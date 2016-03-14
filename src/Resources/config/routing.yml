@@ -22,3 +22,6 @@ _ctp_example_cart:
     path: /example/cart
     defaults: { _controller: CtpBundle:Cart:index}
 
+_ctp_example_add_lineItem:
+    path: /example/cart/add
+    defaults: { _controller: CtpBundle:Cart:addLineItem}

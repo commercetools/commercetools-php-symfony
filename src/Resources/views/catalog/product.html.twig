@@ -4,6 +4,9 @@
     <h3>{{ product.getName }}</h3>
     <img src="{{ product.getMasterVariant.getImages.current.getSmall }}" width="100">
     <p>{{ product.getDescription }}</p>
+    {{ form_start(form) }}
+    {{ form_widget(form) }}
+    {{ form_end(form) }}
 {% endblock %}
 
 

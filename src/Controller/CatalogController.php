@@ -5,6 +5,7 @@ namespace  Commercetools\Symfony\CtpBundle\Controller;
 use Commercetools\Core\Client;
 use Commercetools\Symfony\CtpBundle\Model\Repository\ProductRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Symfony\Component\Form\Extension\Core\Type\HiddenType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Monolog\Handler\StreamHandler;
@@ -56,8 +57,18 @@ class CatalogController extends Controller
                 'sku' => $variant->getSku()
             ];
         }
+        $form = $this->createFormBuilder()
+            ->setAction($this->generateUrl('_ctp_example_add_lineItem'))
+            ->add('productId', HiddenType::class, ['data' => $product->getId()])
+            ->add('variantId', HiddenType::class, ['data' => '1'])
+            ->add('quantity', HiddenType::class, ['data' => '1'])
+            ->add('slug', HiddenType::class, ['data' => (string)$product->getSlug()])
+            ->add('addToCart', SubmitType::class, array('label' => 'Add to cart'))
+            ->getForm();
+        $form->handleRequest($request);
         return $this->render('CtpBundle:catalog:product.html.twig', array(
-            'product' =>  $product
+            'product' =>  $product,
+            'form' => $form->createView()
         ));
     }
 }

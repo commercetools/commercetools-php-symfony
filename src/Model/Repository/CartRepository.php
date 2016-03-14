@@ -14,7 +14,7 @@ use Commercetools\Core\Model\Cart\CartDraft;
 use Commercetools\Core\Model\Cart\LineItemDraft;
 use Commercetools\Core\Model\Cart\LineItemDraftCollection;
 use Commercetools\Core\Model\Common\Address;
-//use Commercetools\Core\Model\ShippingMethod\ShippingMethodCollection;
+use Commercetools\Core\Model\ShippingMethod\ShippingMethodCollection;
 use Commercetools\Core\Request\Carts\CartByIdGetRequest;
 use Commercetools\Core\Request\Carts\CartCreateRequest;
 use Commercetools\Core\Request\Carts\CartUpdateRequest;
@@ -85,7 +85,7 @@ class CartRepository extends Repository
                     ->setVariantId($variantId)
                     ->setQuantity($quantity)
             );
-            $cart = $this->createCart($currency, $country, $lineItems);
+            $cart = $this->createCart($locale, $currency, $country, $lineItems);
         } else {
             $client = $this->getClient($locale);
 
@@ -141,7 +141,7 @@ class CartRepository extends Repository
     public function createCart($locale, $currency, $country, LineItemDraftCollection $lineItems)
     {
         $client = $this->getClient($locale);
-        $shippingMethodResponse = $this->shippingMethodRepository->getByCountryAndCurrency($country, $currency);
+        $shippingMethodResponse = $this->shippingMethodRepository->getByCountryAndCurrency($locale, $country, $currency);
         $cartDraft = CartDraft::ofCurrency($currency)->setCountry($country)
             ->setShippingAddress(Address::of()->setCountry($country))
             ->setLineItems($lineItems);

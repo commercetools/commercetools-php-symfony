@@ -6,9 +6,12 @@
 namespace Commercetools\Symfony\CtpBundle\Controller;
 
 
+use Commercetools\Symfony\CtpBundle\Model\Repository\CartRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Commercetools\Core\Model\Cart\Cart;
 use Commercetools\Core\Model\Common\Money;
+use Symfony\Component\Form\Extension\Core\Type\HiddenType;
+use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -22,34 +25,47 @@ class CartController extends Controller
     {
         $session = $this->get('session');
         $cartId = $session->get('cartId');
-        $cart = $this->get('commercetools.repository.cart')->getCart($cartId);
-
-        return $this->render('CtpBundle:catalog:cart.html.twig', ['cart' => $cart]);
+        $cart = $this->get('commercetools.repository.cart')->getCart($request->getLocale(), $cartId);
+        return $this->render('CtpBundle:cart:index.html.twig', ['cart' => $cart]);
     }
 
-    public function addAction(Request $request)
+    public function addLineItemAction(Request $request)
     {
+        $locale = $this->get('commercetools.locale.converter')->convert($request->getLocale());
         $session = $this->get('session');
 
-        $productId = $request->get('productId');
-        $variantId = (int)$request->get('variantId');
-        $quantity = (int)$request->get('quantity');
-        $sku = $request->get('productSku');
-        $slug = $request->get('productSlug');
-        $cartId = $session->get('cartId');
-        $country = \Locale::getRegion($this->locale);
-        $currency = $this->get('commercetools.currency.'. $country);
-        $cart = $this->get('commercetools.repository.cart')
-            ->addLineItem($cartId, $productId, $variantId, $quantity, $currency, $country);
-        $session->set('cartId', $cart->getId());
-        $session->set('cartNumItems', $this->getItemCount($cart));
-        $session->save();
+        $form = $this->createFormBuilder()
+            ->setAction($this->generateUrl('_ctp_example_add_lineItem'))
+            ->add('productId', HiddenType::class)
+            ->add('variantId', HiddenType::class)
+            ->add('quantity', HiddenType::class)
+            ->add('slug', HiddenType::class)
+            ->add('addToCart', SubmitType::class, array('label' => 'Add to cart'))
+            ->getForm();
+        $form->handleRequest($request);
 
-        if (empty($sku)) {
-            $redirectUrl = $this->generateUrl('pdp-master', ['slug' => $slug]);
+        if ($form->isValid() && $form->isSubmitted()) {
+            $productId = $form->get('productId')->getData();
+            $variantId = (int)$form->get('variantId')->getData();
+            $quantity = (int)$form->get('quantity')->getData();
+            $slug = $form->get('slug')->getData();
+            $cartId = $session->get('cartId');
+            $country = \Locale::getRegion($locale);
+            $currency = $this->getParameter('commercetools.currency.'. $country);
+            /**
+             * @var CartRepository $repository
+             */
+            $repository = $this->get('commercetools.repository.cart');
+            $cart = $repository->addLineItem($request->getLocale(), $cartId, $productId, $variantId, $quantity, $currency, $country);
+            $session->set('cartId', $cart->getId());
+            $session->set('cartNumItems', $this->getItemCount($cart));
+            $session->save();
+
+            $redirectUrl = $this->generateUrl('_ctp_example_product', ['slug' => $slug]);
         } else {
-            $redirectUrl = $this->generateUrl('pdp', ['slug' => $slug, 'sku' => $sku]);
+            $redirectUrl = $this->generateUrl('_ctp_example');
         }
+
         return new RedirectResponse($redirectUrl);
     }
 
@@ -59,7 +75,7 @@ class CartController extends Controller
         $response->headers->addCacheControlDirective('no-cache');
         $response->headers->addCacheControlDirective('no-store');
 
-        $response = $this->render('common/mini-cart.hbs', $response);
+        $response = $this->render('CtpBundle:catalog:cart.html.twig', $response);
 
         return $response;
     }
@@ -89,7 +105,7 @@ class CartController extends Controller
         $session->set('cartNumItems', $this->getItemCount($cart));
         $session->save();
 
-        return new RedirectResponse($this->generateUrl('cart'));
+        return new RedirectResponse($this->generateUrl('_ctp_example_cart'));
     }
 
 //    public function checkoutAction(Request $request)
@@ -165,9 +181,6 @@ class CartController extends Controller
 
     protected function getCartLineItems(Cart $cart)
     {
-        $cartItems = new ViewData();
-        $cartItems->list = new ViewDataCollection();
-
         $lineItems = $cart->getLineItems();
 
         if (!is_null($lineItems)) {
@@ -213,5 +226,16 @@ class CartController extends Controller
         }
 
         return $cartItems;
+    }
+
+    protected function getItemCount(Cart $cart)
+    {
+        $count = 0;
+        if ($cart->getLineItems()) {
+            foreach ($cart->getLineItems() as $lineItem) {
+                $count+= $lineItem->getQuantity();
+            }
+        }
+        return $count;
     }
 }
