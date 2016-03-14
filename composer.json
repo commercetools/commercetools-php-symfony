@@ -1,5 +1,5 @@
 {
-    "name": "commercetools/symfony-php",
+    "name": "commercetools/symfony-bundle",
     "description": "Symfony bundle for Commercetools platform",
     "type": "library",
     "license": "MIT",
