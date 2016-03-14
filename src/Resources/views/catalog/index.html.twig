@@ -1,0 +1,15 @@
+{% extends "CtpBundle::layout.html.twig" %}
+
+{% block container %}
+    {{ form_start(form) }}
+    {{ form_widget(form) }}
+    {{ form_end(form) }}
+
+    {% for product in products %}
+        <a href="{{ path('_ctp_example_product', {slug: product.getSlug}) }}">
+            <h3>{{ product.getName }}</h3>
+            <img src="{{ product.getMasterVariant.getImages.current.getSmall }}" width="100">
+            <p>{{ product.getDescription }}</p>
+        </a>
+    {% endfor %}
+{% endblock %}

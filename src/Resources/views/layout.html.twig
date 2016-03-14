@@ -1,0 +1,28 @@
+{% block head %}
+<!DOCTYPE html>
+    <html>
+        <head>
+            <link rel="stylesheet" href="" />
+            <title>{% block title %}  Awesome webapp by Commercetools {% endblock %}</title>
+        </head>
+{% endblock %}
+
+{% block menu %}
+    <ul>
+        <li><a href="{{ path('_ctp_example') }}">Home</a> </li>
+        <li><a href="{{ path('login') }}">login</a> </li>
+        <li><a href="{{ path('logout') }}">logout</a> </li>
+        <li><a href="{{ path('_ctp_example_cart') }}">logout</a> </li>
+    </ul>
+{% endblock %}
+
+{% block body %}
+    <body>
+        <div class="container">
+        {% block container %}
+        {% endblock %}
+        </div>
+    </body>
+{% endblock %}
+
+

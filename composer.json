@@ -1,0 +1,20 @@
+{
+    "name": "commercetools/symfony-php",
+    "description": "Symfony bundle for Commercetools platform",
+    "type": "library",
+    "license": "MIT",
+    "autoload": {
+        "psr-4": {
+            "Commercetools\\Symfony\\CtpBundle": "src/"
+        }
+    },
+    "require": {
+        "php": ">=5.5.9",
+        "symfony/symfony": "3.0.*",
+        "commercetools/commons": "*",
+        "commercetools/php-sdk": "dev-develop"
+    },
+    "require-dev": {
+        "symfony/phpunit-bridge": "^3.0"
+    }
+}
