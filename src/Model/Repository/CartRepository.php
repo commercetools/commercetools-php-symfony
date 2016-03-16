@@ -106,7 +106,7 @@ class CartRepository extends Repository
     public function deleteLineItem($locale, $cartId, $lineItemId)
     {
         $client = $this->getClient($locale);
-        $cart = $this->getCart($cartId);
+        $cart = $this->getCart($locale, $cartId);
 
         $cartUpdateRequest = CartUpdateRequest::ofIdAndVersion($cart->getId(), $cart->getVersion());
         $cartUpdateRequest->addAction(
@@ -120,7 +120,7 @@ class CartRepository extends Repository
 
     public function changeLineItemQuantity($locale, $cartId, $lineItemId, $quantity)
     {
-        $cart = $this->getCart($cartId);
+        $cart = $this->getCart($locale, $cartId);
         $client = $this->getClient($locale);
         $cartUpdateRequest = CartUpdateRequest::ofIdAndVersion($cart->getId(), $cart->getVersion());
         $cartUpdateRequest->addAction(

@@ -6,12 +6,16 @@
 namespace Commercetools\Symfony\CtpBundle\Controller;
 
 
+use Commercetools\Symfony\CtpBundle\Model\Form\Type\AddToCartType;
 use Commercetools\Symfony\CtpBundle\Model\Repository\CartRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Commercetools\Core\Model\Cart\Cart;
 use Commercetools\Core\Model\Common\Money;
+use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
+use Symfony\Component\Form\Extension\Core\Type\FormType;
 use Symfony\Component\Form\Extension\Core\Type\HiddenType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
+use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -26,6 +30,11 @@ class CartController extends Controller
         $session = $this->get('session');
         $cartId = $session->get('cartId');
         $cart = $this->get('commercetools.repository.cart')->getCart($request->getLocale(), $cartId);
+
+        $form = $this->createNamedFormBuilder('')
+            ->add('lineItemId', TextType::class)
+            ->add('quantity', TextType::class)
+            ->getForm();
         return $this->render('CtpBundle:cart:index.html.twig', ['cart' => $cart]);
     }
 
@@ -34,14 +43,8 @@ class CartController extends Controller
         $locale = $this->get('commercetools.locale.converter')->convert($request->getLocale());
         $session = $this->get('session');
 
-        $form = $this->createFormBuilder()
-            ->setAction($this->generateUrl('_ctp_example_add_lineItem'))
-            ->add('productId', HiddenType::class)
-            ->add('variantId', HiddenType::class)
-            ->add('quantity', HiddenType::class)
-            ->add('slug', HiddenType::class)
-            ->add('addToCart', SubmitType::class, array('label' => 'Add to cart'))
-            ->getForm();
+
+        $form = $this->createForm(AddToCartType::class, ['variantIdText' => true]);
         $form->handleRequest($request);
 
         if ($form->isValid() && $form->isSubmitted()) {
@@ -86,13 +89,16 @@ class CartController extends Controller
         $lineItemId = $request->get('lineItemId');
         $lineItemCount = (int)$request->get('quantity');
         $cartId = $session->get('cartId');
-        $cart = $this->get('commercetools.repository.cart')
-            ->changeLineItemQuantity($cartId, $lineItemId, $lineItemCount);
+        /**
+         * @var CartRepository $repository
+         */
+        $repository = $this->get('commercetools.repository.cart');
+        $cart = $repository->changeLineItemQuantity($request->getLocale(), $cartId, $lineItemId, $lineItemCount);
 
         $session->set('cartNumItems', $this->getItemCount($cart));
         $session->save();
 
-        return new RedirectResponse($this->generateUrl('cart'));
+        return new RedirectResponse($this->generateUrl('_ctp_example_cart'));
     }
 
     public function deleteLineItemAction(Request $request)
@@ -100,7 +106,7 @@ class CartController extends Controller
         $session = $this->get('session');
         $lineItemId = $request->get('lineItemId');
         $cartId = $session->get('cartId');
-        $cart = $this->get('commercetools.repository.cart')->deleteLineItem($cartId, $lineItemId);
+        $cart = $this->get('commercetools.repository.cart')->deleteLineItem($request->getLocale(), $cartId, $lineItemId);
 
         $session->set('cartNumItems', $this->getItemCount($cart));
         $session->save();
@@ -237,5 +243,18 @@ class CartController extends Controller
             }
         }
         return $count;
+    }
+
+    /**
+     * Creates and returns a form builder instance.
+     *
+     * @param mixed $data    The initial data for the form
+     * @param array $options Options for the form
+     *
+     * @return FormBuilder
+     */
+    protected function createNamedFormBuilder($name, $data = null, array $options = array())
+    {
+        return $this->container->get('form.factory')->createNamedBuilder($name, FormType::class, $data, $options);
     }
 }

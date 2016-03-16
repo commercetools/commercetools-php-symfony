@@ -3,6 +3,7 @@
 namespace  Commercetools\Symfony\CtpBundle\Controller;
 
 use Commercetools\Core\Client;
+use Commercetools\Symfony\CtpBundle\Model\Form\Type\AddToCartType;
 use Commercetools\Symfony\CtpBundle\Model\Repository\ProductRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\Form\Extension\Core\Type\HiddenType;
@@ -52,19 +53,16 @@ class CatalogController extends Controller
         $variantIds = [];
 
         foreach ($product->getAllVariants() as $variant) {
-            $variantIds[] = [
-                'id' => $variant->getId(),
-                'sku' => $variant->getSku()
-            ];
+            $variantIds[$variant->getSku()] = $variant->getId();
         }
-        $form = $this->createFormBuilder()
-            ->setAction($this->generateUrl('_ctp_example_add_lineItem'))
-            ->add('productId', HiddenType::class, ['data' => $product->getId()])
-            ->add('variantId', HiddenType::class, ['data' => '1'])
-            ->add('quantity', HiddenType::class, ['data' => '1'])
-            ->add('slug', HiddenType::class, ['data' => (string)$product->getSlug()])
-            ->add('addToCart', SubmitType::class, array('label' => 'Add to cart'))
-            ->getForm();
+
+        $data = [
+            'productId' => $product->getId(),
+            'variantId' => 1,
+            'slug' => (string)$product->getSlug(),
+            'variant_choices' => $variantIds
+        ];
+        $form = $this->createForm(AddToCartType::class, $data, ['action' => $this->generateUrl('_ctp_example_add_lineItem')]);
         $form->handleRequest($request);
         return $this->render('CtpBundle:catalog:product.html.twig', array(
             'product' =>  $product,

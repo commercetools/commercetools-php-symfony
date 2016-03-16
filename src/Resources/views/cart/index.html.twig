@@ -1,5 +1,40 @@
 {% extends "CtpBundle::layout.html.twig" %}
 
 {% block container %}
-    {{ cart.getTotalPrice }}
+    Id: {{ cart.getId }} <br xmlns="http://www.w3.org/1999/html"/>
+    Total price: {{ cart.getTotalPrice }} <br/>
+
+    Total Net : {% if cart.getTaxedPrice %}{{ cart.getTaxedPrice.getTotalNet }}{% endif %} <br/>
+    Total Gross : {% if cart.getTaxedPrice %}{{ cart.getTaxedPrice.getTotalGross }}{% endif %} <br/>
+<hr/>
+    <table>
+        <tr>
+            <th>Product</th>
+            <th>Quantity</th>
+            <th>Price</th>
+            <th>Total Price</th>
+        </tr>
+        {% for lineItem in cart.getLineItems %}
+            <tr>
+                <td>{{ lineItem.getName }}</td>
+                <td>
+                    <form action="{{ path('_ctp_example_change_lineItem') }}" method="post">
+                        <input type="hidden" name="lineItemId" value="{{ lineItem.getId }}">
+                        <select name="quantity">
+                            {% for i in 1..10 %}
+                                <option value="{{ i }}" {% if lineItem.getQuantity == i %} selected="selected" {% endif %}>{{ i }}</option>
+                            {% endfor %}
+                        </select>
+                        <button type="submit">Change</button>
+                    </form>
+                    <form action="{{ path('_ctp_example_delete_lineItem') }}" method="post">
+                        <input type="hidden" name="lineItemId" value="{{ lineItem.getId }}">
+                        <button type="submit">Delete</button>
+                    </form>
+                </td>
+                <td>{{ lineItem.getPrice }}</td>
+                <td>{{ lineItem.getTotalPrice }}</td>
+            </tr>
+        {% endfor %}
+    </table>
 {% endblock %}

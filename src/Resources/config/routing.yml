@@ -25,3 +25,11 @@ _ctp_example_cart:
 _ctp_example_add_lineItem:
     path: /example/cart/add
     defaults: { _controller: CtpBundle:Cart:addLineItem}
+
+_ctp_example_change_lineItem:
+    path: /example/cart/change
+    defaults: { _controller: CtpBundle:Cart:changeLineItem}
+
+_ctp_example_delete_lineItem:
+    path: /example/cart/delete
+    defaults: { _controller: CtpBundle:Cart:deleteLineItem}
