@@ -1,3 +1,7 @@
+_ctp_example_index:
+    path:     /
+    defaults: { _controller: CtpBundle:home:index }
+
 _ctp_example:
     path:     /example/product
     defaults: { _controller: CtpBundle:Catalog:index }
@@ -14,9 +18,9 @@ login_check:
 logout:
     path: /example/logout
 
-_ctp_example_user:
-    path:    /example/user
-    defaults: { _controller: CtpBundle:User:index }
+_ctp_example_user_details:
+    path:    /example/details
+    defaults: { _controller: CtpBundle:User:details }
 
 _ctp_example_cart:
     path: /example/cart
@@ -33,3 +37,4 @@ _ctp_example_change_lineItem:
 _ctp_example_delete_lineItem:
     path: /example/cart/delete
     defaults: { _controller: CtpBundle:Cart:deleteLineItem}
+

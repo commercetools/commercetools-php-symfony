@@ -24,28 +24,32 @@ class CustomerRepository extends Repository
      * @return Customer
      */
 
-    public function getCustomer($customerId)
+    public function getCustomer($locale, $customerId)
     {
+        $client = $this->getClient($locale);
         $request = CustomerByIdGetRequest::ofId($customerId);
-        $response = $request->executeWithClient($this->client);
+        $response = $request->executeWithClient($client);
         $customer = $request->mapResponse($response);
 
         return $customer;
     }
 
-    public function setAddresses(Customer $customer, Address $address, $addressId)
+    public function setAddresses($locale, Customer $customer, Address $address, $addressId)
     {
+        $client = $this->getClient($locale);
+
         $request = CustomerUpdateRequest::ofIdAndVersion($customer->getId(), $customer->getVersion());
 
         $request->addAction(CustomerChangeAddressAction::ofAddressIdAndAddress($addressId, $address));
-        $response = $request->executeWithClient($this->client);
+        $response = $request->executeWithClient($client);
         $customer = $request->mapResponse($response);
 
         return $customer;
     }
 
-    public function setCustomerDetails(Customer $customer, $firstName, $lastName, $email)
+    public function setCustomerDetails($locale, Customer $customer, $firstName, $lastName, $email)
     {
+        $client = $this->getClient($locale);
         $request = CustomerUpdateRequest::ofIdAndVersion($customer->getId(), $customer->getVersion());
         if ($customer->getFirstName() != $firstName || $customer->getLastName() != $lastName) {
             $request->addAction(CustomerChangeNameAction::ofFirstNameAndLastName($firstName, $lastName));
@@ -53,7 +57,7 @@ class CustomerRepository extends Repository
         if ($customer->getEmail() != $email) {
             $request->addAction(CustomerChangeEmailAction::ofEmail($email));
         }
-        $response = $request->executeWithClient($this->client);
+        $response = $request->executeWithClient($client);
 
         if ($response->isError()) {
             return null;
@@ -63,10 +67,12 @@ class CustomerRepository extends Repository
         return $customer;
     }
 
-    public function setNewPassword(Customer $customer, $currentPassword, $newPassword)
+    public function setNewPassword($locale,Customer $customer, $currentPassword, $newPassword)
     {
+        $client = $this->getClient($locale);
+
         if ($currentPassword == $newPassword) {
-            throw new \InvalidArgumentException('same_password');
+            throw new \InvalidArgumentException('form.type.password');
         }
         if (!empty($currentPassword) && !empty($newPassword)) {
             $request = CustomerPasswordChangeRequest::ofIdVersionAndPasswords(
@@ -76,7 +82,7 @@ class CustomerRepository extends Repository
                 $newPassword
             );
 
-            $response = $request->executeWithClient($this->client);
+            $response = $request->executeWithClient($client);
 
             if ($response->isError()) {
                 throw new \InvalidArgumentException('wrong_password');

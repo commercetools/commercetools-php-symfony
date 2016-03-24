@@ -1,7 +1,7 @@
 {% extends "CtpBundle::layout.html.twig" %}
 
 {% block container %}
-    Id: {{ cart.getId }} <br xmlns="http://www.w3.org/1999/html"/>
+    Id: {{ cart.getId }} <br/>
     Total price: {{ cart.getTotalPrice }} <br/>
 
     Total Net : {% if cart.getTaxedPrice %}{{ cart.getTaxedPrice.getTotalNet }}{% endif %} <br/>
