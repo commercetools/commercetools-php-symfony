@@ -27,7 +27,7 @@ _ctp_example_user_address_book:
     defaults: { _controller: CtpBundle:User:addressBook }
 
 _ctp_example_user_address_edit:
-    path:    /example/user/address/edit/{id}
+    path:    /example/user/address/edit/{addressId}
     defaults: { _controller: CtpBundle:User:editAddress }
 
 _ctp_example_cart:

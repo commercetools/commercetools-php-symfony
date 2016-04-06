@@ -142,7 +142,7 @@ class UserController extends Controller
         );
     }
 
-    public function editAddressAction(Request $request, $id)
+    public function editAddressAction(Request $request, $addressId)
     {
         /**
          * @var User $user
@@ -151,11 +151,10 @@ class UserController extends Controller
         $repository = $this->get('commercetools.repository.customer');
         $customer = $repository->getCustomer($request->getLocale(), $customerId);
 
-        $address = $customer->getAddresses()->getById($id);
+        $address = $customer->getAddresses()->getById($addressId);
 
         $entity = UserAddress::ofAddress($address);
 
-        //todo change id to $addressId
         $form = $this->createFormBuilder($entity)
             ->add('title', TextType::class)
             ->add('salutation', ChoiceType::class, [
@@ -188,7 +187,7 @@ class UserController extends Controller
         $form->handleRequest($request);
 
         if ($form->isValid() && $form->isSubmitted()){
-            $repository->setAddresses($request->getLocale(), $customer, $form->getData()->toCTPAddress(), $id);
+            $repository->setAddresses($request->getLocale(), $customer, $form->getData()->toCTPAddress(), $addressId);
         }
 
         return $this->render(
