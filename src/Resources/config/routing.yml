@@ -19,8 +19,16 @@ logout:
     path: /example/logout
 
 _ctp_example_user_details:
-    path:    /example/details
+    path:    /example/user/details
     defaults: { _controller: CtpBundle:User:details }
+
+_ctp_example_user_address_book:
+    path:    /example/user/address
+    defaults: { _controller: CtpBundle:User:addressBook }
+
+_ctp_example_user_address_edit:
+    path:    /example/user/address/edit/{id}
+    defaults: { _controller: CtpBundle:User:editAddress }
 
 _ctp_example_cart:
     path: /example/cart

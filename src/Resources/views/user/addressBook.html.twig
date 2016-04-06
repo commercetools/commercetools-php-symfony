@@ -1,0 +1,54 @@
+{% extends  "CtpBundle::layout.html.twig" %}
+
+{% block container %}
+    <table>
+        <tr>
+            <td>Title</td>
+            <td>Salutation</td>
+            <td>FirstName</td>
+            <td>LastName</td>
+            <td>Email</td>
+            <td>Company</td>
+            <td>StreenName and number</td>
+            <td>Building</td>
+            <td>Apartment</td>
+            <td>Department</td>
+            <td>PostalCode</td>
+            <td>City</td>
+            <td>Country</td>
+            <td>Region</td>
+            <td>State</td>
+            <td>Postalbox</td>
+            <td>Address info</td>
+            <td>Street info</td>
+            <td>Phone</td>
+            <td>Mobile</td>
+            <td>Edit</td>
+        </tr>
+        {% for address in customer.getAddresses %}
+        <tr>
+            <td>{{ address.getTitle }}</td>
+            <td>{{ address.getSalutation }}</td>
+            <td>{{ address.getFirstName }}</td>
+            <td>{{ address.getLastName }}</td>
+            <td>{{ address.getEmail }}</td>
+            <td>{{ address.getCompany }}</td>
+            <td>{{ address.getStreetName }} {{ address.getStreetNumber }}</td>
+            <td>{{ address.getBuilding }}</td>
+            <td>{{ address.getApartment }}</td>
+            <td>{{ address.getDepartment }}</td>
+            <td>{{ address.getPostalCode }}</td>
+            <td>{{ address.getCity }}</td>
+            <td>{{ address.getCountry }}</td>
+            <td>{{ address.getRegion }}</td>
+            <td>{{ address.getState }}</td>
+            <td>{{ address.getPOBox }}</td>
+            <td>{{ address.getAdditionalStreetInfo }}</td>
+            <td>{{ address.getAdditionalAddressInfo }}</td>
+            <td>{{ address.getPhone }}</td>
+            <td>{{ address.getMobile }}</td>
+            <td><a href="{{ path('_ctp_example_user_address_edit', {'id': address.getId}) }}"><button>Edit</button></a> </td>
+        </tr>
+        {% endfor %}
+    </table>
+{% endblock %}

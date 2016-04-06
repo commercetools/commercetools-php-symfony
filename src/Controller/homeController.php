@@ -8,7 +8,7 @@ namespace Commercetools\Symfony\CtpBundle\Controller;
 
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 
-class homeController extends Controller
+class HomeController extends Controller
 {
     public function indexAction()
     {
