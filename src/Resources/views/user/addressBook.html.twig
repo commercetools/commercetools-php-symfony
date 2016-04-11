@@ -1,54 +1,92 @@
 {% extends  "CtpBundle::layout.html.twig" %}
 
 {% block container %}
-    <table>
-        <tr>
-            <td>Title</td>
-            <td>Salutation</td>
-            <td>FirstName</td>
-            <td>LastName</td>
-            <td>Email</td>
-            <td>Company</td>
-            <td>StreenName and number</td>
-            <td>Building</td>
-            <td>Apartment</td>
-            <td>Department</td>
-            <td>PostalCode</td>
-            <td>City</td>
-            <td>Country</td>
-            <td>Region</td>
-            <td>State</td>
-            <td>Postalbox</td>
-            <td>Address info</td>
-            <td>Street info</td>
-            <td>Phone</td>
-            <td>Mobile</td>
-            <td>Edit</td>
-        </tr>
+    <table class="table-condensed">
         {% for address in customer.getAddresses %}
-        <tr>
-            <td>{{ address.getTitle }}</td>
-            <td>{{ address.getSalutation }}</td>
-            <td>{{ address.getFirstName }}</td>
-            <td>{{ address.getLastName }}</td>
-            <td>{{ address.getEmail }}</td>
-            <td>{{ address.getCompany }}</td>
-            <td>{{ address.getStreetName }} {{ address.getStreetNumber }}</td>
-            <td>{{ address.getBuilding }}</td>
-            <td>{{ address.getApartment }}</td>
-            <td>{{ address.getDepartment }}</td>
-            <td>{{ address.getPostalCode }}</td>
-            <td>{{ address.getCity }}</td>
-            <td>{{ address.getCountry }}</td>
-            <td>{{ address.getRegion }}</td>
-            <td>{{ address.getState }}</td>
-            <td>{{ address.getPOBox }}</td>
-            <td>{{ address.getAdditionalStreetInfo }}</td>
-            <td>{{ address.getAdditionalAddressInfo }}</td>
-            <td>{{ address.getPhone }}</td>
-            <td>{{ address.getMobile }}</td>
-            <td><a href="{{ path('_ctp_example_user_address_edit', {'addressId': address.getId}) }}"><button>Edit</button></a> </td>
-        </tr>
+            <tr class="active">
+                <td class="first-table">Title</td>
+                <td class="second-table">{{ address.getTitle }}</td>
+            </tr>
+            <tr class="active">
+                <td class="first-table">Salutation</td>
+                <td class="second-table">{{ address.getSalutation }}</td>
+            </tr>
+            <tr class="active">
+                <td class="first-table">FirstName</td>
+                <td class="second-table">{{ address.getFirstName }}</td>
+            </tr>
+            <tr class="active">
+                <td class="first-table">LastName</td>
+                <td class="second-table">{{ address.getLastName }}</td>
+            </tr>
+            <tr class="active">
+                <td class="first-table">Email</td>
+                <td class="second-table">{{ address.getEmail }}</td>
+            </tr>
+            <tr class="active">
+                <td class="first-table">Company</td>
+                <td class="second-table">{{ address.getCompany }}</td>
+            </tr>
+            <tr class="active">
+                <td class="first-table">StreenName and number</td>
+                <td class="second-table"> {{ address.getStreetName }} {{ address.getStreetNumber }}</td>
+            </tr>
+            <tr class="active">
+                <td class="first-table">Building</td>
+                <td class="second-table">{{ address.getBuilding }}</td>
+            </tr>
+            <tr class="active">
+                <td class="first-table">Apartment</td>
+                <td class="second-table">{{ address.getApartment }}</td>
+            </tr>
+            <tr class="active">
+                <td class="first-table">Department</td>
+                <td class="second-table">{{ address.getDepartment }}</td>
+            </tr>
+            <tr class="active">
+                <td class="first-table">Postalcode</td>
+                <td class="second-table">{{ address.getPostalCode }}</td>
+            </tr>
+            <tr class="active">
+                <td class="first-table">City</td>
+                <td class="second-table">{{ address.getCity }}</td>
+            </tr>
+            <tr class="active">
+                <td class="first-table">Country</td>
+                <td class="second-table">{{ address.getCountry }}</td>
+            </tr>
+            <tr class="active">
+                <td class="first-table">Region</td>
+                <td class="second-table">{{ address.getRegion }}</td>
+            </tr>
+            <tr class="active">
+                <td class="first-table">State</td>
+                <td class="second-table">{{ address.getState }}</td>
+            </tr>
+            <tr class="active">
+                <td class="first-table">Postalbox</td>
+                <td class="second-table">{{ address.getPOBox }}</td>
+            </tr>
+            <tr class="active">
+                <td class="first-table">Address info</td>
+                <td class="second-table">{{ address.getAdditionalStreetInfo }}</td>
+            </tr>
+            <tr class="active">
+                <td class="first-table">Street info</td>
+                <td class="second-table">{{ address.getAdditionalAddressInfo }}</td>
+            </tr>
+            <tr class="active">
+                <td class="first-table">Phone</td>
+                <td class="second-table">{{ address.getPhone }}</td>
+            </tr>
+            <tr class="active">
+                <td class="first-table">Mobile</td>
+                <td class="second-table">{{ address.getMobile }}</td>
+            </tr>
+            <tr class="active">
+                <td class="first-table"></td>
+                <td class="second-table"><a href="{{ path('_ctp_example_user_address_edit', {'addressId': address.getId}) }}"><button>Edit</button></a> </td>
+            </tr>
         {% endfor %}
     </table>
 {% endblock %}

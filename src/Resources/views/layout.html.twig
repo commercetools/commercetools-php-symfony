@@ -2,31 +2,48 @@
 <!DOCTYPE html>
     <html>
         <head>
-            <link rel="stylesheet" href="" />
             <title>{% block title %}  Awesome webapp by Commercetools {% endblock %}</title>
+
+            {% block stylesheets %}
+                {% stylesheets
+                    '@CtpBundle/Web/public/css/bootstrap.css'
+                    '@CtpBundle/Web/public/css/style.css'
+                %}
+                <link rel="stylesheet" href="{{ asset_url }}" />
+                {% endstylesheets %}
+            {% endblock %}
+
         </head>
 {% endblock %}
 
 {% block menu %}
-    <ul>
-        <li><a href="{{ path('_ctp_example') }}">Home</a> </li>
-        <li><a href="{{ path('_ctp_example_cart') }}">Cart</a> </li>
-        {% if app.user %}
-            <li><a href="{{ path('_ctp_example_user_details') }}">User</a> </li>
-            <li><a href="{{ path('_ctp_example_user_address_book') }}">Adressen</a> </li>
-            <li><a href="{{ path('logout') }}">logout</a> </li>
-        {% endif %}
-        {% if not app.user %}
-            <li><a href="{{ path('login') }}">login</a> </li>
-        {% endif %}
-    </ul>
+    <div class="menu">
+       <a href="{{ path('_ctp_example') }}">
+            {% image '@CtpBundle/Web/public/img/CT-logo.svg' %}
+                <img class="menu-logo" src="{{ asset_url }}" alt="example"/>
+            {% endimage %}
+       </a>
+        <ul>
+            <li><a href="{{ path('_ctp_example') }}">Home</a> </li>
+            <li><a href="{{ path('_ctp_example_cart') }}">Cart</a> </li>
+            {% if app.user %}
+                <li><a href="{{ path('_ctp_example_user_details') }}">User</a> </li>
+                <li><a href="{{ path('_ctp_example_user_address_book') }}">Adressen</a> </li>
+                <li><a href="{{ path('logout') }}">logout</a> </li>
+            {% endif %}
+            {% if not app.user %}
+                <li><a href="{{ path('login') }}">login</a> </li>
+            {% endif %}
+        </ul>
+    </div>
+
 {% endblock %}
 
 {% block body %}
     <body>
-        <div class="container">
-        {% block container %}
-        {% endblock %}
+        <div class="content">
+            {% block container %}
+            {% endblock %}
         </div>
     </body>
 {% endblock %}

@@ -1,7 +1,7 @@
 {% extends "CtpBundle::layout.html.twig" %}
 
 {% block container %}
-    Id: {{ cart.getId }} <br/>
+    {#Id: {{ cart.getId }} <br/>#}
     Total price: {{ cart.getTotalPrice }} <br/>
 
     Total Net : {% if cart.getTaxedPrice %}{{ cart.getTaxedPrice.getTotalNet }}{% endif %} <br/>
@@ -13,28 +13,37 @@
             <th>Quantity</th>
             <th>Price</th>
             <th>Total Price</th>
+            <th>Delete</th>
         </tr>
         {% for lineItem in cart.getLineItems %}
             <tr>
-                <td>{{ lineItem.getName }}</td>
-                <td>
+                <th>{{ lineItem.getName }}</th>
+                <th>
                     <form action="{{ path('_ctp_example_change_lineItem') }}" method="post">
-                        <input type="hidden" name="lineItemId" value="{{ lineItem.getId }}">
-                        <select name="quantity">
-                            {% for i in 1..10 %}
-                                <option value="{{ i }}" {% if lineItem.getQuantity == i %} selected="selected" {% endif %}>{{ i }}</option>
-                            {% endfor %}
-                        </select>
-                        <button type="submit">Change</button>
+                        <div class="form-group">
+                            <input type="hidden" name="lineItemId" value="{{ lineItem.getId }}">
+                            <select name="quantity">
+                                {% for i in 1..10 %}
+                                    <option value="{{ i }}" {% if lineItem.getQuantity == i %} selected="selected" {% endif %}>{{ i }}</option>
+                                {% endfor %}
+                            </select>
+                            <button class="btn btn-default" type="submit">Change</button>
+                        </div>
                     </form>
+                </th>
+                <th>{{ lineItem.getPrice }}</th>
+                <th>{{ lineItem.getTotalPrice }}</th>
+
+                <th>
                     <form action="{{ path('_ctp_example_delete_lineItem') }}" method="post">
-                        <input type="hidden" name="lineItemId" value="{{ lineItem.getId }}">
-                        <button type="submit">Delete</button>
+                        <div class="form-group">
+                            <input type="hidden" name="lineItemId" value="{{ lineItem.getId }}">
+                            <button class="btn btn-default" type="submit">Delete</button>
+                        </div>
                     </form>
-                </td>
-                <td>{{ lineItem.getPrice }}</td>
-                <td>{{ lineItem.getTotalPrice }}</td>
+                </th>
             </tr>
         {% endfor %}
     </table>
 {% endblock %}
+

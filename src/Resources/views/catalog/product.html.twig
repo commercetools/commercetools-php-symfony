@@ -6,7 +6,8 @@
     <p>{{ product.getDescription }}</p>
     {% if app.user %}
         {{ form_start(form) }}
-        {{ form_widget(form) }}
+            {% form_theme form 'bootstrap_3_layout.html.twig' %}
+            {{ form_widget(form) }}
         {{ form_end(form) }}
     {% endif %}
 {% endblock %}
