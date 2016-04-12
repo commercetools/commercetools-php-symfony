@@ -1,11 +1,9 @@
 {% extends "CtpBundle::layout.html.twig" %}
 
 {% block container %}
-    <div class="search">
-    {{ form_start(form) }}
-    {{ form_widget(form, { 'attr': {'class': 'search'} }) }}
-    {{ form_end(form) }}
-    </div>
+        {{ form_start(form) }}
+        {{ form_widget(form, { 'attr': {'class': 'search'} }) }}
+        {{ form_end(form) }}
     <div class="row">
         {% for product in products %}
             <div class="col-md-6">
@@ -13,6 +11,7 @@
                     <h3>{{ product.getName }}</h3>
                     <img src="{{ product.getMasterVariant.getImages.current.getSmall }}" width="100">
                     <p>{{ product.getDescription }}</p>
+                    <p>{{ product.getMasterVariant.getPrices.current.getValue }}</p>
                 </a>
             </div>
         {% endfor %}

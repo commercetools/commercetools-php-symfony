@@ -26,7 +26,7 @@ class CatalogController extends Controller
             ->add('search', TextType::class,
                 array(
                     'attr' => array(
-                        'placeholder' => 'Search an item by name',
+                        'placeholder' => 'Search...',
                     ),
                     'label' => false,
                     'required' => false,
