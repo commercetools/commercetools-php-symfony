@@ -23,8 +23,15 @@ class CatalogController extends Controller
         $repository = $this->get('commercetools.repository.product');
 
         $form = $this->createFormBuilder()
-            ->add('search', TextType::class)
-            ->add('save', SubmitType::class, array('label' => 'search'))
+            ->add('search', TextType::class,
+                array(
+                    'attr' => array(
+                        'placeholder' => 'Search...',
+                    ),
+                    'label' => false,
+                    'required' => false,
+                ))
+            ->add('save', SubmitType::class, array('label' => 'Search'))
             ->getForm();
         $form->handleRequest($request);
 

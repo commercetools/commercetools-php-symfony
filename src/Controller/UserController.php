@@ -5,17 +5,23 @@
 
 namespace Commercetools\Symfony\CtpBundle\Controller;
 
+use Commercetools\Core\Client;
+use Commercetools\Core\Model\Common\Address;
+use Commercetools\Core\Model\Customer\Customer;
 use Commercetools\Core\Request\Customers\CustomerByIdGetRequest;
 use Commercetools\Core\Request\Customers\CustomerPasswordChangeRequest;
+use Commercetools\Symfony\CtpBundle\Entity\UserAddress;
 use Commercetools\Symfony\CtpBundle\Entity\UserDetails;
-use Commercetools\Symfony\CtpBundle\Security\User\User;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Form\Extension\Core\Type\RepeatedType;
 use Symfony\Component\Form\Extension\Core\Type\PasswordType;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
+
+use Commercetools\Symfony\CtpBundle\Entity\User;
 
 class UserController extends Controller
 {
@@ -26,9 +32,11 @@ class UserController extends Controller
          */
         $user = $this->getUser();
 
-        return $this->render('CtpBundle:catalog:index.html.twig', array(
-            'user' => $user
-        ));
+        return $this->render('CtpBundle:catalog:index.html.twig',
+            [
+                'user' => $user
+            ]
+        );
     }
 
     public function loginAction(Request $request)
@@ -40,10 +48,11 @@ class UserController extends Controller
         $lastUsername = $authenticationUtils->getLastUsername();
 
         return $this->render('CtpBundle:user:login.html.twig',
-            array(
+            [
                 'last_username' => $lastUsername,
                 'error' => $error
-            ));
+            ]
+        );
     }
 
     public function loginCheckAction()
@@ -111,9 +120,82 @@ class UserController extends Controller
 
         }
 
-        return $this->render('CtpBundle:User:user.html.twig', array(
-            'form' => $form->createView()
-        ));
+        return $this->render('CtpBundle:User:user.html.twig',
+            [
+                'formDetails' => $form->createView()
+            ]
+        );
+    }
+
+    public function addressBookAction(Request $request)
+    {
+        /**
+         * @var User $user
+         */
+        $customerId = $this->get('security.token_storage')->getToken()->getUser()->getId();
+        $customer = $this->get('commercetools.repository.customer')->getCustomer($request->getLocale(), $customerId);
+
+        return $this->render('CtpBundle:User:addressBook.html.twig',
+            [
+                'customer' => $customer
+            ]
+        );
+    }
+
+    public function editAddressAction(Request $request, $addressId)
+    {
+        /**
+         * @var User $user
+         */
+        $customerId = $this->get('security.token_storage')->getToken()->getUser()->getId();
+        $repository = $this->get('commercetools.repository.customer');
+        $customer = $repository->getCustomer($request->getLocale(), $customerId);
+
+        $address = $customer->getAddresses()->getById($addressId);
+
+        $entity = UserAddress::ofAddress($address);
+
+        $form = $this->createFormBuilder($entity)
+            ->add('title', TextType::class)
+            ->add('salutation', ChoiceType::class, [
+                'choices' => [
+                    'Mr' => 'mr',
+                    'Mrs' => 'mrs'
+                ]
+            ])
+            ->add('firstName', TextType::class)
+            ->add('lastName', TextType::class)
+            ->add('email', TextType::class)
+            ->add('company', TextType::class)
+            ->add('streetName', TextType::class)
+            ->add('streetNumber', TextType::class)
+            ->add('building', TextType::class)
+            ->add('apartment', TextType::class)
+            ->add('department', TextType::class)
+            ->add('postalCode', TextType::class)
+            ->add('city', TextType::class)
+            ->add('country', TextType::class)
+            ->add('region', TextType::class)
+            ->add('state', TextType::class)
+            ->add('pOBox', TextType::class, ['label' => 'Postal Code'])
+            ->add('additionalAddressInfo', TextType::class)
+            ->add('additionalStreetInfo', TextType::class)
+            ->add('phone', TextType::class)
+            ->add('mobile', TextType::class)
+            ->add('Change', SubmitType::class)
+            ->getForm();
+        $form->handleRequest($request);
+
+        if ($form->isValid() && $form->isSubmitted()){
+            $repository->setAddresses($request->getLocale(), $customer, $form->getData()->toCTPAddress(), $addressId);
+        }
+
+        return $this->render(
+            'CtpBundle:User:editAddress.html.twig',
+            [
+                'form' => $form->createView()
+            ]
+        );
     }
 
     protected function getCustomer(User $user)
@@ -121,9 +203,13 @@ class UserController extends Controller
         if (!$user instanceof User){
             throw new \InvalidArgumentException;
         }
+
+        /**
+         * @var Client $client
+         */
         $client = $this->get('commercetools.client');
 
-        $request = CustomerByIdGetRequest::ofId($client);
+        $request = CustomerByIdGetRequest::ofId($user->getId());
         $response = $request->executeWithClient($client);
 
         $customer = $request->mapResponse($response);

@@ -7,13 +7,16 @@
 
     {% block form %}
         <form action="{{ path('login_check') }}" method="post">
-            <label for="username">Username:</label>
-            <input type="text" id="username" name="_username" value="{{ last_username }}" />
+            <div class="form-group">
+                <label for="username">Username</label>
+                <input class="form-control" type="text" id="username" name="_username" value="{{ last_username }}" />
 
-            <label for="password">Password:</label>
-            <input type="password" id="password" name="_password" />
+                <label for="password">Password</label>
+                <input class="form-control" type="password" id="password" name="_password" />
 
-            <button type="submit">login</button>
+                <button class="btn btn-default" type="submit">login</button>
+            </div>
+
         </form>
     {% endblock %}
 {% endblock %}
