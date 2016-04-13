@@ -11,8 +11,8 @@
     "require": {
         "php": ">=5.5.9",
         "symfony/symfony": "3.0.*",
-        "commercetools/commons": "*",
-        "commercetools/php-sdk": "dev-develop"
+        "commercetools/commons": "@dev",
+        "commercetools/php-sdk": "^1.0@beta"
     },
     "require-dev": {
         "symfony/phpunit-bridge": "^3.0"
