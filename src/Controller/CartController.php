@@ -78,7 +78,7 @@ class CartController extends Controller
         $response->headers->addCacheControlDirective('no-cache');
         $response->headers->addCacheControlDirective('no-store');
 
-        $response = $this->render('CtpBundle:catalog:cart.html.twig', $response);
+        $response = $this->render('CtpBundle:cart:index.html.twig', $response);
 
         return $response;
     }

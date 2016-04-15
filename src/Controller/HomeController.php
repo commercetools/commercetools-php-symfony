@@ -12,6 +12,6 @@ class HomeController extends Controller
 {
     public function indexAction()
     {
-        return $this->render('CtpBundle:index.html.twig');
+        return $this->render('CtpBundle::index.html.twig');
     }
 }

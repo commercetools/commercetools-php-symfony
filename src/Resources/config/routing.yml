@@ -1,6 +1,6 @@
 _ctp_example_index:
     path:     /
-    defaults: { _controller: CtpBundle:home:index }
+    defaults: { _controller: CtpBundle:Home:index }
 
 _ctp_example:
     path:     /product
