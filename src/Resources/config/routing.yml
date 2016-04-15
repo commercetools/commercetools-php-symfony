@@ -3,46 +3,50 @@ _ctp_example_index:
     defaults: { _controller: CtpBundle:home:index }
 
 _ctp_example:
-    path:     /example/product
+    path:     /product
     defaults: { _controller: CtpBundle:Catalog:index }
 
 _ctp_example_product:
-    path:    /example/product/{slug}
+    path:    /product/{slug}
     defaults: { _controller: CtpBundle:Catalog:detail }
 
 login:
-    path: /example/login
+    path: /login
     defaults: { _controller: CtpBundle:User:login }
 login_check:
-    path: /example/login_check
+    path: /login_check
 logout:
-    path: /example/logout
+    path: /logout
 
 _ctp_example_user_details:
-    path:    /example/user/details
+    path:    /user/details
     defaults: { _controller: CtpBundle:User:details }
 
 _ctp_example_user_address_book:
-    path:    /example/user/address
+    path:    /user/address
     defaults: { _controller: CtpBundle:User:addressBook }
 
 _ctp_example_user_address_edit:
-    path:    /example/user/address/edit/{addressId}
+    path:    /user/address/edit/{addressId}
     defaults: { _controller: CtpBundle:User:editAddress }
 
 _ctp_example_cart:
-    path: /example/cart
+    path: /cart
     defaults: { _controller: CtpBundle:Cart:index}
 
+_ctp_example_cart_checkout:
+    path: /checkout
+    defaults: { _controller: CtpBundle:Checkout:setAddress}
+
 _ctp_example_add_lineItem:
-    path: /example/cart/add
+    path: /cart/add
     defaults: { _controller: CtpBundle:Cart:addLineItem}
 
 _ctp_example_change_lineItem:
-    path: /example/cart/change
+    path: /cart/change
     defaults: { _controller: CtpBundle:Cart:changeLineItem}
 
 _ctp_example_delete_lineItem:
-    path: /example/cart/delete
+    path: /cart/delete
     defaults: { _controller: CtpBundle:Cart:deleteLineItem}
 

@@ -10,9 +10,10 @@
     },
     "require": {
         "php": ">=5.5.9",
-        "symfony/symfony": "3.0.*",
+        "symfony/symfony": "^3.0",
         "commercetools/commons": "*",
-        "commercetools/php-sdk": "^1.0@beta"
+        "commercetools/php-sdk": "^1.0@beta",
+        "symfony/assetic-bundle": "^2.8"
     },
     "require-dev": {
         "symfony/phpunit-bridge": "^3.0"
