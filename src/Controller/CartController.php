@@ -59,11 +59,7 @@ class CartController extends Controller
              * @var CartRepository $repository
              */
             $repository = $this->get('commercetools.repository.cart');
-            $cart = $repository->addLineItem($request->getLocale(), $cartId, $productId, $variantId, $quantity, $currency, $country);
-            $session->set('cartId', $cart->getId());
-            $session->set('cartNumItems', $this->getItemCount($cart));
-            $session->save();
-
+            $repository->addLineItem($request->getLocale(), $cartId, $productId, $variantId, $quantity, $currency, $country);
             $redirectUrl = $this->generateUrl('_ctp_example_product', ['slug' => $slug]);
         } else {
             $redirectUrl = $this->generateUrl('_ctp_example');
@@ -93,10 +89,7 @@ class CartController extends Controller
          * @var CartRepository $repository
          */
         $repository = $this->get('commercetools.repository.cart');
-        $cart = $repository->changeLineItemQuantity($request->getLocale(), $cartId, $lineItemId, $lineItemCount);
-
-        $session->set('cartNumItems', $this->getItemCount($cart));
-        $session->save();
+        $repository->changeLineItemQuantity($request->getLocale(), $cartId, $lineItemId, $lineItemCount);
 
         return new RedirectResponse($this->generateUrl('_ctp_example_cart'));
     }
@@ -106,10 +99,7 @@ class CartController extends Controller
         $session = $this->get('session');
         $lineItemId = $request->get('lineItemId');
         $cartId = $session->get('cartId');
-        $cart = $this->get('commercetools.repository.cart')->deleteLineItem($request->getLocale(), $cartId, $lineItemId);
-
-        $session->set('cartNumItems', $this->getItemCount($cart));
-        $session->save();
+        $this->get('commercetools.repository.cart')->deleteLineItem($request->getLocale(), $cartId, $lineItemId);
 
         return new RedirectResponse($this->generateUrl('_ctp_example_cart'));
     }

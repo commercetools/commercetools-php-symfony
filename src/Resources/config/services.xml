@@ -40,6 +40,7 @@
             <argument type="service" id="commercetools.cache" />
             <argument type="service" id="commercetools.client"/>
             <argument type="service" id="commercetools.repository.shipping_method"/>
+            <argument type="service" id="session"/>
         </service>
         <service id="commercetools.repository.shipping_method" class="Commercetools\Symfony\CtpBundle\Model\Repository\ShippingMethodRepository">
             <argument>%commercetools.cache.customer%</argument>
@@ -61,6 +62,7 @@
             <argument type="service" id="security.user_checker" />
             <argument /> <!-- Provider-shared Key -->
             <argument>%security.authentication.hide_user_not_found%</argument>
+            <argument type="service" id="logger" />
         </service>
     </services>
 </container>
