@@ -7,6 +7,7 @@ a {
 a:hover{
     text-decoration: inherit;
 }
+
 /* MENU style*/
 
 .menu{
@@ -114,6 +115,31 @@ table tr td{
     z-index: 3;
 }
 
+/* FORM BILLING & SHIPPING */
 #form_save:hover{
     background: #7b7375;
+}
+#form_shippingAddress, #form_billingAddress{
+    color: #a29a9c;
+}
+
+#form_shippingAddress input, #form_billingAddress input{
+    border: 0;
+    border-bottom: 2px solid #000;
+}
+
+#form_shippingAddress input:focus, #form_billingAddress input:focus{
+    outline: none;
+}
+
+#form_shippingAddress label, #form_billingAddress label{
+    padding-right: 10px;
+}
+
+.required{
+    color: darkred;
+}
+
+.error{
+    background: #000;
 }

@@ -34,8 +34,12 @@ _ctp_example_cart:
     path: /cart
     defaults: { _controller: CtpBundle:Cart:index}
 
-_ctp_example_cart_checkout:
-    path: /checkout
+_ctp_example_checkout_signin:
+    path: /checkout/signin
+    defaults: { _controller: CtpBundle:Checkout:signin}
+
+_ctp_example_checkout_address:
+    path: /checkout/address
     defaults: { _controller: CtpBundle:Checkout:setAddress}
 
 _ctp_example_add_lineItem:

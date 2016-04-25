@@ -14,6 +14,7 @@ use Commercetools\Symfony\CtpBundle\Entity\UserAddress;
 use Commercetools\Symfony\CtpBundle\Entity\UserDetails;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
+use Symfony\Component\Form\Extension\Core\Type\EmailType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Form\Extension\Core\Type\RepeatedType;
@@ -71,7 +72,7 @@ class UserController extends Controller
         $form = $this->createFormBuilder()
             ->add('firstName', TextType::class, array('required' => false, 'label' => 'First Name'))
             ->add('lastName', TextType::class, array('required' => false, 'label' => 'Last Name'))
-            ->add('email', TextType::class, array('required' => false, 'label' => 'Email'))
+            ->add('email', EmailType::class, array('required' => false, 'label' => 'Email'))
             ->add('currentPassword', PasswordType::class, array('required' => false, 'label' => 'Current Password'))
             ->add('newPassword', RepeatedType::class, array(
                 'type' => PasswordType::class,
@@ -107,7 +108,7 @@ class UserController extends Controller
                 $this->addFlash('notice', 'User updated');
             }
 
-            if (isset($currentPassword)){
+            if (isset($newPassword)){
                 try{
                     $this->get('commercetools.repository.customer')
                         ->setNewPassword($request->getLocale(), $customer, $currentPassword, $newPassword);

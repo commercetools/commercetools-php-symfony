@@ -6,6 +6,8 @@
 namespace Commercetools\Symfony\CtpBundle\Model\Repository;
 
 
+use Commercetools\Core\Request\Carts\Command\CartSetBillingAddressAction;
+use Commercetools\Core\Request\Carts\Command\CartSetShippingAddressAction;
 use Commercetools\Symfony\CtpBundle\Model\Repository;
 use Commercetools\Core\Cache\CacheAdapterInterface;
 use Commercetools\Core\Client;
@@ -126,6 +128,26 @@ class CartRepository extends Repository
         $cartUpdateRequest->addAction(
             CartChangeLineItemQuantityAction::ofLineItemIdAndQuantity($lineItemId, $quantity)
         );
+        $cartResponse = $cartUpdateRequest->executeWithClient($client);
+        $cart = $cartUpdateRequest->mapResponse($cartResponse);
+
+        return $cart;
+    }
+
+    public function setAddresses($locale, $cartId, Address $shippingAddress, Address $billingAddress = null)
+    {
+        $cart = $this->getCart($locale, $cartId);
+        $client = $this->getClient($locale);
+        $cartUpdateRequest = CartUpdateRequest::ofIdAndVersion($cart->getId(), $cart->getVersion());
+
+        $billingAddressAction = CartSetBillingAddressAction::of();
+        if (!is_null($billingAddress)) {
+            $billingAddressAction->setAddress($billingAddress);
+        }
+        $cartUpdateRequest->addAction(CartSetShippingAddressAction::of()->setAddress($shippingAddress))
+            ->addAction($billingAddressAction);
+
+        $billingAddressAction = CartSetBillingAddressAction::of();
         $cartResponse = $cartUpdateRequest->executeWithClient($client);
         $cart = $cartUpdateRequest->mapResponse($cartResponse);
 

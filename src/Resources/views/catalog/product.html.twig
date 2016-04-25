@@ -5,12 +5,10 @@
     <img src="{{ product.getMasterVariant.getImages.current.getSmall }}" width="100">
     <p>{{ product.getDescription }}</p>
     <p>{{ product.getMasterVariant.getPrices.current.getValue }}</p>
-    {% if app.user %}
-        {{ form_start(form) }}
-            {% form_theme form 'bootstrap_3_layout.html.twig' %}
-            {{ form_widget(form) }}
-        {{ form_end(form) }}
-    {% endif %}
+    {{ form_start(form) }}
+        {% form_theme form 'bootstrap_3_layout.html.twig' %}
+        {{ form_widget(form) }}
+    {{ form_end(form) }}
 {% endblock %}
 
 

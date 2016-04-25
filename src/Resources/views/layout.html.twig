@@ -13,6 +13,15 @@
                 {% endstylesheets %}
             {% endblock %}
 
+            {% block javascripts %}
+                {% javascripts
+                    '@CtpBundle/Web/public/js/jquiry-2.3.3.js'
+                    '@CtpBundle/Web/public/js/index.js'
+                %}
+                    <script src="{{ asset_url }}"></script>
+                {% endjavascripts %}
+            {% endblock %}
+
         </head>
 {% endblock %}
 

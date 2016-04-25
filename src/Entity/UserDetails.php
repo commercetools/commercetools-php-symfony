@@ -25,10 +25,13 @@ class UserDetails
 
     /**
      * @param mixed $firstName
+     * @return $this
      */
     public function setFirstName($firstName)
     {
         $this->firstName = $firstName;
+
+        return $this;
     }
 
     /**
@@ -41,10 +44,13 @@ class UserDetails
 
     /**
      * @param mixed $lastName
+     * @return $this
      */
     public function setLastName($lastName)
     {
         $this->lastName = $lastName;
+
+        return $this;
     }
 
     /**
@@ -57,10 +63,13 @@ class UserDetails
 
     /**
      * @param mixed $email
+     * @return $this
      */
     public function setEmail($email)
     {
         $this->email = $email;
+
+        return $this;
     }
 
     /**
@@ -73,10 +82,13 @@ class UserDetails
 
     /**
      * @param mixed $password
+     * @return $this
      */
     public function setPassword($password)
     {
         $this->password = $password;
+
+        return $this;
     }
 
     /**
@@ -89,10 +101,13 @@ class UserDetails
 
     /**
      * @param mixed $currentPassword
+     * @return $this
      */
     public function setCurrentPassword($currentPassword)
     {
         $this->currentPassword = $currentPassword;
+
+        return $this;
     }
 
 
@@ -100,7 +115,9 @@ class UserDetails
     public static function ofCustomer(Customer $customer)
     {
         $userDetails = new static();
-        $userPassword = $userDetails->getPassword();
+        $userDetails->setFirstName($customer->getFirstName());
+        $userDetails->setLastName($customer->getLastName());
+        $userDetails->setEmail($customer->getEmail());
 
         return $userDetails;
     }
