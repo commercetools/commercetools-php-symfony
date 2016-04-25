@@ -18,6 +18,7 @@ use Commercetools\Core\Request\Customers\CustomerUpdateRequest;
 class CustomerRepository extends Repository
 {
     const NAME = 'customer';
+    const CUSTOMER_ID = 'customer.id';
 
     /**
      * @param $customerId

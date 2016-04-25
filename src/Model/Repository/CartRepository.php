@@ -8,6 +8,8 @@ namespace Commercetools\Symfony\CtpBundle\Model\Repository;
 
 use Commercetools\Core\Request\Carts\Command\CartSetBillingAddressAction;
 use Commercetools\Core\Request\Carts\Command\CartSetShippingAddressAction;
+use Commercetools\Core\Model\Cart\CartState;
+use Commercetools\Core\Request\Carts\CartQueryRequest;
 use Commercetools\Symfony\CtpBundle\Model\Repository;
 use Commercetools\Core\Cache\CacheAdapterInterface;
 use Commercetools\Core\Client;
@@ -17,20 +19,23 @@ use Commercetools\Core\Model\Cart\LineItemDraft;
 use Commercetools\Core\Model\Cart\LineItemDraftCollection;
 use Commercetools\Core\Model\Common\Address;
 use Commercetools\Core\Model\ShippingMethod\ShippingMethodCollection;
-use Commercetools\Core\Request\Carts\CartByIdGetRequest;
 use Commercetools\Core\Request\Carts\CartCreateRequest;
 use Commercetools\Core\Request\Carts\CartUpdateRequest;
 use Commercetools\Core\Request\Carts\Command\CartAddLineItemAction;
 use Commercetools\Core\Request\Carts\Command\CartChangeLineItemQuantityAction;
 use Commercetools\Core\Request\Carts\Command\CartRemoveLineItemAction;
 use Commercetools\Symfony\CtpBundle\Service\ClientFactory;
+use Symfony\Component\HttpFoundation\Session\Session;
 
 
 class CartRepository extends Repository
 {
     protected $shippingMethodRepository;
+    protected $session;
 
     const NAME = 'cart';
+    const CART_ID = 'cart.id';
+    const CART_ITEM_COUNT = 'cart.itemCount';
 
     /**
      * CartRepository constructor
@@ -43,25 +48,40 @@ class CartRepository extends Repository
         $enableCache,
         CacheAdapterInterface $cache,
         ClientFactory $clientFactory,
-        ShippingMethodRepository $shippingMethodRepository
+        ShippingMethodRepository $shippingMethodRepository,
+        Session $session
     ) {
         parent::__construct($enableCache, $cache, $clientFactory);
         $this->shippingMethodRepository = $shippingMethodRepository;
+        $this->session = $session;
     }
 
 
-    public function getCart($locale, $cartId = null)
+    public function getCart($locale, $cartId = null, $customerId = null)
     {
         $cart = null;
         $client = $this->getClient($locale);
         if ($cartId) {
-            $cartRequest = CartByIdGetRequest::ofId($cartId);
+            $cartRequest = CartQueryRequest::of();
+            $predicate = 'id = "' . $cartId . '" and cartState = "' . CartState::ACTIVE . '"';
+            if (!is_null($customerId)) {
+                $predicate .= ' and customerId="' . $customerId . '"';
+            }
+            $cartRequest->where($predicate)->limit(1);
             $cartResponse = $cartRequest->executeWithClient($client);
-            $cart = $cartRequest->mapResponse($cartResponse);
+            $carts = $cartRequest->mapResponse($cartResponse);
+            if (!is_null($carts)) {
+                $cart = $carts->current();
+            }
         }
 
         if (is_null($cart)) {
             $cart = Cart::of($client->getConfig()->getContext());
+            $this->session->remove(self::CART_ID);
+            $this->session->remove(self::CART_ITEM_COUNT);
+        } else {
+            $this->session->set(self::CART_ID, $cart->getId());
+            $this->session->set(self::CART_ITEM_COUNT, $cart->getLineItemCount());
         }
 
         return $cart;
@@ -100,6 +120,7 @@ class CartRepository extends Repository
                 throw new \InvalidArgumentException();
             }
             $cart = $cartUpdateRequest->mapResponse($cartResponse);
+            $this->session->set(self::CART_ITEM_COUNT, $cart->getLineItemCount());
         }
 
         return $cart;
@@ -116,6 +137,7 @@ class CartRepository extends Repository
         );
         $cartResponse = $cartUpdateRequest->executeWithClient($client);
         $cart = $cartUpdateRequest->mapResponse($cartResponse);
+        $this->session->set(self::CART_ITEM_COUNT, $cart->getLineItemCount());
 
         return $cart;
     }
@@ -130,6 +152,7 @@ class CartRepository extends Repository
         );
         $cartResponse = $cartUpdateRequest->executeWithClient($client);
         $cart = $cartUpdateRequest->mapResponse($cartResponse);
+        $this->session->set(self::CART_ITEM_COUNT, $cart->getLineItemCount());
 
         return $cart;
     }
@@ -147,7 +170,6 @@ class CartRepository extends Repository
         $cartUpdateRequest->addAction(CartSetShippingAddressAction::of()->setAddress($shippingAddress))
             ->addAction($billingAddressAction);
 
-        $billingAddressAction = CartSetBillingAddressAction::of();
         $cartResponse = $cartUpdateRequest->executeWithClient($client);
         $cart = $cartUpdateRequest->mapResponse($cartResponse);
 
@@ -177,6 +199,8 @@ class CartRepository extends Repository
         $cartCreateRequest = CartCreateRequest::ofDraft($cartDraft);
         $cartResponse = $cartCreateRequest->executeWithClient($client);
         $cart = $cartCreateRequest->mapResponse($cartResponse);
+        $this->session->set(self::CART_ID, $cart->getId());
+        $this->session->set(self::CART_ITEM_COUNT, $cart->getLineItemCount());
 
         return $cart;
     }

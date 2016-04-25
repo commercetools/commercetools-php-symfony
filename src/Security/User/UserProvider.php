@@ -5,6 +5,7 @@
 
 namespace Commercetools\Symfony\CtpBundle\Security\User;
 
+use Commercetools\Symfony\CtpBundle\Model\Repository\CustomerRepository;
 use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Security\Core\User\UserProviderInterface;
@@ -24,7 +25,7 @@ class UserProvider implements UserProviderInterface
 
     public function loadUserByUsername($username)
     {
-        $id = $this->session->get('customer.id');
+        $id = $this->session->get(CustomerRepository::CUSTOMER_ID);
 
         return new User($username, '', ['ROLE_USER'], $id);
     }
