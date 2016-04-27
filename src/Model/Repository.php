@@ -39,6 +39,9 @@ class Repository
 
     public function __construct($enableCache, CacheAdapterInterface $cache, ClientFactory $clientFactory)
     {
+        if (is_string($enableCache)) {
+            $enableCache = ($enableCache == "true");
+        }
         $this->enableCache = $enableCache;
         $this->cache = $cache;
         $this->clientFactory = $clientFactory;

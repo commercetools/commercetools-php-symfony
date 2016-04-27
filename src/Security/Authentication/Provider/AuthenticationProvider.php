@@ -26,6 +26,7 @@ class AuthenticationProvider extends UserAuthenticationProvider
      * @var UserProviderInterface
      */
     private $userProvider;
+    
     /**
      * @var ClientFactory
      */
@@ -35,6 +36,7 @@ class AuthenticationProvider extends UserAuthenticationProvider
      * @var Session
      */
     private $session;
+
     /**
      * @var LoggerInterface
      */

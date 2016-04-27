@@ -27,6 +27,9 @@ class CommercetoolsExtension extends Extension
         $container->setParameter('commercetools.project', isset($config['project']) ? $config['project']: []);
 
         foreach ($config['cache'] as $key => $value) {
+            if (is_string($value)) {
+                $value = ($value == "true");
+            }
             $container->setParameter('commercetools.cache.' . $key, $value);
         }
         foreach ($config['currency'] as $key => $value) {
