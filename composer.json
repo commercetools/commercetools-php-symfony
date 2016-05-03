@@ -11,7 +11,7 @@
     "require": {
         "php": ">=5.5.9",
         "symfony/symfony": "^3.0",
-        "commercetools/commons": "*",
+        "commercetools/commons": "^0.2",
         "commercetools/php-sdk": "^1.0",
         "symfony/assetic-bundle": "^2.8"
     },

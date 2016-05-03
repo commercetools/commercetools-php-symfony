@@ -4,28 +4,27 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "355dd290238a1d903f86d65fbe3c3a2c",
-    "content-hash": "128618dea7c89048df76a64572b8e096",
+    "hash": "9463d41654419fad39b8847bc6da16e6",
+    "content-hash": "1cb8377d012d51fd96a01c1eef986d8a",
     "packages": [
         {
             "name": "commercetools/commons",
-            "version": "v0.1.0",
+            "version": "v0.2.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/sphereio/commercetools-php-commons.git",
-                "reference": "662dacc263871bbb896aa486662c3f5dab3ca6be"
+                "reference": "c96f801c4f6659118b86ad9d12826ede8050402a"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/sphereio/commercetools-php-commons/zipball/662dacc263871bbb896aa486662c3f5dab3ca6be",
-                "reference": "662dacc263871bbb896aa486662c3f5dab3ca6be",
+                "url": "https://api.github.com/repos/sphereio/commercetools-php-commons/zipball/c96f801c4f6659118b86ad9d12826ede8050402a",
+                "reference": "c96f801c4f6659118b86ad9d12826ede8050402a",
                 "shasum": ""
             },
             "require": {
-                "commercetools/php-sdk": "*"
+                "commercetools/php-sdk": "^1.0"
             },
             "require-dev": {
-                "commercetools/php-sdk": "^1.0@dev",
                 "phpunit/phpunit": "^4.8"
             },
             "type": "library",
@@ -45,7 +44,7 @@
                 }
             ],
             "homepage": "https://github.com/sphereio/commercetools-php-commons",
-            "time": "2015-10-12 10:28:12"
+            "time": "2016-05-03 12:57:58"
         },
         {
             "name": "commercetools/php-sdk",
