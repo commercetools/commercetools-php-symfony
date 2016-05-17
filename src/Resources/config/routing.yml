@@ -38,9 +38,17 @@ _ctp_example_checkout_signin:
     path: /checkout/signin
     defaults: { _controller: CtpBundle:Checkout:signin}
 
+_ctp_example_checkout_shipping:
+    path: /checkout/shipping
+    defaults: { _controller: CtpBundle:Checkout:shippingMethod}
+
 _ctp_example_checkout_address:
     path: /checkout/address
     defaults: { _controller: CtpBundle:Checkout:setAddress}
+
+_ctp_example_checkout_confirm:
+    path: /checkout/address/confirm
+    defaults: { _controller: CtpBundle:Checkout:confirmation}
 
 _ctp_example_add_lineItem:
     path: /cart/add
@@ -54,3 +62,6 @@ _ctp_example_delete_lineItem:
     path: /cart/delete
     defaults: { _controller: CtpBundle:Cart:deleteLineItem}
 
+_ctp_example_checkout_guest:
+    path: /checkout/quest
+    defaults: { _controller: CtpBundle:Checkout:setAddress}

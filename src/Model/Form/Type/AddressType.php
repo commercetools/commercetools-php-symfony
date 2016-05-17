@@ -10,6 +10,7 @@ use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\CountryType;
+use Symfony\Component\Form\Extension\Core\Type\EmailType;
 use Symfony\Component\Form\Extension\Core\Type\NumberType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
@@ -27,22 +28,22 @@ class AddressType extends AbstractType
                 'Mrs' => 'mrs'
             ]
         ]);
-        $builder->add('firstName', TextType::class);
-        $builder->add('lastName', TextType::class);
-        $builder->add('email', TextType::class);
-        $builder->add('streetName', TextType::class);
-        $builder->add('streetNumber', TextType::class);
+        $builder->add('firstName', TextType::class, ['attr' => ['data-required' => 'true']]);
+        $builder->add('lastName', TextType::class, ['attr' => ['data-required' => 'true']]);
+        $builder->add('email', EmailType::class, ['attr' => ['data-required' => 'true']]);
+        $builder->add('streetName', TextType::class, ['attr' => ['data-required' => 'true']]);
+        $builder->add('streetNumber', TextType::class, ['attr' => ['data-required' => 'true']]);
         $builder->add('building', TextType::class, ['required' => false]);
         $builder->add('apartment', TextType::class, ['required' => false]);
         $builder->add('department', TextType::class, ['required' => false]);
-        $builder->add('city', TextType::class);
-        $builder->add('country', CountryType::class);
+        $builder->add('city', TextType::class, ['attr' => ['data-required' => 'true']]);
+        $builder->add('country', CountryType::class, ['attr' => ['data-required' => 'true']]);
         $builder->add('region', TextType::class, ['required' => false]);
         $builder->add('state', TextType::class, ['required' => false]);
         $builder->add('pOBox', TextType::class, ['label' => 'Postal Code']);
         $builder->add('additionalAddressInfo', TextType::class, ['required' => false]);
         $builder->add('additionalStreetInfo', TextType::class, ['required' => false]);
-        $builder->add('phone', TextType::class);
+        $builder->add('phone', TextType::class, ['attr' => ['data-required' => 'true']]);
         $builder->add('mobile', TextType::class, ['required' => false]);
     }
 }

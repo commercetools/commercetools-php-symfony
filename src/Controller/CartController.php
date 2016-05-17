@@ -5,7 +5,6 @@
 
 namespace Commercetools\Symfony\CtpBundle\Controller;
 
-
 use Commercetools\Symfony\CtpBundle\Model\Form\Type\AddToCartType;
 use Commercetools\Symfony\CtpBundle\Model\Repository\CartRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
@@ -28,13 +27,14 @@ class CartController extends Controller
     public function indexAction(Request $request)
     {
         $session = $this->get('session');
-        $cartId = $session->get('cartId');
+        $cartId = $session->get(CartRepository::CART_ID);
         $cart = $this->get('commercetools.repository.cart')->getCart($request->getLocale(), $cartId);
 
         $form = $this->createNamedFormBuilder('')
             ->add('lineItemId', TextType::class)
             ->add('quantity', TextType::class)
             ->getForm();
+
         return $this->render('CtpBundle:cart:index.html.twig', ['cart' => $cart]);
     }
 
@@ -42,7 +42,6 @@ class CartController extends Controller
     {
         $locale = $this->get('commercetools.locale.converter')->convert($request->getLocale());
         $session = $this->get('session');
-
 
         $form = $this->createForm(AddToCartType::class, ['variantIdText' => true]);
         $form->handleRequest($request);
@@ -52,7 +51,7 @@ class CartController extends Controller
             $variantId = (int)$form->get('variantId')->getData();
             $quantity = (int)$form->get('quantity')->getData();
             $slug = $form->get('slug')->getData();
-            $cartId = $session->get('cartId');
+            $cartId = $session->get(CartRepository::CART_ID);
             $country = \Locale::getRegion($locale);
             $currency = $this->getParameter('commercetools.currency.'. $country);
             /**
@@ -84,7 +83,7 @@ class CartController extends Controller
         $session = $this->get('session');
         $lineItemId = $request->get('lineItemId');
         $lineItemCount = (int)$request->get('quantity');
-        $cartId = $session->get('cartId');
+        $cartId = $session->get(CartRepository::CART_ID);
         /**
          * @var CartRepository $repository
          */
@@ -98,57 +97,12 @@ class CartController extends Controller
     {
         $session = $this->get('session');
         $lineItemId = $request->get('lineItemId');
-        $cartId = $session->get('cartId');
+        $cartId = $session->get(CartRepository::CART_ID);
         $this->get('commercetools.repository.cart')->deleteLineItem($request->getLocale(), $cartId, $lineItemId);
 
         return new RedirectResponse($this->generateUrl('_ctp_example_cart'));
     }
 
-//    public function checkoutAction(Request $request)
-//    {
-//        $session = $this->get('session');
-//        $userId = $session->get('userId');
-//        if (is_null($userId)) {
-//            return $this->checkoutSigninAction($request);
-//        }
-//
-//        return $this->checkoutShippingAction($request);
-//    }
-
-//    public function checkoutSigninAction(Request $request)
-//    {
-//        $viewData = $this->getViewData('Sunrise - Checkout - Signin', $request);
-//        return $this->render('checkout-signin.hbs', $viewData->toArray());
-//    }
-//
-//    public function checkoutShippingAction(Request $request)
-//    {
-//        $viewData = $this->getViewData('Sunrise - Checkout - Shipping', $request);
-//        return $this->render('checkout-shipping.hbs', $viewData->toArray());
-//    }
-//
-//    public function checkoutPaymentAction(Request $request)
-//    {
-//        $viewData = $this->getViewData('Sunrise - Checkout - Payment', $request);
-//        return $this->render('checkout-payment.hbs', $viewData->toArray());
-//    }
-//
-//    public function checkoutConfirmationAction(Request $request)
-//    {
-//        $viewData = $this->getViewData('Sunrise - Checkout - Confirmation', $request);
-//        return $this->render('checkout-confirmation.hbs', $viewData->toArray());
-//    }
-//
-//    protected function getItemCount(Cart $cart)
-//    {
-//        $count = 0;
-//        if ($cart->getLineItems()) {
-//            foreach ($cart->getLineItems() as $lineItem) {
-//                $count+= $lineItem->getQuantity();
-//            }
-//        }
-//        return $count;
-//    }
 
     protected function getCart(Cart $cart)
     {

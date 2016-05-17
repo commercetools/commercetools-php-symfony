@@ -42,6 +42,8 @@ class CatalogController extends Controller
 
         list($products, $offset) = $repository->getProducts($request->getLocale(), 12, 1, 'price asc', 'EUR', 'DE', $search);
 
+
+
         return $this->render('CtpBundle:catalog:index.html.twig', array(
             'products' => $products,
             'form' => $form->createView()

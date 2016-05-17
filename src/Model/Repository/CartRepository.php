@@ -6,10 +6,12 @@
 namespace Commercetools\Symfony\CtpBundle\Model\Repository;
 
 
+use Commercetools\Core\Model\ShippingMethod\ShippingMethodReference;
 use Commercetools\Core\Request\Carts\Command\CartSetBillingAddressAction;
 use Commercetools\Core\Request\Carts\Command\CartSetShippingAddressAction;
 use Commercetools\Core\Model\Cart\CartState;
 use Commercetools\Core\Request\Carts\CartQueryRequest;
+use Commercetools\Core\Request\Carts\Command\CartSetShippingMethodAction;
 use Commercetools\Symfony\CtpBundle\Model\Repository;
 use Commercetools\Core\Cache\CacheAdapterInterface;
 use Commercetools\Core\Client;
@@ -55,7 +57,6 @@ class CartRepository extends Repository
         $this->shippingMethodRepository = $shippingMethodRepository;
         $this->session = $session;
     }
-
 
     public function getCart($locale, $cartId = null, $customerId = null)
     {
@@ -169,6 +170,21 @@ class CartRepository extends Repository
         }
         $cartUpdateRequest->addAction(CartSetShippingAddressAction::of()->setAddress($shippingAddress))
             ->addAction($billingAddressAction);
+
+        $cartResponse = $cartUpdateRequest->executeWithClient($client);
+        $cart = $cartUpdateRequest->mapResponse($cartResponse);
+
+        return $cart;
+    }
+
+    public function setShippingMethod($locale, $cartId, ShippingMethodReference $shippingMethod)
+    {
+        $cart = $this->getCart($locale, $cartId);
+        $client = $this->getClient($locale);
+        $cartUpdateRequest = CartUpdateRequest::ofIdAndVersion($cart->getId(), $cart->getVersion());
+
+        $shippingMethodAction = CartSetShippingMethodAction::of()->setShippingMethod($shippingMethod);
+        $cartUpdateRequest->addAction($shippingMethodAction);
 
         $cartResponse = $cartUpdateRequest->executeWithClient($client);
         $cart = $cartUpdateRequest->mapResponse($cartResponse);

@@ -64,7 +64,7 @@ table tr td{
     text-align: left;
 }
 
-table tr td{
+table tr .td{
     display: inline-block;
     margin-top: 2px;
 }
@@ -74,11 +74,23 @@ table tr td{
     background: #fff;
 }
 
+.first-table, .second-table{
+    display: inline-block;
+}
+
+
 .second-table{
     font-style: italic;
     background: #fbfbfb;
 }
 
+
+.table-40{
+    width: 40%;
+}
+.table-20{
+    width: 20%;
+}
 /*SEARCH form style */
 
 
@@ -100,7 +112,6 @@ table tr td{
 #form_search:active{
     border: none;
     border-bottom: 0px solid #000;
-
 }
 
 #form_save{
@@ -142,4 +153,8 @@ table tr td{
 
 .error{
     background: #000;
+}
+
+label[for=form_check]{
+    padding-right: 5px;
 }
