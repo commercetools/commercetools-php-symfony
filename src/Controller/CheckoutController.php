@@ -139,7 +139,6 @@ class CheckoutController extends Controller
 
         $repository = $this->get('commercetools.repository.cart');
 
-
         if ($form->isValid() && $form->isSubmitted()) {
             $check = $form->get('check')->getData();
             $shippingAddress = Address::fromArray($form->get('shippingAddress')->getData());

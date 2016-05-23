@@ -40,7 +40,7 @@ class AddressType extends AbstractType
         $builder->add('country', CountryType::class, ['attr' => ['data-required' => 'true']]);
         $builder->add('region', TextType::class, ['required' => false]);
         $builder->add('state', TextType::class, ['required' => false]);
-        $builder->add('pOBox', TextType::class, ['label' => 'Postal Code']);
+        $builder->add('pOBox', TextType::class, ['label' => 'Postal Code', 'attr' => ['data-required' => 'true']]);
         $builder->add('additionalAddressInfo', TextType::class, ['required' => false]);
         $builder->add('additionalStreetInfo', TextType::class, ['required' => false]);
         $builder->add('phone', TextType::class, ['attr' => ['data-required' => 'true']]);
