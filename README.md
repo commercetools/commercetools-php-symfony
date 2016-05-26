@@ -1,3 +1,6 @@
+# Sunrise symfony bundle installation guide
+
+##Installation
 Create a new symfony project and open the project.
 
 Open composer.json and add to the attribute require this line
