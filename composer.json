@@ -10,7 +10,11 @@
     },
     "require": {
         "php": ">=5.5.9",
-        "symfony/symfony": "^3.0",
+        "symfony/framework-bundle": "^3.0",
+        "symfony/form": "^3.0",
+        "symfony/security-bundle": "^3.0",
+        "symfony/validator": "^3.0",
+        "symfony/serializer": "^3.0",
         "commercetools/commons": "^0.2",
         "commercetools/php-sdk": "^1.0",
         "symfony/assetic-bundle": "^2.8"

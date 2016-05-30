@@ -6,11 +6,8 @@ use Commercetools\Core\Client;
 use Commercetools\Symfony\CtpBundle\Model\Form\Type\AddToCartType;
 use Commercetools\Symfony\CtpBundle\Model\Repository\ProductRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
-use Symfony\Component\Form\Extension\Core\Type\HiddenType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
-use Monolog\Handler\StreamHandler;
-use Symfony\Bridge\Monolog\Logger;
 use Symfony\Component\HttpFoundation\Request;
 
 class CatalogController extends Controller

@@ -6,12 +6,9 @@
 namespace Commercetools\Symfony\CtpBundle\Controller;
 
 use Commercetools\Core\Client;
-use Commercetools\Core\Model\Common\Address;
-use Commercetools\Core\Model\Customer\Customer;
 use Commercetools\Core\Request\Customers\CustomerByIdGetRequest;
-use Commercetools\Core\Request\Customers\CustomerPasswordChangeRequest;
 use Commercetools\Symfony\CtpBundle\Entity\UserAddress;
-use Commercetools\Symfony\CtpBundle\Entity\UserDetails;
+use Commercetools\Symfony\CtpBundle\Security\User\User;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
@@ -20,8 +17,6 @@ use Symfony\Component\Form\Extension\Core\Type\RepeatedType;
 use Symfony\Component\Form\Extension\Core\Type\PasswordType;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
-
-use Commercetools\Symfony\CtpBundle\Entity\User;
 
 class UserController extends Controller
 {

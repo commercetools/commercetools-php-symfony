@@ -75,6 +75,10 @@ class User implements UserInterface, EquatableInterface
             return false;
         }
 
+        if ($this->id !== $user->getId()) {
+            return false;
+        }
+
         return true;
     }
 }
