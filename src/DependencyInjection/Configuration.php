@@ -31,6 +31,11 @@ class Configuration implements ConfigurationInterface
                 ->arrayNode('currency')
                     ->prototype('scalar')->end()
                 ->end()
+                ->arrayNode('fallback_languages')
+                    ->prototype('array')
+                        ->prototype('scalar')->end()
+                    ->end()
+                ->end()
             ->end()
         ;
 
