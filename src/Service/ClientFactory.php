@@ -53,7 +53,10 @@ class ClientFactory
             $fallbackLanguages = $this->fallbackLanguages;
         }
         $language = \Locale::getPrimaryLanguage($locale);
-        $languages = array_merge([$language], $fallbackLanguages[$language]);
+        $languages = [$language];
+        if (isset($fallbackLanguages[$language])) {
+            $languages = array_merge($languages, $fallbackLanguages[$language]);
+        }
         $context = Context::of()->setLanguages($languages)->setGraceful(true)->setLocale($locale);
         $config = $clientCredentials;
         $config = Config::fromArray($config)->setContext($context);
