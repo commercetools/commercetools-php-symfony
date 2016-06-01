@@ -55,8 +55,6 @@ assetic:
         cssrewrite: ~
 
 ```
-Open the console and go to the right directory and type the command “composer update” After a while the question will appear add the credentials. 
-These you can find in admin.sphere.io -> developers -> api clients -> Select project -> Client Credential Flow
 
 Open App/config/routing_dev.yml and add these lines between _errors: and _main: 
 ```yml
@@ -64,3 +62,10 @@ _example:
     resource: "@CtpBundle/Resources/config/routing.yml"
     prefix: /_example
 ```
+
+Open the console and go to the right directory and type the command “composer update” After a while the question will appear add the credentials. 
+These you can find in admin.sphere.io -> developers -> api clients -> Select project -> Client Credential Flow
+
+Now run the project and go to the selected address and type behind it /_example/ 
+
+Concratulations you are done!
