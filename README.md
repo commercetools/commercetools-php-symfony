@@ -24,6 +24,7 @@ Open App/config/parameters.yml.dist and add these lines
 ```
 Open App/config/config.yml and these lines on the bottom of the document
 ```yaml	
+#Commercetools sunrise configuration
 	commercetools:
  	 credentials:
    	 client_id: "%commercetools.client_id%"
