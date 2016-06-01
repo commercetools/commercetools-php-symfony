@@ -11,7 +11,7 @@ Open composer.json and add to the attribute require this line
 "commercetools/symfony-bundle": "dev-checkout",
 "symfony/assetic-bundle": "^2.8" 
 ```
-Open App/AppKernel.php and these lines to the $bundle array
+Open App/AppKernel.php and these lines to the $bundles array
 ```php
 new Commercetools\Symfony\CtpBundle\CtpBundle(),
 new Symfony\Bundle\AsseticBundle\AsseticBundle()
