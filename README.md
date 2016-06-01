@@ -39,6 +39,11 @@ commercetools:
     project: "%commercetools.project%"
   cache:
     product: true
+  fallback_languages:
+    de:
+    - en
+    en:
+    - de
   currency:
     DE: EUR
     UK: GBP
