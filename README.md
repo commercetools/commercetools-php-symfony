@@ -32,16 +32,16 @@ Open App/config/parameters.yml.dist and add these lines
 Open App/config/config.yml and these lines on the bottom of the document
 ```yaml	
 #Commercetools sunrise configuration
-	commercetools:
- 	 credentials:
-   	 client_id: "%commercetools.client_id%"
-  	  client_secret: "%commercetools.client_secret%"
-   	 project: "%commercetools.project%"
-  	cache:
-   		 product: true
- 		 currency:
- 	   DE: EUR
-   	 UK: GBP
+commercetools:
+  credentials:
+    client_id: "%commercetools.client_id%"
+    client_secret: "%commercetools.client_secret%"
+    project: "%commercetools.project%"
+  cache:
+    product: true
+  currency:
+    DE: EUR
+    UK: GBP
 
 assetic:
     debug:          '%kernel.debug%'
