@@ -3,6 +3,8 @@
 ##Installation
 Create a new or open a symfony project and open it in any editor of choice
 
+Note: To install symfony go to http://symfony.com/doc/current/book/installation.html 
+
 Open composer.json and add to the attribute require this line
 
 ```yaml
