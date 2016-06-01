@@ -25,9 +25,9 @@ new Symfony\Bundle\AsseticBundle\AsseticBundle()
 ```
 Open App/config/parameters.yml.dist and add these lines 
 ```yaml	
-	commercetools.client_id: ~
-    	commercetools.client_secret: ~
-    	commercetools.project: ~
+    commercetools.client_id: ~
+    commercetools.client_secret: ~
+    commercetools.project: ~
 ```
 Open App/config/config.yml and these lines on the bottom of the document
 ```yaml	
