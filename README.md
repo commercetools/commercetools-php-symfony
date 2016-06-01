@@ -11,18 +11,6 @@ Open composer.json and add to the attribute require this line
 "commercetools/symfony-bundle": "dev-checkout",
 "symfony/assetic-bundle": "^2.8" 
 ```
-The part you just edited should be a bit simmulair like this
-
-```yaml
-  "require": {
-        "php": ">=5.5.9",
-        "symfony/symfony": "^3.0",
-        "commercetools/commons": "*",
-        "commercetools/php-sdk": "*",
-        "symfony/assetic-bundle": "^2.8"
-    },
-```
-
 Open App/AppKernel.php and these lines to the $bundle array
 ```php
 new Commercetools\Symfony\CtpBundle\CtpBundle(),
