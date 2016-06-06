@@ -21,11 +21,22 @@ class CartController extends Controller
 {
     const CSRF_TOKEN_NAME = 'csrfToken';
 
+    protected function getCustomerId()
+    {
+        $user = $this->getUser();
+        if (is_null($user)) {
+            return null;
+        }
+        $customerId = $user->getId();
+
+        return $customerId;
+    }
+
     public function indexAction(Request $request)
     {
         $session = $this->get('session');
         $cartId = $session->get(CartRepository::CART_ID);
-        $cart = $this->get('commercetools.repository.cart')->getCart($request->getLocale(), $cartId);
+        $cart = $this->get('commercetools.repository.cart')->getCart($request->getLocale(), $cartId, $this->getCustomerId());
 
         $form = $this->createNamedFormBuilder('')
             ->add('lineItemId', TextType::class)
@@ -55,7 +66,16 @@ class CartController extends Controller
              * @var CartRepository $repository
              */
             $repository = $this->get('commercetools.repository.cart');
-            $repository->addLineItem($request->getLocale(), $cartId, $productId, $variantId, $quantity, $currency, $country);
+            $repository->addLineItem(
+                $request->getLocale(),
+                $cartId,
+                $productId,
+                $variantId,
+                $quantity,
+                $currency,
+                $country,
+                $this->getCustomerId()
+            );
             $redirectUrl = $this->generateUrl('_ctp_example_product', ['slug' => $slug]);
         } else {
             $redirectUrl = $this->generateUrl('_ctp_example');
@@ -85,7 +105,7 @@ class CartController extends Controller
          * @var CartRepository $repository
          */
         $repository = $this->get('commercetools.repository.cart');
-        $repository->changeLineItemQuantity($request->getLocale(), $cartId, $lineItemId, $lineItemCount);
+        $repository->changeLineItemQuantity($request->getLocale(), $cartId, $lineItemId, $lineItemCount, $this->getCustomerId());
 
         return new RedirectResponse($this->generateUrl('_ctp_example_cart'));
     }
@@ -95,84 +115,9 @@ class CartController extends Controller
         $session = $this->get('session');
         $lineItemId = $request->get('lineItemId');
         $cartId = $session->get(CartRepository::CART_ID);
-        $this->get('commercetools.repository.cart')->deleteLineItem($request->getLocale(), $cartId, $lineItemId);
+        $this->get('commercetools.repository.cart')->deleteLineItem($request->getLocale(), $cartId, $lineItemId, $this->getCustomerId());
 
         return new RedirectResponse($this->generateUrl('_ctp_example_cart'));
-    }
-
-
-    protected function getCart(Cart $cart)
-    {
-        $cartModel = new ViewData();
-        $cartModel->totalItems = $this->getItemCount($cart);
-        if ($cart->getTaxedPrice()) {
-            $salexTax = Money::ofCurrencyAndAmount(
-                $cart->getTaxedPrice()->getTotalGross()->getCurrencyCode(),
-                $cart->getTaxedPrice()->getTotalGross()->getCentAmount() -
-                $cart->getTaxedPrice()->getTotalNet()->getCentAmount(),
-                $cart->getContext()
-            );
-            $cartModel->salesTax = (string)$salexTax;
-            $cartModel->subtotalPrice = (string)$cart->getTaxedPrice()->getTotalNet();
-            $cartModel->totalPrice = (string)$cart->getTotalPrice();
-        }
-        if ($cart->getShippingInfo()) {
-            $shippingInfo = $cart->getShippingInfo();
-            $cartModel->shippingMethod = new ViewData();
-            $cartModel->shippingMethod->price = (string)$shippingInfo->getPrice();
-        }
-
-        $cartModel->lineItems = $this->getCartLineItems($cart);
-        return $cartModel;
-    }
-
-    protected function getCartLineItems(Cart $cart)
-    {
-        $lineItems = $cart->getLineItems();
-
-        if (!is_null($lineItems)) {
-            foreach ($lineItems as $lineItem) {
-                $variant = $lineItem->getVariant();
-                $cartLineItem = new ViewData();
-                $cartLineItem->productId = $lineItem->getProductId();
-                $cartLineItem->variantId = $variant->getId();
-                $cartLineItem->lineItemId = $lineItem->getId();
-                $cartLineItem->quantity = $lineItem->getQuantity();
-                $lineItemVariant = new ViewData();
-                $lineItemVariant->url = (string)$this->generateUrl(
-                    'pdp-master',
-                    ['slug' => (string)$lineItem->getProductSlug()]
-                );
-                $lineItemVariant->name = (string)$lineItem->getName();
-                $lineItemVariant->image = (string)$variant->getImages()->current()->getUrl();
-                $price = $lineItem->getPrice();
-                if (!is_null($price->getDiscounted())) {
-                    $lineItemVariant->price = (string)$price->getDiscounted()->getValue();
-                    $lineItemVariant->priceOld = (string)$price->getValue();
-                } else {
-                    $lineItemVariant->price = (string)$price->getValue();
-                }
-                $cartLineItem->variant = $lineItemVariant;
-                $cartLineItem->sku = $variant->getSku();
-                $cartLineItem->totalPrice = $lineItem->getTotalPrice();
-                $cartLineItem->attributes = new ViewDataCollection();
-
-                $cartAttributes = $this->get('commercetools.cart.attributes');
-                foreach ($cartAttributes as $attributeName) {
-                    $attribute = $variant->getAttributes()->getByName($attributeName);
-                    if ($attribute) {
-                        $lineItemAttribute = new ViewData();
-                        $lineItemAttribute->label = $attributeName;
-                        $lineItemAttribute->key = $attributeName;
-                        $lineItemAttribute->value = (string)$attribute->getValue();
-                        $cartLineItem->attributes->add($lineItemAttribute);
-                    }
-                }
-                $cartItems->list->add($cartLineItem);
-            }
-        }
-
-        return $cartItems;
     }
 
     protected function getItemCount(Cart $cart)

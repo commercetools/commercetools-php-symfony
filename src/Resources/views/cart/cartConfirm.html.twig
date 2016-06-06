@@ -4,7 +4,11 @@
 
     {% include 'CtpBundle:partials:address.html.twig' with {address: cart.getShippingAddress} %}
 
-    {% include 'CtpBundle:partials:address.html.twig' with {address: cart.getBillingAddress} %}
+    {% if cart.getBillingAddress %}
+        {% include 'CtpBundle:partials:address.html.twig' with {address: cart.getBillingAddress} %}
+    {% else %}
+        {% include 'CtpBundle:partials:address.html.twig' with {address: cart.getShippingAddress} %}
+    {% endif %}
 
     {% include 'CtpBundle:partials:shippingProvider.html.twig' with {shippingInfo: cart.getShippingInfo} %}
 

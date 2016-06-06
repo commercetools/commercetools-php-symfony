@@ -4,6 +4,9 @@
            xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
            xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
     <parameters>
+        <parameter key="commercetools.cache.order" type="string">false</parameter>
+        <parameter key="commercetools.cache.cart" type="string">false</parameter>
+        <parameter key="commercetools.cache.shipping_method" type="string">false</parameter>
         <parameter key="commercetools.cache.customer" type="string">false</parameter>
         <parameter key="commercetools.cache.product" type="string">false</parameter>
     </parameters>
@@ -35,15 +38,20 @@
             <argument type="service" id="commercetools.cache" />
             <argument type="service" id="commercetools.client"/>
         </service>
+        <service id="commercetools.repository.order" class="Commercetools\Symfony\CtpBundle\Model\Repository\OrderRepository">
+            <argument>%commercetools.cache.order%</argument>
+            <argument type="service" id="commercetools.cache" />
+            <argument type="service" id="commercetools.client"/>
+        </service>
         <service id="commercetools.repository.cart" class="Commercetools\Symfony\CtpBundle\Model\Repository\CartRepository">
-            <argument>%commercetools.cache.customer%</argument>
+            <argument>%commercetools.cache.cart%</argument>
             <argument type="service" id="commercetools.cache" />
             <argument type="service" id="commercetools.client"/>
             <argument type="service" id="commercetools.repository.shipping_method"/>
             <argument type="service" id="session"/>
         </service>
         <service id="commercetools.repository.shipping_method" class="Commercetools\Symfony\CtpBundle\Model\Repository\ShippingMethodRepository">
-            <argument>%commercetools.cache.customer%</argument>
+            <argument>%commercetools.cache.shipping_method%</argument>
             <argument type="service" id="commercetools.cache" />
             <argument type="service" id="commercetools.client"/>
         </service>

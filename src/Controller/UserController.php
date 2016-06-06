@@ -194,6 +194,26 @@ class UserController extends Controller
         );
     }
 
+    public function showOrdersAction(Request $request)
+    {
+        $orders = $this->get('commercetools.repository.order')->getOrders($request->getLocale(), $this->getUser()->getId());
+
+        return $this->render('CtpBundle:user:orders.html.twig', [
+            'orders' => $orders
+        ]);
+    }
+
+    public function showOrderAction(Request $request, $orderId)
+    {
+        $order = $this->get('commercetools.repository.order')->getOrder($request->getLocale(), $orderId);
+
+        var_dump($order);
+
+        return $this->render('CtpBundle:user:order.html.twig', [
+            'order' => $order
+         ]);
+    }
+
     protected function getCustomer(User $user)
     {
         if (!$user instanceof User){

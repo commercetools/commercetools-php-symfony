@@ -63,6 +63,9 @@ class CheckoutController extends Controller
 
         $cart = $this->get('commercetools.repository.cart')->getCart($request->getLocale(), $cartId);
 
+        if (is_null($cart->getId())) {
+            return new RedirectResponse($this->generateUrl('_ctp_example_cart'));
+        }
         $methods = [];
         /**
          * @var ShippingMethod $shippingMethod
@@ -79,6 +82,9 @@ class CheckoutController extends Controller
             ->add('name', ChoiceType::class, [
                 'choices'  => $methods,
                 'expanded' => true,
+//                'attr' => [
+//                    'class' => 'form-control'
+//                ]
             ])
             ->add('submit', SubmitType::class)
             ->getForm();
@@ -105,6 +111,10 @@ class CheckoutController extends Controller
         $cartId = $session->get(CartRepository::CART_ID);
         $cart = $this->get('commercetools.repository.cart')->getCart($request->getLocale(), $cartId);
 
+        if (is_null($cart->getId())) {
+            return new RedirectResponse($this->generateUrl('_ctp_example_cart'));
+        }
+
         $customerId = $this->get('security.token_storage')->getToken()->getUser()->getId();
 
         $customer = $this->get('commercetools.repository.customer')->getCustomer($request->getLocale(), $customerId);
@@ -117,11 +127,31 @@ class CheckoutController extends Controller
         );
     }
 
+    public function successAction(Request $request)
+    {
+        $session = $this->get('session');
+        $cartId = $session->get(CartRepository::CART_ID);
+        $cart = $this->get('commercetools.repository.cart')->getCart($request->getLocale(), $cartId);
+        if (is_null($cart->getId())) {
+            return new RedirectResponse($this->generateUrl('_ctp_example_cart'));
+        }
+
+        $repository = $this->get('commercetools.repository.order');
+
+        $placeOrder = $repository->createOrderFromCart($request->getLocale(), $cart);
+
+        return $this->render('CtpBundle:cart:cartSuccess.html.twig');
+    }
+
     public function setAddressAction(Request $request)
     {
         $session = $this->get('session');
         $cartId = $session->get(CartRepository::CART_ID);
         $cart = $this->get('commercetools.repository.cart')->getCart($request->getLocale(), $cartId);
+
+        if (is_null($cart->getId())) {
+            return new RedirectResponse($this->generateUrl('_ctp_example_cart'));
+        }
 
         $entity = CartEntity::ofCart($cart);
         $form = $this->createFormBuilder($entity)

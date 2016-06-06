@@ -1,0 +1,12 @@
+{% extends "CtpBundle::layout.html.twig" %}
+
+{% block container %}
+    <h1>Orders</h1>
+    {% for order in orders %}
+        {{ order.getId }} <br/>
+        {{ order.getTotalPrice }} <br/>
+        {{ order.getVersion }}<br/>
+        {{ order.getCreatedAt.getDateTime|date("m/d/Y H:i") }} <br/>
+        <a href="{{ path('_ctp_example_order', {'orderId': order.getId}) }}">Check </a> <br /> <br />
+    {% endfor %}
+{% endblock %}

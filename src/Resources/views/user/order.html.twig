@@ -1,0 +1,13 @@
+{% extends "CtpBundle::layout.html.twig" %}
+
+{% block container %}
+    {{ order.getCreatedAt.getDateTime|date("m/d/Y H:i") }} <br />
+
+    {% for items in order.getLineItems %}
+        {{ items.getName }}
+        {{ items.getTotalPrice }}
+        {{ items.getQuantity }}
+    {% endfor %}
+
+
+{% endblock %}

@@ -158,3 +158,11 @@ table tr .td{
 label[for=form_check]{
     padding-right: 5px;
 }
+
+
+/* form shipping selector */
+
+label[for=form_name_*]{
+    display: block;
+    color: #fff;
+}

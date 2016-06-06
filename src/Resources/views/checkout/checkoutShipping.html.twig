@@ -1,10 +1,11 @@
 {% extends "CtpBundle::layout.html.twig" %}
 
 {% block body %}
-
-    {{ form_start(form) }}
-    {{ form_widget(form) }}
-    {{ form_end(form) }}
+    <div class="form-group">
+        {{ form_start(form) }}
+        {{ form_widget(form, {'attr': {'class': 'form-control'}}) }}
+        {{ form_end(form) }}
+    </div>
 
 {% endblock %}
 
