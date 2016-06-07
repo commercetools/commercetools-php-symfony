@@ -1,14 +1,14 @@
 # Sunrise symfony bundle installation guide
 
 ##Requirements
-Symfony :
+Symfony 3:
 To install symfony go to http://symfony.com/doc/current/book/installation.html 
 
 Composer :
 To install the composer go to https://getcomposer.org/doc/00-intro.md
 
 ##Installation
-Create a new or open a symfony project and open it in any editor of choice
+Create a new or open a symfony3 project and open it in any editor of choice
 
 
 
