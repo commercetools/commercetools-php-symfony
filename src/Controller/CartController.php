@@ -62,6 +62,7 @@ class CartController extends Controller
             $cartId = $session->get(CartRepository::CART_ID);
             $country = \Locale::getRegion($locale);
             $currency = $this->getParameter('commercetools.currency.'. $country);
+
             /**
              * @var CartRepository $repository
              */

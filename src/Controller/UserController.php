@@ -51,7 +51,7 @@ class UserController extends Controller
         );
     }
 
-    public function loginCheckAction()
+    public function loginCheckAction(Request $request)
     {
         
     }
@@ -206,8 +206,6 @@ class UserController extends Controller
     public function showOrderAction(Request $request, $orderId)
     {
         $order = $this->get('commercetools.repository.order')->getOrder($request->getLocale(), $orderId);
-
-        var_dump($order);
 
         return $this->render('CtpBundle:user:order.html.twig', [
             'order' => $order

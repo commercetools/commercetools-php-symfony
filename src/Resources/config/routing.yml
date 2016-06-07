@@ -15,6 +15,7 @@ login:
     defaults: { _controller: CtpBundle:User:login }
 login_check:
     path: /login_check
+    defaults: { _controller: CtpBundle:User:login }
 logout:
     path: /logout
 

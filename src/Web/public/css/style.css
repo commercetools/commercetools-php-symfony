@@ -166,3 +166,15 @@ label[for=form_name_*]{
     display: block;
     color: #fff;
 }
+
+
+/* Order page style */
+
+.order-box{
+    background: #F5F5F5;
+    padding: 10px;
+    border: 5px solid #fff;
+}
+.order-box h2{
+    font-size: 16px;
+}

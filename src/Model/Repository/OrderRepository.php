@@ -23,13 +23,13 @@ class OrderRepository extends Repository
 
     const NAME = 'orders';
 
-//    /**
-//     * CartRepository constructor
-//     * @param $enableCache
-//     * @param CacheAdapterInterface $cache
-//     * @param ClientFactory $clientFactory
-//     * @param ShippingMethodRepository $shippingMethodRepository
-//     */
+    /**
+     * CartRepository constructor
+     * @param $enableCache
+     * @param CacheAdapterInterface $cache
+     * @param ClientFactory $clientFactory
+     * @param ShippingMethodRepository $shippingMethodRepository
+     */
 //    public function __construct(
 //        $enableCache,
 //        CacheAdapterInterface $cache,
@@ -74,12 +74,18 @@ class OrderRepository extends Repository
     {
         $client = $this->getClient($locale);
         $request = OrderCreateFromCartRequest::ofCartIdAndVersion($cart->getId(), $cart->getVersion());
+        $request->setOrderNumber($this->createOrderNumber());
         $response = $request->executeWithClient($client);
         $order = $request->mapResponse($response);
 
-//        $this->session->remove(CartRepository::CART_ID);
-//        $this->session->remove(CartRepository::CART_ITEM_COUNT);
+        $this->session->remove(CartRepository::CART_ID);
+        $this->session->remove(CartRepository::CART_ITEM_COUNT);
 
         return $order;
+    }
+
+    protected function createOrderNumber()
+    {
+        return (string)time();
     }
 }

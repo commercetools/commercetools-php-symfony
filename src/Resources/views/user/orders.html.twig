@@ -2,11 +2,31 @@
 
 {% block container %}
     <h1>Orders</h1>
-    {% for order in orders %}
-        {{ order.getId }} <br/>
-        {{ order.getTotalPrice }} <br/>
-        {{ order.getVersion }}<br/>
-        {{ order.getCreatedAt.getDateTime|date("m/d/Y H:i") }} <br/>
-        <a href="{{ path('_ctp_example_order', {'orderId': order.getId}) }}">Check </a> <br /> <br />
-    {% endfor %}
+
+
+    <div class="col-md-12">
+        <table class="table">
+            <thread>
+                <tr>
+                    <th>Order Number</th>
+                    <th>Date</th>
+                    <th>Total Price</th>
+                    {#<th>Version</th>#}
+                    <th>View order</th>
+                </tr>
+            </thread>
+            <tbody>
+            {% for order in orders %}
+                <tr>
+                    <td>{{ order.getOrderNumber }} </td>
+                    <td>{{ order.getCreatedAt.getDateTime|date("m/d/Y H:i") }}</td>
+                    <td>{{ order.getTotalPrice }} </td>
+                    {#<td>{{ order.getVersion }}</td>#}
+                    <td><a href="{{ path('_ctp_example_order', {'orderId': order.getId}) }}">Check </a> </td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
 {% endblock %}
