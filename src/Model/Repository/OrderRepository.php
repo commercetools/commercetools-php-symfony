@@ -24,21 +24,21 @@ class OrderRepository extends Repository
     const NAME = 'orders';
 
     /**
-     * CartRepository constructor
+     * OrderRepository constructor.
      * @param $enableCache
      * @param CacheAdapterInterface $cache
      * @param ClientFactory $clientFactory
-     * @param ShippingMethodRepository $shippingMethodRepository
+     * @param Session $session
      */
-//    public function __construct(
-//        $enableCache,
-//        CacheAdapterInterface $cache,
-//        ClientFactory $clientFactory,
-//        Session $session
-//    ) {
-//        parent::__construct($enableCache, $cache, $clientFactory);
-//        $this->session = $session;
-//    }
+    public function __construct(
+        $enableCache,
+        CacheAdapterInterface $cache,
+        ClientFactory $clientFactory,
+        Session $session
+    ) {
+        parent::__construct($enableCache, $cache, $clientFactory);
+        $this->session = $session;
+    }
 
     /**
      * @param $locale
@@ -48,7 +48,7 @@ class OrderRepository extends Repository
     public function getOrders($locale, $customerId)
     {
         $client = $this->getClient($locale);
-        $request = OrderQueryRequest::of()->where('customerId = "' . $customerId . '"');
+        $request = OrderQueryRequest::of()->where('customerId = "' . $customerId . '"')->sort('createdAt desc');
         $response = $request->executeWithClient($client);
         $orders = $request->mapResponse($response);
 

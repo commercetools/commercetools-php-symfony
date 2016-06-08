@@ -42,6 +42,7 @@
             <argument>%commercetools.cache.order%</argument>
             <argument type="service" id="commercetools.cache" />
             <argument type="service" id="commercetools.client"/>
+            <argument type="service" id="session"/>
         </service>
         <service id="commercetools.repository.cart" class="Commercetools\Symfony\CtpBundle\Model\Repository\CartRepository">
             <argument>%commercetools.cache.cart%</argument>

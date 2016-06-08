@@ -2,8 +2,6 @@
 
 {% block container %}
     <h1>Orders</h1>
-
-
     <div class="col-md-12">
         <table class="table">
             <thread>
@@ -17,13 +15,16 @@
             </thread>
             <tbody>
             {% for order in orders %}
-                <tr>
-                    <td>{{ order.getOrderNumber }} </td>
-                    <td>{{ order.getCreatedAt.getDateTime|date("m/d/Y H:i") }}</td>
-                    <td>{{ order.getTotalPrice }} </td>
-                    {#<td>{{ order.getVersion }}</td>#}
-                    <td><a href="{{ path('_ctp_example_order', {'orderId': order.getId}) }}">Check </a> </td>
-                </tr>
+                {% if order is not empty %}
+                    <tr>
+                        <td>{{ order.getOrderNumber }} </td>
+                        <td>{{ order.getCreatedAt.getDateTime|date("m/d/Y H:i") }}</td>
+                        <td>{{ order.getTotalPrice }} </td>
+                        <td><a href="{{ path('_ctp_example_order', {'orderId': order.getId}) }}">Check </a> </td>
+                    </tr>
+                {% else %}
+                    <p>There are no orders yet, go a head and buy something!</p>
+                {% endif %}
             {% endfor %}
             </tbody>
         </table>
