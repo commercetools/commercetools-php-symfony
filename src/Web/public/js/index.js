@@ -10,14 +10,14 @@ jQuery(document).ready(function($){
         required = !required;
     });
 
-    var required = true;
-    jQuery(document).ready(function($){
-        $("#form_check").on("click",function(){
-            $("[id^='form_shippingAddress_']").each(function(){
-                var id = $(this).attr("id").replace("shipping","billing");
+    $("#form_check").on("click",function(){
+        $("[id^='form_shippingAddress_']").each(function(){
+            var id = $(this).attr("id").replace("shipping","billing");
+            if ($("#"+id).val() == '') {
                 $("#"+id).val($(this).val());
-            });
+            }
         });
     });
 })
+
 
