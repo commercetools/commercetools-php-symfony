@@ -6,6 +6,7 @@
 namespace Commercetools\Symfony\CtpBundle\Model\Form\Type;
 
 
+use Commercetools\Symfony\CtpBundle\Entity\UserAddress;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
@@ -13,6 +14,7 @@ use Symfony\Component\Form\Extension\Core\Type\CountryType;
 use Symfony\Component\Form\Extension\Core\Type\EmailType;
 use Symfony\Component\Form\Extension\Core\Type\NumberType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
+use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\Validator\Constraints\Choice;
@@ -23,10 +25,11 @@ class AddressType extends AbstractType
     {
         $builder->add('title', TextType::class, ['required' => false]);
         $builder->add('salutation', ChoiceType::class, [
-            'choices' => [
-                'Mr' => 'mr',
-                'Mrs' => 'mrs'
-            ]
+            'choices' =>
+                [
+                    'Mr' => 'Mr',
+                    'Mrs' => 'Mrs'
+                ]
         ]);
         $builder->add('firstName', TextType::class, ['attr' => ['data-required' => 'true']]);
         $builder->add('lastName', TextType::class, ['attr' => ['data-required' => 'true']]);
@@ -40,10 +43,36 @@ class AddressType extends AbstractType
         $builder->add('country', CountryType::class, ['attr' => ['data-required' => 'true']]);
         $builder->add('region', TextType::class, ['required' => false]);
         $builder->add('state', TextType::class, ['required' => false]);
-        $builder->add('pOBox', TextType::class, ['label' => 'Postal Code', 'attr' => ['data-required' => 'true']]);
-        $builder->add('additionalAddressInfo', TextType::class, ['required' => false]);
-        $builder->add('additionalStreetInfo', TextType::class, ['required' => false]);
+        $builder->add('pOBox', TextType::class,
+            [
+                'label' => 'Postal Code', 'attr' =>
+                    [
+                        'data-required' => 'true'
+                    ]
+            ]);
+        $builder->add('additionalAddressInfo', TextareaType::class,
+            [
+                'required' => false,
+                'attr'  => ['class' => 'form_text']
+            ]);
+        $builder->add('additionalStreetInfo', TextareaType::class,
+            [
+                'required' => false,
+                'attr'  => ['class' => 'form_text']
+            ]);
         $builder->add('phone', TextType::class, ['attr' => ['data-required' => 'true']]);
-        $builder->add('mobile', TextType::class, ['required' => false]);
+        $builder->add('mobile', TextType::class, ['required' => false] );
+
+//        $customerId = $this->get('security.token_storage')->getToken()->getUser()->getId();
+//        $repository = $this->get('commercetools.repository.customer');
+//        $customer = $repository->getCustomer($request->getLocale(), $customerId);
+//        $address = $customer->getAddresses()->getById($addressId);
+//        $userAddress = UserAddress::ofAddress($address);
+//
+//        if (!is_null($userAddress)){
+//            $builder->get('firstName')->setData($userAddress->getFirstName());
+//        }
+
     }
+
 }

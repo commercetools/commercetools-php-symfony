@@ -2,7 +2,7 @@
 
 {% block container %}
     <div class="row">
-        <h1>My orders</h1>
+        <h1>My Order: {{ order.getOrderNumber }}</h1>
         <hr />
         <div class="col-md-12">
             Order number: {{ order.getOrderNumber }}<br />
@@ -15,11 +15,10 @@
             <div class="col-md-6 order-box">
         {% endif %}
                 <h2>Shipping address</h2>
-                {{ order.getShippingAddress.getFirstName }}
+                {{ order.getShippingAddress.getSalutation }} {{ order.getShippingAddress.getFirstName }}
                 {{ order.getShippingAddress.getLastName }} <br />
                 {{ order.getShippingAddress.getStreetName }}
                 {{ order.getShippingAddress.getStreetNumber }} <br />
-                {#{{ order.getShippingAddress.getPostalCode }} <br />#}
                 {{ order.getShippingAddress.getPOBox }} <br />
                 {{ order.getShippingAddress.getCity }} <br />
                 {{ order.getShippingAddress.getRegion }}<br />
@@ -32,11 +31,10 @@
             {% if order.getBillingAddress is not empty %}
             <div class="col-md-6 order-box">
                 <h2>Billing address</h2>
-                    {{ order.getBillingAddress.getFirstName }}
+                    {{ order.getBillingAddress.getSalutation }} {{ order.getBillingAddress.getFirstName }}
                     {{ order.getBillingAddress.getLastName }} <br />
                     {{ order.getBillingAddress.getStreetName }}
                     {{ order.getBillingAddress.getStreetNumber }} <br />
-                    {#{{ order.getBillingAddress.getPostalCode }} <br />#}
                     {{ order.getShippingAddress.getPOBox }} <br />
                     {{ order.getBillingAddress.getCity }} <br />
                     {{ order.getBillingAddress.getRegion }}<br />

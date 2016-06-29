@@ -82,9 +82,6 @@ class CheckoutController extends Controller
             ->add('name', ChoiceType::class, [
                 'choices'  => $methods,
                 'expanded' => true,
-//                'attr' => [
-//                    'class' => 'form-control'
-//                ]
             ])
             ->add('submit', SubmitType::class)
             ->getForm();
@@ -143,11 +140,22 @@ class CheckoutController extends Controller
         return $this->render('CtpBundle:cart:cartSuccess.html.twig');
     }
 
+
     public function setAddressAction(Request $request)
     {
+        $user = $this->getUser();
+        if (!is_null($user)){
+            $customerId = $this->get('security.token_storage')->getToken()->getUser()->getId();
+            $customer = $this->get('commercetools.repository.customer')->getCustomer($request->getLocale(), $customerId);
+        }else{
+            $customerId = null;
+            $customer = null;
+        }
+
         $session = $this->get('session');
         $cartId = $session->get(CartRepository::CART_ID);
-        $cart = $this->get('commercetools.repository.cart')->getCart($request->getLocale(), $cartId);
+        $cart = $this->get('commercetools.repository.cart')->getCart($request->getLocale(), $cartId, $customerId);
+
 
         if (is_null($cart->getId())) {
             return new RedirectResponse($this->generateUrl('_ctp_example_cart'));
@@ -170,21 +178,54 @@ class CheckoutController extends Controller
         $repository = $this->get('commercetools.repository.cart');
 
         if ($form->isValid() && $form->isSubmitted()) {
+
             $check = $form->get('check')->getData();
             $shippingAddress = Address::fromArray($form->get('shippingAddress')->getData());
+
             $billingAddress = null;
 
             if($check !== true) {
                 $billingAddress = Address::fromArray($form->get('billingAddress')->getData());
             }
 
-            $checkout = $repository->setAddresses(
+            $cart = $repository->setAddresses(
                 $request->getLocale(),
                 $cartId,
                 $shippingAddress,
-                $billingAddress
+                $billingAddress,
+                $customerId
             );
-            return new RedirectResponse($this->generateUrl('_ctp_example_checkout_shipping'));
+
+            if (!is_null($cart)) {
+                return new RedirectResponse($this->generateUrl('_ctp_example_checkout_shipping'));
+            }else{
+                var_dump('cart is empty, check for state field is empty'.$cart);
+            }
+        }
+
+        if (!$form->isSubmitted() && count(array_diff_key($cart->getShippingAddress()->toArray(), ['country' => true])) == 0 ) {
+            if (!is_null($customer)) {
+                $address = $customer->getDefaultShippingAddress();
+                $form->get('shippingAddress')->get('salutation')->setData($address->getSalutation());
+                $form->get('shippingAddress')->get('title')->setData($address->getTitle());
+                $form->get('shippingAddress')->get('firstName')->setData($address->getFirstName());
+                $form->get('shippingAddress')->get('lastName')->setData($address->getLastName());
+                $form->get('shippingAddress')->get('email')->setData($address->getEmail());
+                $form->get('shippingAddress')->get('streetName')->setData($address->getStreetName());
+                $form->get('shippingAddress')->get('streetNumber')->setData($address->getStreetNumber());
+                $form->get('shippingAddress')->get('building')->setData($address->getBuilding());
+                $form->get('shippingAddress')->get('apartment')->setData($address->getApartment());
+                $form->get('shippingAddress')->get('department')->setData($address->getDepartment());
+                $form->get('shippingAddress')->get('city')->setData($address->getCity());
+                $form->get('shippingAddress')->get('country')->setData($address->getCountry());
+                $form->get('shippingAddress')->get('region')->setData($address->getRegion());
+//                $form->get('shippingAddress')->get('state')->setData($address->getState());
+                $form->get('shippingAddress')->get('pOBox')->setData($address->getPOBox());
+                $form->get('shippingAddress')->get('additionalAddressInfo')->setData($address->getAdditionalAddressInfo());
+                $form->get('shippingAddress')->get('additionalStreetInfo')->setData($address->getAdditionalStreetInfo());
+                $form->get('shippingAddress')->get('phone')->setData($address->getPhone());
+                $form->get('shippingAddress')->get('mobile')->setData($address->getMobile());
+            }
         }
 
         return $this->render('CtpBundle:checkout:checkout.html.twig',

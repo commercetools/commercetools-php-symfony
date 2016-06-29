@@ -14,6 +14,8 @@ class CartEntity
 
     public $shippingAddress;
 
+    public $address;
+
     public $check;
 
     public $name;

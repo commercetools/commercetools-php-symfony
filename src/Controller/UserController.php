@@ -6,13 +6,19 @@
 namespace Commercetools\Symfony\CtpBundle\Controller;
 
 use Commercetools\Core\Client;
+use Commercetools\Core\Model\Common\Address;
 use Commercetools\Core\Request\Customers\CustomerByIdGetRequest;
+use Commercetools\Symfony\CtpBundle\Entity\CartEntity;
 use Commercetools\Symfony\CtpBundle\Entity\UserAddress;
+use Commercetools\Symfony\CtpBundle\Model\Form\Type\AddressType;
+use Commercetools\Symfony\CtpBundle\Model\Repository\CartRepository;
 use Commercetools\Symfony\CtpBundle\Security\User\User;
+use Commercetools\Symfony\CtpBundle\Tests\Entity\UserAddressTest;
 use Doctrine\Common\Collections\ArrayCollection;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\EmailType;
+use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Form\Extension\Core\Type\RepeatedType;
@@ -151,47 +157,93 @@ class UserController extends Controller
 
         $address = $customer->getAddresses()->getById($addressId);
 
-        $entity = UserAddress::ofAddress($address);
+        $session = $this->get('session');
+        $cartId = $session->get(CartRepository::CART_ID);
+        $cart = $this->get('commercetools.repository.cart')->getCart($request->getLocale(), $cartId, $customerId);
+
+        $userAddress = UserAddress::ofAddress($address);
+        $entity = new UserAddress();
 
         $form = $this->createFormBuilder($entity)
-            ->add('title', TextType::class)
-            ->add('salutation', ChoiceType::class, [
-                'choices' => [
-                    'Mr' => 'mr',
-                    'Mrs' => 'mrs'
-                ]
-            ])
-            ->add('firstName', TextType::class)
-            ->add('lastName', TextType::class)
-            ->add('email', TextType::class)
-            ->add('company', TextType::class)
-            ->add('streetName', TextType::class)
-            ->add('streetNumber', TextType::class)
-            ->add('building', TextType::class)
-            ->add('apartment', TextType::class)
-            ->add('department', TextType::class)
-            ->add('postalCode', TextType::class)
-            ->add('city', TextType::class)
-            ->add('country', TextType::class)
-            ->add('region', TextType::class)
-            ->add('state', TextType::class)
-            ->add('pOBox', TextType::class, ['label' => 'Postal Code'])
-            ->add('additionalAddressInfo', TextType::class)
-            ->add('additionalStreetInfo', TextType::class)
-            ->add('phone', TextType::class)
-            ->add('mobile', TextType::class)
-            ->add('Change', SubmitType::class)
+            ->add('address', AddressType::class)
+            ->add('Submit', SubmitType::class)
             ->getForm();
         $form->handleRequest($request);
 
+        $form->get('address')->get('firstName')->setData($userAddress->getFirstName());
+        $form->get('address')->get('salutation')->setData($address->getSalutation());
+        $form->get('address')->get('title')->setData($address->getTitle());
+        $form->get('address')->get('firstName')->setData($address->getFirstName());
+        $form->get('address')->get('lastName')->setData($address->getLastName());
+        $form->get('address')->get('email')->setData($address->getEmail());
+        $form->get('address')->get('streetName')->setData($address->getStreetName());
+        $form->get('address')->get('streetNumber')->setData($address->getStreetNumber());
+        $form->get('address')->get('building')->setData($address->getBuilding());
+        $form->get('address')->get('apartment')->setData($address->getApartment());
+        $form->get('address')->get('department')->setData($address->getDepartment());
+        $form->get('address')->get('city')->setData($address->getCity());
+        $form->get('address')->get('country')->setData($address->getCountry());
+        $form->get('address')->get('region')->setData($address->getRegion());
+        $form->get('address')->get('pOBox')->setData($address->getPOBox());
+        $form->get('address')->get('additionalAddressInfo')->setData($address->getAdditionalAddressInfo());
+        $form->get('address')->get('additionalStreetInfo')->setData($address->getAdditionalStreetInfo());
+        $form->get('address')->get('phone')->setData($address->getPhone());
+        $form->get('address')->get('mobile')->setData($address->getMobile());
+
+//        $form = $this->createFormBuilder($userAddress)
+//            ->add('title', TextType::class)
+//            ->add('salutation', ChoiceType::class, [
+//                'choices' => [
+//                    'Mr' => 'mr',
+//                    'Mrs' => 'mrs'
+//                ]
+//            ])
+//            ->add('firstName', TextType::class)
+//            ->add('lastName', TextType::class)
+//            ->add('email', TextType::class)
+//            ->add('company', TextType::class)
+//            ->add('streetName', TextType::class)
+//            ->add('streetNumber', TextType::class)9
+//            ->add('building', TextType::class)
+//            ->add('apartment', TextType::class)
+//            ->add('department', TextType::class)
+//            ->add('postalCode', TextType::class)
+//            ->add('city', TextType::class)
+//            ->add('country', TextType::class)
+//            ->add('region', TextType::class)
+//            ->add('state', TextType::class,
+//                [
+//                    'required' => false
+//                ])
+//            ->add('pOBox', TextType::class, ['label' => 'Postal Code'])
+//            ->add('additionalAddressInfo', TextareaType::class,
+//                [
+//                    'attr'  => ['class' => 'form_text']
+//                ])
+//            ->add('additionalStreetInfo', TextareaType::class,
+//                [
+//                    'attr'  => ['class' => 'form_text']
+//                ])
+//            ->add('phone', TextType::class)
+//            ->add('mobile', TextType::class)
+//            ->add('Change', SubmitType::class)
+//            ->getForm();
+
         if ($form->isValid() && $form->isSubmitted()){
-            $repository->setAddresses($request->getLocale(), $customer, $form->getData()->toCTPAddress(), $addressId);
+            $repository->setAddresses($request->getLocale(), $customer, $address, $addressId);
+
+            $submit = $repository->setAddresses(
+                $request->getLocale(),
+                $cartId,
+                $address,
+                $customerId
+            );
         }
 
         return $this->render(
             'CtpBundle:User:editAddress.html.twig',
             [
-                'form' => $form->createView()
+                'form_address' => $form->createView()
             ]
         );
     }
@@ -204,7 +256,6 @@ class UserController extends Controller
             'orders' => $orders
         ]);
     }
-
 
     public function showOrderAction(Request $request, $orderId)
     {
