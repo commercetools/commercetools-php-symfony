@@ -90,8 +90,14 @@ class AuthenticationProvider extends UserAuthenticationProvider
             }
             $user->setId($customer->getId());
             $this->session->set(CustomerRepository::CUSTOMER_ID, $customer->getId());
-            $this->session->set(CartRepository::CART_ID, $result->getCart()->getId());
-            $this->session->set(CartRepository::CART_ITEM_COUNT, $result->getCart()->getLineItemCount());
+            $this->session->set(
+                CartRepository::CART_ID,
+                $result->getCart() === null ? null : $result->getCart()->getId()
+            );
+            $this->session->set(
+                CartRepository::CART_ITEM_COUNT,
+                $result->getCart() === null ? null : $result->getCart()->getLineItemCount()
+            );
         }
     }
 
