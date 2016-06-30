@@ -198,8 +198,6 @@ class CheckoutController extends Controller
 
             if (!is_null($cart)) {
                 return new RedirectResponse($this->generateUrl('_ctp_example_checkout_shipping'));
-            }else{
-                var_dump('cart is empty, check for state field is empty'.$cart);
             }
         }
 

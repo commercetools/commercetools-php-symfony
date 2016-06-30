@@ -9,11 +9,29 @@ use Commercetools\Core\Model\Customer\Customer;
  */
 class UserDetails
 {
+    private $user;
     private $firstName;
     private $lastName;
     private $email;
     private $password;
     private $currentPassword;
+    private $newPassword;
+
+    /**
+     * @return mixed
+     */
+    public function getUser()
+    {
+        return $this->user;
+    }
+
+    /**
+     * @param mixed $user
+     */
+    public function setUser($user)
+    {
+        $this->user = $user;
+    }
 
     /**
      * @return mixed
@@ -110,7 +128,24 @@ class UserDetails
         return $this;
     }
 
+    /**
+     * @return mixed
+     */
+    public function getNewPassword()
+    {
+        return $this->newPassword;
+    }
 
+    /**
+     * @param mixed $newPassword
+     * @return $this
+     */
+    public function setNewPassword($newPassword)
+    {
+        $this->newPassword = $newPassword;
+
+        return $this;
+    }
 
     public static function ofCustomer(Customer $customer)
     {

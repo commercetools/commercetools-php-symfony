@@ -62,17 +62,5 @@ class AddressType extends AbstractType
             ]);
         $builder->add('phone', TextType::class, ['attr' => ['data-required' => 'true']]);
         $builder->add('mobile', TextType::class, ['required' => false] );
-
-//        $customerId = $this->get('security.token_storage')->getToken()->getUser()->getId();
-//        $repository = $this->get('commercetools.repository.customer');
-//        $customer = $repository->getCustomer($request->getLocale(), $customerId);
-//        $address = $customer->getAddresses()->getById($addressId);
-//        $userAddress = UserAddress::ofAddress($address);
-//
-//        if (!is_null($userAddress)){
-//            $builder->get('firstName')->setData($userAddress->getFirstName());
-//        }
-
     }
-
 }

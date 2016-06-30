@@ -8,7 +8,9 @@ use Commercetools\Symfony\CtpBundle\Model\Repository\ProductRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 
 class CatalogController extends Controller
 {
@@ -21,14 +23,14 @@ class CatalogController extends Controller
 
         $form = $this->createFormBuilder()
             ->add('search', TextType::class,
-                array(
-                    'attr' => array(
+                [
+                    'attr' => [
                         'placeholder' => 'Search...',
-                    ),
+                    ],
                     'label' => false,
                     'required' => false,
-                ))
-            ->add('save', SubmitType::class, array('label' => 'Search'))
+                ])
+            ->add('save', SubmitType::class, ['label' => 'Search'])
             ->getForm();
         $form->handleRequest($request);
 
@@ -39,10 +41,10 @@ class CatalogController extends Controller
 
         list($products, $offset) = $repository->getProducts($request->getLocale(), 12, 1, 'price asc', 'EUR', 'DE', $search);
 
-        return $this->render('CtpBundle:catalog:index.html.twig', array(
-            'products' => $products,
-            'form' => $form->createView()
-        ));
+        return $this->render('CtpBundle:catalog:index.html.twig', [
+                'products' => $products,
+                'form' => $form->createView()
+        ]);
     }
 
     public function detailAction(Request $request, $slug)
@@ -68,9 +70,10 @@ class CatalogController extends Controller
         ];
         $form = $this->createForm(AddToCartType::class, $data, ['action' => $this->generateUrl('_ctp_example_add_lineItem')]);
         $form->handleRequest($request);
-        return $this->render('CtpBundle:catalog:product.html.twig', array(
-            'product' =>  $product,
-            'form' => $form->createView()
-        ));
+        return $this->render('CtpBundle:catalog:product.html.twig', [
+                'product' =>  $product,
+                'form' => $form->createView()
+        ]);
+    }
     }
 }
