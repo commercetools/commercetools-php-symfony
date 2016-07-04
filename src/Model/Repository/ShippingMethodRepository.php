@@ -7,6 +7,7 @@ namespace Commercetools\Symfony\CtpBundle\Model\Repository;
 
 
 use Commercetools\Core\Model\ShippingMethod\ShippingMethodCollection;
+use Commercetools\Core\Request\ShippingMethods\ShippingMethodByCartIdGetRequest;
 use Commercetools\Core\Request\ShippingMethods\ShippingMethodByLocationGetRequest;
 use Commercetools\Core\Request\ShippingMethods\ShippingMethodQueryRequest;
 use Commercetools\Symfony\CtpBundle\Model\Repository;
@@ -34,7 +35,7 @@ class ShippingMethodRepository extends Repository
     {
         $shippingMethod = $this->getShippingMethods($locale)->getByName($name);
         if (is_null($shippingMethod)) {
-            $shippingMethod = $this->getShippingMethods(true)->getByName($name);
+            $shippingMethod = $this->getShippingMethods($locale, true)->getByName($name);
         }
         return $shippingMethod;
     }
@@ -50,4 +51,15 @@ class ShippingMethodRepository extends Repository
         $request = ShippingMethodByLocationGetRequest::ofCountry($country)->withCurrency($currency);
         return $client->executeAsync($request);
     }
+
+    public function getShippingMethodByCart($locale, $cartId)
+    {
+        $client = $this->getClient($locale);
+        $request = ShippingMethodByCartIdGetRequest::ofCartId($cartId);
+        $response = $request->executeWithClient($client);
+        $shippingMethods = $request->mapResponse($response);
+
+        return $shippingMethods;
+    }
+
 }

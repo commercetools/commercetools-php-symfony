@@ -1,0 +1,90 @@
+{% extends "CtpBundle::layout.html.twig" %}
+
+{% block container %}
+    <div class="row">
+        <h1>My Order: {{ order.getOrderNumber }}</h1>
+        <hr />
+        <div class="col-md-12">
+            Order number: {{ order.getOrderNumber }}<br />
+            Order date: {{ order.getCreatedAt.getDateTime|date("m/d/Y H:i") }}
+        </div>
+
+        {% if order.getBillingAddress is empty %}
+            <div class="col-md-12 order-box">
+        {% else %}
+            <div class="col-md-6 order-box">
+        {% endif %}
+                <h2>Shipping address</h2>
+                {{ order.getShippingAddress.getSalutation }} {{ order.getShippingAddress.getFirstName }}
+                {{ order.getShippingAddress.getLastName }} <br />
+                {{ order.getShippingAddress.getStreetName }}
+                {{ order.getShippingAddress.getStreetNumber }} <br />
+                {{ order.getShippingAddress.getPOBox }} <br />
+                {{ order.getShippingAddress.getCity }} <br />
+                {{ order.getShippingAddress.getRegion }}<br />
+                {{ order.getShippingAddress.getPhone }}<br />
+                {{ order.getShippingAddress.getMobile }}<br />
+                {{ order.getShippingAddress.getPhone }}<br />
+                {{ order.getShippingAddress.getEmail }}<br />
+            </div>
+
+            {% if order.getBillingAddress is not empty %}
+            <div class="col-md-6 order-box">
+                <h2>Billing address</h2>
+                    {{ order.getBillingAddress.getSalutation }} {{ order.getBillingAddress.getFirstName }}
+                    {{ order.getBillingAddress.getLastName }} <br />
+                    {{ order.getBillingAddress.getStreetName }}
+                    {{ order.getBillingAddress.getStreetNumber }} <br />
+                    {{ order.getShippingAddress.getPOBox }} <br />
+                    {{ order.getBillingAddress.getCity }} <br />
+                    {{ order.getBillingAddress.getRegion }}<br />
+                    {{ order.getBillingAddress.getPhone }}<br />
+                    {{ order.getBillingAddress.getMobile }}<br />
+                    {{ order.getBillingAddress.getPhone }}<br />
+                    {{ order.getBillingAddress.getEmail }}<br />
+            {% endif %}
+            </div>
+
+            <div class="col-md-12 order-box">
+                <h2> Shipping details</h2>
+                {{ order.getShippingInfo.getShippingMethodName }}
+            </div>
+
+        <div class="col-md-12 order-box">
+            <hr />
+            Gross Price: {{ order.getTaxedPrice.getTotalGross }} <br/>
+            Net Price: {{ order.getTaxedPrice.getTotalNet }} <br/>
+            Taxes:<br/>
+            {%  for taxPortion in order.getTaxedPrice.getTaxPortions %}
+                {{ taxPortion.getName }}: {{ taxPortion.getAmount }}<br/>
+            {% endfor %}
+            Total Price: {{ order.getTotalPrice }}<br />
+        </div>
+
+        <div class="col-md-12">
+            <table class="table">
+                <thread>
+                    <tr>
+                        <th>Name</th>
+                        <th>Price</th>
+                        <th>Quantity</th>
+                        <th>Total price</th>
+                        <th>Product description</th>
+                    </tr>
+                </thread>
+                <tbody>
+                {% for items in order.getLineItems %}
+                    <tr>
+                        <td>{{ items.getName }} </td>
+                        <td> {{ items.getPrice }} </td>
+                        <td>{{ items.getQuantity }} </td>
+                        <td> {{ items.getTotalPrice }} </td>
+                        <td><img src="{{ items.getVariant.getImages.current.getUrl }}" width="100px" height="100px" /></td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+{% endblock %}

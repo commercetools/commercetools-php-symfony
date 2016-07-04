@@ -79,7 +79,6 @@ class AuthenticationProvider extends UserAuthenticationProvider
             $cartId = $this->session->get(CartRepository::CART_ID);
             $request = CustomerLoginRequest::ofEmailAndPassword($token->getUser(), $presentedPassword, $cartId);
             $response = $request->executeWithClient($client);
-
             if ($response->isError()) {
                 throw new BadCredentialsException('The presented password is invalid.');
             }

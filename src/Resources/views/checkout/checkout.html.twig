@@ -1,0 +1,43 @@
+{% extends "CtpBundle::layout.html.twig" %}
+
+{% block container %}
+    {{ form_start(form) }}
+    <div class="form-group">
+
+        <div class="row">
+            <div class="col-md-6">
+
+                {% if form_errors(form.shippingAddress) is not empty %}
+                    <div class="error">
+                        {{ form_errors(form.shippingAddress) }}
+                    </div>
+                {% endif %}
+
+                {{ form_label(form.shippingAddress) }}
+                {{ form_widget(form.shippingAddress) }}
+            </div>
+            <div class="col-md-6">
+
+                {% if form_errors(form.billingAddress) is not empty %}
+                    <div class="error">
+                        {{ form_errors(form.billingAddress) }}
+                    </div>
+                {% endif %}
+
+                {{ form_label(form.billingAddress) }}
+                {{ form_widget(form.billingAddress) }}
+            </div>
+
+        </div>
+    </div>
+    {{ form_end(form) }}
+
+    <form>
+        <div class="form-group">
+            <input id="defaultCheck" class="btn btn-default" type="button" value="Clear form"/>
+        </div>
+    </form>
+
+
+
+{% endblock %}

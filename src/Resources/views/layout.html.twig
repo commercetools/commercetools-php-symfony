@@ -13,6 +13,14 @@
                 {% endstylesheets %}
             {% endblock %}
 
+            {% block javascripts %}
+                {% javascripts
+                    '@CtpBundle/Web/public/js/jquiry-2.3.3.js'
+                    '@CtpBundle/Web/public/js/index.js'
+                %}
+                    <script src="{{ asset_url }}"></script>
+                {% endjavascripts %}
+            {% endblock %}
         </head>
 {% endblock %}
 
@@ -29,6 +37,7 @@
             {% if app.user %}
                 <li><a href="{{ path('_ctp_example_user_details') }}">User</a> </li>
                 <li><a href="{{ path('_ctp_example_user_address_book') }}">Adressen</a> </li>
+                <li><a href="{{ path('_ctp_example_orders_all') }}">Orders</a> </li>
                 <li><a href="{{ path('logout') }}">logout</a> </li>
             {% endif %}
             {% if not app.user %}

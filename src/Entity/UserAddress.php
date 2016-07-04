@@ -14,6 +14,7 @@ use Symfony\Component\Validator\Mapping\ClassMetadata;
 
 class UserAddress
 {
+    private $address;
     private $title;
     private $salutation;
     private $firstName;
@@ -39,6 +40,24 @@ class UserAddress
     /**
      * @return mixed
      */
+    public function getAddress()
+    {
+        return $this->address;
+    }
+
+    /**
+     * @param mixed $address
+     */
+    public function setAddress($address)
+    {
+        $this->address = $address;
+    }
+
+
+
+    /**
+     * @return mixed
+     */
     public function getAdditionalStreetInfo()
     {
         return $this->additionalStreetInfo;
@@ -46,10 +65,13 @@ class UserAddress
 
     /**
      * @param mixed $additionalStreetInfo
+     * @return $this
      */
     public function setAdditionalStreetInfo($additionalStreetInfo)
     {
         $this->additionalStreetInfo = $additionalStreetInfo;
+
+        return $this;
     }
 
 
@@ -63,10 +85,13 @@ class UserAddress
 
     /**
      * @param mixed $additionalAddressInfo
+     * @return $this
      */
     public function setAdditionalAddressInfo($additionalAddressInfo)
     {
         $this->additionalAddressInfo = $additionalAddressInfo;
+
+        return $this;
     }
 
 
@@ -80,10 +105,13 @@ class UserAddress
 
     /**
      * @param mixed $salutation
+     * @return $this
      */
     public function setSalutation($salutation)
     {
         $this->salutation = $salutation;
+
+        return $this;
     }
 
 
@@ -97,10 +125,13 @@ class UserAddress
 
     /**
      * @param mixed $title
+     * @return $this
      */
     public function setTitle($title)
     {
         $this->title = $title;
+
+        return $this;
     }
 
 
@@ -118,6 +149,8 @@ class UserAddress
     public function setDepartment($department)
     {
         $this->department = $department;
+
+        return $this;
     }
 
 
@@ -131,10 +164,13 @@ class UserAddress
 
     /**
      * @param mixed $company
+     * @return $this
      */
     public function setCompany($company)
     {
         $this->company = $company;
+
+        return $this;
     }
 
 
@@ -148,10 +184,13 @@ class UserAddress
 
     /**
      * @param mixed $firstName
+     * @return $this
      */
     public function setFirstName($firstName)
     {
         $this->firstName = $firstName;
+
+        return $this;
     }
 
     /**
@@ -164,10 +203,13 @@ class UserAddress
 
     /**
      * @param mixed $lastName
+     * @return $this
      */
     public function setLastName($lastName)
     {
         $this->lastName = $lastName;
+
+        return $this;
     }
 
     /**
@@ -180,10 +222,13 @@ class UserAddress
 
     /**
      * @param mixed $email
+     * @return $this
      */
     public function setEmail($email)
     {
         $this->email = $email;
+
+        return $this;
     }
 
     /**
@@ -196,10 +241,13 @@ class UserAddress
 
     /**
      * @param mixed $streetName
+     * @return $this
      */
     public function setStreetName($streetName)
     {
         $this->streetName = $streetName;
+
+        return $this;
     }
 
     /**
@@ -212,10 +260,13 @@ class UserAddress
 
     /**
      * @param mixed $streetNumber
+     * @return $this
      */
     public function setStreetNumber($streetNumber)
     {
         $this->streetNumber = $streetNumber;
+
+        return $this;
     }
 
     /**
@@ -228,10 +279,13 @@ class UserAddress
 
     /**
      * @param mixed $building
+     * @return $this
      */
     public function setBuilding($building)
     {
         $this->building = $building;
+
+        return $this;
     }
 
     /**
@@ -244,10 +298,13 @@ class UserAddress
 
     /**
      * @param mixed $apartment
+     * @return $this
      */
     public function setApartment($apartment)
     {
         $this->apartment = $apartment;
+
+        return $this;
     }
 
     /**
@@ -260,10 +317,13 @@ class UserAddress
 
     /**
      * @param mixed $postalCode
+     * @return $this
      */
     public function setPostalCode($postalCode)
     {
         $this->postalCode = $postalCode;
+
+        return $this;
     }
 
     /**
@@ -276,10 +336,13 @@ class UserAddress
 
     /**
      * @param mixed $city
+     * @return $this
      */
     public function setCity($city)
     {
         $this->city = $city;
+
+        return $this;
     }
 
     /**
@@ -292,10 +355,13 @@ class UserAddress
 
     /**
      * @param mixed $country
+     * @return $this
      */
     public function setCountry($country)
     {
         $this->country = $country;
+
+        return $this;
     }
 
     /**
@@ -308,10 +374,13 @@ class UserAddress
 
     /**
      * @param mixed $region
+     * @return $this
      */
     public function setRegion($region)
     {
         $this->region = $region;
+
+        return $this;
     }
 
     /**
@@ -324,10 +393,13 @@ class UserAddress
 
     /**
      * @param mixed $state
+     * @return $this
      */
     public function setState($state)
     {
         $this->state = $state;
+
+        return $this;
     }
 
     /**
@@ -340,10 +412,13 @@ class UserAddress
 
     /**
      * @param mixed $pOBox
+     * @return $this
      */
     public function setPOBox($pOBox)
     {
         $this->pOBox = $pOBox;
+
+        return $this;
     }
 
     /**
@@ -356,10 +431,13 @@ class UserAddress
 
     /**
      * @param mixed $phone
+     * @return $this
      */
     public function setPhone($phone)
     {
         $this->phone = $phone;
+
+        return $this;
     }
 
     /**
@@ -372,10 +450,13 @@ class UserAddress
 
     /**
      * @param mixed $mobile
+     * @param $this
      */
     public function setMobile($mobile)
     {
         $this->mobile = $mobile;
+
+        return $this;
     }
 
 
@@ -476,5 +557,10 @@ class UserAddress
         $newAddress->setDepartment($this->getDepartment());
 
         return $newAddress;
+    }
+
+    public function toArray()
+    {
+        return get_object_vars($this);
     }
 }
