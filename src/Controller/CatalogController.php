@@ -75,5 +75,4 @@ class CatalogController extends Controller
                 'form' => $form->createView()
         ]);
     }
-    }
 }

@@ -27,6 +27,7 @@ use Commercetools\Core\Request\Carts\Command\CartAddLineItemAction;
 use Commercetools\Core\Request\Carts\Command\CartChangeLineItemQuantityAction;
 use Commercetools\Core\Request\Carts\Command\CartRemoveLineItemAction;
 use Commercetools\Symfony\CtpBundle\Service\ClientFactory;
+use Psr\Cache\CacheItemPoolInterface;
 use Symfony\Component\HttpFoundation\Session\Session;
 
 
@@ -42,13 +43,13 @@ class CartRepository extends Repository
     /**
      * CartRepository constructor
      * @param $enableCache
-     * @param CacheAdapterInterface $cache
+     * @param CacheItemPoolInterface $cache
      * @param ClientFactory $clientFactory
      * @param ShippingMethodRepository $shippingMethodRepository
      */
     public function __construct(
         $enableCache,
-        CacheAdapterInterface $cache,
+        CacheItemPoolInterface $cache,
         ClientFactory $clientFactory,
         ShippingMethodRepository $shippingMethodRepository,
         Session $session

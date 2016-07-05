@@ -75,7 +75,7 @@ class AuthenticationProvider extends UserAuthenticationProvider
                 throw new BadCredentialsException('The presented password cannot be empty.');
             }
 
-            $client = $this->clientFactory->build('en');
+            $client = $this->clientFactory->build();
             $cartId = $this->session->get(CartRepository::CART_ID);
             $request = CustomerLoginRequest::ofEmailAndPassword($token->getUser(), $presentedPassword, $cartId);
             $response = $request->executeWithClient($client);

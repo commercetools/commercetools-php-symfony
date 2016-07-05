@@ -63,6 +63,7 @@ class ProductRepository extends Repository
      * @param $sort
      * @param $currency
      * @param $country
+     * @param $search
      * @param array $filters
      * @param array $facets
      * @return array

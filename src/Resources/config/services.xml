@@ -21,10 +21,9 @@
             <argument type="service" id="commercetools.locale.converter" />
             <argument type="service" id="logger" on-invalid="null" />
         </service>
-        <service id="commercetools.cache" class="Commercetools\Core\Cache\CacheAdapterInterface">
-            <factory service="commercetools.cache.factory" method="get" />
+        <service id="commercetools.cache" parent="cache.app">
+            <tag name="cache.pool" />
         </service>
-        <service id="commercetools.cache.factory" class="Commercetools\Core\Cache\CacheAdapterFactory" />
         <service id="commercetools.locale.converter" class="Commercetools\Symfony\CtpBundle\Service\LocaleConverter">
             <argument>DE</argument>
         </service>

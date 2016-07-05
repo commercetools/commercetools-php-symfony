@@ -15,6 +15,7 @@ use Commercetools\Core\Request\Orders\OrderCreateFromCartRequest;
 use Commercetools\Core\Request\Orders\OrderQueryRequest;
 use Commercetools\Symfony\CtpBundle\Model\Repository;
 use Commercetools\Symfony\CtpBundle\Service\ClientFactory;
+use Psr\Cache\CacheItemPoolInterface;
 use Symfony\Component\HttpFoundation\Session\Session;
 
 class OrderRepository extends Repository
@@ -26,13 +27,13 @@ class OrderRepository extends Repository
     /**
      * OrderRepository constructor.
      * @param $enableCache
-     * @param CacheAdapterInterface $cache
+     * @param CacheItemPoolInterface $cache
      * @param ClientFactory $clientFactory
      * @param Session $session
      */
     public function __construct(
         $enableCache,
-        CacheAdapterInterface $cache,
+        CacheItemPoolInterface $cache,
         ClientFactory $clientFactory,
         Session $session
     ) {

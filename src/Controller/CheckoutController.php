@@ -17,6 +17,7 @@ use Commercetools\Symfony\CtpBundle\Entity\Checkout;
 use Commercetools\Symfony\CtpBundle\Entity\ShippingAddress;
 use Commercetools\Symfony\CtpBundle\Model\Form\Type\AddressType;
 use Commercetools\Symfony\CtpBundle\Model\Repository\CartRepository;
+use Psr\Cache\CacheItemPoolInterface;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\PasswordType;
 use Symfony\Component\Form\Extension\Core\Type\RadioType;
@@ -36,7 +37,7 @@ class CheckoutController extends Controller
     public function signinAction(Request $request)
     {
         if ($this->get('security.authorization_checker')->isGranted('IS_AUTHENTICATED_FULLY')) {
-            return new RedirectResponse($this->generateUrl('_ctp_example_checkout_address'));
+            return $this->redirect($this->generateUrl('_ctp_example_checkout_address'));
         }
 
         $authenticationUtils = $this->get('security.authentication_utils');
@@ -64,7 +65,7 @@ class CheckoutController extends Controller
         $cart = $this->get('commercetools.repository.cart')->getCart($request->getLocale(), $cartId);
 
         if (is_null($cart->getId())) {
-            return new RedirectResponse($this->generateUrl('_ctp_example_cart'));
+            return $this->redirect($this->generateUrl('_ctp_example_cart'));
         }
         $methods = [];
         /**
@@ -92,7 +93,7 @@ class CheckoutController extends Controller
             $shippingMethod = $shippingRepository->getByName($request->getLocale(), $form->get('name')->getData());
             $cart = $this->get('commercetools.repository.cart')->setShippingMethod($request->getLocale(), $cartId, $shippingMethod->getReference());
 
-            return new RedirectResponse($this->generateUrl('_ctp_example_checkout_confirm'));
+            return $this->redirect($this->generateUrl('_ctp_example_checkout_confirm'));
         }
 
         return $this->render('CtpBundle:checkout:checkoutShipping.html.twig', [
@@ -109,7 +110,7 @@ class CheckoutController extends Controller
         $cart = $this->get('commercetools.repository.cart')->getCart($request->getLocale(), $cartId);
 
         if (is_null($cart->getId())) {
-            return new RedirectResponse($this->generateUrl('_ctp_example_cart'));
+            return $this->redirect($this->generateUrl('_ctp_example_cart'));
         }
 
         $customerId = $this->get('security.token_storage')->getToken()->getUser()->getId();
@@ -130,7 +131,7 @@ class CheckoutController extends Controller
         $cartId = $session->get(CartRepository::CART_ID);
         $cart = $this->get('commercetools.repository.cart')->getCart($request->getLocale(), $cartId);
         if (is_null($cart->getId())) {
-            return new RedirectResponse($this->generateUrl('_ctp_example_cart'));
+            return $this->redirect($this->generateUrl('_ctp_example_cart'));
         }
 
         $repository = $this->get('commercetools.repository.order');
@@ -158,7 +159,7 @@ class CheckoutController extends Controller
 
 
         if (is_null($cart->getId())) {
-            return new RedirectResponse($this->generateUrl('_ctp_example_cart'));
+            return $this->redirect($this->generateUrl('_ctp_example_cart'));
         }
 
         $entity = CartEntity::ofCart($cart);
@@ -197,7 +198,7 @@ class CheckoutController extends Controller
             );
 
             if (!is_null($cart)) {
-                return new RedirectResponse($this->generateUrl('_ctp_example_checkout_shipping'));
+                return $this->redirect($this->generateUrl('_ctp_example_checkout_shipping'));
             }
         }
 
