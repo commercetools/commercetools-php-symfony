@@ -87,7 +87,7 @@ class Repository
             if (!empty($cachedData)) {
                 $data = $cachedData;
             }
-            $result = unserialize($data);
+            $result = unserialize($data->get());
             $result->setContext($client->getConfig()->getContext());
         } else {
             $helper = new QueryHelper();
@@ -112,7 +112,7 @@ class Repository
             if (empty($cachedData)) {
                 throw new NotFoundHttpException("resource not found");
             }
-            $result = unserialize($cachedData);
+            $result = unserialize($cachedData->get());
             $result->setContext($client->getConfig()->getContext());
         } else {
             $response = $request->executeWithClient($client);
