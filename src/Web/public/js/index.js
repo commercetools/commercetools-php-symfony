@@ -3,6 +3,18 @@
  */
 
 var required = false;
+
+function debounce(fn, delay) {
+    var timer = null;
+    return function () {
+        var context = this, args = arguments;
+        clearTimeout(timer);
+        timer = setTimeout(function () {
+            fn.apply(context, args);
+        }, delay);
+    };
+}
+
 jQuery(document).ready(function($){
     //Add class to submitbutton form
     $('#form_Submit').addClass('btn btn-primary spacer');
@@ -16,6 +28,9 @@ jQuery(document).ready(function($){
             $("[id^='form_billingAddress_']").val("");
         }
     });
+
+    // disable autocomplete, anoying
+    $("#form_search").attr("autocomplete", "off");
 
     $("#form_check").on("click",function(){
         if ($("#form_check:checked").val()) {
@@ -39,4 +54,64 @@ jQuery(document).ready(function($){
             $('#form_billingAddress_salutation').val($salutation);
          });
     });
-})
+
+    // animate the search results container
+    $("#form_search").keypress(debounce(function () {
+        $(".search-container").css("display", "block");
+
+    }, 1));
+
+    // ajax handeling
+    $("#form_search").on("keyup", debounce(function (event) {
+        var searchTerm = $(event.target).val();
+        var productUrl = '/_example/product/';
+        var itemUrl = '/_example/suggest/';
+        var col4 = '<div class="col-md-4">';
+
+        $("#search-results").html("");
+
+        $.ajax({
+            type: 'POST',
+            url: itemUrl + searchTerm,
+            dataType: "json"
+        }).done(function (data) {
+            if(data) {
+                for (i in data) {
+                    // build founded items
+                    var img = '<img class="ctp-img" src="' + data[i].image + '" alt="' + data[i].name + '"/>';
+                    var price = '<p>' + data[i].price + '</p>';
+                    var product = col4+'<a href="' + productUrl + data[i].link + '"><div><h3>' + data[i].name + '</h3>' + img + '<p>' + data[i].desc + '</p>'+ price +'</div></a></div>';
+                    $("#search-results").append(product);
+                }
+            }
+
+            var jsonData = data.toString();
+
+            if (jsonData.length <= 0){
+                setTimeout(function emptyResult(){
+                    var msg = '<div class="empty-result"><h3>No result</h3><p>Try a different search query</p></div>';
+                    $("#search-results").append(msg);
+                }, 400);
+            }
+
+            // activate the loading gif
+            $(document).on({
+                ajaxStart: function() {
+                    $(".loading").css("display", "block");
+                },
+                ajaxStop: function() {
+                    $(".loading").css("display", "none");
+                }
+            });
+
+            //check for input
+            $("#form_search").on("keyup", function(){
+                if( $(this).val().length <= 0 ) {
+                    $(".search-container").css("display", "none");
+                }
+            });
+
+        });
+
+    }, 300));//time ajax request
+});

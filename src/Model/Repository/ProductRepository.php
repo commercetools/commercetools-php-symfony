@@ -90,6 +90,7 @@ class ProductRepository extends Repository
         if (!is_null($search)) {
             $language = \Locale::getPrimaryLanguage($locale);
             $searchRequest->addParam('text.' . $language, $search);
+            $searchRequest->fuzzy(true);
         }
         if (!is_null($facets)) {
             foreach ($facets as $facet) {
