@@ -13,7 +13,6 @@ use Commercetools\Core\Model\Cart\CartState;
 use Commercetools\Core\Request\Carts\CartQueryRequest;
 use Commercetools\Core\Request\Carts\Command\CartSetShippingMethodAction;
 use Commercetools\Symfony\CtpBundle\Model\Repository;
-use Commercetools\Core\Cache\CacheAdapterInterface;
 use Commercetools\Core\Client;
 use Commercetools\Core\Model\Cart\Cart;
 use Commercetools\Core\Model\Cart\CartDraft;
@@ -74,6 +73,9 @@ class CartRepository extends Repository
             $carts = $cartRequest->mapResponse($cartResponse);
             if (!is_null($carts)) {
                 $cart = $carts->current();
+                if ($cart->getCustomerId() !== $customerId) {
+                    throw new \InvalidArgumentException();
+                }
             }
         }
 
