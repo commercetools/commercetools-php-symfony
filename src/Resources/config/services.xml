@@ -21,6 +21,10 @@
             <argument type="service" id="commercetools.locale.converter" />
             <argument type="service" id="logger" on-invalid="null" />
         </service>
+        <service id="commercetools.auth.listener" class="Commercetools\Symfony\CtpBundle\EventListener\AuthenticationListener">
+            <tag name="kernel.event_subscriber"/>
+            <argument type="service" id="session"/>
+        </service>
         <service id="commercetools.cache" parent="cache.app">
             <tag name="cache.pool" />
         </service>
@@ -64,7 +68,6 @@
                  abstract="true"
                  public="false"
         >
-            <argument type="service" id="session" />
             <argument type="service" id="commercetools.client" />
             <argument /> <!-- User Provider -->
             <argument type="service" id="security.user_checker" />

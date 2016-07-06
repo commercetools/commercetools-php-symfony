@@ -6,10 +6,14 @@
 namespace Commercetools\Symfony\CtpBundle\Security\Authentication\Provider;
 
 use Commercetools\Core\Request\Customers\CustomerLoginRequest;
+use Commercetools\Symfony\CtpBundle\Model\AuthSuccess;
 use Commercetools\Symfony\CtpBundle\Model\Repository\CartRepository;
 use Commercetools\Symfony\CtpBundle\Model\Repository\CustomerRepository;
+use Commercetools\Symfony\CtpBundle\Security\User\User;
 use Commercetools\Symfony\CtpBundle\Service\ClientFactory;
 use Psr\Log\LoggerInterface;
+use Symfony\Component\EventDispatcher\Event;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\Security\Core\Authentication\Provider\UserAuthenticationProvider;
 use Symfony\Component\Security\Core\Authentication\Token\UsernamePasswordToken;
@@ -33,17 +37,11 @@ class AuthenticationProvider extends UserAuthenticationProvider
     private $clientFactory;
 
     /**
-     * @var Session
-     */
-    private $session;
-
-    /**
      * @var LoggerInterface
      */
     private $logger;
 
     public function __construct(
-        Session $session,
         ClientFactory $clientFactory,
         UserProviderInterface $userProvider,
         UserCheckerInterface $userChecker,
@@ -55,7 +53,6 @@ class AuthenticationProvider extends UserAuthenticationProvider
         parent::__construct($userChecker, $providerKey, $hideUserNotFoundExceptions);
         $this->userProvider = $userProvider;
         $this->clientFactory = $clientFactory;
-        $this->session = $session;
         $this->logger = $logger;
     }
 
@@ -76,7 +73,10 @@ class AuthenticationProvider extends UserAuthenticationProvider
             }
 
             $client = $this->clientFactory->build();
-            $cartId = $this->session->get(CartRepository::CART_ID);
+            $cartId = null;
+            if ($user instanceof User) {
+                $cartId = $user->getCartId();
+            }
             $request = CustomerLoginRequest::ofEmailAndPassword($token->getUser(), $presentedPassword, $cartId);
             $response = $request->executeWithClient($client);
             if ($response->isError()) {
@@ -87,14 +87,13 @@ class AuthenticationProvider extends UserAuthenticationProvider
             if ($currentUser !== $customer->getEmail()) {
                 throw new BadCredentialsException('The presented password is invalid.');
             }
-            $user->setId($customer->getId());
-            $this->session->set(CustomerRepository::CUSTOMER_ID, $customer->getId());
-            if (!is_null($result->getCart())) {
-                $this->session->set(CartRepository::CART_ID, $result->getCart()->getId());
-                $this->session->set(CartRepository::CART_ITEM_COUNT, $result->getCart()->getLineItemCount());
-            } else {
-                $this->session->remove(CartRepository::CART_ID);
-                $this->session->remove(CartRepository::CART_ITEM_COUNT);
+            if ($user instanceof User) {
+                $user->setId($customer->getId());
+                $cart = $result->getCart();
+                if (!is_null($cart)) {
+                    $user->setCartId($cart->getId());
+                    $user->setCartItemCount($cart->getLineItemCount());
+                }
             }
         }
     }
@@ -110,7 +109,6 @@ class AuthenticationProvider extends UserAuthenticationProvider
         }
 
         try {
-
             $user = $this->userProvider->loadUserByUsername($username);
 
             if (!$user instanceof UserInterface) {
