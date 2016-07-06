@@ -82,8 +82,3 @@ _ctp_example_order:
 _ctp_example_suggest:
     path: /suggest/{searchTerm}
     defaults: { _controller: CtpBundle:Catalog:suggest}
-
-
-_ctp_example_ajax:
-    path: /suggest/result
-    defaults: { _controller: CtpBundle:Catalog:ajax}

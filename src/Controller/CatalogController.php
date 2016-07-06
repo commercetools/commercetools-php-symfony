@@ -84,7 +84,7 @@ class CatalogController extends Controller
     {
 //        $searchTerm = null;
         $repository = $this->get('commercetools.repository.product');
-        list($products, $offset) = $repository->getProducts($request->getLocale(), 5, 1, 'price asc', 'EUR', 'DE', $searchTerm);
+        $products = $repository->suggestProducts($request->getLocale(), $searchTerm, 5, 'EUR', 'DE');
 
         $items = [];
 
