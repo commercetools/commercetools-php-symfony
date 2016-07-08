@@ -5,12 +5,13 @@
 
 namespace Commercetools\Symfony\CtpBundle\Model;
 
+use Cache\Adapter\Common\CacheItem;
 use Commercetools\Commons\Helper\QueryHelper;
-use Commercetools\Core\Cache\CacheAdapterInterface;
 use Commercetools\Core\Client;
 use Commercetools\Core\Request\AbstractApiRequest;
 use Commercetools\Core\Request\QueryAllRequestInterface;
 use Commercetools\Symfony\CtpBundle\Service\ClientFactory;
+use Psr\Cache\CacheItemPoolInterface;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class Repository
@@ -23,7 +24,7 @@ class Repository
     protected $enableCache;
 
     /**
-     * @var CacheAdapterInterface
+     * @var CacheItemPoolInterface
      */
     protected $cache;
 
@@ -37,7 +38,13 @@ class Repository
      */
     protected $clientFactory;
 
-    public function __construct($enableCache, CacheAdapterInterface $cache, ClientFactory $clientFactory)
+    /**
+     * Repository constructor.
+     * @param $enableCache
+     * @param CacheItemPoolInterface $cache
+     * @param ClientFactory $clientFactory
+     */
+    public function __construct($enableCache, CacheItemPoolInterface $cache, ClientFactory $clientFactory)
     {
         if (is_string($enableCache)) {
             $enableCache = ($enableCache == "true");
@@ -75,12 +82,12 @@ class Repository
         $ttl = self::CACHE_TTL
     ) {
         $data = [];
-        if (!$force && $this->enableCache && $this->cache->has($cacheKey)) {
-            $cachedData = $this->cache->fetch($cacheKey);
+        if (!$force && $this->enableCache && $this->cache->hasItem($cacheKey)) {
+            $cachedData = $this->cache->getItem($cacheKey);
             if (!empty($cachedData)) {
                 $data = $cachedData;
             }
-            $result = unserialize($data);
+            $result = unserialize($data->get());
             $result->setContext($client->getConfig()->getContext());
         } else {
             $helper = new QueryHelper();
@@ -100,12 +107,12 @@ class Repository
      */
     protected function retrieve(Client $client, $cacheKey, AbstractApiRequest $request, $force = false, $ttl = self::CACHE_TTL)
     {
-        if (!$force && $this->enableCache && $this->cache->has($cacheKey)) {
-            $cachedData = $this->cache->fetch($cacheKey);
+        if (!$force && $this->enableCache && $this->cache->hasItem($cacheKey)) {
+            $cachedData = $this->cache->getItem($cacheKey);
             if (empty($cachedData)) {
                 throw new NotFoundHttpException("resource not found");
             }
-            $result = unserialize($cachedData);
+            $result = unserialize($cachedData->get());
             $result->setContext($client->getConfig()->getContext());
         } else {
             $response = $request->executeWithClient($client);
@@ -123,7 +130,8 @@ class Repository
     protected function store($cacheKey, $data, $ttl)
     {
         if ($this->enableCache) {
-            $this->cache->store($cacheKey, $data, $ttl);
+            $item = $this->cache->getItem($cacheKey)->set($data)->expiresAfter($ttl);
+            $this->cache->save($item);
         }
     }
 }

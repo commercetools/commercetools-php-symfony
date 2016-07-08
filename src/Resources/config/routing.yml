@@ -15,6 +15,7 @@ login:
     defaults: { _controller: CtpBundle:User:login }
 login_check:
     path: /login_check
+    defaults: { _controller: CtpBundle:User:login }
 logout:
     path: /logout
 
@@ -34,9 +35,21 @@ _ctp_example_cart:
     path: /cart
     defaults: { _controller: CtpBundle:Cart:index}
 
-_ctp_example_cart_checkout:
-    path: /checkout
+_ctp_example_checkout_signin:
+    path: /checkout/signin
+    defaults: { _controller: CtpBundle:Checkout:signin}
+
+_ctp_example_checkout_shipping:
+    path: /checkout/shipping
+    defaults: { _controller: CtpBundle:Checkout:shippingMethod}
+
+_ctp_example_checkout_address:
+    path: /checkout/address
     defaults: { _controller: CtpBundle:Checkout:setAddress}
+
+_ctp_example_checkout_confirm:
+    path: /checkout/address/confirm
+    defaults: { _controller: CtpBundle:Checkout:confirmation}
 
 _ctp_example_add_lineItem:
     path: /cart/add
@@ -50,3 +63,22 @@ _ctp_example_delete_lineItem:
     path: /cart/delete
     defaults: { _controller: CtpBundle:Cart:deleteLineItem}
 
+_ctp_example_checkout_guest:
+    path: /checkout/quest
+    defaults: { _controller: CtpBundle:Checkout:setAddress}
+
+_ctp_example_checkout_success:
+    path: /checkout/succes
+    defaults: { _controller: CtpBundle:Checkout:success}
+
+_ctp_example_orders_all:
+    path: /orders/
+    defaults: { _controller: CtpBundle:User:showOrders}
+
+_ctp_example_order:
+    path: /orders/{orderId}
+    defaults: { _controller: CtpBundle:User:showOrder}
+
+_ctp_example_suggest:
+    path: /suggest/{searchTerm}
+    defaults: { _controller: CtpBundle:Catalog:suggest}

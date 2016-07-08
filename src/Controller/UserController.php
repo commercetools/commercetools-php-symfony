@@ -6,17 +6,30 @@
 namespace Commercetools\Symfony\CtpBundle\Controller;
 
 use Commercetools\Core\Client;
+use Commercetools\Core\Model\Cart\Cart;
+use Commercetools\Core\Model\Common\Address;
 use Commercetools\Core\Request\Customers\CustomerByIdGetRequest;
+use Commercetools\Symfony\CtpBundle\Entity\CartEntity;
 use Commercetools\Symfony\CtpBundle\Entity\UserAddress;
+use Commercetools\Symfony\CtpBundle\Entity\UserDetails;
+use Commercetools\Symfony\CtpBundle\Model\Form\Type\AddressType;
+use Commercetools\Symfony\CtpBundle\Model\Form\Type\UserType;
+use Commercetools\Symfony\CtpBundle\Model\Repository\CartRepository;
 use Commercetools\Symfony\CtpBundle\Security\User\User;
+use Commercetools\Symfony\CtpBundle\Tests\Entity\UserAddressTest;
+use Doctrine\Common\Collections\ArrayCollection;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
+use Symfony\Component\Form\Extension\Core\Type\EmailType;
+use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Form\Extension\Core\Type\RepeatedType;
 use Symfony\Component\Form\Extension\Core\Type\PasswordType;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
+use Symfony\Component\Validator\Constraints\DateTime;
+
 
 class UserController extends Controller
 {
@@ -50,11 +63,6 @@ class UserController extends Controller
         );
     }
 
-    public function loginCheckAction()
-    {
-        
-    }
-
     public function detailsAction(Request $request)
     {
         /**
@@ -62,35 +70,19 @@ class UserController extends Controller
          */
         $customerId = $this->get('security.token_storage')->getToken()->getUser()->getId();
         $customer = $this->get('commercetools.repository.customer')->getCustomer($request->getLocale(), $customerId);
+        $entity = UserDetails::ofCustomer($customer);
 
-        $form = $this->createFormBuilder()
-            ->add('firstName', TextType::class, array('required' => false, 'label' => 'First Name'))
-            ->add('lastName', TextType::class, array('required' => false, 'label' => 'Last Name'))
-            ->add('email', TextType::class, array('required' => false, 'label' => 'Email'))
-            ->add('currentPassword', PasswordType::class, array('required' => false, 'label' => 'Current Password'))
-            ->add('newPassword', RepeatedType::class, array(
-                'type' => PasswordType::class,
-                'first_options'  => array('label' => 'New password'),
-                'second_options' => array('label' => 'Repeat new password'),
-                'required' => false
-            ))
-            ->add('submit', SubmitType::class, array('label' => 'Save user'))
-            ->getForm();
-
-        $form->get('firstName')->setData($customer->getFirstName());
-        $form->get('lastName')->setData($customer->getLastName());
-        $form->get('email')->setData($customer->getEmail());
-
+        $form = $this->createForm(UserType::class, $entity)
+            ->add('submit', SubmitType::class);
         $form->handleRequest($request);
 
-        $userDetails = $form->getData();
         if ($form->isValid() && $form->isSubmitted()){
 
-            $firstName = $form->getData()['firstName'];
-            $lastName = $form->getData()['lastName'];
-            $email = $form->getData()['email'];
-            $currentPassword = $form->getData()['currentPassword'];
-            $newPassword = $form->getData()['newPassword'];
+            $firstName = $form->get('firstName')->getData();
+            $lastName = $form->get('lastName')->getData();
+            $email = $form->get('email')->getData();
+            $currentPassword = $form->get('currentPassword')->getData();
+            $newPassword = $form->get('newPassword')->getData();
 
             $customer = $this->get('commercetools.repository.customer')
                 ->setCustomerDetails($request->getLocale(), $customer, $firstName, $lastName, $email);
@@ -102,7 +94,7 @@ class UserController extends Controller
                 $this->addFlash('notice', 'User updated');
             }
 
-            if (isset($currentPassword)){
+            if (isset($newPassword)){
                 try{
                     $this->get('commercetools.repository.customer')
                         ->setNewPassword($request->getLocale(), $customer, $currentPassword, $newPassword);
@@ -145,52 +137,51 @@ class UserController extends Controller
         $customerId = $this->get('security.token_storage')->getToken()->getUser()->getId();
         $repository = $this->get('commercetools.repository.customer');
         $customer = $repository->getCustomer($request->getLocale(), $customerId);
-
         $address = $customer->getAddresses()->getById($addressId);
 
         $entity = UserAddress::ofAddress($address);
 
-        $form = $this->createFormBuilder($entity)
-            ->add('title', TextType::class)
-            ->add('salutation', ChoiceType::class, [
-                'choices' => [
-                    'Mr' => 'mr',
-                    'Mrs' => 'mrs'
-                ]
-            ])
-            ->add('firstName', TextType::class)
-            ->add('lastName', TextType::class)
-            ->add('email', TextType::class)
-            ->add('company', TextType::class)
-            ->add('streetName', TextType::class)
-            ->add('streetNumber', TextType::class)
-            ->add('building', TextType::class)
-            ->add('apartment', TextType::class)
-            ->add('department', TextType::class)
-            ->add('postalCode', TextType::class)
-            ->add('city', TextType::class)
-            ->add('country', TextType::class)
-            ->add('region', TextType::class)
-            ->add('state', TextType::class)
-            ->add('pOBox', TextType::class, ['label' => 'Postal Code'])
-            ->add('additionalAddressInfo', TextType::class)
-            ->add('additionalStreetInfo', TextType::class)
-            ->add('phone', TextType::class)
-            ->add('mobile', TextType::class)
-            ->add('Change', SubmitType::class)
+        $form = $this->createFormBuilder(['address' => $entity->toArray()])
+            ->add('address', AddressType::class)
+            ->add('Submit', SubmitType::class)
             ->getForm();
         $form->handleRequest($request);
 
         if ($form->isValid() && $form->isSubmitted()){
-            $repository->setAddresses($request->getLocale(), $customer, $form->getData()->toCTPAddress(), $addressId);
+            $address = Address::fromArray($form->get('address')->getData());
+
+            $submit = $repository->setAddresses(
+                $request->getLocale(),
+                $customer,
+                $address,
+                $addressId
+            );
         }
 
         return $this->render(
             'CtpBundle:User:editAddress.html.twig',
             [
-                'form' => $form->createView()
+                'form_address' => $form->createView()
             ]
         );
+    }
+
+    public function showOrdersAction(Request $request)
+    {
+        $orders = $this->get('commercetools.repository.order')->getOrders($request->getLocale(), $this->getUser()->getId());
+
+        return $this->render('CtpBundle:user:orders.html.twig', [
+            'orders' => $orders
+        ]);
+    }
+
+    public function showOrderAction(Request $request, $orderId)
+    {
+        $order = $this->get('commercetools.repository.order')->getOrder($request->getLocale(), $orderId);
+
+        return $this->render('CtpBundle:user:order.html.twig', [
+            'order' => $order
+         ]);
     }
 
     protected function getCustomer(User $user)

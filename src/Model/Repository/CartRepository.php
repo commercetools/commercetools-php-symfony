@@ -6,10 +6,13 @@
 namespace Commercetools\Symfony\CtpBundle\Model\Repository;
 
 
+use Commercetools\Core\Model\ShippingMethod\ShippingMethodReference;
+use Commercetools\Core\Request\Carts\Command\CartSetBillingAddressAction;
+use Commercetools\Core\Request\Carts\Command\CartSetShippingAddressAction;
 use Commercetools\Core\Model\Cart\CartState;
 use Commercetools\Core\Request\Carts\CartQueryRequest;
+use Commercetools\Core\Request\Carts\Command\CartSetShippingMethodAction;
 use Commercetools\Symfony\CtpBundle\Model\Repository;
-use Commercetools\Core\Cache\CacheAdapterInterface;
 use Commercetools\Core\Client;
 use Commercetools\Core\Model\Cart\Cart;
 use Commercetools\Core\Model\Cart\CartDraft;
@@ -23,6 +26,7 @@ use Commercetools\Core\Request\Carts\Command\CartAddLineItemAction;
 use Commercetools\Core\Request\Carts\Command\CartChangeLineItemQuantityAction;
 use Commercetools\Core\Request\Carts\Command\CartRemoveLineItemAction;
 use Commercetools\Symfony\CtpBundle\Service\ClientFactory;
+use Psr\Cache\CacheItemPoolInterface;
 use Symfony\Component\HttpFoundation\Session\Session;
 
 
@@ -38,13 +42,13 @@ class CartRepository extends Repository
     /**
      * CartRepository constructor
      * @param $enableCache
-     * @param CacheAdapterInterface $cache
+     * @param CacheItemPoolInterface $cache
      * @param ClientFactory $clientFactory
      * @param ShippingMethodRepository $shippingMethodRepository
      */
     public function __construct(
         $enableCache,
-        CacheAdapterInterface $cache,
+        CacheItemPoolInterface $cache,
         ClientFactory $clientFactory,
         ShippingMethodRepository $shippingMethodRepository,
         Session $session
@@ -53,7 +57,6 @@ class CartRepository extends Repository
         $this->shippingMethodRepository = $shippingMethodRepository;
         $this->session = $session;
     }
-
 
     public function getCart($locale, $cartId = null, $customerId = null)
     {
@@ -70,6 +73,9 @@ class CartRepository extends Repository
             $carts = $cartRequest->mapResponse($cartResponse);
             if (!is_null($carts)) {
                 $cart = $carts->current();
+                if ($cart->getCustomerId() !== $customerId) {
+                    throw new \InvalidArgumentException();
+                }
             }
         }
 
@@ -92,11 +98,11 @@ class CartRepository extends Repository
      * @param $quantity
      * @return Cart|null
      */
-    public function addLineItem($locale, $cartId, $productId, $variantId, $quantity, $currency, $country)
+    public function addLineItem($locale, $cartId, $productId, $variantId, $quantity, $currency, $country, $customerId = null)
     {
         $cart = null;
         if (!is_null($cartId)) {
-            $cart = $this->getCart($locale, $cartId);
+            $cart = $this->getCart($locale, $cartId, $customerId);
         }
 
         if (is_null($cart)) {
@@ -105,7 +111,7 @@ class CartRepository extends Repository
                     ->setVariantId($variantId)
                     ->setQuantity($quantity)
             );
-            $cart = $this->createCart($locale, $currency, $country, $lineItems);
+            $cart = $this->createCart($locale, $currency, $country, $lineItems, $customerId);
         } else {
             $client = $this->getClient($locale);
 
@@ -124,10 +130,10 @@ class CartRepository extends Repository
         return $cart;
     }
 
-    public function deleteLineItem($locale, $cartId, $lineItemId)
+    public function deleteLineItem($locale, $cartId, $lineItemId, $customerId = null)
     {
         $client = $this->getClient($locale);
-        $cart = $this->getCart($locale, $cartId);
+        $cart = $this->getCart($locale, $cartId, $customerId);
 
         $cartUpdateRequest = CartUpdateRequest::ofIdAndVersion($cart->getId(), $cart->getVersion());
         $cartUpdateRequest->addAction(
@@ -140,9 +146,9 @@ class CartRepository extends Repository
         return $cart;
     }
 
-    public function changeLineItemQuantity($locale, $cartId, $lineItemId, $quantity)
+    public function changeLineItemQuantity($locale, $cartId, $lineItemId, $quantity, $customerId = null)
     {
-        $cart = $this->getCart($locale, $cartId);
+        $cart = $this->getCart($locale, $cartId, $customerId);
         $client = $this->getClient($locale);
         $cartUpdateRequest = CartUpdateRequest::ofIdAndVersion($cart->getId(), $cart->getVersion());
         $cartUpdateRequest->addAction(
@@ -155,19 +161,56 @@ class CartRepository extends Repository
         return $cart;
     }
 
+    public function setAddresses($locale, $cartId, Address $shippingAddress, Address $billingAddress = null, $customerId = null)
+    {
+        $cart = $this->getCart($locale, $cartId, $customerId);
+        $client = $this->getClient($locale);
+        $cartUpdateRequest = CartUpdateRequest::ofIdAndVersion($cart->getId(), $cart->getVersion());
+
+        $billingAddressAction = CartSetBillingAddressAction::of();
+        if (!is_null($billingAddress)) {
+            $billingAddressAction->setAddress($billingAddress);
+        }
+        $cartUpdateRequest->addAction(CartSetShippingAddressAction::of()->setAddress($shippingAddress))
+            ->addAction($billingAddressAction);
+
+        $cartResponse = $cartUpdateRequest->executeWithClient($client);
+        $cart = $cartUpdateRequest->mapResponse($cartResponse);
+
+        return $cart;
+    }
+
+    public function setShippingMethod($locale, $cartId, ShippingMethodReference $shippingMethod, $customerId = null)
+    {
+        $cart = $this->getCart($locale, $cartId, $customerId);
+        $client = $this->getClient($locale);
+        $cartUpdateRequest = CartUpdateRequest::ofIdAndVersion($cart->getId(), $cart->getVersion());
+
+        $shippingMethodAction = CartSetShippingMethodAction::of()->setShippingMethod($shippingMethod);
+        $cartUpdateRequest->addAction($shippingMethodAction);
+
+        $cartResponse = $cartUpdateRequest->executeWithClient($client);
+        $cart = $cartUpdateRequest->mapResponse($cartResponse);
+
+        return $cart;
+    }
+
     /**
      * @param $cartId
      * @param $currency
      * @param $country
      * @return Cart|null
      */
-    public function createCart($locale, $currency, $country, LineItemDraftCollection $lineItems)
+    public function createCart($locale, $currency, $country, LineItemDraftCollection $lineItems, $customerId = null)
     {
         $client = $this->getClient($locale);
         $shippingMethodResponse = $this->shippingMethodRepository->getByCountryAndCurrency($locale, $country, $currency);
         $cartDraft = CartDraft::ofCurrency($currency)->setCountry($country)
             ->setShippingAddress(Address::of()->setCountry($country))
             ->setLineItems($lineItems);
+        if (!is_null($customerId)) {
+            $cartDraft->setCustomerId($customerId);
+        }
         if (!$shippingMethodResponse->isError()) {
             /**
              * @var ShippingMethodCollection $shippingMethods

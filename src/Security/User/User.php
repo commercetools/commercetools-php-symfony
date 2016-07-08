@@ -15,13 +15,17 @@ class User implements UserInterface, EquatableInterface
     private $password;
     private $roles;
     private $id;
+    private $cartId;
+    private $cartItemCount;
 
-    public function __construct($username, $password, array $roles, $id)
+    public function __construct($username, $password, array $roles, $id, $cartId, $cartItemCount)
     {
         $this->username = $username;
         $this->password = $password;
         $this->roles = $roles;
         $this->id= $id;
+        $this->cartItemCount= $cartItemCount;
+        $this->cartId= $cartId;
     }
 
     public function getRoles()
@@ -60,6 +64,37 @@ class User implements UserInterface, EquatableInterface
         $this->id = $id;
     }
 
+    /**
+     * @return mixed
+     */
+    public function getCartId()
+    {
+        return $this->cartId;
+    }
+
+    /**
+     * @param mixed $cartId
+     */
+    public function setCartId($cartId)
+    {
+        $this->cartId = $cartId;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getCartItemCount()
+    {
+        return $this->cartItemCount;
+    }
+
+    /**
+     * @param mixed $cartItemCount
+     */
+    public function setCartItemCount($cartItemCount)
+    {
+        $this->cartItemCount = $cartItemCount;
+    }
 
     public function eraseCredentials()
     {

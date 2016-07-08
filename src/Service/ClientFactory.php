@@ -25,7 +25,7 @@ class ClientFactory
         $client_secret,
         $project,
         $fallbackLanguages,
-        CacheAdapterInterface $cache,
+        $cache,
         LocaleConverter $converter,
         LoggerInterface $logger
     ) {
@@ -40,8 +40,14 @@ class ClientFactory
         $this->logger = $logger;
     }
 
+    /**
+     * @param string $locale
+     * @param null $fallbackLanguages
+     * @param array|null $clientCredentials
+     * @return Client
+     */
     public function build(
-        $locale,
+        $locale = 'en',
         $fallbackLanguages = null,
         array $clientCredentials = null
     ) {

@@ -5,10 +5,14 @@
 
 namespace Commercetools\Symfony\CtpBundle\Model\Repository;
 
+use Commercetools\Core\Model\Common\LocalizedString;
 use Commercetools\Core\Model\Product\ProductProjection;
+use Commercetools\Core\Model\Product\SearchKeywords;
+use Commercetools\Core\Model\Product\SuggestionCollection;
 use Commercetools\Core\Request\Products\ProductProjectionByIdGetRequest;
 use Commercetools\Core\Request\Products\ProductProjectionBySlugGetRequest;
 use Commercetools\Core\Request\Products\ProductProjectionSearchRequest;
+use Commercetools\Core\Request\Products\ProductsSuggestRequest;
 use Commercetools\Symfony\CtpBundle\Model\Repository;
 
 class ProductRepository extends Repository
@@ -56,6 +60,37 @@ class ProductRepository extends Repository
         return $product;
     }
 
+    public function suggestProducts($locale, $term, $limit, $currency, $country)
+    {
+        $client = $this->getClient($locale);
+        $suggestRequest = ProductsSuggestRequest::ofKeywords(LocalizedString::ofLangAndText($locale, $term));
+        $response = $suggestRequest->executeWithClient($client);
+        $data = $response->toArray();
+        $language = \Locale::getPrimaryLanguage($locale);
+
+        if (isset($data['searchKeywords.'. $language])) {
+            $suggestions = SuggestionCollection::fromArray($data['searchKeywords.'. $language]);
+
+            $suggestion = $suggestions->current();
+
+            if (!is_null($suggestion)) {
+                $term = $suggestion->getText();
+            }
+        }
+
+        $searchRequest = ProductProjectionSearchRequest::of()
+            ->limit($limit)
+            ->currency($currency)
+            ->country($country)
+            ->fuzzy(true);
+        $searchRequest->addParam('text.' . $language, $term);
+
+        $response = $searchRequest->executeWithClient($this->getClient($locale));
+        $products = $searchRequest->mapResponse($response);
+
+        return $products;
+    }
+
     /**
      * @param $locale
      * @param $itemsPerPage
@@ -63,6 +98,7 @@ class ProductRepository extends Repository
      * @param $sort
      * @param $currency
      * @param $country
+     * @param $search
      * @param array $filters
      * @param array $facets
      * @return array
@@ -89,6 +125,7 @@ class ProductRepository extends Repository
         if (!is_null($search)) {
             $language = \Locale::getPrimaryLanguage($locale);
             $searchRequest->addParam('text.' . $language, $search);
+            $searchRequest->fuzzy(true);
         }
         if (!is_null($facets)) {
             foreach ($facets as $facet) {

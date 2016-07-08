@@ -1,0 +1,33 @@
+{% extends "CtpBundle::layout.html.twig" %}
+
+{% block container %}
+    {% block form %}
+
+        {% if error %}
+            <div>{{ error.message }}</div>
+        {% endif %}
+
+            <div class="form-group">
+                <div class="row">
+                    <div class="col-md-6">
+                        <form action="{{ path('login_check') }}" method="post">
+                        <label for="username">Username</label>
+                        <input class="form-control" type="text" id="username" name="_username" value="{{ last_username }}" />
+
+                        <label for="password">Password</label>
+                        <input class="form-control" type="password" id="password" name="_password" />
+                        <input type="hidden" name="_target_path" value="{{ path('_ctp_example_checkout_address') }}" />
+                        <button class="btn btn-default" type="submit">login</button>
+                        </form>
+                    </div>
+
+                    <div class="col-md-6">
+                        <a href="{{ path('_ctp_example_checkout_guest') }}">
+                            <button class="btn btn-default" name="_target_guest" type="submit">Guest login</button>
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+    {% endblock %}
+{% endblock %}

@@ -4,12 +4,21 @@
         {{ form_start(form) }}
         {{ form_widget(form, { 'attr': {'class': 'search'} }) }}
         {{ form_end(form) }}
-    <div class="row">
+
+    <div class="search-container">
+            <div id="search-results" class="row"> </div>
+            <div class="loading">
+                <div class="loader"></div>
+            </div>
+    </div>
+
+
+    <div class="row" id="index-results">
         {% for product in products %}
             <div class="col-md-6">
                 <a href="{{ path('_ctp_example_product', {slug: product.getSlug}) }}">
                     <h3>{{ product.getName }}</h3>
-                    <img src="{{ product.getMasterVariant.getImages.current.getSmall }}" width="100">
+                    <img src="{{ product.getMasterVariant.getImages.current.getUrl }}" width="100">
                     <p>{{ product.getDescription }}</p>
                     <p>{{ product.getMasterVariant.getPrices.current.getValue }}</p>
                 </a>
