@@ -7,14 +7,13 @@ namespace Commercetools\Symfony\CtpBundle\Entity;
 
 
 use Commercetools\Core\Model\Cart\Cart;
+use Commercetools\Core\Model\Customer\Customer;
 
 class CartEntity
 {
     public $billingAddress;
 
     public $shippingAddress;
-
-    public $address;
 
     public $check;
 

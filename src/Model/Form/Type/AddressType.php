@@ -60,7 +60,7 @@ class AddressType extends AbstractType
                 'required' => false,
                 'attr'  => ['class' => 'form_text']
             ]);
-        $builder->add('phone', TextType::class, ['attr' => ['data-required' => 'true']]);
+        $builder->add('phone', TextType::class, ['required' => false] );
         $builder->add('mobile', TextType::class, ['required' => false] );
     }
 }
