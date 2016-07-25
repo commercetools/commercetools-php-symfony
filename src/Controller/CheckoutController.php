@@ -46,7 +46,6 @@ class CheckoutController extends Controller
         $cartId = $session->get(CartRepository::CART_ID);
         $shippingMethods = $shippingRepository->getShippingMethodByCart($request->getLocale(), $cartId);
 
-        $cartId = $session->get(CartRepository::CART_ID);
         $customerId = $this->get('security.token_storage')->getToken()->getUser()->getId();
         $cart = $this->get('commercetools.repository.cart')->getCart($request->getLocale(), $cartId, $customerId);
 

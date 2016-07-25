@@ -24,7 +24,7 @@ class ProductRepository extends Repository
      * @param $locale
      * @return ProductProjection|null
      */
-    public function getProductBySlug($slug, $locale)
+    public function getProductBySlug($slug, $locale, $currency, $country)
     {
         $client = $this->getClient($locale);
         $cacheKey = static::NAME . '-' . $slug . '-' . $locale;
@@ -41,7 +41,7 @@ class ProductRepository extends Repository
         $productRequest = ProductProjectionBySlugGetRequest::ofSlugAndContext(
             $slug,
             $client->getConfig()->getContext()
-        );
+        )->country($country)->currency($currency);
         $product = $this->retrieve($client, $cacheKey, $productRequest);
 
         return $product;
