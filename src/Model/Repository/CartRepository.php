@@ -167,12 +167,13 @@ class CartRepository extends Repository
         $client = $this->getClient($locale);
         $cartUpdateRequest = CartUpdateRequest::ofIdAndVersion($cart->getId(), $cart->getVersion());
 
+        $cartUpdateRequest->addAction(CartSetShippingAddressAction::of()->setAddress($shippingAddress));
+
         $billingAddressAction = CartSetBillingAddressAction::of();
         if (!is_null($billingAddress)) {
             $billingAddressAction->setAddress($billingAddress);
+            $cartUpdateRequest->addAction($billingAddressAction);
         }
-        $cartUpdateRequest->addAction(CartSetShippingAddressAction::of()->setAddress($shippingAddress))
-            ->addAction($billingAddressAction);
 
         $cartResponse = $cartUpdateRequest->executeWithClient($client);
         $cart = $cartUpdateRequest->mapResponse($cartResponse);
