@@ -14,58 +14,45 @@ use Psr\Log\LoggerInterface;
 
 class ClientFactory
 {
-    private $clientCredentials;
-    private $fallbackLanguages;
+    private $contextFactory;
     private $cache;
     private $logger;
     private $converter;
+    private $config;
 
     public function __construct(
-        $client_id,
-        $client_secret,
-        $project,
-        $fallbackLanguages,
+        Config $config,
+        ContextFactory $contextFactory,
         $cache,
         LocaleConverter $converter,
         LoggerInterface $logger
     ) {
-        $this->clientCredentials = [
-            'client_id' => $client_id,
-            'client_secret' => $client_secret,
-            'project' => $project
-        ];
-        $this->fallbackLanguages = $fallbackLanguages;
+        $this->config = $config;
+        $this->contextFactory = $contextFactory;
         $this->cache = $cache;
         $this->converter = $converter;
         $this->logger = $logger;
+        $this->config = $config;
     }
 
     /**
      * @param string $locale
-     * @param null $fallbackLanguages
-     * @param array|null $clientCredentials
+     * @param Context $context
+     * @param Config $config
      * @return Client
      */
     public function build(
-        $locale = 'en',
-        $fallbackLanguages = null,
-        array $clientCredentials = null
+        $locale = null,
+        Context $context = null,
+        Config $config = null
     ) {
-        $locale = $this->converter->convert($locale);
-        if (is_null($clientCredentials)) {
-            $clientCredentials = $this->clientCredentials;
+        if (is_null($config)) {
+            $config = $this->config;
         }
-        if (is_null($fallbackLanguages)) {
-            $fallbackLanguages = $this->fallbackLanguages;
+        if (is_null($context)) {
+            $context = $this->contextFactory->build($locale);
         }
-        $language = \Locale::getPrimaryLanguage($locale);
-        $languages = [$language];
-        if (isset($fallbackLanguages[$language])) {
-            $languages = array_merge($languages, $fallbackLanguages[$language]);
-        }
-        $context = Context::of()->setLanguages($languages)->setGraceful(true)->setLocale($locale);
-        $config = $clientCredentials;
-        $config = Config::fromArray($config)->setContext($context);
+        $config->setContext($context);
 
         if (is_null($this->logger)) {
             return Client::ofConfigAndCache($config, $this->cache);
