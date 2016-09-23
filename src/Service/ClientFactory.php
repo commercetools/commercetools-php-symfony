@@ -5,11 +5,11 @@
 
 namespace Commercetools\Symfony\CtpBundle\Service;
 
-
-use Commercetools\Core\Cache\CacheAdapterInterface;
 use Commercetools\Core\Client;
 use Commercetools\Core\Config;
 use Commercetools\Core\Model\Common\Context;
+use Commercetools\Symfony\CtpBundle\Profiler\CommercetoolsProfilerExtension;
+use Commercetools\Symfony\CtpBundle\Profiler\ProfileMiddleware;
 use Psr\Log\LoggerInterface;
 
 class ClientFactory
@@ -25,7 +25,8 @@ class ClientFactory
         ContextFactory $contextFactory,
         $cache,
         LocaleConverter $converter,
-        LoggerInterface $logger
+        LoggerInterface $logger,
+        CommercetoolsProfilerExtension $profiler
     ) {
         $this->config = $config;
         $this->contextFactory = $contextFactory;
@@ -33,6 +34,7 @@ class ClientFactory
         $this->converter = $converter;
         $this->logger = $logger;
         $this->config = $config;
+        $this->profiler = $profiler;
     }
 
     /**
@@ -55,8 +57,13 @@ class ClientFactory
         $config->setContext($context);
 
         if (is_null($this->logger)) {
-            return Client::ofConfigAndCache($config, $this->cache);
+            $client = Client::ofConfigAndCache($config, $this->cache);
+        } else {
+            $client = Client::ofConfigCacheAndLogger($config, $this->cache, $this->logger);
         }
-        return Client::ofConfigCacheAndLogger($config, $this->cache, $this->logger);
+
+        $client->getHttpClient()->addHandler(ProfileMiddleware::create($this->profiler));
+
+        return $client;
     }
 }

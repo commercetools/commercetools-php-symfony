@@ -21,6 +21,7 @@
             <argument type="service" id="commercetools.cache" />
             <argument type="service" id="commercetools.locale.converter" />
             <argument type="service" id="logger" on-invalid="null" />
+            <argument type="service" id="commercetools.extension.profiler" />
         </service>
         <service id="commercetools.context.factory" class="Commercetools\Symfony\CtpBundle\Service\ContextFactory">
             <argument>%commercetools.fallback_languages%</argument>
@@ -85,5 +86,10 @@
             <argument>%security.authentication.hide_user_not_found%</argument>
             <argument type="service" id="logger" />
         </service>
+        <service id="commercetools.extension.profiler" class="Commercetools\Symfony\CtpBundle\Profiler\CommercetoolsProfilerExtension" public="false">
+            <argument type="service" id="commercetools.profile" />
+            <argument type="service" id="debug.stopwatch" on-invalid="null" />
+        </service>
+        <service id="commercetools.profile" class="Commercetools\Symfony\CtpBundle\Profiler\Profile" />
     </services>
 </container>
