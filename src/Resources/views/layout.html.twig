@@ -5,21 +5,13 @@
             <title>{% block title %}  Awesome webapp by Commercetools {% endblock %}</title>
 
             {% block stylesheets %}
-                {% stylesheets
-                    '@CtpBundle/Web/public/css/bootstrap.css'
-                    '@CtpBundle/Web/public/css/style.css'
-                %}
-                <link rel="stylesheet" href="{{ asset_url }}" />
-                {% endstylesheets %}
+                <link rel="stylesheet" href="{{ asset('bundles/ctp/css/bootstrap.css') }}" />
+                <link rel="stylesheet" href="{{ asset('bundles/ctp/css/style.css') }}" />
             {% endblock %}
 
             {% block javascripts %}
-                {% javascripts
-                    '@CtpBundle/Web/public/js/jquiry-2.3.3.js'
-                    '@CtpBundle/Web/public/js/index.js'
-                %}
-                    <script src="{{ asset_url }}"></script>
-                {% endjavascripts %}
+                <script src="{{ asset('bundles/ctp/js/jquiry-2.3.3.js') }}"></script>
+                <script src="{{ asset('bundles/ctp/js/index.js') }}"></script>
             {% endblock %}
         </head>
 {% endblock %}
@@ -27,9 +19,7 @@
 {% block menu %}
     <div class="menu">
        <a href="{{ path('_ctp_example') }}">
-            {% image '@CtpBundle/Web/public/img/CT-logo.svg' %}
-                <img class="menu-logo" src="{{ asset_url }}" alt="example"/>
-            {% endimage %}
+            <img class="menu-logo" src="{{ asset('bundles/ctp/img/CT-logo.svg') }}" alt="example"/>
        </a>
         <ul>
             <li><a href="{{ path('_ctp_example') }}">Home</a> </li>
