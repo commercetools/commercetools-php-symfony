@@ -15,7 +15,7 @@ Create a new or open a symfony3 project and open it in any editor of choice
 Open composer.json and add to the attribute require this line
 
 ```yaml
-"commercetools/symfony-bundle": "dev-checkout",
+"commercetools/symfony-bundle": "dev-master",
 "symfony/assetic-bundle": "^2.8" 
 ```
 Open App/AppKernel.php and these lines to the $bundles array
