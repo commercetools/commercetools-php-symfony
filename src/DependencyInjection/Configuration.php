@@ -18,12 +18,16 @@ class Configuration implements ConfigurationInterface
 
         $rootNode
             ->children()
-                ->arrayNode('client_config')
+                ->arrayNode('credentials')
                     ->children()
                         ->scalarNode('client_id')->isRequired()->end()
                         ->scalarNode('client_secret')->isRequired()->end()
                         ->scalarNode('project')->isRequired()->end()
                         ->scalarNode('scope')->end()
+                    ->end()
+                ->end()
+                ->arrayNode('config')
+                    ->children()
                         ->scalarNode('api_url')->end()
                         ->scalarNode('oauth_url')->end()
                         ->booleanNode('throwExceptions')->end()

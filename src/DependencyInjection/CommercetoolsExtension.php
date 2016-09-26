@@ -23,10 +23,12 @@ class CommercetoolsExtension extends Extension
         $config = $this->processConfiguration($configuration, $configs);
 
         $container->setParameter('commercetools.fallback_languages', isset($config['fallback_languages']) ? $config['fallback_languages']: []);
-        if (isset($config['client_config'])) {
-            $clientConfig = $config['client_config'];
-            $container->setParameter('commercetools.client.config', $clientConfig);
+        
+        $clientConfig = isset($config['config']) ? $config['config'] : [];
+        if (isset($config['credentials'])) {
+            $clientConfig = array_merge($clientConfig, $config['credentials']);
         }
+        $container->setParameter('commercetools.client.config', $clientConfig);
 
         foreach ($config['defaults'] as $key => $value) {
             $container->setParameter('commercetools.defaults.' . $key, $value);
