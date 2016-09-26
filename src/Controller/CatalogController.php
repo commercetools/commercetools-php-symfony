@@ -58,7 +58,7 @@ class CatalogController extends Controller
          */
         $repository = $this->get('commercetools.repository.product');
 
-        $product = $repository->getProductBySlug($slug, $request->getLocale());
+        $product = $repository->getProductBySlug($slug, $request->getLocale(), 'EUR', 'DE');
 
         $variantIds = [];
 
