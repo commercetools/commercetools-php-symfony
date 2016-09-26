@@ -12,14 +12,25 @@
     </parameters>
     <services>
         <service id="commercetools" synthetic="true" />
-        <service id="commercetools.client" class="Commercetools\Symfony\CtpBundle\Service\ClientFactory">
-            <argument>%commercetools.client_id%</argument>
-            <argument>%commercetools.client_secret%</argument>
-            <argument>%commercetools.project%</argument>
-            <argument>%commercetools.fallback_languages%</argument>
+        <service id="commercetools.client" class="Commercetools\Core\Client">
+            <factory service="commercetools.client.factory" method="build" />
+        </service>
+        <service id="commercetools.client.factory" class="Commercetools\Symfony\CtpBundle\Service\ClientFactory">
+            <argument type="service" id="commercetools.client.config" />
+            <argument type="service" id="commercetools.context.factory" />
             <argument type="service" id="commercetools.cache" />
             <argument type="service" id="commercetools.locale.converter" />
-            <argument type="service" id="logger" on-invalid="null" />
+            <argument type="service" id="commercetools.logger" />
+            <argument type="service" id="commercetools.extension.profiler" />
+        </service>
+        <service id="commercetools.context.factory" class="Commercetools\Symfony\CtpBundle\Service\ContextFactory">
+            <argument>%commercetools.fallback_languages%</argument>
+            <argument type="service" id="commercetools.locale.converter" />
+            <argument>%commercetools.defaults.context%</argument>
+        </service>
+        <service id="commercetools.client.config" class="Commercetools\Core\Config">
+            <factory class="Commercetools\Core\Config" method="fromArray"/>
+            <argument>%commercetools.client.config%</argument>
         </service>
         <service id="commercetools.auth.listener" class="Commercetools\Symfony\CtpBundle\EventListener\AuthenticationListener">
             <tag name="kernel.event_subscriber"/>
@@ -29,35 +40,35 @@
             <tag name="cache.pool" />
         </service>
         <service id="commercetools.locale.converter" class="Commercetools\Symfony\CtpBundle\Service\LocaleConverter">
-            <argument>DE</argument>
+            <argument>%commercetools.defaults.country%</argument>
         </service>
         <service id="commercetools.repository.product" class="Commercetools\Symfony\CtpBundle\Model\Repository\ProductRepository">
             <argument>%commercetools.cache.product%</argument>
             <argument type="service" id="commercetools.cache" />
-            <argument type="service" id="commercetools.client"/>
+            <argument type="service" id="commercetools.client.factory"/>
         </service>
         <service id="commercetools.repository.customer" class="Commercetools\Symfony\CtpBundle\Model\Repository\CustomerRepository">
             <argument>%commercetools.cache.customer%</argument>
             <argument type="service" id="commercetools.cache" />
-            <argument type="service" id="commercetools.client"/>
+            <argument type="service" id="commercetools.client.factory"/>
         </service>
         <service id="commercetools.repository.order" class="Commercetools\Symfony\CtpBundle\Model\Repository\OrderRepository">
             <argument>%commercetools.cache.order%</argument>
             <argument type="service" id="commercetools.cache" />
-            <argument type="service" id="commercetools.client"/>
+            <argument type="service" id="commercetools.client.factory"/>
             <argument type="service" id="session"/>
         </service>
         <service id="commercetools.repository.cart" class="Commercetools\Symfony\CtpBundle\Model\Repository\CartRepository">
             <argument>%commercetools.cache.cart%</argument>
             <argument type="service" id="commercetools.cache" />
-            <argument type="service" id="commercetools.client"/>
+            <argument type="service" id="commercetools.client.factory"/>
             <argument type="service" id="commercetools.repository.shipping_method"/>
             <argument type="service" id="session"/>
         </service>
         <service id="commercetools.repository.shipping_method" class="Commercetools\Symfony\CtpBundle\Model\Repository\ShippingMethodRepository">
             <argument>%commercetools.cache.shipping_method%</argument>
             <argument type="service" id="commercetools.cache" />
-            <argument type="service" id="commercetools.client"/>
+            <argument type="service" id="commercetools.client.factory"/>
         </service>
         <service id="commercetools.user_provider"
                  class="Commercetools\Symfony\CtpBundle\Security\User\UserProvider">
@@ -68,12 +79,26 @@
                  abstract="true"
                  public="false"
         >
-            <argument type="service" id="commercetools.client" />
+            <argument type="service" id="commercetools.client.factory" />
             <argument /> <!-- User Provider -->
             <argument type="service" id="security.user_checker" />
             <argument /> <!-- Provider-shared Key -->
             <argument>%security.authentication.hide_user_not_found%</argument>
             <argument type="service" id="logger" />
+        </service>
+        <service id="commercetools.extension.profiler" class="Commercetools\Symfony\CtpBundle\Profiler\CommercetoolsProfilerExtension" public="false">
+            <argument type="service" id="commercetools.profile" />
+            <argument type="service" id="debug.stopwatch" on-invalid="null" />
+        </service>
+        <service id="commercetools.profile" class="Commercetools\Symfony\CtpBundle\Profiler\Profile" />
+        <service id="data_collector.ctp" class="Commercetools\Symfony\CtpBundle\DataCollector\CommercetoolsDataCollector" public="false">
+            <tag name="data_collector" id="commercetools" template="@Ctp/Collector/commercetools"/>
+            <argument type="service" id="commercetools.logger" />
+            <argument type="service" id="commercetools.profile" />
+        </service>
+        <service id="commercetools.logger" class="Commercetools\Symfony\CtpBundle\Logger\Logger">
+            <argument type="service" id="logger" />
+            <tag name="monolog.logger" channel="commercetools" />
         </service>
     </services>
 </container>

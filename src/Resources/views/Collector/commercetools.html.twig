@@ -1,0 +1,50 @@
+{% extends '@WebProfiler/Profiler/layout.html.twig' %}
+
+{% block icon %}
+    <svg id="Layer_1" data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1053.91 1208.88">
+        <defs><style>.cls-1{fill:#f27923;}.cls-2{fill:#f5a730;}.cls-3{fill:#20ad92;}.cls-4{fill:#d0d1d1;}</style></defs><title>CT_cube_RGB</title><g id="_Group_" data-name="&lt;Group&gt;"><path id="_Path_" data-name="&lt;Path&gt;" class="cls-1" d="M479.88,1315.7a25.37,25.37,0,0,0-.09,46l491.55,230.14a49.81,49.81,0,0,0,20.79,4.74V1082.85a50.74,50.74,0,0,0-21.42,4.71Z" transform="translate(-465.17 -387.69)"/><path id="_Path_2" data-name="&lt;Path&gt;" class="cls-2" d="M992.13,1082.85v513.71a50.34,50.34,0,0,0,22.25-4.74l490.11-229.43a25.38,25.38,0,0,0-.06-46l-490.92-228.83A50.54,50.54,0,0,0,992.13,1082.85Z" transform="translate(-465.17 -387.69)"/><path id="_Path_3" data-name="&lt;Path&gt;" class="cls-3" d="M465.2,643.52a25.11,25.11,0,0,0,14.59,23L971.33,896.66a50.88,50.88,0,0,0,39.2,1.61l13.77-6.4c50.72-23.56,17.12-7.88,480.19-224.64a25.38,25.38,0,0,0-.06-46L1013.51,392.43a50.77,50.77,0,0,0-42.81,0L479.88,620.55A25.41,25.41,0,0,0,465.2,643.52Z" transform="translate(-465.17 -387.69)"/><path id="_Path_4" data-name="&lt;Path&gt;" class="cls-4" d="M992.13,930.31v152.54a50.74,50.74,0,0,0-21.42,4.71L479.88,1315.7a25.33,25.33,0,0,0-14.68,23l0-678V643.52a25.37,25.37,0,0,0,14.59,23L971.33,896.66a50.88,50.88,0,0,0,39.2,1.61l-0.84.39C994.43,905.71,992.13,912.75,992.13,930.31Z" transform="translate(-465.17 -387.69)"/></g>
+    </svg>
+{% endblock %}
+{% block toolbar %}
+    {% if collector.requestCount > 0 %}
+        {% set icon %}
+            <span class="icon">
+                {{ block('icon') }}
+            </span>
+            <span class="sf-toolbar-status">{{ collector.requestCount }}</span>
+        {% endset %}
+
+        {% set text %}
+            <div class="sf-toolbar-info-piece">
+                <b>Requests</b>
+                <span>{{ collector.requestCount }}</span>
+            </div>
+            <div class="sf-toolbar-info-piece">
+                <b>Request time</b>
+                <span>{{ collector.duration|round }} ms</span>
+            </div>
+        {% endset %}
+
+        {{ include('@WebProfiler/Profiler/toolbar_item.html.twig', { 'link': true }) }}
+    {% endif %}
+{% endblock %}
+
+{% block menu %}
+    {# This left-hand menu appears when using the full-screen profiler. #}
+    <span class="label">
+        <span class="icon">{{ block('icon') }}</span>
+        <strong>Commercetools</strong>
+    </span>
+{% endblock %}
+
+{% block panel %}
+    {# Optional, for showing the most details. #}
+    <h2>Logs</h2>
+    <table>
+        {% for log in collector.logs %}
+        <tr>
+            <td>{{ log }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+{% endblock %}
