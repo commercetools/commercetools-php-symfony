@@ -20,7 +20,7 @@
             <argument type="service" id="commercetools.context.factory" />
             <argument type="service" id="commercetools.cache" />
             <argument type="service" id="commercetools.locale.converter" />
-            <argument type="service" id="logger" on-invalid="null" />
+            <argument type="service" id="commercetools.logger" />
             <argument type="service" id="commercetools.extension.profiler" />
         </service>
         <service id="commercetools.context.factory" class="Commercetools\Symfony\CtpBundle\Service\ContextFactory">
@@ -91,5 +91,14 @@
             <argument type="service" id="debug.stopwatch" on-invalid="null" />
         </service>
         <service id="commercetools.profile" class="Commercetools\Symfony\CtpBundle\Profiler\Profile" />
+        <service id="data_collector.ctp" class="Commercetools\Symfony\CtpBundle\DataCollector\CommercetoolsDataCollector" public="false">
+            <tag name="data_collector" id="commercetools" template="@Ctp/Collector/commercetools"/>
+            <argument type="service" id="commercetools.logger" />
+            <argument type="service" id="commercetools.profile" />
+        </service>
+        <service id="commercetools.logger" class="Commercetools\Symfony\CtpBundle\Logger\Logger">
+            <argument type="service" id="logger" />
+            <tag name="monolog.logger" channel="commercetools" />
+        </service>
     </services>
 </container>

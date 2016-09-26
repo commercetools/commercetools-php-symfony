@@ -47,6 +47,15 @@ class Profile implements \IteratorAggregate, \Serializable
         return $this->name;
     }
 
+    public function getDuration()
+    {
+        if (isset($this->starts['wt']) && isset($this->ends['wt'])) {
+            return 1000 * ($this->ends['wt'] - $this->starts['wt']);
+        }
+
+        return 0;
+    }
+
     public function addProfile(Profile $profile)
     {
         $this->profiles[] = $profile;
