@@ -47,4 +47,16 @@
         </tr>
         {% endfor %}
     </table>
+    <h2>Requests</h2>
+    <table>
+        {% for entry in collector.requestInfos %}
+            <tr>
+                <td>{{ entry.request.method }}</td>
+                <td>{{ entry.request.url }}</td>
+                {% if entry.response %}
+                    <td>{{ entry.response.status }}</td>
+                {% endif %}
+            </tr>
+        {% endfor %}
+    </table>
 {% endblock %}

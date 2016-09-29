@@ -26,11 +26,17 @@ class CommercetoolsDataCollector extends DataCollector
     {
         $this->data['logger'] = $this->logger->getMessages();
         $this->data['profile']['duration'] = $this->profile->getDuration();
+        $this->data['requests'] = $this->profile->getRequestInfos();
     }
 
     public function getLogs()
     {
         return $this->data['logger'];
+    }
+
+    public function getRequestInfos()
+    {
+        return $this->data['requests'];
     }
 
     public function getRequestCount()

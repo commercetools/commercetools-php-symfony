@@ -19,6 +19,7 @@ class ClientFactory
     private $logger;
     private $converter;
     private $config;
+    private $environment;
 
     public function __construct(
         Config $config,
@@ -26,7 +27,8 @@ class ClientFactory
         $cache,
         LocaleConverter $converter,
         LoggerInterface $logger,
-        CommercetoolsProfilerExtension $profiler
+        CommercetoolsProfilerExtension $profiler,
+        $environment
     ) {
         $this->config = $config;
         $this->contextFactory = $contextFactory;
@@ -35,6 +37,7 @@ class ClientFactory
         $this->logger = $logger;
         $this->config = $config;
         $this->profiler = $profiler;
+        $this->environment = $environment;
     }
 
     /**
@@ -62,7 +65,9 @@ class ClientFactory
             $client = Client::ofConfigCacheAndLogger($config, $this->cache, $this->logger);
         }
 
-        $client->getHttpClient()->addHandler(ProfileMiddleware::create($this->profiler));
+        if (in_array($this->environment, ['dev', 'test'], true)) {
+            $client->getHttpClient()->addHandler(ProfileMiddleware::create($this->profiler));
+        }
 
         return $client;
     }

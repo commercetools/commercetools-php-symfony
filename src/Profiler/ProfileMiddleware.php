@@ -36,11 +36,11 @@ class ProfileMiddleware
     {
         $fn = $this->handler;
 
-        $this->profiler->enter($profile = new Profile((string)$request->getUri()->getPath()));
+        $this->profiler->enter($profile = new Profile((string)$request->getUri()->getPath(), $request));
 
         return $fn($request, $options)
             ->then(function (ResponseInterface $response) use ($profile) {
-                $this->profiler->leave($profile);
+                $this->profiler->leave($profile, $response);
                 return $response;
             });
     }
