@@ -100,7 +100,7 @@ class UserController extends Controller
                         ->setNewPassword($request->getLocale(), $customer, $currentPassword, $newPassword);
                 } catch (\InvalidArgumentException $e){
                     $this->addFlash('error', $this->get($e->getMessage(), [] , 'customers'));
-                    var_dump($e->getMessage());
+                    dump($e->getMessage());
                     return new Response($e->getMessage());
                 }
             }

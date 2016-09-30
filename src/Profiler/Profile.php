@@ -57,7 +57,8 @@ class Profile implements \IteratorAggregate, \Serializable
         ];
         if ($response) {
             $this->response = [
-                'status' => $response->getStatusCode(),
+                'headers' => $response->getHeaders(),
+                'statusCode' => $response->getStatusCode(),
                 'body' => (string)$response->getBody(),
             ];
         }

@@ -38,6 +38,18 @@
 {% endblock %}
 
 {% block panel %}
+    {% if 'details' == page %}
+        {{ render(controller('commercetools.profiler_controller:details', {
+            token: token,
+            requestIndex: app.request.query.get('requestIndex'),
+            panel: 'commercetools'
+        })) }}
+    {% else %}
+        {{ block('requests') }}
+    {% endif %}
+{% endblock %}
+
+{% block requests %}
     {# Optional, for showing the most details. #}
     <h2>Requests</h2>
     <table>
@@ -46,17 +58,19 @@
             <th>URI</th>
             <th>Status</th>
             <th>Duration</th>
+            <th>Options</th>
         </tr>
         {% for entry in collector.requestInfos %}
             <tr>
                 <td>{{ entry.request.method }}</td>
                 <td>{{ entry.request.url }}</td>
                 {% if entry.response %}
-                    <td>{{ entry.response.status }}</td>
+                    <td>{{ entry.response.statusCode }}</td>
                 {% endif %}
                 {% if entry.duration %}
-                    <td>{{ entry.duration|round }}</td>
+                    <td>{{ entry.duration|round }} ms</td>
                 {% endif %}
+                <td><a class="link-inverse" href="{{ path('_profiler', { panel: 'commercetools', token: token, page: 'details', requestIndex: loop.index0 }) }}">Details</a></td>
             </tr>
         {% endfor %}
     </table>

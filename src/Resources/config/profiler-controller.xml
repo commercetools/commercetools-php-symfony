@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<container xmlns="http://symfony.com/schema/dic/services"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
+    <services>
+        <service id="commercetools.profiler_controller" class="Commercetools\Symfony\CtpBundle\Controller\ProfilerController">
+            <argument type="service" id="profiler" />
+            <argument type="service" id="templating" />
+        </service>
+        <service id="commercetools.profiler.extension" class="Commercetools\Symfony\CtpBundle\Profiler\CommercetoolsProfilerExtension" public="false">
+            <argument type="service" id="commercetools.profile" />
+            <argument type="service" id="debug.stopwatch" on-invalid="null" />
+        </service>
+    </services>
+</container>
