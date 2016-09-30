@@ -100,6 +100,7 @@ class Profile implements \IteratorAggregate, \Serializable
         }
         if ($this->response) {
             $info['response'] = $this->response;
+            $info['duration'] = $this->getDuration();
         }
         return $info;
     }

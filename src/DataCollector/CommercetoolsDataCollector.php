@@ -13,40 +13,32 @@ use Symfony\Component\HttpKernel\DataCollector\DataCollector;
 
 class CommercetoolsDataCollector extends DataCollector
 {
-    private $logger;
     private $profile;
 
-    public function __construct(Logger $logger, Profile $profile)
+    public function __construct(Profile $profile)
     {
-        $this->logger = $logger;
         $this->profile = $profile;
     }
 
     public function collect(Request $request, Response $response, \Exception $exception = null)
     {
-        $this->data['logger'] = $this->logger->getMessages();
-        $this->data['profile']['duration'] = $this->profile->getDuration();
-        $this->data['requests'] = $this->profile->getRequestInfos();
-    }
-
-    public function getLogs()
-    {
-        return $this->data['logger'];
-    }
-
-    public function getRequestInfos()
-    {
-        return $this->data['requests'];
-    }
-
-    public function getRequestCount()
-    {
-        return count($this->data['logger']);
+        $this->data['duration'] = $this->profile->getDuration();
+        $this->data['requestInfos'] = $this->profile->getRequestInfos();
     }
 
     public function getDuration()
     {
-        return isset($this->data['profile']['duration']) ? $this->data['profile']['duration'] : 0;
+        return isset($this->data['duration']) ? $this->data['duration'] : 0;
+    }
+
+    public function getRequestCount()
+    {
+        return count($this->data['requestInfos']);
+    }
+
+    public function getRequestInfos()
+    {
+        return $this->data['requestInfos'];
     }
 
     public function getName()

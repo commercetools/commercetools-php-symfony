@@ -5,7 +5,6 @@
 
 namespace Commercetools\Symfony\CtpBundle\Profiler;
 
-use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 use Symfony\Component\Stopwatch\Stopwatch;
 
@@ -33,7 +32,7 @@ class CommercetoolsProfilerExtension
         array_unshift($this->actives, $profile);
     }
 
-    public function leave(Profile $profile, ResponseInterface $response)
+    public function leave(Profile $profile, ResponseInterface $response = null)
     {
         $profile->leave($response);
         array_shift($this->actives);
@@ -54,5 +53,10 @@ class CommercetoolsProfilerExtension
     public function getName()
     {
         return 'commercetools-profiler';
+    }
+
+    public function getProfileMiddleWare()
+    {
+        return ProfileMiddleware::create($this);
     }
 }

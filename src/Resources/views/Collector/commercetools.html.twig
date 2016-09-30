@@ -39,22 +39,23 @@
 
 {% block panel %}
     {# Optional, for showing the most details. #}
-    <h2>Logs</h2>
-    <table>
-        {% for log in collector.logs %}
-        <tr>
-            <td>{{ log }}</td>
-        </tr>
-        {% endfor %}
-    </table>
     <h2>Requests</h2>
     <table>
+        <tr>
+            <th>Method</th>
+            <th>URI</th>
+            <th>Status</th>
+            <th>Duration</th>
+        </tr>
         {% for entry in collector.requestInfos %}
             <tr>
                 <td>{{ entry.request.method }}</td>
                 <td>{{ entry.request.url }}</td>
                 {% if entry.response %}
                     <td>{{ entry.response.status }}</td>
+                {% endif %}
+                {% if entry.duration %}
+                    <td>{{ entry.duration|round }}</td>
                 {% endif %}
             </tr>
         {% endfor %}

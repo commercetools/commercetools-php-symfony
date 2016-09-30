@@ -66,7 +66,7 @@ class ClientFactory
         }
 
         if (in_array($this->environment, ['dev', 'test'], true)) {
-            $client->getHttpClient()->addHandler(ProfileMiddleware::create($this->profiler));
+            $client->getHttpClient()->addHandler($this->profiler->getProfileMiddleWare());
         }
 
         return $client;
