@@ -14,10 +14,31 @@ use Commercetools\Core\Request\Products\ProductProjectionBySlugGetRequest;
 use Commercetools\Core\Request\Products\ProductProjectionSearchRequest;
 use Commercetools\Core\Request\Products\ProductsSuggestRequest;
 use Commercetools\Symfony\CtpBundle\Model\Repository;
+use Commercetools\Symfony\CtpBundle\Model\Search;
+use Commercetools\Symfony\CtpBundle\Service\ClientFactory;
+use GuzzleHttp\Psr7\Request;
+use GuzzleHttp\Psr7\Uri;
+use Psr\Cache\CacheItemPoolInterface;
 
 class ProductRepository extends Repository
 {
     const NAME = 'products';
+
+    /**
+     * @var Search
+     */
+    private $searchModel;
+
+    public function __construct(
+        $enableCache,
+        CacheItemPoolInterface $cache,
+        ClientFactory $clientFactory,
+        Search $searchModel
+    ) {
+        $this->searchModel = $searchModel;
+        parent::__construct($enableCache, $cache, $clientFactory);
+    }
+
 
     /**
      * @param $slug
@@ -99,8 +120,8 @@ class ProductRepository extends Repository
      * @param $currency
      * @param $country
      * @param $search
+     * @param Uri $uri
      * @param array $filters
-     * @param array $facets
      * @return array
      */
     public function getProducts(
@@ -111,8 +132,8 @@ class ProductRepository extends Repository
         $currency,
         $country,
         $search = null,
-        $filters = null,
-        $facets = null
+        Uri $uri,
+        $filters = null
     ){
 
         $searchRequest = ProductProjectionSearchRequest::of()
@@ -127,11 +148,10 @@ class ProductRepository extends Repository
             $searchRequest->addParam('text.' . $language, $search);
             $searchRequest->fuzzy(true);
         }
-        if (!is_null($facets)) {
-            foreach ($facets as $facet) {
-                $searchRequest->addFacet($facet);
-            }
-        }
+
+        $selectedValues = $this->searchModel->getSelectedValues($uri);
+        $searchRequest = $this->searchModel->addFacets($searchRequest, $selectedValues);
+
         if (!is_null($filters)) {
             foreach ($filters as $type => $typeFilters) {
                 foreach ($typeFilters as $filter) {

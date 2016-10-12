@@ -46,6 +46,7 @@
             <argument>%commercetools.cache.product%</argument>
             <argument type="service" id="commercetools.cache" />
             <argument type="service" id="commercetools.client.factory"/>
+            <argument type="service" id="commercetools.search" />
         </service>
         <service id="commercetools.repository.customer" class="Commercetools\Symfony\CtpBundle\Model\Repository\CustomerRepository">
             <argument>%commercetools.cache.customer%</argument>
@@ -85,6 +86,9 @@
             <argument /> <!-- Provider-shared Key -->
             <argument>%security.authentication.hide_user_not_found%</argument>
             <argument type="service" id="logger" />
+        </service>
+        <service id="commercetools.search" class="Commercetools\Symfony\CtpBundle\Model\Search">
+            <argument>%commercetools.facets%</argument>
         </service>
         <service id="commercetools.logger" class="Commercetools\Symfony\CtpBundle\Logger\Logger">
             <argument type="service" id="logger" />

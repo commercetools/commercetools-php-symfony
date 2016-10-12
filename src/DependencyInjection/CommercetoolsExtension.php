@@ -5,6 +5,7 @@
 
 namespace Commercetools\Symfony\CtpBundle\DependencyInjection;
 
+use Commercetools\Symfony\CtpBundle\Model\FacetConfig;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Extension\Extension;
@@ -43,5 +44,13 @@ class CommercetoolsExtension extends Extension
         foreach ($config['currency'] as $key => $value) {
             $container->setParameter('commercetools.currency.' . strtolower($key), $value);
         }
+
+        $facetConfigs = [];
+        if (isset($config['facets'])) {
+            foreach ($config['facets'] as $name => $config) {
+                $facetConfigs[$name] = $config;
+            }
+        }
+        $container->setParameter('commercetools.facets', $facetConfigs);
     }
 }
