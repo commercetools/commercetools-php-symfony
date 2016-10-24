@@ -5,17 +5,18 @@
 
 namespace Commercetools\Symfony\CtpBundle\Model;
 
-use Cache\Adapter\Common\CacheItem;
-use Commercetools\Commons\Helper\QueryHelper;
 use Commercetools\Core\Client;
+use Commercetools\Core\Model\JsonObjectMapper;
 use Commercetools\Core\Request\AbstractApiRequest;
 use Commercetools\Core\Request\QueryAllRequestInterface;
-use Commercetools\Symfony\CtpBundle\Service\ClientFactory;
+use Commercetools\Symfony\CtpBundle\Service\MapperFactory;
 use Psr\Cache\CacheItemPoolInterface;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class Repository
 {
+    const DEFAULT_PAGE_SIZE = 500;
+
     const CACHE_TTL = 3600;
 
     /**
@@ -31,40 +32,42 @@ class Repository
     /**
      * @var Client
      */
-    protected $client = [];
+    protected $client;
 
     /**
-     * @var ClientFactory
+     * @var MapperFactory
      */
-    protected $clientFactory;
+    protected $mapperFactory;
 
     /**
      * Repository constructor.
      * @param $enableCache
      * @param CacheItemPoolInterface $cache
-     * @param ClientFactory $clientFactory
+     * @param Client $client
+     * @param MapperFactory $mapperFactory
      */
-    public function __construct($enableCache, CacheItemPoolInterface $cache, ClientFactory $clientFactory)
+    public function __construct($enableCache, CacheItemPoolInterface $cache, Client $client, MapperFactory $mapperFactory)
     {
         if (is_string($enableCache)) {
             $enableCache = ($enableCache == "true");
         }
         $this->enableCache = $enableCache;
         $this->cache = $cache;
-        $this->clientFactory = $clientFactory;
+        $this->client = $client;
+        $this->mapperFactory = $mapperFactory;
     }
 
     /**
-     * @param $locale
      * @return Client
      */
-    protected function getClient($locale)
+    protected function getClient()
     {
-        if (!isset($this->client[$locale])) {
-            $this->client[$locale] = $this->clientFactory->build($locale);
-        }
+        return $this->client;
+    }
 
-        return $this->client[$locale];
+    public function getMapper($class, $context)
+    {
+        return JsonObjectMapper::of($class, $context);
     }
 
     /**
@@ -78,6 +81,7 @@ class Repository
         Client $client,
         $cacheKey,
         QueryAllRequestInterface $request,
+        $locale,
         $force = false,
         $ttl = self::CACHE_TTL
     ) {
@@ -90,10 +94,36 @@ class Repository
             $result = unserialize($data->get());
             $result->setContext($client->getConfig()->getContext());
         } else {
-            $helper = new QueryHelper();
-            $result = $helper->getAll($client, $request);
+            $result = $this->getAll($client, $request, $locale);
             $this->store($cacheKey, serialize($result), $ttl);
         }
+
+        return $result;
+    }
+
+    protected function getAll(Client $client, QueryAllRequestInterface $request, $locale)
+    {
+        $lastId = null;
+        $data = ['results' => []];
+        do {
+            $request->sort('id')->limit(static::DEFAULT_PAGE_SIZE)->withTotal(false);
+            if ($lastId != null) {
+                $request->where('id > "' . $lastId . '"');
+            }
+            $response = $client->execute($request);
+            if ($response->isError() || is_null($response->toObject())) {
+                break;
+            }
+            $results = $response->toArray()['results'];
+            $data['results'] = array_merge($data['results'], $results);
+            $lastId = end($results)['id'];
+        } while (count($results) >= static::DEFAULT_PAGE_SIZE);
+
+        $result = $request->map(
+            $data,
+            $client->getConfig()->getContext(),
+            $this->mapperFactory->build($locale, $request->getResultClass())
+        );
 
         return $result;
     }
@@ -105,8 +135,13 @@ class Repository
      * @param int $ttl
      * @return \Commercetools\Core\Model\Common\JsonDeserializeInterface|null
      */
-    protected function retrieve(Client $client, $cacheKey, AbstractApiRequest $request, $force = false, $ttl = self::CACHE_TTL)
-    {
+    protected function retrieve(
+        Client $client, $cacheKey,
+        AbstractApiRequest $request,
+        $locale,
+        $force = false,
+        $ttl = self::CACHE_TTL
+    ) {
         if (!$force && $this->enableCache && $this->cache->hasItem($cacheKey)) {
             $cachedData = $this->cache->getItem($cacheKey);
             if (empty($cachedData)) {
@@ -120,7 +155,10 @@ class Repository
                 $this->store($cacheKey, '', $ttl);
                 throw new NotFoundHttpException("resource not found");
             }
-            $result = $request->mapResponse($response);
+            $result = $request->mapFromResponse(
+                $response,
+                $this->mapperFactory->build($locale, $request->getResultClass())
+            );
             $this->store($cacheKey, serialize($result), $ttl);
         }
 

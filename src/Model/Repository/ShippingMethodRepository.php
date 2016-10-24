@@ -21,10 +21,10 @@ class ShippingMethodRepository extends Repository
      */
     public function getShippingMethods($locale, $force = false)
     {
-        $client = $this->getClient($locale);
+        $client = $this->getClient();
         $cacheKey = static::NAME;
         $shippingMethodRequest = ShippingMethodQueryRequest::of();
-        return $this->retrieveAll($client, $cacheKey, $shippingMethodRequest, $force);
+        return $this->retrieveAll($client, $cacheKey, $shippingMethodRequest, $locale, $force);
     }
 
     /**
@@ -47,14 +47,15 @@ class ShippingMethodRepository extends Repository
      */
     public function getByCountryAndCurrency($locale, $country, $currency)
     {
-        $client = $this->getClient($locale);
+        $client = $this->getClient();
+        
         $request = ShippingMethodByLocationGetRequest::ofCountry($country)->withCurrency($currency);
         return $client->executeAsync($request);
     }
 
     public function getShippingMethodByCart($locale, $cartId)
     {
-        $client = $this->getClient($locale);
+        $client = $this->getClient();
         $request = ShippingMethodByCartIdGetRequest::ofCartId($cartId);
         $response = $request->executeWithClient($client);
         $shippingMethods = $request->mapResponse($response);

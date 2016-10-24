@@ -28,6 +28,9 @@
             <argument type="service" id="commercetools.locale.converter" />
             <argument>%commercetools.defaults.context%</argument>
         </service>
+        <service id="commmercetools.mapper.factory" class="Commercetools\Symfony\CtpBundle\Service\MapperFactory">
+            <argument type="service" id="commercetools.context.factory"/>
+        </service>
         <service id="commercetools.client.config" class="Commercetools\Core\Config">
             <factory class="Commercetools\Core\Config" method="fromArray"/>
             <argument>%commercetools.client.config%</argument>
@@ -45,31 +48,36 @@
         <service id="commercetools.repository.product" class="Commercetools\Symfony\CtpBundle\Model\Repository\ProductRepository">
             <argument>%commercetools.cache.product%</argument>
             <argument type="service" id="commercetools.cache" />
-            <argument type="service" id="commercetools.client.factory"/>
+            <argument type="service" id="commercetools.client"/>
+            <argument type="service" id="commmercetools.mapper.factory" />
             <argument type="service" id="commercetools.search" />
         </service>
         <service id="commercetools.repository.customer" class="Commercetools\Symfony\CtpBundle\Model\Repository\CustomerRepository">
             <argument>%commercetools.cache.customer%</argument>
             <argument type="service" id="commercetools.cache" />
-            <argument type="service" id="commercetools.client.factory"/>
+            <argument type="service" id="commercetools.client"/>
+            <argument type="service" id="commmercetools.mapper.factory" />
         </service>
         <service id="commercetools.repository.order" class="Commercetools\Symfony\CtpBundle\Model\Repository\OrderRepository">
             <argument>%commercetools.cache.order%</argument>
             <argument type="service" id="commercetools.cache" />
-            <argument type="service" id="commercetools.client.factory"/>
+            <argument type="service" id="commercetools.client"/>
+            <argument type="service" id="commmercetools.mapper.factory" />
             <argument type="service" id="session"/>
         </service>
         <service id="commercetools.repository.cart" class="Commercetools\Symfony\CtpBundle\Model\Repository\CartRepository">
             <argument>%commercetools.cache.cart%</argument>
             <argument type="service" id="commercetools.cache" />
-            <argument type="service" id="commercetools.client.factory"/>
+            <argument type="service" id="commercetools.client"/>
+            <argument type="service" id="commmercetools.mapper.factory" />
             <argument type="service" id="commercetools.repository.shipping_method"/>
             <argument type="service" id="session"/>
         </service>
         <service id="commercetools.repository.shipping_method" class="Commercetools\Symfony\CtpBundle\Model\Repository\ShippingMethodRepository">
             <argument>%commercetools.cache.shipping_method%</argument>
             <argument type="service" id="commercetools.cache" />
-            <argument type="service" id="commercetools.client.factory"/>
+            <argument type="service" id="commercetools.client"/>
+            <argument type="service" id="commmercetools.mapper.factory" />
         </service>
         <service id="commercetools.user_provider"
                  class="Commercetools\Symfony\CtpBundle\Security\User\UserProvider">
@@ -80,7 +88,7 @@
                  abstract="true"
                  public="false"
         >
-            <argument type="service" id="commercetools.client.factory" />
+            <argument type="service" id="commercetools.client" />
             <argument /> <!-- User Provider -->
             <argument type="service" id="security.user_checker" />
             <argument /> <!-- Provider-shared Key -->

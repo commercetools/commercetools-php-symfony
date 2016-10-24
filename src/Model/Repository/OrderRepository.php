@@ -6,7 +6,7 @@
 namespace Commercetools\Symfony\CtpBundle\Model\Repository;
 
 
-use Commercetools\Core\Cache\CacheAdapterInterface;
+use Commercetools\Core\Client;
 use Commercetools\Core\Model\Cart\Cart;
 use Commercetools\Core\Model\Order\Order;
 use Commercetools\Core\Model\Order\OrderCollection;
@@ -14,7 +14,7 @@ use Commercetools\Core\Request\Orders\OrderByIdGetRequest;
 use Commercetools\Core\Request\Orders\OrderCreateFromCartRequest;
 use Commercetools\Core\Request\Orders\OrderQueryRequest;
 use Commercetools\Symfony\CtpBundle\Model\Repository;
-use Commercetools\Symfony\CtpBundle\Service\ClientFactory;
+use Commercetools\Symfony\CtpBundle\Service\MapperFactory;
 use Psr\Cache\CacheItemPoolInterface;
 use Symfony\Component\HttpFoundation\Session\Session;
 
@@ -28,16 +28,18 @@ class OrderRepository extends Repository
      * OrderRepository constructor.
      * @param $enableCache
      * @param CacheItemPoolInterface $cache
-     * @param ClientFactory $clientFactory
+     * @param Client $client
+     * @param MapperFactory $mapperFactory
      * @param Session $session
      */
     public function __construct(
         $enableCache,
         CacheItemPoolInterface $cache,
-        ClientFactory $clientFactory,
+        Client $client,
+        MapperFactory $mapperFactory,
         Session $session
     ) {
-        parent::__construct($enableCache, $cache, $clientFactory);
+        parent::__construct($enableCache, $cache, $client, $mapperFactory);
         $this->session = $session;
     }
 
@@ -48,10 +50,13 @@ class OrderRepository extends Repository
      */
     public function getOrders($locale, $customerId)
     {
-        $client = $this->getClient($locale);
+        $client = $this->getClient();
         $request = OrderQueryRequest::of()->where('customerId = "' . $customerId . '"')->sort('createdAt desc');
         $response = $request->executeWithClient($client);
-        $orders = $request->mapResponse($response);
+        $orders = $request->mapFromResponse(
+            $response,
+            $this->mapperFactory->build($locale, $request->getResultClass())
+        );
 
         return $orders;
     }
@@ -63,21 +68,27 @@ class OrderRepository extends Repository
      */
     public function getOrder($locale, $orderId)
     {
-        $client = $this->getClient($locale);
+        $client = $this->getClient();
         $request = OrderByIdGetRequest::ofId($orderId);
         $response = $request->executeWithClient($client);
-        $order = $request->mapResponse($response);
+        $order = $request->mapFromResponse(
+            $response,
+            $this->mapperFactory->build($locale, $request->getResultClass())
+        );
 
         return $order;
     }
 
     public function createOrderFromCart($locale, Cart $cart)
     {
-        $client = $this->getClient($locale);
+        $client = $this->getClient();
         $request = OrderCreateFromCartRequest::ofCartIdAndVersion($cart->getId(), $cart->getVersion());
         $request->setOrderNumber($this->createOrderNumber());
         $response = $request->executeWithClient($client);
-        $order = $request->mapResponse($response);
+        $order = $request->mapFromResponse(
+            $response,
+            $this->mapperFactory->build($locale, $request->getResultClass())
+        );
 
         $this->session->remove(CartRepository::CART_ID);
         $this->session->remove(CartRepository::CART_ITEM_COUNT);

@@ -193,7 +193,7 @@ class UserController extends Controller
         /**
          * @var Client $client
          */
-        $client = $this->get('commercetools.client.factory');
+        $client = $this->get('commercetools.client');
 
         $request = CustomerByIdGetRequest::ofId($user->getId());
         $response = $request->executeWithClient($client);

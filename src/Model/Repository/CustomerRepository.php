@@ -27,30 +27,36 @@ class CustomerRepository extends Repository
 
     public function getCustomer($locale, $customerId)
     {
-        $client = $this->getClient($locale);
+        $client = $this->getClient();
         $request = CustomerByIdGetRequest::ofId($customerId);
         $response = $request->executeWithClient($client);
-        $customer = $request->mapResponse($response);
+        $customer = $request->mapFromResponse(
+            $response,
+            $this->mapperFactory->build($locale, $request->getResultClass())
+        );
 
         return $customer;
     }
 
     public function setAddresses($locale, Customer $customer, Address $address, $addressId)
     {
-        $client = $this->getClient($locale);
+        $client = $this->getClient();
 
         $request = CustomerUpdateRequest::ofIdAndVersion($customer->getId(), $customer->getVersion());
 
         $request->addAction(CustomerChangeAddressAction::ofAddressIdAndAddress($addressId, $address));
         $response = $request->executeWithClient($client);
-        $customer = $request->mapResponse($response);
+        $customer = $request->mapFromResponse(
+            $response,
+            $this->mapperFactory->build($locale, $request->getResultClass())
+        );
 
         return $customer;
     }
 
     public function setCustomerDetails($locale, Customer $customer, $firstName, $lastName, $email)
     {
-        $client = $this->getClient($locale);
+        $client = $this->getClient();
         $request = CustomerUpdateRequest::ofIdAndVersion($customer->getId(), $customer->getVersion());
         if ($customer->getFirstName() != $firstName || $customer->getLastName() != $lastName) {
             $request->addAction(CustomerChangeNameAction::ofFirstNameAndLastName($firstName, $lastName));
@@ -63,14 +69,17 @@ class CustomerRepository extends Repository
         if ($response->isError()) {
             return null;
         }
-        $customer = $request->mapResponse($response);
+        $customer = $request->mapFromResponse(
+            $response,
+            $this->mapperFactory->build($locale, $request->getResultClass())
+        );
 
         return $customer;
     }
 
     public function setNewPassword($locale,Customer $customer, $currentPassword, $newPassword)
     {
-        $client = $this->getClient($locale);
+        $client = $this->getClient();
 
         if ($currentPassword == $newPassword) {
             throw new \InvalidArgumentException('form.type.password');
@@ -88,7 +97,10 @@ class CustomerRepository extends Repository
             if ($response->isError()) {
                 throw new \InvalidArgumentException('wrong_password');
             }
-            $customer = $request->mapResponse($response);
+            $customer = $request->mapFromResponse(
+                $response,
+                $this->mapperFactory->build($locale, $request->getResultClass())
+            );
 
             return $customer;
         }

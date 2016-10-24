@@ -5,6 +5,7 @@
 
 namespace Commercetools\Symfony\CtpBundle\Security\Authentication\Provider;
 
+use Commercetools\Core\Client;
 use Commercetools\Core\Request\Customers\CustomerLoginRequest;
 use Commercetools\Symfony\CtpBundle\Model\AuthSuccess;
 use Commercetools\Symfony\CtpBundle\Model\Repository\CartRepository;
@@ -32,9 +33,9 @@ class AuthenticationProvider extends UserAuthenticationProvider
     private $userProvider;
     
     /**
-     * @var ClientFactory
+     * @var Client
      */
-    private $clientFactory;
+    private $client;
 
     /**
      * @var LoggerInterface
@@ -42,7 +43,7 @@ class AuthenticationProvider extends UserAuthenticationProvider
     private $logger;
 
     public function __construct(
-        ClientFactory $clientFactory,
+        Client $client,
         UserProviderInterface $userProvider,
         UserCheckerInterface $userChecker,
         $providerKey,
@@ -52,7 +53,7 @@ class AuthenticationProvider extends UserAuthenticationProvider
     {
         parent::__construct($userChecker, $providerKey, $hideUserNotFoundExceptions);
         $this->userProvider = $userProvider;
-        $this->clientFactory = $clientFactory;
+        $this->client = $client;
         $this->logger = $logger;
     }
 
@@ -72,7 +73,7 @@ class AuthenticationProvider extends UserAuthenticationProvider
                 throw new BadCredentialsException('The presented password cannot be empty.');
             }
 
-            $client = $this->clientFactory->build();
+            $client = $this->client;
             $cartId = null;
             if ($user instanceof User) {
                 $cartId = $user->getCartId();
