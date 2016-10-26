@@ -6,6 +6,7 @@
 namespace Commercetools\Symfony\CtpBundle\Service;
 
 use Commercetools\Core\Model\JsonObjectMapper;
+use Commercetools\Core\Model\MapperInterface;
 
 class MapperFactory
 {
@@ -16,8 +17,12 @@ class MapperFactory
         $this->factory = $factory;
     }
 
-    public function build($locale, $class)
+    /**
+     * @param $locale
+     * @return MapperInterface
+     */
+    public function build($locale)
     {
-        return JsonObjectMapper::of($class, $this->factory->build($locale));
+        return JsonObjectMapper::of($this->factory->build($locale));
     }
 }

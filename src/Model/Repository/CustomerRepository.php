@@ -48,7 +48,7 @@ class CustomerRepository extends Repository
         $response = $request->executeWithClient($client);
         $customer = $request->mapFromResponse(
             $response,
-            $this->mapperFactory->build($locale, $request->getResultClass())
+            $this->getMapper($locale)
         );
 
         return $customer;
@@ -71,7 +71,7 @@ class CustomerRepository extends Repository
         }
         $customer = $request->mapFromResponse(
             $response,
-            $this->mapperFactory->build($locale, $request->getResultClass())
+            $this->getMapper($locale)
         );
 
         return $customer;
@@ -99,7 +99,7 @@ class CustomerRepository extends Repository
             }
             $customer = $request->mapFromResponse(
                 $response,
-                $this->mapperFactory->build($locale, $request->getResultClass())
+                $this->getMapper($locale)
             );
 
             return $customer;

@@ -7,6 +7,7 @@ namespace Commercetools\Symfony\CtpBundle\Model;
 
 use Commercetools\Core\Client;
 use Commercetools\Core\Model\JsonObjectMapper;
+use Commercetools\Core\Model\MapperInterface;
 use Commercetools\Core\Request\AbstractApiRequest;
 use Commercetools\Core\Request\QueryAllRequestInterface;
 use Commercetools\Symfony\CtpBundle\Service\MapperFactory;
@@ -65,9 +66,13 @@ class Repository
         return $this->client;
     }
 
-    public function getMapper($class, $context)
+    /**
+     * @param $locale
+     * @return MapperInterface
+     */
+    public function getMapper($locale)
     {
-        return JsonObjectMapper::of($class, $context);
+        return $this->mapperFactory->build($locale);
     }
 
     /**
@@ -119,11 +124,7 @@ class Repository
             $lastId = end($results)['id'];
         } while (count($results) >= static::DEFAULT_PAGE_SIZE);
 
-        $result = $request->map(
-            $data,
-            $client->getConfig()->getContext(),
-            $this->mapperFactory->build($locale, $request->getResultClass())
-        );
+        $result = $this->getMapper($locale)->map($data, $request->getResultClass());
 
         return $result;
     }
@@ -155,10 +156,8 @@ class Repository
                 $this->store($cacheKey, '', $ttl);
                 throw new NotFoundHttpException("resource not found");
             }
-            $result = $request->mapFromResponse(
-                $response,
-                $this->mapperFactory->build($locale, $request->getResultClass())
-            );
+
+            $result = $this->getMapper($locale)->map($response->toArray(), $request->getResultClass());
             $this->store($cacheKey, serialize($result), $ttl);
         }
 

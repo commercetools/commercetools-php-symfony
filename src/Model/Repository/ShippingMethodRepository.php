@@ -58,7 +58,10 @@ class ShippingMethodRepository extends Repository
         $client = $this->getClient();
         $request = ShippingMethodByCartIdGetRequest::ofCartId($cartId);
         $response = $request->executeWithClient($client);
-        $shippingMethods = $request->mapResponse($response);
+        $shippingMethods = $request->mapFromResponse(
+            $response,
+            $this->getMapper($locale)
+        );
 
         return $shippingMethods;
     }

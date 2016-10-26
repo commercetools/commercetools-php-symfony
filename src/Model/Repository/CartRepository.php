@@ -75,7 +75,7 @@ class CartRepository extends Repository
             $cartResponse = $cartRequest->executeWithClient($client);
             $carts = $cartRequest->mapFromResponse(
                 $cartResponse,
-                $this->mapperFactory->build($locale, $cartRequest->getResultClass())
+                $this->getMapper($locale)
             );
             if (!is_null($carts)) {
                 $cart = $carts->current();
@@ -131,7 +131,7 @@ class CartRepository extends Repository
             }
             $cart = $cartUpdateRequest->mapFromResponse(
                 $cartResponse,
-                $this->mapperFactory->build($locale, $cartUpdateRequest->getResultClass())
+                $this->getMapper($locale)
             );
             $this->session->set(self::CART_ITEM_COUNT, $cart->getLineItemCount());
         }
@@ -151,7 +151,7 @@ class CartRepository extends Repository
         $cartResponse = $cartUpdateRequest->executeWithClient($client);
         $cart = $cartUpdateRequest->mapFromResponse(
             $cartResponse,
-            $this->mapperFactory->build($locale, $cartUpdateRequest->getResultClass())
+            $this->getMapper($locale)
         );
         $this->session->set(self::CART_ITEM_COUNT, $cart->getLineItemCount());
 
@@ -169,7 +169,7 @@ class CartRepository extends Repository
         $cartResponse = $cartUpdateRequest->executeWithClient($client);
         $cart = $cartUpdateRequest->mapFromResponse(
             $cartResponse,
-            $this->mapperFactory->build($locale, $cartUpdateRequest->getResultClass())
+            $this->getMapper($locale)
         );
         $this->session->set(self::CART_ITEM_COUNT, $cart->getLineItemCount());
 
@@ -193,7 +193,7 @@ class CartRepository extends Repository
         $cartResponse = $cartUpdateRequest->executeWithClient($client);
         $cart = $cartUpdateRequest->mapFromResponse(
             $cartResponse,
-            $this->mapperFactory->build($locale, $cartUpdateRequest->getResultClass())
+            $this->getMapper($locale)
         );
 
         return $cart;
@@ -211,7 +211,7 @@ class CartRepository extends Repository
         $cartResponse = $cartUpdateRequest->executeWithClient($client);
         $cart = $cartUpdateRequest->mapFromResponse(
             $cartResponse,
-            $this->mapperFactory->build($locale, $cartUpdateRequest->getResultClass())
+            $this->getMapper($locale)
         );
 
         return $cart;
@@ -244,7 +244,7 @@ class CartRepository extends Repository
         $cartResponse = $cartCreateRequest->executeWithClient($client);
         $cart = $cartCreateRequest->mapFromResponse(
             $cartResponse,
-            $this->mapperFactory->build($locale, $cartCreateRequest->getResultClass())
+            $this->getMapper($locale)
         );
         $this->session->set(self::CART_ID, $cart->getId());
         $this->session->set(self::CART_ITEM_COUNT, $cart->getLineItemCount());

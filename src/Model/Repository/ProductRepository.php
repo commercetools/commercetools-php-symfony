@@ -18,6 +18,7 @@ use Commercetools\Symfony\CtpBundle\Model\Search;
 use Commercetools\Symfony\CtpBundle\Service\MapperFactory;
 use GuzzleHttp\Psr7\Uri;
 use Psr\Cache\CacheItemPoolInterface;
+use Psr\Http\Message\UriInterface;
 
 class ProductRepository extends Repository
 {
@@ -135,7 +136,7 @@ class ProductRepository extends Repository
         $currency,
         $country,
         $search = null,
-        Uri $uri,
+        UriInterface $uri,
         $filters = null
     ){
 
