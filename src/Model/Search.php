@@ -10,7 +10,7 @@ use Commercetools\Core\Model\Product\Search\Filter;
 use Commercetools\Core\Model\Product\Search\FilterSubtree;
 use Commercetools\Core\Model\Product\Search\FilterSubtreeCollection;
 use Commercetools\Core\Request\Products\ProductProjectionSearchRequest;
-use GuzzleHttp\Psr7\Request;
+use GuzzleHttp\Psr7;
 use Psr\Http\Message\UriInterface;
 
 class Search
@@ -57,7 +57,7 @@ class Search
 
     public function getSelectedValues(UriInterface $uri)
     {
-        $queryParams = \GuzzleHttp\Psr7\parse_query($uri->getQuery());
+        $queryParams = Psr7\parse_query($uri->getQuery());
 
         $selectedValues = [];
         foreach ($queryParams as $paramName => $params) {
