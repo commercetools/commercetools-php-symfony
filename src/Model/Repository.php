@@ -124,7 +124,7 @@ class Repository
             $lastId = end($results)['id'];
         } while (count($results) >= static::DEFAULT_PAGE_SIZE);
 
-        $result = $this->getMapper($locale)->map($data, $request->getResultClass());
+        $result = $this->getMapper($locale)->map($data['results'], $request->getResultClass());
 
         return $result;
     }
@@ -157,7 +157,10 @@ class Repository
                 throw new NotFoundHttpException("resource not found");
             }
 
-            $result = $this->getMapper($locale)->map($response->toArray(), $request->getResultClass());
+            $result = $request->mapFromResponse(
+                $response,
+                $this->getMapper($locale)
+            );
             $this->store($cacheKey, serialize($result), $ttl);
         }
 
