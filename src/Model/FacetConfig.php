@@ -131,6 +131,9 @@ class FacetConfig
                 case 'enum':
                     $this->filterField = sprintf('variants.attributes.%s.key', $this->getField());
                     break;
+                case 'categories':
+                    $this->filterField = 'categories.id';
+                    break;                    
                 default:
                     throw new \InvalidArgumentException(sprintf('Facet type not configured for facet %s', $this->getField()));
             }
