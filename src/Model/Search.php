@@ -93,6 +93,7 @@ class Search
                     foreach ($selectedValues[$facetName] as $value) {
                         $subtree->add(FilterSubtree::ofId($value));
                     }
+                    $filter->setValue($subtree);
                 }
                 if ($facetConfig->isMultiSelect()) {
                     $request->addFilter($filter);
