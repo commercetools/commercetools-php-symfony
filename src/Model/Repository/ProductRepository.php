@@ -124,7 +124,7 @@ class ProductRepository extends Repository
      * @param $currency
      * @param $country
      * @param $search
-     * @param Uri $uri
+     * @param UriInterface $uri
      * @param array $filters
      * @return array
      */

@@ -7,6 +7,7 @@ use Commercetools\Core\Model\Product\Product;
 use Commercetools\Core\Model\Product\ProductProjection;
 use Commercetools\Symfony\CtpBundle\Model\Form\Type\AddToCartType;
 use Commercetools\Symfony\CtpBundle\Model\Repository\ProductRepository;
+use GuzzleHttp\Psr7\Uri;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
@@ -42,7 +43,10 @@ class CatalogController extends Controller
             $search = $form->get('search')->getData();
         }
 
-        list($products, $offset) = $repository->getProducts($request->getLocale(), 12, 1, 'price asc', 'EUR', 'DE', $search);
+        $uri = new Uri($request->getRequestUri());
+        list($products, $offset) = $repository->getProducts(
+            $request->getLocale(), 12, 1, 'price asc', 'EUR', 'DE', $search, $uri
+        );
 
         return $this->render('CtpBundle:catalog:index.html.twig', [
                 'products' => $products,
