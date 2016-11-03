@@ -7,6 +7,8 @@ namespace Commercetools\Symfony\CtpBundle\Model;
 
 use Commercetools\Core\Model\Product\Search\Facet;
 use Commercetools\Core\Model\Product\Search\Filter;
+use Commercetools\Core\Model\Product\Search\FilterRange;
+use Commercetools\Core\Model\Product\Search\FilterRangeCollection;
 use Commercetools\Core\Model\Product\Search\FilterSubtree;
 use Commercetools\Core\Model\Product\Search\FilterSubtreeCollection;
 use Commercetools\Core\Request\Products\ProductProjectionSearchRequest;
@@ -45,6 +47,9 @@ class Search
             if (isset($config['display'])) {
                 $facetConfig->setDisplay($config['display']);
             }
+            if (isset($config['ranges'])) {
+                $facetConfig->setRanges($config['ranges']);
+            }
             $this->paramFacets[$facetConfig->getParamName()] = $name;
             $this->facetConfigs[$name] = $facetConfig;
         }
@@ -78,12 +83,18 @@ class Search
         }
         foreach ($showFacets as $facetName) {
             $facetConfig = $this->facetConfigs[$facetName];
-            $request->addFacet(Facet::ofName($facetConfig->getFacetField())->setAlias($facetConfig->getAlias()));
+            $facet = Facet::ofName($facetConfig->getFacetField())->setAlias($facetConfig->getAlias());
+            if ($facetConfig->getType() == FacetConfig::TYPE_RANGE) {
+                $facet->setValue($facetConfig->getRanges());
+            }
+            $request->addFacet($facet);
             
             if (isset($selectedValues[$facetName])) {
                 $filter = Filter::ofName($facetConfig->getFilterField());
 
-                if (!$facetConfig->getHierarchical()) {
+                if ($facetConfig->getType() == FacetConfig::TYPE_RANGE) {
+                    $filter->setValue($facetConfig->createRanges($selectedValues[$facetName]));
+                } elseif (!$facetConfig->isHierarchical()) {
                     $filter->setValue($selectedValues[$facetName]);
                 } else {
                     $subtree = FilterSubtreeCollection::of();
