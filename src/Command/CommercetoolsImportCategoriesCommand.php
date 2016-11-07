@@ -2,13 +2,13 @@
 
 namespace Commercetools\Symfony\CtpBundle\Command;
 
-use Commercetools\Symfony\CtpBundle\Model\Import\CategoryImport;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
-use Symfony\Component\Translation\Exception\NotFoundResourceException;
+
+
 
 class CommercetoolsImportCategoriesCommand extends ContainerAwareCommand
 {
@@ -21,29 +21,26 @@ class CommercetoolsImportCategoriesCommand extends ContainerAwareCommand
             ->addOption('delimiter', null, InputOption::VALUE_OPTIONAL, 'Column delimiter', ';')
             ->addOption('enclosure', null, InputOption::VALUE_OPTIONAL, 'Column enclosure', '"')
             ->addOption('escape', null, InputOption::VALUE_OPTIONAL, 'Column escape', '\\')
+            ->addOption('identifiedBy', null, InputOption::VALUE_OPTIONAL, 'Column to identify', 'externalId')
         ;
     }
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $client = $this->getContainer()->get('commercetools.client');
+        $importer = $this->getContainer()->get('commercetools.importer.category');
+        $loader = $this->getContainer()->get('commercetools.importer.loader.csv');
 
         $file = $input->getArgument('file');
-
-        try {
-            $file = new \SplFileObject($file, 'rb');
-        } catch (\RuntimeException $e) {
-            throw new NotFoundResourceException(sprintf('Error opening file "%s".', $file), 0, $e);
-        }
 
         $enclosure = $input->getOption('enclosure');
         $delimiter = $input->getOption('delimiter');
         $escape = $input->getOption('escape');
+        $identifiedByColumn = $input->getOption('identifiedBy');
 
-        $file->setFlags(\SplFileObject::READ_CSV | \SplFileObject::SKIP_EMPTY);
-        $file->setCsvControl($delimiter, $enclosure, $escape);
+        $loader->setCsvControl($delimiter, $enclosure, $escape);
+        $data = $loader->load($file);
 
-        $import = new CategoryImport($client);
-        $import->import($file);
+        $importer->setOptions($identifiedByColumn);
+        $importer->import($data);
     }
 }

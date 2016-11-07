@@ -23,49 +23,45 @@ class CategoryImport
      * @var Client
      */
     private $client;
-    private $headings;
 
     private $requests;
+
+    private $identifiedByColumn;
 
     public function __construct(Client $client)
     {
         $this->client = $client;
     }
 
-    public function import($file)
+    public function import($data)
     {
         $headings = null;
         $import = null;
         $parentIds = [];
-        $externalIds = [];
-        foreach ($file as $data) {
-            if (empty($data)) {
-                continue;
+        $identifiers = [];
+        foreach ($data as $row) {
+            $parentValue=$row['parentId'];
+            $identifierValue=$this->getIdentifierFromArray($this->identifiedByColumn, $row);
+            if (!empty($parentValue)) {
+                $parentIds[$parentValue] = $parentValue;
+                $identifiers[$identifierValue] = $parentValue;
             }
-            if (is_null($this->headings)) {
-                $this->headings = array_flip($data);
-                continue;
-            }
-
-            $categoryData = $this->arrange($data);
-            if (!empty(($categoryData['parentId']))) {
-                $parentIds[$categoryData['parentId']] = $categoryData['parentId'];
-                $externalIds[$categoryData['externalId']] = $categoryData['parentId'];
-            }
-            $this->createRequest($categoryData);
+            $this->createRequest($row);
             $this->execute();
         }
 
         $this->execute(true);
 
-        $this->setParents($parentIds, $externalIds);
+        $this->setParents($parentIds, $identifiers);
     }
 
     private function createRequest($categoryData)
     {
-        $externalId = $categoryData['externalId'];
+        $identifier = $this->getIdentifierFromArray($this->identifiedByColumn, $categoryData);//$categoryData[$this->identifiedByColumn];
 
-        $request = CategoryQueryRequest::of()->where(sprintf('externalId="%s"', $externalId))->limit(1);
+        $request = CategoryQueryRequest::of()
+            ->where(sprintf($this->getIdentifierQuery($this->identifiedByColumn), $identifier))
+            ->limit(1);
         $response = $request->executeWithClient($this->client);
 
         $categories = $request->mapFromResponse($response);
@@ -151,69 +147,103 @@ class CategoryImport
         return true;
     }
 
-    private function arrange($data)
-    {
-        $category = [];
-        foreach ($this->headings as $heading => $column) {
-            $headingParts = explode('.', $heading);
-
-            $category = $this->arrangeData($headingParts, $category, $data[$column]);
-        }
-
-        return $category;
-    }
-
-    private function arrangeData($parts, $context, $data)
-    {
-        $actualPart = array_shift($parts);
-
-        if (count($parts) > 0) {
-            if (!isset($context[$actualPart])) {
-                $context[$actualPart] = [];
-            }
-            $context[$actualPart] = $this->arrangeData($parts, $context[$actualPart], $data);
-        } else {
-            $context[$actualPart] = $data;
-        }
-
-        return $context;
-    }
-
-    private function setParents($parentIds, $externalIds)
+    private function setParents($parentIds, $identifiers)
     {
         $chunks = array_chunk($parentIds, static::CHUNK_SIZE);
 
         $parentRefs = [];
         foreach ($chunks as $chunk) {
             $request = CategoryQueryRequest::of()
-                ->where(sprintf('externalId in ("%s")', join('", "', $chunk)))
+                ->where(
+                    sprintf($this->getIdentifierQuery($this->identifiedByColumn, ' in ("%s")'), join('", "', $chunk))
+                )
                 ->limit(static::CHUNK_SIZE);
             $response = $request->executeWithClient($this->client);
             $categories = $request->mapFromResponse($response);
 
             foreach ($categories as $category) {
-                $parentRefs[$category->getExternalId()] = $category->getReference();
+                $identifier = $this->getIdentifierFromCategory($this->identifiedByColumn, $category);
+                $parentRefs[$identifier] = $category->getReference();
             }
         }
-        $chunks = array_chunk(array_keys($externalIds), static::CHUNK_SIZE);
+        $chunks = array_chunk(array_keys($identifiers), static::CHUNK_SIZE);
 
         foreach ($chunks as $chunk) {
             $request = CategoryQueryRequest::of()
-                ->where(sprintf('externalId in ("%s")', join('", "', $chunk)))
+                ->where(
+                    sprintf($this->getIdentifierQuery($this->identifiedByColumn, ' in ("%s")'), join('", "', $chunk))
+                )
                 ->limit(static::CHUNK_SIZE);
 
             $response = $request->executeWithClient($this->client);
             $categories = $request->mapFromResponse($response);
 
             foreach ($categories as $category) {
-                $parentExternalId = $externalIds[$category->getExternalId()];
-                if ($category->getParent()->getId() == $parentRefs[$parentExternalId]->getId()) {
+                $identifier = $this->getIdentifierFromCategory($this->identifiedByColumn, $category);
+                $parentId = $identifiers[$identifier];
+                if ($category->getParent()->getId() == $parentRefs[$parentId]->getId()) {
                     continue;
                 }
                 $request = CategoryUpdateRequest::ofIdAndVersion($category->getId(), $category->getVersion());
-                $request->addAction(CategoryChangeParentAction::ofParentCategory($parentRefs[$parentExternalId]));
+                $request->addAction(CategoryChangeParentAction::ofParentCategory($parentRefs[$parentId]));
                 $response = $request->executeWithClient($this->client);
             }
         }
+    }
+
+    private function getIdentifierFromArray($identifierName, $row)
+    {
+        $parts = explode('.', $identifierName);
+        $value="";
+        switch ($parts[0]) {
+            case "slug":
+                $value = $row[$parts[0]][$parts[1]];
+                break;
+            case "externalId":
+            case "id":
+                $value = $row[$parts[0]];
+                break;
+        }
+        return $value;
+    }
+
+    private function getIdentifierFromCategory($identifierName, Category $category)
+    {
+        $parts = explode('.', $identifierName);
+        $value="";
+        switch ($parts[0]) {
+            case "slug":
+                $locale = $parts[1];
+                $value = $category->getSlug()->$locale;
+                break;
+            case "externalId":
+                $value = $category->getExternalId();
+                break;
+            case "id":
+                $value = $category->getId();
+                break;
+        }
+        return $value;
+    }
+
+    private function getIdentifierQuery($identifierName, $query = '= "%s"')
+    {
+        $parts = explode('.', $identifierName);
+        $value="";
+        switch ($parts[0]) {
+            case "slug":
+                $value = $parts[0].'('.$parts[1]. $query . ')';
+                break;
+            case "externalId":
+            case "id":
+                $value = $parts[0].$query;
+                break;
+        }
+        return $value;
+    }
+
+    public function setOptions($identifiedByColumn)
+    {
+        $this->identifiedByColumn = $identifiedByColumn;
     }
 }
