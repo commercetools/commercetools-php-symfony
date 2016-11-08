@@ -110,9 +110,9 @@
         <service id="commercetools.importer.category" class="Commercetools\Symfony\CtpBundle\Model\Import\CategoryImport">
             <argument type="service" id="commercetools.client" />
         </service>
-        <service id="commercetools.importer.loader.csv" class="Commercetools\Symfony\CtpBundle\Model\Load\CsvFileLoader">
+        <service id="commercetools.importer.loader.csv" class="Commercetools\Symfony\CtpBundle\Model\Import\CsvFileLoader">
             <argument type="service" id="commercetools.importer.transformer.csvTojson" />
         </service>
-        <service id="commercetools.importer.transformer.csvTojson" class="Commercetools\Symfony\CtpBundle\Model\Transform\CsvToJson"/>
+        <service id="commercetools.importer.transformer.csvTojson" class="Commercetools\Symfony\CtpBundle\Model\Import\CsvToJson"/>
     </services>
 </container>

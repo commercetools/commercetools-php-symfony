@@ -6,7 +6,7 @@
  * Time: 12:26
  */
 
-namespace Commercetools\Symfony\CtpBundle\Model\Transform;
+namespace Commercetools\Symfony\CtpBundle\Model\Import;
 
 
 class CsvToJson
