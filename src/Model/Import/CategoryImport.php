@@ -57,7 +57,7 @@ class CategoryImport
 
     private function createRequest($categoryData)
     {
-        $identifier = $this->getIdentifierFromArray($this->identifiedByColumn, $categoryData);//$categoryData[$this->identifiedByColumn];
+        $identifier = $this->getIdentifierFromArray($this->identifiedByColumn, $categoryData);
 
         $request = CategoryQueryRequest::of()
             ->where(sprintf($this->getIdentifierQuery($this->identifiedByColumn), $identifier))

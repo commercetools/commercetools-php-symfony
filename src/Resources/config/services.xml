@@ -114,5 +114,9 @@
             <argument type="service" id="commercetools.importer.transformer.csvTojson" />
         </service>
         <service id="commercetools.importer.transformer.csvTojson" class="Commercetools\Symfony\CtpBundle\Model\Import\CsvToJson"/>
+        <service id="commercetools.importer.loader.json" class="Commercetools\Symfony\CtpBundle\Model\Import\JsonFileLoader"/>
+        <service id="commercetools.importer.product-types" class="Commercetools\Symfony\CtpBundle\Model\Import\ProductTypesImport">
+            <argument type="service" id="commercetools.client" />
+        </service>
     </services>
 </container>
