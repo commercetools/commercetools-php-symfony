@@ -12,7 +12,6 @@ namespace Commercetools\Symfony\CtpBundle\Tests\Model\Import;
 use Commercetools\Symfony\CtpBundle\Model\Import\CsvFileLoader;
 use Commercetools\Symfony\CtpBundle\Model\Import\CsvToJson;
 
-
 class CsvFileLoaderTest extends \PHPUnit_Framework_TestCase
 {
     public function testLoadComma()

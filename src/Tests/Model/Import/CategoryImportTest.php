@@ -37,6 +37,7 @@ class CategoryImportTest extends \PHPUnit_Framework_TestCase
 
 
         $importer = new CategoryImport($client->reveal());
+        $importer->setOptions('externalId');
         $importer->import([
             ['externalId' => '1', 'name' => ['en' => 'test'], 'slug' => ['en' => 'test'], 'parentId' => null]
         ]);
@@ -59,6 +60,7 @@ class CategoryImportTest extends \PHPUnit_Framework_TestCase
 
 
         $importer = new CategoryImport($client->reveal());
+        $importer->setOptions('externalId');
         $importer->import([
             ['externalId' => '1', 'name' => ['en' => 'new name'], 'slug' => ['en' => 'test'], 'parentId' => '']
         ]);

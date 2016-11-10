@@ -2,7 +2,6 @@
 
 namespace Commercetools\Symfony\CtpBundle\Model\Import;
 
-
 use Commercetools\Core\Client;
 use Commercetools\Core\Model\Category\Category;
 use Commercetools\Core\Model\Category\CategoryDraft;
@@ -26,11 +25,14 @@ class CategoryImport
 
     private $requests;
 
+    private $requestBuilder;
+
     private $identifiedByColumn;
 
     public function __construct(Client $client)
     {
         $this->client = $client;
+        $this->requestBuilder = new CategoryRequestBuilder($this->client);
     }
 
     public function import($data)
@@ -41,12 +43,15 @@ class CategoryImport
         $identifiers = [];
         foreach ($data as $row) {
             $parentValue=$row['parentId'];
-            $identifierValue=$this->getIdentifierFromArray($this->identifiedByColumn, $row);
+            $identifierValue=$this->requestBuilder->getIdentifierFromArray($this->identifiedByColumn, $row);
             if (!empty($parentValue)) {
                 $parentIds[$parentValue] = $parentValue;
                 $identifiers[$identifierValue] = $parentValue;
             }
-            $this->createRequest($row);
+            $this->client->addBatchRequest(
+                $this->requestBuilder->createRequest($row, $this->identifiedByColumn)
+            );
+            $this->requests++;
             $this->execute();
         }
 
@@ -55,96 +60,16 @@ class CategoryImport
         $this->setParents($parentIds, $identifiers);
     }
 
-    private function createRequest($categoryData)
-    {
-        $identifier = $this->getIdentifierFromArray($this->identifiedByColumn, $categoryData);
-
-        $request = CategoryQueryRequest::of()
-            ->where(sprintf($this->getIdentifierQuery($this->identifiedByColumn), $identifier))
-            ->limit(1);
-        $response = $request->executeWithClient($this->client);
-
-        $categories = $request->mapFromResponse($response);
-
-        if (count($categories) > 0) {
-            /**
-             * @var Category $category
-             */
-            $category = $categories->current();
-            $request = $this->getUpdateRequest($category, $categoryData);
-            if ($request->hasActions()) {
-                $this->requests++;
-                $this->client->addBatchRequest($request);
-            }
-        } else {
-            $request = $this->getCreateRequest($categoryData);
-            $this->requests++;
-            $this->client->addBatchRequest($request);
-        }
-
-        return null;
-    }
-
     private function execute($force = false)
     {
         $responses = null;
         if ($force || $this->requests > 25) {
             $responses = $this->client->executeBatch();
+            var_dump($responses);
             $this->requests = 0;
         }
 
         return $responses;
-    }
-
-    private function getUpdateRequest(Category $category, $categoryData)
-    {
-        $request = CategoryUpdateRequest::ofIdAndVersion($category->getId(), $category->getVersion());
-
-        $actions = [];
-        foreach ($categoryData as $heading => $data) {
-            switch ($heading) {
-                case 'externalId':
-                    if ($category->getExternalId() != $data) {
-                        $actions[$heading] = CategorySetExternalIdAction::ofExternalId($data);
-                    }
-                    break;
-                case 'name':
-                    if (!$this->compareLocalizedString($category->getName()->toArray(), $data)) {
-                        $actions[$heading] = CategoryChangeNameAction::ofName(
-                            LocalizedString::fromArray($data)
-                        );
-                    }
-                    break;
-                case 'slug':
-                    if (!$this->compareLocalizedString($category->getSlug()->toArray(), $data)) {
-                        $actions[$heading] = CategoryChangeSlugAction::ofSlug(
-                            LocalizedString::fromArray($data)
-                        );
-                    }
-                    break;
-            }
-        }
-        $request->setActions($actions);
-        return $request;
-    }
-
-    private function getCreateRequest($categoryData)
-    {
-        $category = CategoryDraft::fromArray($categoryData);
-
-        $request = CategoryCreateRequest::ofDraft($category);
-        return $request;
-    }
-
-    private function compareLocalizedString($a, $b)
-    {
-        foreach ($a as $locale => $str) {
-            if (!isset($b[$locale]) || $b[$locale] !== $str) {
-                return false;
-            }
-        }
-
-        return true;
     }
 
     private function setParents($parentIds, $identifiers)
@@ -155,7 +80,8 @@ class CategoryImport
         foreach ($chunks as $chunk) {
             $request = CategoryQueryRequest::of()
                 ->where(
-                    sprintf($this->getIdentifierQuery($this->identifiedByColumn, ' in ("%s")'), join('", "', $chunk))
+                    sprintf($this->requestBuilder
+                        ->getIdentifierQuery($this->identifiedByColumn, ' in ("%s")'), join('", "', $chunk))
                 )
                 ->limit(static::CHUNK_SIZE);
             $response = $request->executeWithClient($this->client);
@@ -171,7 +97,8 @@ class CategoryImport
         foreach ($chunks as $chunk) {
             $request = CategoryQueryRequest::of()
                 ->where(
-                    sprintf($this->getIdentifierQuery($this->identifiedByColumn, ' in ("%s")'), join('", "', $chunk))
+                    sprintf($this->requestBuilder
+                        ->getIdentifierQuery($this->identifiedByColumn, ' in ("%s")'), join('", "', $chunk))
                 )
                 ->limit(static::CHUNK_SIZE);
 
@@ -191,22 +118,6 @@ class CategoryImport
         }
     }
 
-    private function getIdentifierFromArray($identifierName, $row)
-    {
-        $parts = explode('.', $identifierName);
-        $value="";
-        switch ($parts[0]) {
-            case "slug":
-                $value = $row[$parts[0]][$parts[1]];
-                break;
-            case "externalId":
-            case "id":
-                $value = $row[$parts[0]];
-                break;
-        }
-        return $value;
-    }
-
     private function getIdentifierFromCategory($identifierName, Category $category)
     {
         $parts = explode('.', $identifierName);
@@ -221,22 +132,6 @@ class CategoryImport
                 break;
             case "id":
                 $value = $category->getId();
-                break;
-        }
-        return $value;
-    }
-
-    private function getIdentifierQuery($identifierName, $query = '= "%s"')
-    {
-        $parts = explode('.', $identifierName);
-        $value="";
-        switch ($parts[0]) {
-            case "slug":
-                $value = $parts[0].'('.$parts[1]. $query . ')';
-                break;
-            case "externalId":
-            case "id":
-                $value = $parts[0].$query;
                 break;
         }
         return $value;
