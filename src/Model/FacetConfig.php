@@ -5,8 +5,16 @@
 
 namespace Commercetools\Symfony\CtpBundle\Model;
 
+use Commercetools\Core\Model\Product\Search\FilterRange;
+use Commercetools\Core\Model\Product\Search\FilterRangeCollection;
+
 class FacetConfig
 {
+    const TYPE_TEXT = 'text';
+    const TYPE_RANGE = 'range';
+    const TYPE_ENUM = 'enum';
+    const TYPE_CATEGORIES = 'categories';
+
     /**
      * @var string
      */
@@ -53,9 +61,14 @@ class FacetConfig
     private $type;
 
     /**
-     * @var bool
+     * @var string
      */
     private $display;
+
+    /**
+     * @var FilterRangeCollection
+     */
+    private $ranges;
 
     public function __construct(
         $name,
@@ -104,13 +117,14 @@ class FacetConfig
     {
         if (is_null($this->facetField)) {
             switch ($this->type) {
-                case 'text':
+                case static::TYPE_RANGE:
+                case static::TYPE_TEXT:
                     $this->facetField = sprintf('variants.attributes.%s', $this->getField());
                     break;
-                case 'enum':
+                case static::TYPE_ENUM:
                     $this->facetField = sprintf('variants.attributes.%s.key', $this->getField());
                     break;
-                case 'categories':
+                case static::TYPE_CATEGORIES:
                     $this->facetField = 'categories.id';
                     break;
                 default:
@@ -125,13 +139,14 @@ class FacetConfig
     {
         if (is_null($this->filterField)) {
             switch ($this->type) {
-                case 'text':
+                case static::TYPE_RANGE:
+                case static::TYPE_TEXT:
                     $this->filterField = sprintf('variants.attributes.%s', $this->getField());
                     break;
-                case 'enum':
+                case static::TYPE_ENUM:
                     $this->filterField = sprintf('variants.attributes.%s.key', $this->getField());
                     break;
-                case 'categories':
+                case static::TYPE_CATEGORIES:
                     $this->filterField = 'categories.id';
                     break;                    
                 default:
@@ -154,23 +169,25 @@ class FacetConfig
     }
 
     /**
-     * @return mixed
+     * @return boolean
      */
-    public function getHierarchical()
+    public function isHierarchical()
     {
         return $this->hierarchical;
     }
 
     /**
-     * @param mixed $hierarchical
+     * @param boolean $hierarchical
+     * @return FacetConfig
      */
     public function setHierarchical($hierarchical)
     {
         $this->hierarchical = $hierarchical;
+        return $this;
     }
 
     /**
-     * @return mixed
+     * @return boolean
      */
     public function isMultiSelect()
     {
@@ -178,15 +195,17 @@ class FacetConfig
     }
 
     /**
-     * @param mixed $multiSelect
+     * @param boolean $multiSelect
+     * @return FacetConfig
      */
     public function setMultiSelect($multiSelect)
     {
         $this->multiSelect = $multiSelect;
+        return $this;
     }
 
     /**
-     * @return mixed
+     * @return string
      */
     public function getType()
     {
@@ -194,15 +213,17 @@ class FacetConfig
     }
 
     /**
-     * @param mixed $type
+     * @param string $type
+     * @return FacetConfig
      */
     public function setType($type)
     {
         $this->type = $type;
+        return $this;
     }
 
     /**
-     * @return mixed
+     * @return string
      */
     public function getDisplay()
     {
@@ -210,10 +231,70 @@ class FacetConfig
     }
 
     /**
-     * @param mixed $display
+     * @param string $display
+     * @return FacetConfig
      */
     public function setDisplay($display)
     {
         $this->display = $display;
+        return $this;
+    }
+
+    /**
+     * @return FilterRangeCollection|array
+     */
+    public function getRanges()
+    {
+        return $this->ranges;
+    }
+
+    /**
+     * @param FilterRangeCollection $ranges
+     * @return $this
+     */
+    public function setRanges($ranges)
+    {
+        $this->ranges = $this->createRanges($ranges);
+        return $this;
+    }
+
+    /**
+     * @param $ranges
+     * @return FilterRangeCollection
+     */
+    public function createRanges($ranges)
+    {
+        if ($ranges instanceof FilterRangeCollection) {
+            return $ranges;
+        }
+        $r = FilterRangeCollection::of();
+        if (is_array($ranges)) {
+            foreach ($ranges as $range) {
+                $r->add($this->createRange($range));
+            }
+        }
+        return $r;
+    }
+
+    /**
+     * @param $range
+     * @return FilterRange
+     */
+    private function createRange($range)
+    {
+        if ($range instanceof FilterRange) {
+            return $range;
+        }
+        $rangeObject = FilterRange::of();
+        if (is_array($range)) {
+            if (isset($range['from']) && $range['from'] != '*') {
+                $rangeObject->setFrom($range['from']);
+            }
+            if (isset($range['to']) && $range['to'] != '*') {
+                $rangeObject->setTo($range['to']);
+            }
+
+        }
+        return $rangeObject;
     }
 }
