@@ -508,6 +508,7 @@ class ProductTypeRequestBuilderTest extends \PHPUnit_Framework_TestCase
         $returnedRequest= $requestBuilder->createRequest($data, "id");
 
         $this->assertInstanceOf(ProductTypeUpdateRequest::class, $returnedRequest);
+
         $this->assertJsonStringEqualsJsonString($expected, (string)$returnedRequest->httpRequest()->getBody());
     }
 }

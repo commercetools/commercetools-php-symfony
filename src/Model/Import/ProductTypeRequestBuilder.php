@@ -38,7 +38,7 @@ use Commercetools\Core\Request\ProductTypes\ProductTypeUpdateRequest;
 use Commercetools\Core\Model\Common\LocalizedString;
 use Commercetools\Core\Model\Common\LocalizedEnum;
 
-class ProductTypeRequestBuilder
+class ProductTypeRequestBuilder extends AbstractRequestBuilder
 {
     public function __construct($client)
     {
@@ -76,15 +76,17 @@ class ProductTypeRequestBuilder
 
     public function getUpdateRequest(ProductType $productType, $productTypeData)
     {
+        $intersect = $this->arrayIntersectRecursive($productType->toArray(), $productTypeData);
+        $addToProductType = $this->arrayDiffRecursive($productTypeData, $intersect);
+        $removeFromProductType = $this->arrayDiffRecursive($intersect, $productType->toArray());
+
         $request = ProductTypeUpdateRequest::ofIdAndVersion($productType->getId(), $productType->getVersion());
 
         $actions = [];
-        foreach ($productTypeData as $heading => $data) {
+        foreach ($addToProductType as $heading => $data) {
             switch ($heading) {
                 case 'key':
-                    if (!$productType->getKey() || $productType->getKey() != $data) {
-                        $actions[$heading] = ProductTypeSetKeyAction::ofKey($data);
-                    }
+                    $actions[$heading] = ProductTypeSetKeyAction::ofKey($data);
                     break;
                 case 'name':
                     if (!$productType->getName() || $productType->getName() != $data) {
@@ -96,12 +98,13 @@ class ProductTypeRequestBuilder
                         $actions[$heading] = ProductTypeChangeDescriptionAction::ofDescription($data);
                     }
                     break;
-                case "attributes":
-                    $actions = array_merge(
-                        $actions,
-                        $this->updateAttributes($productType->getAttributes(), $data)
-                    );
             }
+        }
+        if (isset($productTypeData['attributes'])) {
+            $actions = array_merge(
+                $actions,
+                $this->updateAttributes($productType->getAttributes(), $productTypeData['attributes'])
+            );
         }
         $request->setActions($actions);
 
