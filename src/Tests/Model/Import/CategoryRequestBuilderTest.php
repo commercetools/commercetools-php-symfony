@@ -66,6 +66,16 @@ class CategoryRequestBuilderTest extends \PHPUnit_Framework_TestCase
                 '{"version":null,"actions":[{"action":"setDescription","description":{"en":"Test"}}]}'
             ],
             [
+                ['id' => "12345", 'description' => ['en' => 'Test']],
+                '{"results": [{"id": "12345", "description": {"de": "Test"}}]}',
+                '{"version":null,"actions":[{"action":"setDescription","description":{"en":"Test"}}]}'
+            ],
+            [
+                ['id' => "12345", 'description' => ['en' => 'Test', 'de' => 'Test']],
+                '{"results": [{"id": "12345", "description": {"de": "Test"}}]}',
+                '{"version":null,"actions":[{"action":"setDescription","description":{"en":"Test", "de":"Test"}}]}'
+            ],
+            [
                 ['id' => "12345", 'description' => ['en' => 'new description']],
                 '{"results": [{"id": "12345", "description": {"en": "Test"}}]}',
                 '{"version":null,"actions":[{"action":"setDescription","description":{"en":"new description"}}]}'
@@ -87,6 +97,16 @@ class CategoryRequestBuilderTest extends \PHPUnit_Framework_TestCase
                 '{"version":null,"actions":[{"action":"changeName","name":{"en":"new name"}}]}'
             ],
             [
+                ['id' => "12345", 'name' => ['en' => 'new name']],
+                '{"results": [{"id": "12345", "name": {"de": "Test"}}]}',
+                '{"version":null,"actions":[{"action":"changeName","name":{"en":"new name"}}]}'
+            ],
+            [
+                ['id' => "12345", 'name' => ['en' => 'new name', "de" => "Test"]],
+                '{"results": [{"id": "12345", "name": {"de": "Test"}}]}',
+                '{"version":null,"actions":[{"action":"changeName","name":{"en":"new name", "de": "Test"}}]}'
+            ],
+            [
                 ['id' => "12345", 'name' => ['en' => 'Test']],
                 '{"results": [{"id": "12345", "name": {"en": "Test"}}]}',
                 '{"version":null,"actions":[]}'
@@ -101,6 +121,16 @@ class CategoryRequestBuilderTest extends \PHPUnit_Framework_TestCase
                 ['id' => "12345", 'slug' => ['en' => 'new-slug']],
                 '{"results": [{"id": "12345", "slug": {"en": "Test"}}]}',
                 '{"version":null,"actions":[{"action":"changeSlug","slug":{"en":"new-slug"}}]}'
+            ],
+            [
+                ['id' => "12345", 'slug' => ['en' => 'new-slug']],
+                '{"results": [{"id": "12345", "slug": {"de": "Test"}}]}',
+                '{"version":null,"actions":[{"action":"changeSlug","slug":{"en":"new-slug"}}]}'
+            ],
+            [
+                ['id' => "12345", 'slug' => ['en' => 'new-slug', "de"=> "test"]],
+                '{"results": [{"id": "12345", "slug": {"en": "Test"}}]}',
+                '{"version":null,"actions":[{"action":"changeSlug","slug":{"en":"new-slug", "de":"test"}}]}'
             ],
             [
                 ['id' => "12345", 'slug' => ['en' => 'Test']],
@@ -151,6 +181,16 @@ class CategoryRequestBuilderTest extends \PHPUnit_Framework_TestCase
                 '{"version":null,"actions":[{"action":"setMetaTitle","metaTitle":{"en":"new"}}]}'
             ],
             [
+                ['id' => "12345", 'metaTitle' => ['en'=>'new']],
+                '{"results": [{"id": "12345", "metaTitle":{"de":"old"}}]}',
+                '{"version":null,"actions":[{"action":"setMetaTitle","metaTitle":{"en":"new"}}]}'
+            ],
+            [
+                ['id' => "12345", 'metaTitle' => ['en'=>'new', "de"=>"test"]],
+                '{"results": [{"id": "12345", "metaTitle":{"en":"new"}}]}',
+                '{"version":null,"actions":[{"action":"setMetaTitle","metaTitle":{"en":"new", "de":"test"}}]}'
+            ],
+            [
                 ['id' => "12345", 'metaTitle' => ['en' => 'new']],
                 '{"results": [{"id": "12345", "metaTitle":{"en": "new"}}]}',
                 '{"version":null,"actions":[]}'
@@ -167,6 +207,16 @@ class CategoryRequestBuilderTest extends \PHPUnit_Framework_TestCase
                 '{"version":null,"actions":[{"action":"setMetaDescription","metaDescription":{"en":"new"}}]}'
             ],
             [
+                ['id' => "12345", 'metaDescription' => ['en'=>'new']],
+                '{"results": [{"id": "12345", "metaDescription":{"de":"new"}}]}',
+                '{"version":null,"actions":[{"action":"setMetaDescription","metaDescription":{"en":"new"}}]}'
+            ],
+            [
+                ['id' => "12345", 'metaDescription' => ['en'=>'new', "de"=>"test"]],
+                '{"results": [{"id": "12345", "metaDescription":{"en":"new"}}]}',
+                '{"version":null,"actions":[{"action":"setMetaDescription","metaDescription":{"en":"new", "de" : "test"}}]}'
+            ],
+            [
                 ['id' => "12345", 'metaDescription' => ['en' => 'new']],
                 '{"results": [{"id": "12345", "metaDescription":{"en": "new"}}]}',
                 '{"version":null,"actions":[]}'
@@ -181,6 +231,16 @@ class CategoryRequestBuilderTest extends \PHPUnit_Framework_TestCase
                 ['id' => "12345", 'metaKeywords' => ['en'=>'new']],
                 '{"results": [{"id": "12345", "metaKeywords":{"en":"old"}}]}',
                 '{"version":null,"actions":[{"action":"setMetaKeywords","metaKeywords":{"en":"new"}}]}'
+            ],
+            [
+                ['id' => "12345", 'metaKeywords' => ['en'=>'new']],
+                '{"results": [{"id": "12345", "metaKeywords":{"de":"new"}}]}',
+                '{"version":null,"actions":[{"action":"setMetaKeywords","metaKeywords":{"en":"new"}}]}'
+            ],
+            [
+                ['id' => "12345", 'metaKeywords' => ['en'=>'new', "de"=>"test"]],
+                '{"results": [{"id": "12345", "metaKeywords":{"en":"new"}}]}',
+                '{"version":null,"actions":[{"action":"setMetaKeywords","metaKeywords":{"en":"new","de":"test"}}]}'
             ],
             [
                 ['id' => "12345", 'metaKeywords' => ['en' => 'new']],
@@ -239,5 +299,192 @@ class CategoryRequestBuilderTest extends \PHPUnit_Framework_TestCase
 
         $this->assertInstanceOf(CategoryUpdateRequest::class, $returnedRequest);
         $this->assertJsonStringEqualsJsonString($expected, (string)$returnedRequest->httpRequest()->getBody());
+    }
+
+    public function getTestDataArrayDiff()
+    {
+        return [
+            [
+                [
+                    "k3" => [
+                        ["1"],
+                        ["2"],
+                        ["3"]
+                    ]
+                ],
+                [
+                    "k3" => [
+                        ["1"]
+                    ]
+                ],
+                [
+                    "k3" => [
+                        1 => ["2"],
+                        2 => ["3"]
+                    ]
+                ]
+            ],
+            [
+                [
+                    "k3" => [
+                        ["1"],
+                        ["2"],
+                        ["3"]
+                    ]
+                ],
+                [
+                    "k3" => [
+                        ["2"]
+                    ]
+                ],
+                [
+                    "k3" => [
+                        0 => ["1"],
+                        1 => ["2"],
+                        2 => ["3"]
+                    ]
+                ]
+            ],
+            [
+                [
+                    "k1" => "v1",
+                    "k2" => [
+                        "k2k1" => "v1",
+                        "k2k2" => "v2",
+                        "k2k3" => [
+                            "k2k3k1" => "v1"
+                        ]
+                    ],
+                    "k3" => [
+                        ["1"],
+                        ["2"],
+                        ["3"]
+                    ]
+                ],
+                [
+                    "k1" => "v1",
+                    "k2" => [
+                        "k2k1" => "v2",
+                        "k2k2" => "v2"
+                    ],
+                    "k3" => [
+                        ["1"]
+                    ]
+                ],
+                [
+                    "k2" => [
+                        "k2k1" => "v1",
+                        "k2k3" => [
+                            "k2k3k1" => "v1"
+                        ]
+                    ],
+                    "k3" => [1 =>["2"], 2 => ["3"]]
+                ]
+            ]
+        ];
+    }
+    /**
+     * @dataProvider getTestDataArrayDiff
+     */
+    public function testArrayDiffRecursive($a, $b, $expected)
+    {
+        $client = $this->prophesize(Client::class);
+        $requestBuilder = new CategoryRequestBuilder($client->reveal());
+
+        $returnedDiff= $requestBuilder->arrayDiffRecursive($a, $b);
+
+        $this->assertEquals($expected, $returnedDiff);
+    }
+
+    public function getTestDataArrayIntersect()
+    {
+        return [
+            [
+                [
+                    "k3" => [
+                        ["1"],
+                        ["2"],
+                        ["3"]
+                    ]
+                ],
+                [
+                    "k3" => [
+                        ["1"]
+                    ]
+                ],
+                [
+                    "k3" => [
+                        ["1"]
+                    ]
+                ]
+            ],
+            [
+                [
+                    "k3" => [
+                        ["1"],
+                        ["2"],
+                        ["3"]
+                    ]
+                ],
+                [
+                    "k3" => [
+                        ["2"]
+                    ]
+                ],
+                []
+            ],
+            [
+                [
+                    "k1" => "v1",
+                    "k2" => [
+                        "k2k1" => "v1",
+                        "k2k2" => "v2",
+                        "k2k3" => [
+                            "k2k3k1" => "v1"
+                        ]
+                    ],
+                    "k3" => [
+                        ["1"],
+                        ["2"],
+                        ["3"]
+                    ]
+                ],
+                [
+                    "k1" => "v1",
+                    "k2" => [
+                        "k2k1" => "v2",
+                        "k2k2" => "v2",
+                        "k2k3" => [
+                            "k2k3k1" => "v1"
+                        ]
+                    ],
+                    "k3" => [
+                        ["1"]
+                    ]
+                ],
+                [
+                    "k1" => "v1",
+                    "k2" => [
+                        "k2k2" => "v2",
+                        "k2k3" => [
+                            "k2k3k1" => "v1"
+                        ]
+                    ],
+                    "k3" => [["1"]]
+                ]
+            ]
+        ];
+    }
+    /**
+     * @dataProvider getTestDataArrayIntersect
+     */
+    public function testArrayIntersectRecursive($a, $b, $expected)
+    {
+        $client = $this->prophesize(Client::class);
+        $requestBuilder = new CategoryRequestBuilder($client->reveal());
+
+        $returnedDiff= $requestBuilder->arrayIntersectRecursive($a, $b);
+
+        $this->assertEquals($expected, $returnedDiff);
     }
 }

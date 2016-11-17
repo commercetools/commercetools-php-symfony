@@ -30,7 +30,7 @@ use Commercetools\Core\Request\CustomField\Command\SetCustomFieldAction;
 use Commercetools\Core\Request\CustomField\Command\SetCustomTypeAction;
 use Commercetools\Core\Model\Type\TypeReference;
 
-class CategoryRequestBuilder
+class CategoryRequestBuilder extends AbstractRequestBuilder
 {
 
     public function __construct($client)
@@ -63,6 +63,7 @@ class CategoryRequestBuilder
              * @var Category $category
              */
             $category = $categories->current();
+
             $request = $this->getUpdateRequest($category, $categoryData);
         } else {
             $request = $this->getCreateRequest($categoryData);
@@ -89,63 +90,48 @@ class CategoryRequestBuilder
 
     private function getUpdateRequest(Category $category, $categoryData)
     {
+        $intersect = $this->arrayIntersectRecursive($category->toArray(), $categoryData);
+        $addToCategory = $this->arrayDiffRecursive($categoryData, $intersect);
+        $removeFromCategory = $this->arrayDiffRecursive($intersect, $category->toArray());
         $request = CategoryUpdateRequest::ofIdAndVersion($category->getId(), $category->getVersion());
 
         $actions = [];
-        foreach ($categoryData as $heading => $data) {
+        foreach ($addToCategory as $heading => $data) {
             switch ($heading) {
                 case 'externalId':
-                    if (!$category->getExternalId() || $category->getExternalId() != $data) {
-                        $actions[$heading] = CategorySetExternalIdAction::ofExternalId($data);
-                    }
+                    $actions[$heading] = CategorySetExternalIdAction::ofExternalId($data);
                     break;
                 case 'name':
-                    if (!$category->getName() || !$this->compareLocalizedString($category->getName()->toArray(), $data)) {
-                        $actions[$heading] = CategoryChangeNameAction::ofName(
-                            LocalizedString::fromArray($data)
-                        );
-                    }
+                    $actions[$heading] = CategoryChangeNameAction::ofName(
+                        LocalizedString::fromArray($categoryData[$heading])
+                    );
                     break;
                 case 'slug':
-                    if (!$category->getSlug() || !$this->compareLocalizedString($category->getSlug()->toArray(), $data)) {
-                        $actions[$heading] = CategoryChangeSlugAction::ofSlug(
-                            LocalizedString::fromArray($data)
-                        );
-                    }
+                    $actions[$heading] = CategoryChangeSlugAction::ofSlug(
+                        LocalizedString::fromArray($categoryData[$heading])
+                    );
                     break;
                 case 'description':
-                    if (!$category->getDescription() || !$this->compareLocalizedString($category->getDescription()->toArray(), $data)) {
-                        $actions[$heading] = CategorySetDescriptionAction::ofDescription(
-                            LocalizedString::fromArray($data)
-                        );
-                    }
+                    $actions[$heading] = CategorySetDescriptionAction::ofDescription(
+                        LocalizedString::fromArray($categoryData[$heading])
+                    );
                     break;
                 case 'orderHint':
-                    if (!$category->getOrderHint() || $category->getOrderHint() != $data) {
-                        $actions[$heading] = CategoryChangeOrderHintAction::ofOrderHint($data);
-                    }
+                    $actions[$heading] = CategoryChangeOrderHintAction::ofOrderHint($data);
                     break;
                 case 'metaTitle':
-                    if (!$category->getMetaTitle() || !$this->compareLocalizedString($category->getMetaTitle()->toArray(), $data)) {
-                        $actions[$heading] = CategorySetMetaTitleAction::of()->setMetaTitle(LocalizedString::fromArray($data));
-                    }
+                    $actions[$heading] = CategorySetMetaTitleAction::of()->setMetaTitle(LocalizedString::fromArray($categoryData[$heading]));
                     break;
                 case 'metaDescription':
-                    if (!$category->getmetaDescription() || !$this->compareLocalizedString($category->getmetaDescription()->toArray(), $data)) {
-                        $actions[$heading] = CategorySetMetaDescriptionAction::of()->setmetaDescription(LocalizedString::fromArray($data));
-                    }
+                    $actions[$heading] = CategorySetMetaDescriptionAction::of()->setmetaDescription(LocalizedString::fromArray($categoryData[$heading]));
                     break;
                 case 'metaKeywords':
-                    if (!$category->getMetaKeywords() || !$this->compareLocalizedString($category->getMetaKeywords()->toArray(), $data)) {
-                        $actions[$heading] = CategorySetMetaKeywordsAction::of()->setMetaKeywords(LocalizedString::fromArray($data));
-                    }
+                    $actions[$heading] = CategorySetMetaKeywordsAction::of()->setMetaKeywords(LocalizedString::fromArray($categoryData[$heading]));
                     break;
                 case 'custom':
                     if ($data['type']) {
-                        if (!$category->getCustom() || $category->getCustom()->getType()->getKey() != $data['type']['key']) {
-                            $actions[$heading.'type'] =
-                                SetCustomTypeAction::ofType(TypeReference::ofTypeAndKey('type', $data['type']['key']));
-                        }
+                        $actions[$heading.'type'] =
+                            SetCustomTypeAction::ofType(TypeReference::ofTypeAndKey('type', $data['type']['key']));
                     }
                     if ($data['fields']) {
                         foreach ($data['fields'] as $fieldName => $value) {
