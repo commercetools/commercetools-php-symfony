@@ -65,7 +65,6 @@ class CategoryImport
         $responses = null;
         if ($force || $this->requests > 25) {
             $responses = $this->client->executeBatch();
-            var_dump($responses);
             $this->requests = 0;
         }
 

@@ -11,6 +11,8 @@ namespace Commercetools\Symfony\CtpBundle\Model\Import;
 use Commercetools\Core\Model\Category\Category;
 use Commercetools\Core\Model\Category\CategoryDraft;
 use Commercetools\Core\Model\Common\LocalizedString;
+use Commercetools\Core\Model\Type\FieldDefinition;
+use Commercetools\Core\Request\Carts\Command\CartSetCustomLineItemCustomFieldAction;
 use Commercetools\Core\Request\Categories\CategoryCreateRequest;
 use Commercetools\Core\Request\Categories\CategoryQueryRequest;
 use Commercetools\Core\Request\Categories\CategoryUpdateRequest;
@@ -24,6 +26,9 @@ use Commercetools\Core\Request\Categories\Command\CategorySetMetaDescriptionActi
 use Commercetools\Core\Request\Categories\Command\CategorySetMetaKeywordsAction;
 use Commercetools\Core\Request\Categories\Command\CategorySetMetaTitleAction;
 use Commercetools\Core\Request\ClientRequestInterface;
+use Commercetools\Core\Request\CustomField\Command\SetCustomFieldAction;
+use Commercetools\Core\Request\CustomField\Command\SetCustomTypeAction;
+use Commercetools\Core\Model\Type\TypeReference;
 
 class CategoryRequestBuilder
 {
@@ -133,6 +138,19 @@ class CategoryRequestBuilder
                 case 'metaKeywords':
                     if (!$category->getMetaKeywords() || !$this->compareLocalizedString($category->getMetaKeywords()->toArray(), $data)) {
                         $actions[$heading] = CategorySetMetaKeywordsAction::of()->setMetaKeywords(LocalizedString::fromArray($data));
+                    }
+                    break;
+                case 'custom':
+                    if ($data['type']) {
+                        if (!$category->getCustom() || $category->getCustom()->getType()->getKey() != $data['type']['key']) {
+                            $actions[$heading.'type'] =
+                                SetCustomTypeAction::ofType(TypeReference::ofTypeAndKey('type', $data['type']['key']));
+                        }
+                    }
+                    if ($data['fields']) {
+                        foreach ($data['fields'] as $fieldName => $value) {
+                            $actions[$heading.'field'.$fieldName] = SetCustomFieldAction::ofName($fieldName)->setValue($value);
+                        }
                     }
                     break;
             }

@@ -186,6 +186,37 @@ class CategoryRequestBuilderTest extends \PHPUnit_Framework_TestCase
                 ['id' => "12345", 'metaKeywords' => ['en' => 'new']],
                 '{"results": [{"id": "12345", "metaKeywords":{"en": "new"}}]}',
                 '{"version":null,"actions":[]}'
+            ],
+            //set Custom Field test cases
+            [
+                ['id' => "12345",
+                 'custom' =>
+                    [
+                        'type' => [ "key"=> "my-category" ],
+                        'fields' => [ "description"=> "my description"]
+                    ]
+                ],
+                '{"results": [{
+                        "id": "12345",
+                        "custom" : {
+                            "type" : [{ "key" : "my-category" }]
+                        }
+                    }]
+                 }',
+                '{"version":null,
+                  "actions":
+                  [{
+                    "action":"setCustomType",
+                    "type" : {
+                        "typeId": "type",
+                        "key": "my-category"
+                    }
+                  },{
+                    "action":"setCustomField",
+                    "name" : "description",
+                    "value": "my description"
+                  }]
+                 }'
             ]
         ];
     }
