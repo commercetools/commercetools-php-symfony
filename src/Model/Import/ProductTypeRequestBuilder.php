@@ -142,8 +142,16 @@ class ProductTypeRequestBuilder extends AbstractRequestBuilder
                 $attribute->getName()
             );
         }
+        $actions = array_merge(
+            $actions,
+            $this->changeAttribute($toChange, $attributeByName, $attributeDataByName)
+        );
+        return $actions;
+    }
 
-
+    protected function changeAttribute($toChange, $attributeByName, $attributeDataByName)
+    {
+        $actions =[];
         foreach ($toChange as $attributeName) {
             /**
              * @var AttributeDefinition $attribute
@@ -184,77 +192,97 @@ class ProductTypeRequestBuilder extends AbstractRequestBuilder
                 if ($attributeType instanceof EnumType ||
                     $attributeType instanceof SetType && $attributeType->getElementType() instanceof EnumType
                 ) {
-                    $attributeEnumValues=$attributeType->getValues();
-
-                    $enumDataByName = [];
-
-                    foreach ($attributeData['type']['values'] as $enum) {
-                        $enumDataByName[$enum['key']] = $enum;
-                    }
-                    $enumByName = [];
-                    foreach ($attributeEnumValues as $enum) {
-                        $enumByName[$enum->getKey()] = $enum;
-                    }
-
-                    $toChange = array_intersect(array_keys($enumDataByName), array_keys($enumByName));
-                    $toAdd = array_diff_key($enumDataByName, array_flip($toChange));
-
-                    foreach ($toAdd as $item) {
-                        $actions['addPlainEnumValue_' . $item['key']]=
-                            ProductTypeAddPlainEnumValueAction::ofAttributeNameAndValue(
-                                $attributeData['name'],
-                                Enum::fromArray($item)
-                            );
-                    }
-
-                    foreach ($toChange as $item) {
-                        if (strcmp($enumDataByName[$item]['label'], $enumByName[$item]->getLabel())!= 0) {
-                            $actions['changePlainEnumLabel_' . $item]=
-                                ProductTypeChangePlainEnumLabelAction::ofAttributeNameAndEnumValue(
-                                    $attributeData['name'],
-                                    Enum::fromArray($enumDataByName[$item])
-                                );
-                        }
-                    }
+                    $actions = array_merge(
+                        $actions,
+                        $this->getPlainEnumRequest($attributeType, $attributeData)
+                    );
                 }
                 if ($attributeType instanceof LocalizedEnumType ||
                     $attributeType instanceof SetType && $attributeType->getElementType() instanceof LocalizedEnumType
                 ) {
-                    $attributeEnumValues=$attributeType->getValues();
-
-                    $enumDataByName = [];
-
-                    foreach ($attributeData['type']['values'] as $enum) {
-                        $enumDataByName[$enum['key']] = $enum;
-                    }
-                    $enumByName = [];
-                    foreach ($attributeEnumValues as $enum) {
-                        $enumByName[$enum->getKey()] = $enum;
-                    }
-
-                    $toChange = array_intersect(array_keys($enumDataByName), array_keys($enumByName));
-                    $toAdd = array_diff_key($enumDataByName, array_flip($toChange));
-
-                    foreach ($toAdd as $item) {
-                        $item['label']=LocalizedString::fromArray($item['label']);
-                        $actions['addLocalizedEnumValue_' . $item['key']]=
-                            ProductTypeAddLocalizedEnumValueAction::ofAttributeNameAndValue(
-                                $attributeData['name'],
-                                LocalizedEnum::fromArray($item)
-                            );
-                    }
-
-                    foreach ($toChange as $item) {
-                        if (!$this->compareLocalizedString($enumDataByName[$item]['label'], $enumByName[$item]->getLabel()->toArray())) {
-                            $enumDataByName[$item]['label'] = LocalizedString::fromArray($enumDataByName[$item]['label']);
-                            $actions['changeLocalizedEnumLabel_' . $item]=
-                                ProductTypeChangeLocalizedEnumLabelAction::ofAttributeNameAndEnumValue(
-                                    $attributeData['name'],
-                                    LocalizedEnum::fromArray($enumDataByName[$item])
-                                );
-                        }
-                    }
+                    $actions = array_merge(
+                        $actions,
+                        $this->getLocalizedEnumRequest($attributeType, $attributeData)
+                    );
                 }
+            }
+        }
+        return $actions;
+    }
+
+    private function getPlainEnumRequest($attributeType, $attributeData)
+    {
+        $actions =[];
+        $attributeEnumValues=$attributeType->getValues();
+
+        $enumDataByName = [];
+
+        foreach ($attributeData['type']['values'] as $enum) {
+            $enumDataByName[$enum['key']] = $enum;
+        }
+        $enumByName = [];
+        foreach ($attributeEnumValues as $enum) {
+            $enumByName[$enum->getKey()] = $enum;
+        }
+
+        $toChange = array_intersect(array_keys($enumDataByName), array_keys($enumByName));
+        $toAdd = array_diff_key($enumDataByName, array_flip($toChange));
+
+        foreach ($toAdd as $item) {
+            $actions['addPlainEnumValue_' . $item['key']]=
+                ProductTypeAddPlainEnumValueAction::ofAttributeNameAndValue(
+                    $attributeData['name'],
+                    Enum::fromArray($item)
+                );
+        }
+
+        foreach ($toChange as $item) {
+            if (strcmp($enumDataByName[$item]['label'], $enumByName[$item]->getLabel())!= 0) {
+                $actions['changePlainEnumLabel_' . $item]=
+                    ProductTypeChangePlainEnumLabelAction::ofAttributeNameAndEnumValue(
+                        $attributeData['name'],
+                        Enum::fromArray($enumDataByName[$item])
+                    );
+            }
+        }
+        return $actions;
+    }
+
+    private function getLocalizedEnumRequest($attributeType, $attributeData)
+    {
+        $actions =[];
+        $attributeEnumValues=$attributeType->getValues();
+
+        $enumDataByName = [];
+
+        foreach ($attributeData['type']['values'] as $enum) {
+            $enumDataByName[$enum['key']] = $enum;
+        }
+        $enumByName = [];
+        foreach ($attributeEnumValues as $enum) {
+            $enumByName[$enum->getKey()] = $enum;
+        }
+
+        $toChange = array_intersect(array_keys($enumDataByName), array_keys($enumByName));
+        $toAdd = array_diff_key($enumDataByName, array_flip($toChange));
+
+        foreach ($toAdd as $item) {
+            $item['label']=LocalizedString::fromArray($item['label']);
+            $actions['addLocalizedEnumValue_' . $item['key']]=
+                ProductTypeAddLocalizedEnumValueAction::ofAttributeNameAndValue(
+                    $attributeData['name'],
+                    LocalizedEnum::fromArray($item)
+                );
+        }
+
+        foreach ($toChange as $item) {
+            if (!$this->compareLocalizedString($enumDataByName[$item]['label'], $enumByName[$item]->getLabel()->toArray())) {
+                $enumDataByName[$item]['label'] = LocalizedString::fromArray($enumDataByName[$item]['label']);
+                $actions['changeLocalizedEnumLabel_' . $item]=
+                    ProductTypeChangeLocalizedEnumLabelAction::ofAttributeNameAndEnumValue(
+                        $attributeData['name'],
+                        LocalizedEnum::fromArray($enumDataByName[$item])
+                    );
             }
         }
         return $actions;
