@@ -118,5 +118,8 @@
         <service id="commercetools.importer.product-types" class="Commercetools\Symfony\CtpBundle\Model\Import\ProductTypesImport">
             <argument type="service" id="commercetools.client" />
         </service>
+        <service id="commercetools.importer.product" class="Commercetools\Symfony\CtpBundle\Model\Import\ProductsImport">
+            <argument type="service" id="commercetools.client" />
+        </service>
     </services>
 </container>
