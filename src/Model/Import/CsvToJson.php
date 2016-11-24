@@ -11,13 +11,14 @@ namespace Commercetools\Symfony\CtpBundle\Model\Import;
 
 class CsvToJson
 {
-    
+
     public function transform($data, $headings)
     {
         $category = [];
         foreach ($headings as $heading => $column) {
             $headingParts = explode('.', $heading);
-            $category = $this->transformData($headingParts, $category, $data[$column]);
+            $columnData = isset($data[$column]) ? $data[$column] : '';
+            $category = $this->transformData($headingParts, $category, $columnData);
         }
 
         return $category;

@@ -88,6 +88,7 @@ class CategoryRequestBuilder extends AbstractRequestBuilder
         return $value;
     }
 
+    
     private function getUpdateRequest(Category $category, $categoryData)
     {
         $intersect = $this->arrayIntersectRecursive($category->toArray(), $categoryData);

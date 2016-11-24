@@ -31,14 +31,27 @@ class ProductsImport
         $headings = null;
         $import = null;
 
-        foreach ($data as $row) {
-            $this->client->addBatchRequest(
-                $this->requestBuilder->createRequest($row, $this->identifiedByColumn)
-            );
-            $this->requests++;
-            $this->execute();
-            break;
+        $productData = [];
+        foreach ($data as $key => $row) {
+            if ($key == 0) {
+                $productData = $row;
+                $productData['variants'][] = $row;
+                continue;
+            }
+            $productData['variants'][] = $row;
+            if (!empty($row[$this->identifiedByColumn])) {
+                $this->client->addBatchRequest(
+                    $this->requestBuilder->createRequest($productData, $this->identifiedByColumn)
+                );
+                $this->requests++;
+                $this->execute();
+                $productData = $row;
+                break;
+            }
         }
+        $this->client->addBatchRequest(
+            $this->requestBuilder->createRequest($productData, $this->identifiedByColumn)
+        );
 
         $this->execute(true);
     }
