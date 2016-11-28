@@ -43,7 +43,6 @@ abstract class AbstractRequestBuilder
             if (array_key_exists($key, $arr2)) {
                 if (is_array($value)) {
                     $intersect = $this->arrayIntersectRecursive($value, $arr2[$key]);
-
                     if (count($intersect)) {
                         $outputIntersect[$key] = $intersect;
                     }

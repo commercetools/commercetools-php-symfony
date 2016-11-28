@@ -38,7 +38,6 @@ class ProductsImport
                 $productData['variants'][] = $row;
                 continue;
             }
-            $productData['variants'][] = $row;
             if (!empty($row[$this->identifiedByColumn])) {
                 $this->client->addBatchRequest(
                     $this->requestBuilder->createRequest($productData, $this->identifiedByColumn)
@@ -46,8 +45,10 @@ class ProductsImport
                 $this->requests++;
                 $this->execute();
                 $productData = $row;
+                $productData['variants'][] = $row; // TODO remove with break ;)
                 break;
             }
+            $productData['variants'][] = $row;
         }
         $this->client->addBatchRequest(
             $this->requestBuilder->createRequest($productData, $this->identifiedByColumn)

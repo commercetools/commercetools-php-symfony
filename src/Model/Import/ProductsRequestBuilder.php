@@ -18,7 +18,12 @@ use Commercetools\Core\Model\Product\Product;
 use Commercetools\Core\Model\Product\ProductDraft;
 use Commercetools\Core\Model\Product\ProductProjection;
 use Commercetools\Core\Model\Product\ProductVariantDraft;
+use Commercetools\Core\Model\Product\ProductVariantDraftCollection;
 use Commercetools\Core\Model\Product\SearchKeywords;
+use Commercetools\Core\Model\ProductType\BooleanType;
+use Commercetools\Core\Model\ProductType\LocalizedStringType;
+use Commercetools\Core\Model\ProductType\ProductType;
+use Commercetools\Core\Model\ProductType\ProductTypeCollection;
 use Commercetools\Core\Model\ProductType\ProductTypeReference;
 use Commercetools\Core\Model\State\StateReference;
 use Commercetools\Core\Model\TaxCategory\TaxCategoryCollection;
@@ -29,6 +34,7 @@ use Commercetools\Core\Request\Products\Command\ProductAddVariantAction;
 use Commercetools\Core\Request\Products\Command\ProductChangeNameAction;
 use Commercetools\Core\Request\Products\Command\ProductChangeSlugAction;
 use Commercetools\Core\Request\Products\Command\ProductRemoveFromCategoryAction;
+use Commercetools\Core\Request\Products\Command\ProductSetAttributeAction;
 use Commercetools\Core\Request\Products\Command\ProductSetDescriptionAction;
 use Commercetools\Core\Request\Products\Command\ProductSetKeyAction;
 use Commercetools\Core\Request\Products\Command\ProductSetMetaDescriptionAction;
@@ -39,6 +45,7 @@ use Commercetools\Core\Request\Products\ProductCreateRequest;
 use Commercetools\Core\Request\Products\ProductProjectionQueryRequest;
 use Commercetools\Core\Request\Products\ProductQueryRequest;
 use Commercetools\Core\Request\Products\ProductUpdateRequest;
+use Commercetools\Core\Request\ProductTypes\ProductTypeQueryRequest;
 use Commercetools\Core\Request\TaxCategories\TaxCategoryQueryRequest;
 use Commercetools\Core\Request\TaxCategories\TaxCategoryUpdateRequest;
 use Commercetools\Core\Model\Common\LocalizedString;
@@ -55,6 +62,7 @@ class ProductsRequestBuilder extends AbstractRequestBuilder
 
         $this->categories = $this->getCategories();
         $this->taxCategories = $this->getTaxCategories();
+        $this->productTypes = $this->getProductTypes();
     }
 
     private function getCategories()
@@ -87,6 +95,26 @@ class ProductsRequestBuilder extends AbstractRequestBuilder
             $catByPath[$categoryPath] = $categoryInfo['reference'];
         }
         return $catByPath;
+    }
+
+    private function getProductTypes()
+    {
+        $request = ProductTypeQueryRequest::of();
+
+        $helper = new QueryHelper();
+        $productTypes = $helper->getAll($this->client, $request);
+
+
+        /**
+         * @var ProductTypeCollection $productTypes;
+         */
+        $productTypesByKey = [];
+        foreach ($productTypes as $productType) {
+            $productTypesByKey[$productType->getKey()] = $productType;
+            $productTypesByKey[$productType->getId()] = $productType;
+        }
+
+        return $productTypesByKey;
     }
 
     private function getTaxCategories()
@@ -146,7 +174,7 @@ class ProductsRequestBuilder extends AbstractRequestBuilder
         $actions = [];
 
         foreach ($variants as $variant) {
-            $variantArray=$this->mapVariantFromData($variant);
+            $variantArray=$this->mapVariantFromData($variant, $this->productTypes[$product->getProductType()->getId()]);
             $actions[]=ProductAddVariantAction::fromArray($variantArray);
         }
 //        $request->setActions($actions);
@@ -154,6 +182,7 @@ class ProductsRequestBuilder extends AbstractRequestBuilder
     }
     private function getCreateRequest($productData)
     {
+//        var_dump($productData);exit;
         $productDraftArray = $this->mapProductFromData($productData);
         $product = ProductDraft::fromArray($productDraftArray);
         $request = ProductCreateRequest::ofDraft($product);
@@ -162,19 +191,56 @@ class ProductsRequestBuilder extends AbstractRequestBuilder
 
     private function getUpdateRequest(ProductProjection $product, $productData)
     {
+//        var_dump($productData['key']);
         $productDraftArray = $this->mapProductFromData($productData);
         $productDataDraft = ProductDraft::fromArray($productDraftArray);
         $productDataArray= $productDataDraft->toArray();
 
-        $intersect = $this->arrayIntersectRecursive($product->toArray(), $productDataArray);
+        $product = $product->toArray();
+        if (isset($product['masterVariant']['attributes'])) {
+            foreach ($product['masterVariant']['attributes'] as &$attribute) {
+                if (isset($attribute['value']['key'])) {
+                    $attribute['value'] = $attribute['value']['key'];
+                }
+            }
+        }
+        if (isset($product['variants'])) {
+            foreach ($product['variants'] as &$variant) {
+                if (isset($variant['attributes'])) {
+                    foreach ($variant['attributes'] as &$attribute) {
+                        if (isset($attribute['value']['key'])) {
+                            $attribute['value'] = $attribute['value']['key'];
+                        }
+                    }
+                }
+            }
+        }
+//var_dump($productDataArray['variants'][0]);exit;
+        /**
+         * @var ProductVariantDraftCollection $variants
+         */
+        $variants= ProductVariantDraftCollection::fromArray($productDataArray['variants']);
+        $variantsArray = $variants->toArray();
+        shuffle($variantsArray);
+        $productDataArray['variants'] = $variantsArray;
+//        $productDataArray['variants']= $productDataArray['variants']->toArray();
+        $intersect = $this->arrayIntersectRecursive($product, $productDataArray);
+//        var_dump($intersect);
+//        echo PHP_EOL . PHP_EOL."============================================================================";
+//        print_r($productDataArray['masterVariant']);
+//        echo PHP_EOL . PHP_EOL."============================================================================";
+
+//        echo PHP_EOL . PHP_EOL."----------------============================================================";
+//        print_r($product['masterVariant']);exit;
+
 
         $toAdd= $this->arrayDiffRecursive($productDataArray, $intersect);
-        $toAdd['categories']=$this->categoriesToAdd($product->toArray()['categories'], $productDataArray['categories']);
-
+        $toAdd['categories']=$this->categoriesToAdd($product['categories'], $productDataArray['categories']);
+//        print_r($toAdd);exit;
 //        $toRemove = $this->arrayDiffRecursive($intersect, $product->toArray());
-        $toRemove['categories']=$this->categoriesToRemove($product->toArray()['categories'], $productDataArray['categories']);
+        $toRemove['categories']=$this->categoriesToRemove($product['categories'], $productDataArray['categories']);
 
-        $request = ProductUpdateRequest::ofIdAndVersion($product->getId(), $product->getVersion());
+        $request = ProductUpdateRequest::ofIdAndVersion($product['id'], $product['version']);
 
         $actions = [];
 
@@ -217,7 +283,11 @@ class ProductsRequestBuilder extends AbstractRequestBuilder
                 case 'metaKeywords':
                     $actions[$heading] = ProductSetMetaKeywordsAction::of()->setMetaKeywords(LocalizedString::fromArray($data));
                     break;
-
+                case "masterVariant":
+                    $actions = array_merge_recursive(
+                        $actions,
+                        $this->getVariantActions($product['masterVariant'], $productDraftArray[$heading])
+                    );
             }
         }
         foreach ($toRemove as $heading => $data) {
@@ -230,10 +300,33 @@ class ProductsRequestBuilder extends AbstractRequestBuilder
             }
         }
         $request->setActions($actions);
+        print_r((string)$request->httpRequest()->getBody());
+
         return $request;
     }
 
-    private function mapVariantFromData($variantData)
+    private function getVariantActions($productVariant, $productVariantDraftArray)
+    {
+        $actions=[];
+        $productAttributes = [];
+        $productDraftAttributes = [];
+        foreach ($productVariant['attributes'] as $attribute) {
+            $productAttributes[$attribute['name']] = $attribute;
+        }
+        foreach ($productVariantDraftArray->toArray()['attributes'] as $attribute) {
+            $productDraftAttributes[$attribute['name']] = $attribute;
+        }
+        $toChange = $this->arrayDiffRecursive($productAttributes, $productDraftAttributes);
+        foreach ($toChange as $key => $value) {
+            $action = ProductSetAttributeAction::ofVariantIdAndName($productVariant['id'], $key);
+            if ($productDraftAttributes[$key]['value']) {
+                $action->setValue($productDraftAttributes[$key]['value']);
+            }
+            $actions['variant' . $productVariant['id'] . $key] = $action;
+        }
+        return $actions;
+    }
+    private function mapVariantFromData($variantData, ProductType $productType)
     {
         $variantDraftArray= [];
         foreach ($variantData as $key => $value) {
@@ -257,12 +350,24 @@ class ProductsRequestBuilder extends AbstractRequestBuilder
                     $variantDraftArray[$key] = $value;
                     break;
                 case "images":
+                case "searchKeywords":
                 case "prices":
 //                    $variantDraftArray[$key] = $value;
                     break;
                 default:
                     if (!is_null($value) && $value !== '') {
-                        $variantDraftArray['attributes'][] = ['name' => $key, 'value' => $value];
+                        $attributeDefinition = $productType->getAttributes()->getByName($key);
+                        if ($attributeDefinition) {
+                            $attributeType = $attributeDefinition->getType();
+                            switch (true) {
+                                case $attributeType instanceof BooleanType:
+                                    $value = $value == 'true' ? true: false;
+                                    break;
+                            }
+                            if ($value) {
+                                $variantDraftArray['attributes'][] = ['name' => $key, 'value' => $value];
+                            }
+                        }
                     }
                     break;
             }
@@ -315,7 +420,7 @@ class ProductsRequestBuilder extends AbstractRequestBuilder
                 case "variants":
                     $variants=[];
                     foreach ($value as $variant) {
-                        $variantData = $this->mapVariantFromData($variant);
+                        $variantData = $this->mapVariantFromData($variant, $this->productTypes[$productData['productType']]);
                         if ($variantData['variantId'] === '1') {
                             $productDraftArray['masterVariant']= ProductVariantDraft::fromArray($variantData);
                             continue;
@@ -325,6 +430,9 @@ class ProductsRequestBuilder extends AbstractRequestBuilder
                     $productDraftArray[$key]= $variants;
             }
         }
+//        if (array_key_exists('variants', $productDraftArray)){
+//            $productDraftArray['masterVariant']['attributes'][] = ProductVariantDraft::fromArray([ 'name' => 'baseId', 'value' => $productData['baseId']]);
+//        }
         return $productDraftArray;
     }
     public function getIdentifierQuery($identifierName, $query = '= "%s"')
@@ -335,6 +443,7 @@ class ProductsRequestBuilder extends AbstractRequestBuilder
             case "slug":
                 $value = $parts[0].'('.$parts[1]. $query . ')';
                 break;
+            case "key":
             case "id":
                 $value = $parts[0].$query;
                 break;
@@ -349,6 +458,7 @@ class ProductsRequestBuilder extends AbstractRequestBuilder
             case "slug":
                 $value = $row[$parts[0]][$parts[1]];
                 break;
+            case "key":
             case "id":
                 $value = $row[$parts[0]];
                 break;

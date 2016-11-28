@@ -17,10 +17,12 @@ class CsvToJson
         $category = [];
         foreach ($headings as $heading => $column) {
             $headingParts = explode('.', $heading);
-            $columnData = isset($data[$column]) ? $data[$column] : '';
-            $category = $this->transformData($headingParts, $category, $columnData);
+            $columnData = isset($data[$column]) ? $data[$column] : null;
+            $columnData = $columnData !== '' ? $columnData : null;
+            if (!is_null($columnData)) {
+                $category = $this->transformData($headingParts, $category, $columnData);
+            }
         }
-
         return $category;
     }
 
