@@ -20,6 +20,7 @@ use Commercetools\Core\Model\Product\ProductProjection;
 use Commercetools\Core\Model\Product\ProductVariantDraft;
 use Commercetools\Core\Model\Product\ProductVariantDraftCollection;
 use Commercetools\Core\Model\Product\SearchKeywords;
+use Commercetools\Core\Model\ProductType\AttributeDefinition;
 use Commercetools\Core\Model\ProductType\BooleanType;
 use Commercetools\Core\Model\ProductType\LocalizedStringType;
 use Commercetools\Core\Model\ProductType\ProductType;
@@ -34,7 +35,9 @@ use Commercetools\Core\Request\Products\Command\ProductAddVariantAction;
 use Commercetools\Core\Request\Products\Command\ProductChangeNameAction;
 use Commercetools\Core\Request\Products\Command\ProductChangeSlugAction;
 use Commercetools\Core\Request\Products\Command\ProductRemoveFromCategoryAction;
+use Commercetools\Core\Request\Products\Command\ProductRemoveVariantAction;
 use Commercetools\Core\Request\Products\Command\ProductSetAttributeAction;
+use Commercetools\Core\Request\Products\Command\ProductSetAttributeInAllVariantsAction;
 use Commercetools\Core\Request\Products\Command\ProductSetDescriptionAction;
 use Commercetools\Core\Request\Products\Command\ProductSetKeyAction;
 use Commercetools\Core\Request\Products\Command\ProductSetMetaDescriptionAction;
@@ -55,6 +58,8 @@ class ProductsRequestBuilder extends AbstractRequestBuilder
     private $categories;
     private $productTypes;
     private $client;
+    private $productVariantsBySku;
+    private $productVariantsDraftBySku;
 
     public function __construct(Client $client)
     {
@@ -168,21 +173,17 @@ class ProductsRequestBuilder extends AbstractRequestBuilder
 
         return $request;
     }
-    private function createVariantRequest(Product $product, $variants)
+    private function createVariantAddRequest($variants)
     {
-//        $request = ProductUpdateRequest::ofIdAndVersion($product->getId(), $product->getVersion());
         $actions = [];
 
         foreach ($variants as $variant) {
-            $variantArray=$this->mapVariantFromData($variant, $this->productTypes[$product->getProductType()->getId()]);
-            $actions[]=ProductAddVariantAction::fromArray($variantArray);
+            $actions[]=ProductAddVariantAction::fromArray($variant);
         }
-//        $request->setActions($actions);
         return $actions;
     }
     private function getCreateRequest($productData)
     {
-//        var_dump($productData);exit;
         $productDraftArray = $this->mapProductFromData($productData);
         $product = ProductDraft::fromArray($productDraftArray);
         $request = ProductCreateRequest::ofDraft($product);
@@ -191,7 +192,6 @@ class ProductsRequestBuilder extends AbstractRequestBuilder
 
     private function getUpdateRequest(ProductProjection $product, $productData)
     {
-//        var_dump($productData['key']);
         $productDraftArray = $this->mapProductFromData($productData);
         $productDataDraft = ProductDraft::fromArray($productDraftArray);
         $productDataArray= $productDataDraft->toArray();
@@ -215,29 +215,19 @@ class ProductsRequestBuilder extends AbstractRequestBuilder
                 }
             }
         }
-//var_dump($productDataArray['variants'][0]);exit;
-        /**
-         * @var ProductVariantDraftCollection $variants
-         */
-        $variants= ProductVariantDraftCollection::fromArray($productDataArray['variants']);
-        $variantsArray = $variants->toArray();
-        shuffle($variantsArray);
-        $productDataArray['variants'] = $variantsArray;
-//        $productDataArray['variants']= $productDataArray['variants']->toArray();
+
+        $this->productVariantsBySku = $this->getProductVariantsBySku($product['variants']);
+        $this->productVariantsDraftBySku = $this->getDataVariantsBySku($productDataArray['variants']);
+
         $intersect = $this->arrayIntersectRecursive($product, $productDataArray);
-//        var_dump($intersect);
-//        echo PHP_EOL . PHP_EOL."============================================================================";
-//        print_r($productDataArray['masterVariant']);
-//        echo PHP_EOL . PHP_EOL."============================================================================";
 
-//        echo PHP_EOL . PHP_EOL."----------------============================================================";
-//        print_r($product['masterVariant']);exit;
+        $toRemove['variants'] = $this->getVariantsDiff($this->productVariantsBySku, $this->productVariantsDraftBySku, false);
+        $toAdd['variants'] = $this->getVariantsDiff($this->productVariantsBySku, $this->productVariantsDraftBySku);
+
+        $toChange= $this->arrayDiffRecursive($productDataArray, $intersect);
+        $toChange['categories']=$this->categoriesToAdd($product['categories'], $productDataArray['categories']);
 
 
-        $toAdd= $this->arrayDiffRecursive($productDataArray, $intersect);
-        $toAdd['categories']=$this->categoriesToAdd($product['categories'], $productDataArray['categories']);
-//        print_r($toAdd);exit;
-//        $toRemove = $this->arrayDiffRecursive($intersect, $product->toArray());
         $toRemove['categories']=$this->categoriesToRemove($product['categories'], $productDataArray['categories']);
 
         $request = ProductUpdateRequest::ofIdAndVersion($product['id'], $product['version']);
@@ -245,6 +235,16 @@ class ProductsRequestBuilder extends AbstractRequestBuilder
         $actions = [];
 
         foreach ($toAdd as $heading => $data) {
+            switch ($heading) {
+                case "variants":
+                    $actions = array_merge_recursive(
+                        $actions,
+                        $this->createVariantAddRequest($data)
+                    );
+                    break;
+            }
+        }
+        foreach ($toChange as $heading => $data) {
             switch ($heading) {
                 case 'name':
                     $actions[$heading] = ProductChangeNameAction::ofName(
@@ -270,7 +270,7 @@ class ProductsRequestBuilder extends AbstractRequestBuilder
                     $actions[$heading] = ProductSetTaxCategoryAction::of()->setTaxCategory($productDraftArray[$heading]);
                     break;
                 case 'categories':
-                    foreach ($toAdd[$heading] as $category) {
+                    foreach ($toChange[$heading] as $category) {
                         $actions[$heading.$category['id']] = ProductAddToCategoryAction::ofCategory(CategoryReference::fromArray($category));
                     }
                     break;
@@ -286,8 +286,28 @@ class ProductsRequestBuilder extends AbstractRequestBuilder
                 case "masterVariant":
                     $actions = array_merge_recursive(
                         $actions,
-                        $this->getVariantActions($product['masterVariant'], $productDraftArray[$heading])
+                        $this->getVariantActions($product['masterVariant'], $productDraftArray[$heading], $product['productType'])
                     );
+                    break;
+                case "variants":
+//                    foreach ($product['variants'] as $variant) {
+//                        if (isset($this->productVariantsDraftBySku[$variant['sku']])) {
+//                            $actions = array_merge_recursive(
+//                                $actions,
+//                                $this->getVariantActions($variant, ProductVariantDraft::fromArray($this->productVariantsDraftBySku[$variant['sku']]), $product['productType'])
+//                            );
+//                        }
+//                    }
+                    for($i=0; $i<count($product['variants']); $i++)
+                    {
+                        if (isset($productDraftArray[$heading][$i])) {
+                            $actions = array_merge_recursive(
+                                $actions,
+                                $this->getVariantActions($product['variants'][$i], $productDraftArray[$heading][$i], $product['productType'])
+                            );
+                        }
+                    }
+                    break;
             }
         }
         foreach ($toRemove as $heading => $data) {
@@ -297,15 +317,57 @@ class ProductsRequestBuilder extends AbstractRequestBuilder
                         $actions[$heading.$category['id']] = ProductRemoveFromCategoryAction::ofCategory(CategoryReference::fromArray($category));
                     }
                     break;
+                case "variants":
+                    foreach ($data as $variant) {
+                        if (isset($variant['sku'])) {
+                            $actions[$heading . 'remove' . $variant['sku']] = ProductRemoveVariantAction::ofSku($variant['sku']);
+                        }
+                    }
+                    break;
             }
         }
         $request->setActions($actions);
-        print_r((string)$request->httpRequest()->getBody());
+//        print_r((string)$request->httpRequest()->getBody());exit;
 
         return $request;
     }
 
-    private function getVariantActions($productVariant, $productVariantDraftArray)
+    private function getProductVariantsBySku($productVariants)
+    {
+        $productVariantsBySku = [];
+        foreach ($productVariants as $variant) {
+            $productVariantsBySku[$variant['sku']] = $variant;
+        }
+
+        return $productVariantsBySku;
+    }
+    private function getDataVariantsBySku($ProductVariantDraftCollection)
+    {
+        /**
+         * @var ProductVariantDraftCollection $variants
+         */
+        $variants= ProductVariantDraftCollection::fromArray($ProductVariantDraftCollection);
+        $ProductVariantDraftCollection = $variants->toArray();
+
+        $productVariantsDraftBySku = [];
+
+        foreach ($ProductVariantDraftCollection as $variant) {
+            unset($variant['variantId']);
+            $productVariantsDraftBySku[$variant['sku']] = $variant;
+        }
+        return $productVariantsDraftBySku;
+    }
+    private function getVariantsDiff($productVariants, $ProductVariantDraftCollection, $toAddFlag = true)
+    {
+        if ($toAddFlag) {
+            $result = $this->arrayDiffRecursive($ProductVariantDraftCollection, $productVariants);
+        } else {
+            $result = $this->arrayDiffRecursive($productVariants, $ProductVariantDraftCollection);
+        }
+
+        return $result;
+    }
+    private function getVariantActions($productVariant, $productVariantDraftArray, $productType)
     {
         $actions=[];
         $productAttributes = [];
@@ -316,9 +378,22 @@ class ProductsRequestBuilder extends AbstractRequestBuilder
         foreach ($productVariantDraftArray->toArray()['attributes'] as $attribute) {
             $productDraftAttributes[$attribute['name']] = $attribute;
         }
+
         $toChange = $this->arrayDiffRecursive($productAttributes, $productDraftAttributes);
+//        var_dump($toChange);
+        /**
+         * @var ProductType $productType
+         */
+        $productType = $this->productTypes[$productType['id']];
+
         foreach ($toChange as $key => $value) {
-            $action = ProductSetAttributeAction::ofVariantIdAndName($productVariant['id'], $key);
+            $attributeDefinition = $productType->getAttributes()->getByName($key);
+            if ($attributeDefinition->getAttributeConstraint() == 'SameForAll') {
+                $action = ProductSetAttributeInAllVariantsAction::ofName($key);
+            } else {
+                $action = ProductSetAttributeAction::ofVariantIdAndName($productVariant['id'], $key);
+            }
+
             if ($productDraftAttributes[$key]['value']) {
                 $action->setValue($productDraftAttributes[$key]['value']);
             }
