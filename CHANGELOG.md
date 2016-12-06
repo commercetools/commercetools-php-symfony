@@ -1,0 +1,34 @@
+<a name="0.2.0"></a>
+# [0.2.0](https://github.com/commercetools/commercetools-php-symfony/compare/0.1.0...v0.2.0) (2016-12-06)
+
+
+### Bug Fixes
+
+* **Example:** fix example catalog controller ([e9eab18](https://github.com/commercetools/commercetools-php-symfony/commit/e9eab18))
+* **Example:** fix product details with missing images ([aafb491](https://github.com/commercetools/commercetools-php-symfony/commit/aafb491))
+* **Repository:** fix mapping ([40eb4e1](https://github.com/commercetools/commercetools-php-symfony/commit/40eb4e1))
+* **Repository:** fix mapping ([92e8ebe](https://github.com/commercetools/commercetools-php-symfony/commit/92e8ebe))
+
+### Features
+
+* **Client:** add profiler middleware ([9b58ec2](https://github.com/commercetools/commercetools-php-symfony/commit/9b58ec2))
+* **Profiler:** add commercetools stats to profiler ([aa4db35](https://github.com/commercetools/commercetools-php-symfony/commit/aa4db35))
+* **Search:** add range facets to search model ([d18588d](https://github.com/commercetools/commercetools-php-symfony/commit/d18588d)), closes [#24](https://github.com/commercetools/commercetools-php-symfony/issues/24)
+* **Search:** add search model ([5915226](https://github.com/commercetools/commercetools-php-symfony/commit/5915226))
+* **Templating:** remove assetic parts ([b46319d](https://github.com/commercetools/commercetools-php-symfony/commit/b46319d))
+
+### Breaking Change
+
+The Service ```commercetools.client``` has been changed. It now returns a client instead of a client factory.
+
+  Before:
+
+  ```
+  $client = $this->get('commercetools.client')->build($locale);
+  ```
+
+  After:
+
+  ```
+  $client = $this->get('commercetools.client.factory')->build($locale);
+  ```
