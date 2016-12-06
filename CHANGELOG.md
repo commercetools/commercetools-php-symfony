@@ -1,3 +1,12 @@
+<a name="0.2.1"></a>
+## [0.2.1](https://github.com/commercetools/commercetools-php-symfony/compare/0.2.0...v0.2.1) (2016-12-06)
+
+
+### Bug Fixes
+
+* **Search:** fix uninitialized facet configuration ([8ba352e](https://github.com/commercetools/commercetools-php-symfony/commit/8ba352e))
+
+
 <a name="0.2.0"></a>
 # [0.2.0](https://github.com/commercetools/commercetools-php-symfony/compare/0.1.0...v0.2.0) (2016-12-06)
 

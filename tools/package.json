@@ -1,6 +1,6 @@
 {
   "name": "commercetools-php-symfony-changelog",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "commercetools symfony bundle changelog generator package description",
   "homepage": "https://github.com/commercetools/commercetools-php-symfony",
   "bugs": "https://github.com/commercetools/commercetools-php-symfony/issues",
