@@ -20,8 +20,8 @@ class Search
     /**
      * @var FacetConfig[]
      */
-    private $facetConfigs;
-    private $paramFacets;
+    private $facetConfigs = [];
+    private $paramFacets = [];
 
     public function __construct(array $facetConfigs)
     {
