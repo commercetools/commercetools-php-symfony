@@ -16,7 +16,11 @@ use Commercetools\Core\Model\Category\CategoryReference;
 use Commercetools\Core\Model\Category\CategoryReferenceCollection;
 use Commercetools\Core\Model\Common\Image;
 use Commercetools\Core\Model\Common\ImageDimension;
+use Commercetools\Core\Model\Common\Money;
+use Commercetools\Core\Model\Common\Price;
 use Commercetools\Core\Model\Common\PriceDraft;
+use Commercetools\Core\Model\CustomerGroup\CustomerGroup;
+use Commercetools\Core\Model\CustomerGroup\CustomerGroupCollection;
 use Commercetools\Core\Model\Product\Product;
 use Commercetools\Core\Model\Product\ProductDraft;
 use Commercetools\Core\Model\Product\ProductProjection;
@@ -32,6 +36,7 @@ use Commercetools\Core\Model\ProductType\ProductTypeReference;
 use Commercetools\Core\Model\State\StateReference;
 use Commercetools\Core\Model\TaxCategory\TaxCategoryCollection;
 use Commercetools\Core\Request\Categories\CategoryQueryRequest;
+use Commercetools\Core\Request\CustomerGroups\CustomerGroupQueryRequest;
 use Commercetools\Core\Request\Payments\PaymentUpdateRequest;
 use Commercetools\Core\Request\Products\Command\ProductAddToCategoryAction;
 use Commercetools\Core\Request\Products\Command\ProductAddVariantAction;
@@ -71,6 +76,7 @@ class ProductsRequestBuilder extends AbstractRequestBuilder
         $this->categories = $this->getCategories();
         $this->taxCategories = $this->getTaxCategories();
         $this->productTypes = $this->getProductTypes();
+        $this->customerGroups = $this->getCustomerGroups();
     }
 
     private function getCategories()
@@ -125,6 +131,27 @@ class ProductsRequestBuilder extends AbstractRequestBuilder
         return $productTypesByKey;
     }
 
+    private function getCustomerGroups()
+    {
+        $request = CustomerGroupQueryRequest::of();
+
+        $helper = new QueryHelper();
+        $customerGroups = $helper->getAll($this->client, $request);
+
+
+        /**
+         * @var CustomerGroupCollection $customerGroups;
+         */
+//        var_dump($customerGroups);exit;
+        $customerGroupsByName = [];
+        foreach ($customerGroups as $customerGroup) {
+//            var_dump($customerGroup);exit;
+            $customerGroupsByName[$customerGroup->getName()] = $customerGroup->getReference();
+        }
+
+        return $customerGroupsByName;
+    }
+
     private function getTaxCategories()
     {
         $request = TaxCategoryQueryRequest::of();
@@ -162,9 +189,7 @@ class ProductsRequestBuilder extends AbstractRequestBuilder
             ->limit(1);
 
         $response = $request->executeWithClient($this->client);
-//        var_dump($response->toArray());
         $products = $request->mapFromResponse($response);
-
 
         if (count($products) > 0) {
             /**
@@ -229,7 +254,6 @@ class ProductsRequestBuilder extends AbstractRequestBuilder
         }
 
         $this->productVariantsBySku = $this->getProductVariantsBySku($product['variants']);
-//        var_dump($productDataArray['variants']);
         $this->productVariantsDraftBySku = $this->getDataVariantsBySku($productDataArray['variants']);
 
         $intersect = $this->arrayIntersectRecursive($product, $productDataArray);
@@ -305,22 +329,12 @@ class ProductsRequestBuilder extends AbstractRequestBuilder
                 case "variants":
                     foreach ($product['variants'] as $variant) {
                         if (isset($this->productVariantsDraftBySku[$variant['sku']])) {
-//                            var_dump($this->productVariantsDraftBySku);exit;
                             $actions = array_merge_recursive(
                                 $actions,
                                 $this->getVariantActions($variant, ProductVariantDraft::fromArray($this->productVariantsDraftBySku[$variant['sku']]), $product['productType'])
                             );
                         }
                     }
-//                    for ($i=0; $i<count($product['variants']); $i++) {
-//                        if (isset($productDraftArray[$heading][$i])) {
-//                            $actions = array_merge_recursive(
-//                                $actions,
-//                                $this->getVariantActions($product['variants'][$i], $productDraftArray[$heading][$i], $product['productType'])
-//                            );
-//                        }
-//                    }
-
                     break;
             }
 
@@ -500,6 +514,7 @@ class ProductsRequestBuilder extends AbstractRequestBuilder
                 case "searchKeywords":
                     break;
                 case "prices":
+                    $variantDraftArray[$key]=$this->mapPriceFtomData($value);
                     break;
                 default:
                     if ($value==[]) {
@@ -523,7 +538,38 @@ class ProductsRequestBuilder extends AbstractRequestBuilder
         }
         return $variantDraftArray;
     }
+    private function mapPriceFtomData($data)
+    {
+        $prices=[];
+        $currencyAndPrices=explode(';', $data);
+        foreach ($currencyAndPrices as $currencyAndPrice) {
+            $splittedcurrencyAndPrice=explode(' ', $currencyAndPrice);
+            if(count($splittedcurrencyAndPrice)>=3) {
+                var_dump($this->customerGroups);exit;
+                $price['customerGroup'] = $this->customerGroups[$splittedcurrencyAndPrice[2]];
+            }
+            $countryCurrency=explode('-', $splittedcurrencyAndPrice[0]);
+            if (count($countryCurrency)> 1) {
+                $price['country']=$countryCurrency[0];
+            } else {
+                $money['currencyCode']=$countryCurrency[0];
+            }
+            $splitedprice=explode('|', $splittedcurrencyAndPrice[1]);
+            $money['centAmount']=$splitedprice[0]*10;
+//            if (count($splitedprice)>1) {
+//                $customGoup = explode(' ', $splitedprice[1]);
+//                if (count($customGoup) > 1) {
+//                    $price['customerGroup'] = $this->customerGroups[$customGoup];
+//                }
+//
+//            }
+            $price['value']=Money::fromArray($money);
+            $prices[]=Price::fromArray($price);
 
+        }
+
+        return $prices;
+    }
     private function mapProductFromData($productData)
     {
         $productDraftArray= [];
@@ -562,9 +608,6 @@ class ProductsRequestBuilder extends AbstractRequestBuilder
                     }
                     $productDraftArray[$key]= $categories;
                     break;
-//                case "baseId":
-//                    $productDraftArray['masterVariant']['attributes'][] = ProductVariantDraft::fromArray([ 'name' => 'baseId', 'value' => $value]);
-//                    break;
                 case "variants":
                     $variants=[];
                     foreach ($value as $variant) {
@@ -578,9 +621,6 @@ class ProductsRequestBuilder extends AbstractRequestBuilder
                     $productDraftArray[$key]= $variants;
             }
         }
-//        if (array_key_exists('variants', $productDraftArray)){
-//            $productDraftArray['masterVariant']['attributes'][] = ProductVariantDraft::fromArray([ 'name' => 'baseId', 'value' => $productData['baseId']]);
-//        }
         return $productDraftArray;
     }
     public function getIdentifierQuery($identifierName, $query = '= "%s"')
