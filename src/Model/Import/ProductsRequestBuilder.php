@@ -38,11 +38,14 @@ use Commercetools\Core\Model\TaxCategory\TaxCategoryCollection;
 use Commercetools\Core\Request\Categories\CategoryQueryRequest;
 use Commercetools\Core\Request\CustomerGroups\CustomerGroupQueryRequest;
 use Commercetools\Core\Request\Payments\PaymentUpdateRequest;
+use Commercetools\Core\Request\Products\Command\ProductAddPriceAction;
 use Commercetools\Core\Request\Products\Command\ProductAddToCategoryAction;
 use Commercetools\Core\Request\Products\Command\ProductAddVariantAction;
 use Commercetools\Core\Request\Products\Command\ProductChangeNameAction;
+use Commercetools\Core\Request\Products\Command\ProductChangePriceAction;
 use Commercetools\Core\Request\Products\Command\ProductChangeSlugAction;
 use Commercetools\Core\Request\Products\Command\ProductRemoveFromCategoryAction;
+use Commercetools\Core\Request\Products\Command\ProductRemovePriceAction;
 use Commercetools\Core\Request\Products\Command\ProductRemoveVariantAction;
 use Commercetools\Core\Request\Products\Command\ProductSetAttributeAction;
 use Commercetools\Core\Request\Products\Command\ProductSetAttributeInAllVariantsAction;
@@ -68,6 +71,7 @@ class ProductsRequestBuilder extends AbstractRequestBuilder
     private $client;
     private $productVariantsBySku;
     private $productVariantsDraftBySku;
+    private $productVariantDraftPricesByUniqueKey;
 
     public function __construct(Client $client)
     {
@@ -142,11 +146,10 @@ class ProductsRequestBuilder extends AbstractRequestBuilder
         /**
          * @var CustomerGroupCollection $customerGroups;
          */
-//        var_dump($customerGroups);exit;
         $customerGroupsByName = [];
         foreach ($customerGroups as $customerGroup) {
-//            var_dump($customerGroup);exit;
             $customerGroupsByName[$customerGroup->getName()] = $customerGroup->getReference();
+            $customerGroupsByName[$customerGroup->getId()] = $customerGroup->getName();
         }
 
         return $customerGroupsByName;
@@ -376,8 +379,6 @@ class ProductsRequestBuilder extends AbstractRequestBuilder
          */
         $variants= ProductVariantDraftCollection::fromArray($ProductVariantDraftCollection);
         $ProductVariantDraftCollection = $variants->toArray();
-//        var_dump($ProductVariantDraftCollection);
-
 
         $productVariantsDraftBySku = [];
 
@@ -416,6 +417,79 @@ class ProductsRequestBuilder extends AbstractRequestBuilder
         return $result;
     }
 
+    private function getPriceDiff($ProductPrices, $productVariantDraftPrices)
+    {
+        $this->productVariantDraftPricesByUniqueKey=[];
+        $productVariantDraftPricesByUniqueKey=[];
+
+        foreach ($productVariantDraftPrices as $price) {
+            $keyParts = [];
+            $priceObj=PriceDraft::fromArray($price->toArray());
+            $price=$price->toArray();
+            $keyParts[]=$price['value']['currencyCode'];
+            if (isset($price['country'])) {
+                $keyParts[]=$price['country'];
+            }
+            if (isset($price['customerGroup'])) {
+                $keyParts[]=$price['customerGroup']['obj']['name'];
+            }
+            if (isset($price['channel'])) {
+                $keyParts[]=$price['channel'];
+            }
+            $key=implode('-', $keyParts);
+            $productVariantDraftPricesByUniqueKey[$key]=$price['value']['centAmount'];
+            $this->productVariantDraftPricesByUniqueKey[$key]=$priceObj;
+        }
+
+        $ProductPricesById=[];
+        $ProductPricesByUniqueKey=[];
+        foreach ($ProductPrices as $price) {
+            $keyParts = [];
+            $keyParts[]=$price['value']['currencyCode'];
+            if (isset($price['country'])) {
+                $keyParts[]=$price['country'];
+            }
+            if (isset($price['customerGroup'])) {
+                $keyParts[]=$this->customerGroups[$price['customerGroup']['id']];
+            }
+            if (isset($price['channel'])) {
+                $keyParts[]=$price['channel'];
+            }
+            $key=implode('-', $keyParts);
+            $ProductPricesById[$price['id']][$key]=$price['value']['centAmount'];
+            $ProductPricesByUniqueKey[$key]=$price['value']['centAmount'];
+        }
+
+        $pricesToChange=[];
+        foreach ($ProductPricesById as $id => $priceArray) {
+            foreach ($priceArray as $key => $price) {
+                if (isset($productVariantDraftPricesByUniqueKey[$key]) && $productVariantDraftPricesByUniqueKey[$key]!=$price) {
+                    $pricesToChange[$id]= $priceArray;
+                }
+            }
+        }
+        $diffToReturn['toChange']=$pricesToChange;
+
+        $pricesToRemove=[];
+        foreach ($ProductPricesById as $id => $priceArray) {
+            foreach ($priceArray as $key => $price) {
+                if (!isset($productVariantDraftPricesByUniqueKey[$key])) {
+                    $pricesToRemove[] = $id;
+                }
+            }
+        }
+        $diffToReturn['toRemove']=$pricesToRemove;
+
+        $pricesToAdd=[];
+        foreach ($productVariantDraftPricesByUniqueKey as $key => $value) {
+            if (!isset($ProductPricesByUniqueKey[$key])) {
+                   $pricesToAdd[] = $key;
+            }
+        }
+        $diffToReturn['toAdd']=$pricesToAdd;
+        return $diffToReturn;
+    }
+
     private function getVariantActions($productVariant, $productVariantDraftArray, $productType)
     {
         $actions=[];
@@ -429,19 +503,65 @@ class ProductsRequestBuilder extends AbstractRequestBuilder
             $productDraftAttributes[$attribute['name']] = $attribute;
         }
 
+        $pricesDiff=$this->getPriceDiff($productVariant['prices'], $productVariantDraftArray->toArray()['prices']);
+
         $toChange = $this->arrayDiffRecursive($productAttributes, $productDraftAttributes);
 
         $toChange['images']= $this->arrayDiffRecursive($productVariant['images'], $productVariantDraftArray->toArray()['images']);
 
+        if (isset($pricesDiff['toChange'])) {
+            $toChange['prices'] = $pricesDiff['toChange'];
+        }
+
+        $toRemove=[];
+        if (isset($pricesDiff['toRemove'])) {
+            $toRemove['prices'] = $pricesDiff['toRemove'];
+        }
+
+        $toAdd=[];
+        if (isset($pricesDiff['toAdd'])) {
+            $toAdd['prices'] = $pricesDiff['toAdd'];
+        }
+
         /**
          * @var ProductType $productType
          */
-//        var_dump($productType);exit;
         $productType = $this->productTypes[$productType['id']];
+
+        foreach ($toRemove as $key => $value) {
+            switch ($key) {
+                case "prices":
+                    foreach ($value as $priceId) {
+                        $actions[]= ProductRemovePriceAction::ofPriceId($priceId);
+                    }
+                    break;
+            }
+        }
+
+        foreach ($toAdd as $key => $value) {
+            switch ($key) {
+                case "prices":
+                    foreach ($value as $key) {
+                        $actions[]= ProductAddPriceAction::ofSkuAndPrice($productVariant['sku'], $this->productVariantDraftPricesByUniqueKey[$key]);
+                    }
+                    break;
+            }
+        }
 
         foreach ($toChange as $key => $value) {
             switch ($key) {
                 case "images":
+                    break;
+                case "prices":
+                    foreach ($value as $id => $price) {
+                        foreach ($price as $priceUniqueKey => $value) {
+                            $actions[] =
+                                ProductChangePriceAction::ofPriceIdAndPrice(
+                                    $id,
+                                    $this->productVariantDraftPricesByUniqueKey[$priceUniqueKey]
+                                );
+                        }
+                    }
                     break;
                 default:
                     $attributeDefinition = $productType->getAttributes()->getByName($key);
@@ -543,9 +663,9 @@ class ProductsRequestBuilder extends AbstractRequestBuilder
         $prices=[];
         $currencyAndPrices=explode(';', $data);
         foreach ($currencyAndPrices as $currencyAndPrice) {
+            $price =[];
             $splittedcurrencyAndPrice=explode(' ', $currencyAndPrice);
-            if(count($splittedcurrencyAndPrice)>=3) {
-                var_dump($this->customerGroups);exit;
+            if (count($splittedcurrencyAndPrice)>=3) {
                 $price['customerGroup'] = $this->customerGroups[$splittedcurrencyAndPrice[2]];
             }
             $countryCurrency=explode('-', $splittedcurrencyAndPrice[0]);
@@ -554,18 +674,10 @@ class ProductsRequestBuilder extends AbstractRequestBuilder
             } else {
                 $money['currencyCode']=$countryCurrency[0];
             }
-            $splitedprice=explode('|', $splittedcurrencyAndPrice[1]);
-            $money['centAmount']=$splitedprice[0]*10;
-//            if (count($splitedprice)>1) {
-//                $customGoup = explode(' ', $splitedprice[1]);
-//                if (count($customGoup) > 1) {
-//                    $price['customerGroup'] = $this->customerGroups[$customGoup];
-//                }
-//
-//            }
+            $splitedPrice=explode('|', $splittedcurrencyAndPrice[1]);
+            $money['centAmount']= intval($splitedPrice[0]);
             $price['value']=Money::fromArray($money);
             $prices[]=Price::fromArray($price);
-
         }
 
         return $prices;
