@@ -18,7 +18,6 @@ class CsvToJson
         foreach ($headings as $heading => $column) {
             $headingParts = explode('.', $heading);
             $columnData = isset($data[$column]) ? $data[$column] : null;
-            $columnData = $columnData !== '' ? $columnData : null;
             if (!is_null($columnData)) {
                 $category = $this->transformData($headingParts, $category, $columnData);
             }
@@ -36,7 +35,9 @@ class CsvToJson
             }
             $context[$actualPart] = $this->transformData($parts, $context[$actualPart], $data);
         } else {
-            $context[$actualPart] = $data;
+            if ($data !== '' && !is_null($data)) {
+                $context[$actualPart] = $data;
+            }
         }
 
         return $context;

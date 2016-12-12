@@ -38,6 +38,7 @@ use Commercetools\Core\Model\TaxCategory\TaxCategoryCollection;
 use Commercetools\Core\Request\Categories\CategoryQueryRequest;
 use Commercetools\Core\Request\CustomerGroups\CustomerGroupQueryRequest;
 use Commercetools\Core\Request\Payments\PaymentUpdateRequest;
+use Commercetools\Core\Request\Products\Command\ProductAddExternalImageAction;
 use Commercetools\Core\Request\Products\Command\ProductAddPriceAction;
 use Commercetools\Core\Request\Products\Command\ProductAddToCategoryAction;
 use Commercetools\Core\Request\Products\Command\ProductAddVariantAction;
@@ -45,6 +46,7 @@ use Commercetools\Core\Request\Products\Command\ProductChangeNameAction;
 use Commercetools\Core\Request\Products\Command\ProductChangePriceAction;
 use Commercetools\Core\Request\Products\Command\ProductChangeSlugAction;
 use Commercetools\Core\Request\Products\Command\ProductRemoveFromCategoryAction;
+use Commercetools\Core\Request\Products\Command\ProductRemoveImageAction;
 use Commercetools\Core\Request\Products\Command\ProductRemovePriceAction;
 use Commercetools\Core\Request\Products\Command\ProductRemoveVariantAction;
 use Commercetools\Core\Request\Products\Command\ProductSetAttributeAction;
@@ -209,8 +211,10 @@ class ProductsRequestBuilder extends AbstractRequestBuilder
     private function createVariantAddRequest($variants)
     {
         $actions = [];
-
         foreach ($variants as $variant) {
+            if ($variant['prices']==[]) {
+                unset($variant['prices']);
+            }
             $actions[]=ProductAddVariantAction::fromArray($variant);
         }
         return $actions;
@@ -222,7 +226,6 @@ class ProductsRequestBuilder extends AbstractRequestBuilder
         $request = ProductCreateRequest::ofDraft($product);
         return $request;
     }
-
     private function getUpdateRequest(ProductProjection $product, $productData)
     {
         $productDraftArray = $this->mapProductFromData($productData);
@@ -296,9 +299,10 @@ class ProductsRequestBuilder extends AbstractRequestBuilder
                     );
                     break;
                 case 'description':
-                    $actions[$heading] = ProductSetDescriptionAction::ofDescription(
-                        LocalizedString::fromArray($productDraftArray[$heading])
-                    );
+                    $actions[$heading] = ProductSetDescriptionAction::of();
+                    if (!empty($productDraftArray[$heading])) {
+                        $actions[$heading]->setDescription(LocalizedString::fromArray($productDraftArray[$heading]));
+                    }
                     break;
                 case 'key':
                     $actions[$heading] = ProductSetKeyAction::ofKey(
@@ -387,7 +391,7 @@ class ProductsRequestBuilder extends AbstractRequestBuilder
             $images=[];
             if (isset($variant['images'])) {
                 foreach ($variant['images'] as $image) {
-                    $images[] = $image->toArray();
+                    $images[] = $image;
                 }
 
                 $variant['images'] = $images;
@@ -456,6 +460,7 @@ class ProductsRequestBuilder extends AbstractRequestBuilder
                 $keyParts[]=$price['channel'];
             }
             $key=implode('-', $keyParts);
+
             $ProductPricesById[$price['id']][$key]=$price['value']['centAmount'];
             $ProductPricesByUniqueKey[$key]=$price['value']['centAmount'];
         }
@@ -495,6 +500,7 @@ class ProductsRequestBuilder extends AbstractRequestBuilder
         $actions=[];
         $productAttributes = [];
         $productDraftAttributes = [];
+
         foreach ($productVariant['attributes'] as $attribute) {
             $productAttributes[$attribute['name']] = $attribute;
         }
@@ -506,8 +512,26 @@ class ProductsRequestBuilder extends AbstractRequestBuilder
         $pricesDiff=$this->getPriceDiff($productVariant['prices'], $productVariantDraftArray->toArray()['prices']);
 
         $toChange = $this->arrayDiffRecursive($productAttributes, $productDraftAttributes);
+        var_dump($productAttributes);exit;
 
-        $toChange['images']= $this->arrayDiffRecursive($productVariant['images'], $productVariantDraftArray->toArray()['images']);
+        $imagesFromData=[];
+
+        foreach ($productVariantDraftArray->toArray()['images'] as $image) {
+            $keyParts=[];
+            $keyParts[]=$image['url'];
+            $keyParts[]=implode('-', $image['dimensions']->toArray());
+            $imagesFromData [implode('-', $keyParts)]= $image;
+        }
+        $imagesFromVariant=[];
+
+        foreach ($productVariant['images'] as $image) {
+            $keyParts=[];
+            $keyParts[]=$image['url'];
+            $keyParts[]=implode('-', $image['dimensions']);
+            $imagesFromVariant [implode('-', $keyParts)]= $image;
+        }
+
+
 
         if (isset($pricesDiff['toChange'])) {
             $toChange['prices'] = $pricesDiff['toChange'];
@@ -517,12 +541,13 @@ class ProductsRequestBuilder extends AbstractRequestBuilder
         if (isset($pricesDiff['toRemove'])) {
             $toRemove['prices'] = $pricesDiff['toRemove'];
         }
+        $toRemove['images']= array_diff_key($imagesFromVariant, $imagesFromData);
 
         $toAdd=[];
         if (isset($pricesDiff['toAdd'])) {
             $toAdd['prices'] = $pricesDiff['toAdd'];
         }
-
+        $toAdd['images']= array_diff_key($imagesFromData, $imagesFromVariant);
         /**
          * @var ProductType $productType
          */
@@ -535,6 +560,11 @@ class ProductsRequestBuilder extends AbstractRequestBuilder
                         $actions[]= ProductRemovePriceAction::ofPriceId($priceId);
                     }
                     break;
+                case 'images':
+                    foreach ($value as $image) {
+                        $actions[]= ProductRemoveImageAction::ofSkuAndImageUrl($productVariant['sku'], $image['url']);
+                    }
+                    break;
             }
         }
 
@@ -545,11 +575,21 @@ class ProductsRequestBuilder extends AbstractRequestBuilder
                         $actions[]= ProductAddPriceAction::ofSkuAndPrice($productVariant['sku'], $this->productVariantDraftPricesByUniqueKey[$key]);
                     }
                     break;
+                case "images":
+                    foreach ($value as $image) {
+                        $actions[]= ProductAddExternalImageAction::ofSkuAndImage($productVariant['sku'], Image::fromArray($image));
+                    }
+                    break;
             }
         }
 
         foreach ($toChange as $key => $value) {
             switch ($key) {
+//                case "articleNumberManufacturer":
+//                case "articleNumberMax":
+//                case "matrixId":
+//                case "baseId":
+//                case "baseId":
                 case "images":
                     break;
                 case "prices":
@@ -582,6 +622,9 @@ class ProductsRequestBuilder extends AbstractRequestBuilder
     private function mapVariantFromData($variantData, ProductType $productType)
     {
         $variantDraftArray= [];
+        if (!isset($variantData['prices'])) {
+            $variantData['prices']="";
+        }
         foreach ($variantData as $key => $value) {
             switch ($key) {
                 case "metaTitle":
@@ -603,33 +646,17 @@ class ProductsRequestBuilder extends AbstractRequestBuilder
                     $variantDraftArray[$key] = $value;
                     break;
                 case "images":
-                    $image=[];
-                    $size=(explode("-thumb", $value));
-                    $dimension='';
-                    if (count($size)>=1) {
-                        $dimension= ImageDimension::fromArray(["w"=> 50, "h"=> 50]);
+                    $images=[];
+                    $dimension= ImageDimension::fromArray(["w"=> 0, "h"=> 0]);
+                    $value=explode(';', $value);
+                    foreach ($value as $imageUrl) {
+                        if ($imageUrl!='') {
+                            $image['url'] = $imageUrl;
+                            $image['dimensions'] = $dimension;
+                            $images[]=$image;
+                        }
                     }
-                    $size=(explode("-small", $value));
-                    if (count($size)>=1) {
-                        $dimension= ImageDimension::fromArray(["w"=> 150, "h"=> 250]);
-                    }
-                    $size=(explode("-medium", $value));
-                    if (count($size)>=1) {
-                        $dimension= ImageDimension::fromArray(["w"=> 400, "h"=> 400]);
-                    }
-                    $size=(explode("-large", $value));
-                    if (count($size)>=1) {
-                        $dimension= ImageDimension::fromArray(["w"=> 700, "h"=> 700]);
-                    }
-                    $size=(explode("-zoom", $value));
-                    if (count($size)>=1) {
-                        $dimension= ImageDimension::fromArray(["w"=> 1400, "h"=> 1400]);
-                    }
-                    if ($value!='') {
-                        $image['url'] = $value;
-                        $image['dimensions'] = $dimension;
-                    }
-                    $variantDraftArray[$key] = [Image::fromArray($image)];
+                    $variantDraftArray[$key] = Image::fromArray($images);
                     break;
                 case "searchKeywords":
                     break;
@@ -674,16 +701,19 @@ class ProductsRequestBuilder extends AbstractRequestBuilder
             } else {
                 $money['currencyCode']=$countryCurrency[0];
             }
-            $splitedPrice=explode('|', $splittedcurrencyAndPrice[1]);
-            $money['centAmount']= intval($splitedPrice[0]);
-            $price['value']=Money::fromArray($money);
-            $prices[]=Price::fromArray($price);
+            if (count($splittedcurrencyAndPrice)>= 2) {
+                $splitedPrice=explode('|', $splittedcurrencyAndPrice[1]);
+                $money['centAmount']= intval($splitedPrice[0]);
+                $price['value']=Money::fromArray($money);
+                $prices[]= Price::fromArray($price);
+            }
         }
 
         return $prices;
     }
     private function mapProductFromData($productData)
     {
+//        var_dump($productData);exit;
         $productDraftArray= [];
         foreach ($productData as $key => $value) {
             switch ($key) {
@@ -695,9 +725,9 @@ class ProductsRequestBuilder extends AbstractRequestBuilder
                 case "slug":
                 case "description":
                 case "publish":
-                    if (!is_null($value) && $value !== '') {
+//                    if (!is_null($value) && $value !== '') {
                         $productDraftArray[$key]= $value;
-                    }
+//                    }
                     break;
                 case "productType":
                     $productDraftArray[$key]= ProductTypeReference::ofKey($value);
@@ -733,6 +763,7 @@ class ProductsRequestBuilder extends AbstractRequestBuilder
                     $productDraftArray[$key]= $variants;
             }
         }
+//        var_dump($productDraftArray);exit;
         return $productDraftArray;
     }
     public function getIdentifierQuery($identifierName, $query = '= "%s"')

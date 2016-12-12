@@ -49,6 +49,11 @@ class CsvToJsonTest extends \PHPUnit_Framework_TestCase
                 ['a.b.d', 'a.b.c'],
                 [1, 2],
                 ['a'=> ['b' =>['d'=>1,'c'=>2]]]
+            ],
+            [
+                ['description.en'],
+                [''],
+                ['description' => []]
             ]
         ];
     }
