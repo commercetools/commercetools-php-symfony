@@ -206,6 +206,7 @@ class ProductsRequestBuilder extends AbstractRequestBuilder
             $request = $this->getCreateRequest($productData);
         }
 
+        print_r((string)$request->httpRequest()->getBody());
         return $request;
     }
     private function createVariantAddRequest($variants)
@@ -221,7 +222,7 @@ class ProductsRequestBuilder extends AbstractRequestBuilder
     }
     private function getCreateRequest($productData)
     {
-        $productDraftArray = $this->mapProductFromData($productData);
+        $productDraftArray = $this->mapProductFromData($productData, true);
         $product = ProductDraft::fromArray($productDraftArray);
         $request = ProductCreateRequest::ofDraft($product);
         return $request;
@@ -263,14 +264,29 @@ class ProductsRequestBuilder extends AbstractRequestBuilder
         $this->productVariantsDraftBySku = $this->getDataVariantsBySku($productDataArray['variants']);
 
         $intersect = $this->arrayIntersectRecursive($product, $productDataArray);
-
+//        if(isset($product['taxCategory'])){
+//        var_dump($product['taxCategory'],$productDataArray['taxCategory']);
         $toRemove['variants'] = $this->getVariantsDiff($this->productVariantsBySku, $this->productVariantsDraftBySku, false);
+        $toRemove['categories']=$this->categoriesToRemove($product['categories'], $productDataArray['categories']);
+
+
         $toAdd['variants'] = $this->getVariantsDiff($this->productVariantsBySku, $this->productVariantsDraftBySku);
-        $toChange= $this->arrayDiffRecursive($productDataArray, $intersect);
+
+
+        $toChange = $this->arrayDiffRecursive($productDataArray, $intersect);
         $toChange['categories']=$this->categoriesToAdd($product['categories'], $productDataArray['categories']);
 
+        if (isset($product['taxCategory']) && isset($productDataArray['taxCategory'])) {
+            $taxCategoryToChange=$this->taxCategoryDiff($product['taxCategory'], $productDataArray['taxCategory']);
+            if ($taxCategoryToChange ==null) {
+                unset($toChange['taxCategory']);
+            }
+        } elseif (isset($productDataArray['taxCategory'])) {
+            $toChange['taxCategory']= $productDataArray['taxCategory'];
+        } else {
+            $toChange['taxCategory']=[];
+        }
 
-        $toRemove['categories']=$this->categoriesToRemove($product['categories'], $productDataArray['categories']);
 
         $request = ProductUpdateRequest::ofIdAndVersion($product['id'], $product['version']);
 
@@ -299,9 +315,12 @@ class ProductsRequestBuilder extends AbstractRequestBuilder
                     );
                     break;
                 case 'description':
-                    $actions[$heading] = ProductSetDescriptionAction::of();
+                    $action = ProductSetDescriptionAction::of();
                     if (!empty($productDraftArray[$heading])) {
-                        $actions[$heading]->setDescription(LocalizedString::fromArray($productDraftArray[$heading]));
+                        $action->setDescription(LocalizedString::fromArray($productDraftArray[$heading]));
+                    }
+                    if (!empty($productDraftArray[$heading]) || !empty($product[$heading])) {
+                        $actions[$heading] = $action;
                     }
                     break;
                 case 'key':
@@ -310,7 +329,18 @@ class ProductsRequestBuilder extends AbstractRequestBuilder
                     );
                     break;
                 case 'taxCategory':
-                    $actions[$heading] = ProductSetTaxCategoryAction::of()->setTaxCategory($productDraftArray[$heading]);
+//                    if (isset($productDataArray['taxCategory'])) {
+//                        $actions[$heading] = ProductSetTaxCategoryAction::of()->setTaxCategory($productDraftArray[$heading]);
+//                    } else {
+//                        $actions[$heading] = ProductSetTaxCategoryAction::of();
+//                    }
+                    $action = ProductSetTaxCategoryAction::of();
+                    if (!empty($productDraftArray[$heading])) {
+                        $action->setTaxCategory($productDraftArray[$heading]);
+                    }
+                    if (!empty($productDraftArray[$heading]) || !empty($product[$heading])) {
+                        $actions[$heading] = $action;
+                    }
                     break;
                 case 'categories':
                     foreach ($toChange[$heading] as $category) {
@@ -318,13 +348,31 @@ class ProductsRequestBuilder extends AbstractRequestBuilder
                     }
                     break;
                 case 'metaTitle':
-                    $actions[$heading] = ProductSetMetaTitleAction::of()->setMetaTitle(LocalizedString::fromArray($data));
+                    $action = ProductSetMetaTitleAction::of();
+                    if (!empty($productDraftArray[$heading])) {
+                        $action->setMetaTitle(LocalizedString::fromArray($productDraftArray[$heading]));
+                    }
+                    if (!empty($productDraftArray[$heading]) || !empty($product[$heading])) {
+                        $actions[$heading] = $action;
+                    }
                     break;
                 case 'metaDescription':
-                    $actions[$heading] = ProductSetMetaDescriptionAction::of()->setMetaDescription(LocalizedString::fromArray($data));
+                    $action = ProductSetMetaDescriptionAction::of();
+                    if (!empty($productDraftArray[$heading])) {
+                        $action->setMetaDescription(LocalizedString::fromArray($productDraftArray[$heading]));
+                    }
+                    if (!empty($productDraftArray[$heading]) || !empty($product[$heading])) {
+                        $actions[$heading] = $action;
+                    }
                     break;
                 case 'metaKeywords':
-                    $actions[$heading] = ProductSetMetaKeywordsAction::of()->setMetaKeywords(LocalizedString::fromArray($data));
+                    $action = ProductSetMetaKeywordsAction::of();
+                    if (!empty($productDraftArray[$heading])) {
+                        $action->setMetaKeywords(LocalizedString::fromArray($productDraftArray[$heading]));
+                    }
+                    if (!empty($productDraftArray[$heading]) || !empty($product[$heading])) {
+                        $actions[$heading] = $action;
+                    }
                     break;
                 case "masterVariant":
                     $actions = array_merge_recursive(
@@ -363,7 +411,7 @@ class ProductsRequestBuilder extends AbstractRequestBuilder
             }
         }
         $request->setActions($actions);
-//        print_r((string)$request->httpRequest()->getBody());exit;
+        print_r((string)$request->httpRequest()->getBody());
         return $request;
     }
 
@@ -512,7 +560,7 @@ class ProductsRequestBuilder extends AbstractRequestBuilder
         $pricesDiff=$this->getPriceDiff($productVariant['prices'], $productVariantDraftArray->toArray()['prices']);
 
         $toChange = $this->arrayDiffRecursive($productAttributes, $productDraftAttributes);
-        var_dump($productAttributes);exit;
+//        var_dump($productAttributes);exit;
 
         $imagesFromData=[];
 
@@ -585,11 +633,6 @@ class ProductsRequestBuilder extends AbstractRequestBuilder
 
         foreach ($toChange as $key => $value) {
             switch ($key) {
-//                case "articleNumberManufacturer":
-//                case "articleNumberMax":
-//                case "matrixId":
-//                case "baseId":
-//                case "baseId":
                 case "images":
                     break;
                 case "prices":
@@ -664,9 +707,10 @@ class ProductsRequestBuilder extends AbstractRequestBuilder
                     $variantDraftArray[$key]=$this->mapPriceFtomData($value);
                     break;
                 default:
-                    if ($value==[]) {
-                        $variantDraftArray['attributes']=[];
-                    } elseif (!is_null($value) && $value !== '') {
+                    if (!isset($variantDraftArray['attributes'])) {
+                        $variantDraftArray['attributes'] = [];
+                    }
+                    if (!is_null($value) && $value !== '') {
                         $attributeDefinition = $productType->getAttributes()->getByName($key);
                         if ($attributeDefinition) {
                             $attributeType = $attributeDefinition->getType();
@@ -711,9 +755,8 @@ class ProductsRequestBuilder extends AbstractRequestBuilder
 
         return $prices;
     }
-    private function mapProductFromData($productData)
+    private function mapProductFromData($productData, $ignoreEmpty = false)
     {
-//        var_dump($productData);exit;
         $productDraftArray= [];
         foreach ($productData as $key => $value) {
             switch ($key) {
@@ -725,9 +768,9 @@ class ProductsRequestBuilder extends AbstractRequestBuilder
                 case "slug":
                 case "description":
                 case "publish":
-//                    if (!is_null($value) && $value !== '') {
+                    if (!$ignoreEmpty || !empty($value) && $value !== '') {
                         $productDraftArray[$key]= $value;
-//                    }
+                    }
                     break;
                 case "productType":
                     $productDraftArray[$key]= ProductTypeReference::ofKey($value);
@@ -735,10 +778,6 @@ class ProductsRequestBuilder extends AbstractRequestBuilder
                 case "tax":
                     $productDraftArray['taxCategory']= $this->taxCategories[$value];
                     break;
-//                case "searchKeywords":
-//                    $keywords =
-//                    $productDraftArray[$key]= SearchKeywords::fromArray($value);
-//                    break;
                 case "state":
                     $productDraftArray[$key]= StateReference::ofKey($value);
                     break;
@@ -763,7 +802,6 @@ class ProductsRequestBuilder extends AbstractRequestBuilder
                     $productDraftArray[$key]= $variants;
             }
         }
-//        var_dump($productDraftArray);exit;
         return $productDraftArray;
     }
     public function getIdentifierQuery($identifierName, $query = '= "%s"')
@@ -805,6 +843,12 @@ class ProductsRequestBuilder extends AbstractRequestBuilder
             }
         }
         return $toAdd;
+    }
+    private function taxCategoryDiff($productCategory, $dataCategory)
+    {
+        if ($productCategory['id'] != $dataCategory ['id']) {
+            return $dataCategory;
+        }
     }
     private function categoriesToRemove($productCategories, $dataCategories)
     {

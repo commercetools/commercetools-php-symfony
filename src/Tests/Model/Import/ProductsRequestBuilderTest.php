@@ -16,6 +16,7 @@ use Commercetools\Core\Request\Products\ProductProjectionQueryRequest;
 use Commercetools\Core\Request\ProductTypes\ProductTypeQueryRequest;
 use Commercetools\Core\Request\TaxCategories\TaxCategoryQueryRequest;
 use Commercetools\Core\Response\PagedQueryResponse;
+use Commercetools\Symfony\CtpBundle\Model\Import\CsvToJson;
 use Commercetools\Symfony\CtpBundle\Model\Import\ProductsRequestBuilder;
 use Commercetools\Core\Request\Products\ProductCreateRequest;
 use Commercetools\Core\Request\Products\ProductUpdateRequest;
@@ -59,7 +60,7 @@ class ProductsRequestBuilderTest extends \PHPUnit_Framework_TestCase
 
         $requestBuilder = new ProductsRequestBuilder($client->reveal());
 
-        $data = ['productType'=> 'main','slug' => ['de'=>'product-slug-de', 'en' => 'product-slug-en'], 'name' => ['de'=>'product name de', 'en' => 'product name en'], 'key' => "productkey"];
+        $data = ['productType'=> 'main','description' => [], 'slug' => ['de'=>'product-slug-de', 'en' => 'product-slug-en'], 'name' => ['de'=>'product name de', 'en' => 'product name en'], 'key' => "productkey", "details" => []];
 
         $returnedRequest= $requestBuilder->createRequest($data, "key");
 
@@ -80,12 +81,53 @@ class ProductsRequestBuilderTest extends \PHPUnit_Framework_TestCase
                     'description' => [],
                     'key' => "productkey",
                 ],
+                '{"results": [{"version" :"","id" :"12345","sku":"1234", "name":{"de":"product name de","en" : "product name en"}, "key": "productkey","categories": {}, "masterVariant": {}, "variants": []}]}',
+                '{"actions":[],
+                    "version" :""
+                }',
+                ['sku' => '1234', 'name.de' => 'product name de', 'name.en' => 'product name en', 'description.de' => '', 'key' => 'productkey'],
+            ],
+            [
+                [
+                    "sku"=>"1234",
+                    'name' => ['de'=>'product name de', 'en' => 'product name en'],
+                    'description' => [],
+                    'key' => "productkey",
+                ],
                 '{"results": [{"version" :"","id" :"12345","sku":"1234","description":{"de":"product name de","en" : "product name en"},"name":{"de":"product name de","en" : "product name en"}, "key": "productkey","categories": {}, "masterVariant": {}, "variants": []}]}',
                 '{"actions":[
                     {"action":"setDescription"}
                     ],
                     "version" :""
                 }'
+            ],
+            [
+                [
+                    "sku"=>"1234",
+                    'name' => ['de'=>'product name de', 'en' => 'product name en'],
+                    'metaTitle' => [],
+                    'key' => "productkey",
+                ],
+                '{"results": [{"version" :"","id" :"12345","sku":"1234","name":{"de":"product name de","en" : "product name en"}, "key": "productkey","categories": {}, "masterVariant": {}, "variants": []}]}',
+                '{"actions":[],
+                    "version" :""
+                }',
+                ['sku' => '1234', 'name.de' => 'product name de', 'name.en' => 'product name en', 'metaTitle.de' => '', 'key' => 'productkey'],
+            ],
+            [
+                [
+                    "sku"=>"1234",
+                    'name' => ['de'=>'product name de', 'en' => 'product name en'],
+                    'metaTitle' => [],
+                    'key' => "productkey",
+                ],
+                '{"results": [{"version" :"","id" :"12345","sku":"1234","metaTitle":{"de":"product metaTitle de","en" : "product metaTitle en"},"name":{"de":"product name de","en" : "product name en"}, "key": "productkey","categories": {}, "masterVariant": {}, "variants": []}]}',
+                '{"actions":[
+                    {"action":"setMetaTitle"}
+                    ],
+                    "version" :""
+                }',
+                ['sku' => '1234', 'name.de' => 'product name de', 'name.en' => 'product name en', 'metaTitle.de' => '', 'key' => 'productkey'],
             ],
             //change Name
             [
@@ -724,10 +766,14 @@ class ProductsRequestBuilderTest extends \PHPUnit_Framework_TestCase
     /**
      * @dataProvider getTestData
      */
-    public function testUpdateRequest($data, $response, $expected)
+    public function testUpdateRequest($data, $response, $expected, $csvLine = null)
     {
         $client = $this->prophesize(Client::class);
 
+        if (!is_null($csvLine)) {
+            $csvToJson = new CsvToJson();
+            $data = $csvToJson->transform(array_values($csvLine), array_flip(array_keys($csvLine)));
+        }
         $config = new Config();
         $client->getConfig()->willReturn($config);
         $client->execute(Argument::type(ProductProjectionQueryRequest::class))->will(function ($args) use ($response) {
