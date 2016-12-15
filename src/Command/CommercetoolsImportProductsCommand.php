@@ -37,7 +37,6 @@ class CommercetoolsImportProductsCommand extends ContainerAwareCommand
 
         $loader->setCsvControl($delimiter, $enclosure, $escape);
         $data = $loader->load($file);
-//        var_dump($data);
         $importer->setOptions($identifiedByColumn);
         $importer->import($data);
     }

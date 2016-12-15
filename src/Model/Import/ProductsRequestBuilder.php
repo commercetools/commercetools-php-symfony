@@ -71,6 +71,8 @@ class ProductsRequestBuilder extends AbstractRequestBuilder
     private $categories;
     private $productTypes;
     private $client;
+    private $productVariantsById;
+    private $productVariantsDraftById;
     private $productVariantsBySku;
     private $productVariantsDraftBySku;
     private $productVariantDraftPricesByUniqueKey;
@@ -206,7 +208,6 @@ class ProductsRequestBuilder extends AbstractRequestBuilder
             $request = $this->getCreateRequest($productData);
         }
 
-        print_r((string)$request->httpRequest()->getBody());
         return $request;
     }
     private function createVariantAddRequest($variants)
@@ -260,14 +261,15 @@ class ProductsRequestBuilder extends AbstractRequestBuilder
             }
         }
 
-        $this->productVariantsBySku = $this->getProductVariantsBySku($product['variants']);
-        $this->productVariantsDraftBySku = $this->getDataVariantsBySku($productDataArray['variants']);
+
+        $this->productVariantsById = $this->getProductVariantsById($product['variants']);
+        $this->productVariantsDraftById = $this->getDataVariantsById($productDataArray['variants']);
 
         $intersect = $this->arrayIntersectRecursive($product, $productDataArray);
-//        if(isset($product['taxCategory'])){
-//        var_dump($product['taxCategory'],$productDataArray['taxCategory']);
+
         $toRemove['variants'] = $this->getVariantsDiff($this->productVariantsBySku, $this->productVariantsDraftBySku, false);
         $toRemove['categories']=$this->categoriesToRemove($product['categories'], $productDataArray['categories']);
+
 
 
         $toAdd['variants'] = $this->getVariantsDiff($this->productVariantsBySku, $this->productVariantsDraftBySku);
@@ -291,6 +293,7 @@ class ProductsRequestBuilder extends AbstractRequestBuilder
         $request = ProductUpdateRequest::ofIdAndVersion($product['id'], $product['version']);
 
         $actions = [];
+
 
         foreach ($toAdd as $heading => $data) {
             switch ($heading) {
@@ -329,11 +332,6 @@ class ProductsRequestBuilder extends AbstractRequestBuilder
                     );
                     break;
                 case 'taxCategory':
-//                    if (isset($productDataArray['taxCategory'])) {
-//                        $actions[$heading] = ProductSetTaxCategoryAction::of()->setTaxCategory($productDraftArray[$heading]);
-//                    } else {
-//                        $actions[$heading] = ProductSetTaxCategoryAction::of();
-//                    }
                     $action = ProductSetTaxCategoryAction::of();
                     if (!empty($productDraftArray[$heading])) {
                         $action->setTaxCategory($productDraftArray[$heading]);
@@ -382,12 +380,14 @@ class ProductsRequestBuilder extends AbstractRequestBuilder
                     break;
 
                 case "variants":
-                    foreach ($product['variants'] as $variant) {
-                        if (isset($this->productVariantsDraftBySku[$variant['sku']])) {
-                            $actions = array_merge_recursive(
-                                $actions,
-                                $this->getVariantActions($variant, ProductVariantDraft::fromArray($this->productVariantsDraftBySku[$variant['sku']]), $product['productType'])
-                            );
+                    if ($this->productVariantsBySku) {
+                        foreach ($this->productVariantsBySku as $variant) {
+                            if (isset($this->productVariantsDraftBySku[$variant['sku']])) {//change sku to id
+                                $actions = array_merge_recursive(
+                                    $actions,
+                                    $this->getVariantActions($variant, ProductVariantDraft::fromArray($this->productVariantsDraftBySku[$variant['sku']]), $product['productType'])
+                                );
+                            }
                         }
                     }
                     break;
@@ -403,28 +403,28 @@ class ProductsRequestBuilder extends AbstractRequestBuilder
                     break;
                 case "variants":
                     foreach ($data as $variant) {
-                        if (isset($variant['sku'])) {
-                            $actions[$heading . 'remove' . $variant['sku']] = ProductRemoveVariantAction::ofSku($variant['sku']);
+                        if (isset($variant['id'])) {
+                            $actions[$heading . 'remove' . $variant['id']] = ProductRemoveVariantAction::ofVariantId($variant['id']);
                         }
                     }
                     break;
             }
         }
         $request->setActions($actions);
-        print_r((string)$request->httpRequest()->getBody());
+//        print_r((string)$request->httpRequest()->getBody());
         return $request;
     }
 
-    private function getProductVariantsBySku($productVariants)
+    private function getProductVariantsById($productVariants)
     {
-        $productVariantsBySku = [];
+        $productVariantsById = [];
         foreach ($productVariants as $variant) {
-            $productVariantsBySku[$variant['sku']] = $variant;
+            $productVariantsById[$variant['id']] = $variant;
+            $this->productVariantsBySku[$variant['sku']] = $variant;
         }
-
-        return $productVariantsBySku;
+        return $productVariantsById;
     }
-    private function getDataVariantsBySku($ProductVariantDraftCollection)
+    private function getDataVariantsById($ProductVariantDraftCollection)
     {
         /**
          * @var ProductVariantDraftCollection $variants
@@ -432,10 +432,9 @@ class ProductsRequestBuilder extends AbstractRequestBuilder
         $variants= ProductVariantDraftCollection::fromArray($ProductVariantDraftCollection);
         $ProductVariantDraftCollection = $variants->toArray();
 
-        $productVariantsDraftBySku = [];
+        $productVariantsDraftById = [];
 
         foreach ($ProductVariantDraftCollection as $variant) {
-            unset($variant['variantId']);
             $images=[];
             if (isset($variant['images'])) {
                 foreach ($variant['images'] as $image) {
@@ -444,24 +443,30 @@ class ProductsRequestBuilder extends AbstractRequestBuilder
 
                 $variant['images'] = $images;
             }
-            $productVariantsDraftBySku[$variant['sku']] = $variant;
+            $productVariantsDraftById[$variant['variantId']] = $variant;
+            $this->productVariantsDraftBySku[$variant['sku']] = $variant;
+//            unset($productVariantsDraftById[$variant['variantId']]['variantId']);
         }
-        return $productVariantsDraftBySku;
+        return $productVariantsDraftById;
     }
     private function getVariantsDiff($productVariants, $ProductVariantDraftCollection, $toAddFlag = true)
     {
         if ($toAddFlag) {
             $result=[];
-            foreach ($ProductVariantDraftCollection as $variant) {
-                if (!isset($productVariants[$variant['sku']])) {
-                    $result[]=$variant;
+            if ($ProductVariantDraftCollection) {
+                foreach ($ProductVariantDraftCollection as $variant) {
+                    if (!isset($productVariants[$variant['sku']])) {
+                        $result[] = $variant;
+                    }
                 }
             }
         } else {
             $result=[];
-            foreach ($productVariants as $variant) {
-                if (!isset($ProductVariantDraftCollection[$variant['sku']])) {
-                    $result[]=$variant;
+            if ($productVariants) {
+                foreach ($productVariants as $variant) {
+                    if (!isset($ProductVariantDraftCollection[$variant['sku']])) {
+                        $result[] = $variant;
+                    }
                 }
             }
         }
@@ -545,7 +550,7 @@ class ProductsRequestBuilder extends AbstractRequestBuilder
 
     private function getVariantActions($productVariant, $productVariantDraftArray, $productType)
     {
-        $actions=[];
+        $actions = [];
         $productAttributes = [];
         $productDraftAttributes = [];
 
@@ -557,29 +562,30 @@ class ProductsRequestBuilder extends AbstractRequestBuilder
             $productDraftAttributes[$attribute['name']] = $attribute;
         }
 
-        $pricesDiff=$this->getPriceDiff($productVariant['prices'], $productVariantDraftArray->toArray()['prices']);
+        $pricesDiff = $this->getPriceDiff($productVariant['prices'], $productVariantDraftArray->toArray()['prices']);
 
         $toChange = $this->arrayDiffRecursive($productAttributes, $productDraftAttributes);
-//        var_dump($productAttributes);exit;
 
         $imagesFromData=[];
+        $imagesFromVariant = [];
 
-        foreach ($productVariantDraftArray->toArray()['images'] as $image) {
-            $keyParts=[];
-            $keyParts[]=$image['url'];
-            $keyParts[]=implode('-', $image['dimensions']->toArray());
-            $imagesFromData [implode('-', $keyParts)]= $image;
-        }
-        $imagesFromVariant=[];
-
-        foreach ($productVariant['images'] as $image) {
-            $keyParts=[];
-            $keyParts[]=$image['url'];
-            $keyParts[]=implode('-', $image['dimensions']);
-            $imagesFromVariant [implode('-', $keyParts)]= $image;
+        if (isset($productVariantDraftArray->toArray()['images'])) {
+            foreach ($productVariantDraftArray->toArray()['images'] as $image) {
+                $keyParts = [];
+                $keyParts[] = $image['url'];
+                $keyParts[] = implode('-', $image['dimensions']->toArray());
+                $imagesFromData [implode('-', $keyParts)] = $image;
+            }
         }
 
-
+        if (isset($productVariant['images'])) {
+            foreach ($productVariant['images'] as $image) {
+                $keyParts = [];
+                $keyParts[] = $image['url'];
+                $keyParts[] = implode('-', $image['dimensions']);
+                $imagesFromVariant [implode('-', $keyParts)] = $image;
+            }
+        }
 
         if (isset($pricesDiff['toChange'])) {
             $toChange['prices'] = $pricesDiff['toChange'];
@@ -589,13 +595,16 @@ class ProductsRequestBuilder extends AbstractRequestBuilder
         if (isset($pricesDiff['toRemove'])) {
             $toRemove['prices'] = $pricesDiff['toRemove'];
         }
+
         $toRemove['images']= array_diff_key($imagesFromVariant, $imagesFromData);
 
         $toAdd=[];
         if (isset($pricesDiff['toAdd'])) {
             $toAdd['prices'] = $pricesDiff['toAdd'];
         }
+
         $toAdd['images']= array_diff_key($imagesFromData, $imagesFromVariant);
+
         /**
          * @var ProductType $productType
          */
@@ -610,7 +619,7 @@ class ProductsRequestBuilder extends AbstractRequestBuilder
                     break;
                 case 'images':
                     foreach ($value as $image) {
-                        $actions[]= ProductRemoveImageAction::ofSkuAndImageUrl($productVariant['sku'], $image['url']);
+                        $actions[]= ProductRemoveImageAction::ofVariantIdAndImageUrl($productVariant['id'], $image['url']);
                     }
                     break;
             }
@@ -620,17 +629,16 @@ class ProductsRequestBuilder extends AbstractRequestBuilder
             switch ($key) {
                 case "prices":
                     foreach ($value as $key) {
-                        $actions[]= ProductAddPriceAction::ofSkuAndPrice($productVariant['sku'], $this->productVariantDraftPricesByUniqueKey[$key]);
+                        $actions[]= ProductAddPriceAction::ofVariantIdAndPrice($productVariant['id'], $this->productVariantDraftPricesByUniqueKey[$key]);
                     }
                     break;
                 case "images":
                     foreach ($value as $image) {
-                        $actions[]= ProductAddExternalImageAction::ofSkuAndImage($productVariant['sku'], Image::fromArray($image));
+                        $actions[]= ProductAddExternalImageAction::ofVariantIdAndImage($productVariant['id'], Image::fromArray($image));
                     }
                     break;
             }
         }
-
         foreach ($toChange as $key => $value) {
             switch ($key) {
                 case "images":
@@ -685,6 +693,8 @@ class ProductsRequestBuilder extends AbstractRequestBuilder
                 case "creationDate":
                     break;
                 case "variantId":
+                    $variantDraftArray[$key] = $value;
+                    break;
                 case "sku":
                     $variantDraftArray[$key] = $value;
                     break;
