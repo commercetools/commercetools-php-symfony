@@ -17,6 +17,7 @@ use Commercetools\Core\Request\ProductTypes\ProductTypeQueryRequest;
 use Commercetools\Core\Request\TaxCategories\TaxCategoryQueryRequest;
 use Commercetools\Core\Response\PagedQueryResponse;
 use Commercetools\Symfony\CtpBundle\Model\Import\CsvToJson;
+use Commercetools\Symfony\CtpBundle\Model\Import\ProductsImport;
 use Commercetools\Symfony\CtpBundle\Model\Import\ProductsRequestBuilder;
 use Commercetools\Core\Request\Products\ProductCreateRequest;
 use Commercetools\Core\Request\Products\ProductUpdateRequest;
@@ -95,6 +96,199 @@ class ProductsRequestBuilderTest extends \PHPUnit_Framework_TestCase
                 '{"productType":{"typeId":"product-type","key":"main"},"metaDescription":{"de":"de metaDescription","en":"en metaDescription"},"slug":{"de":"product-slug-de","en":"product-slug-en"},"name":{"de":"product name de","en":"product name en"},"key":"productkey"}',
                 ['productType'=> 'main','metaDescription.de' => 'de metaDescription', 'metaDescription.en' => 'en metaDescription','slug' => ['de'=>'product-slug-de', 'en' => 'product-slug-en'], 'name' => ['de'=>'product name de', 'en' => 'product name en'], 'key' => "productkey", "details" => []]
             ],
+            // Master Variant
+            [
+                [
+                    'productType'=> 'main',
+                    'slug' => ['de'=>'product-slug-de', 'en' => 'product-slug-en'],
+                    'key' => "productkey",
+                    'variants'=> [["sku"=>"1234","key"=>"productkey","variantId"=>'1']]
+                ],
+                '{
+                    "productType":{"typeId":"product-type","key":"main"}, 
+                    "slug":{"de":"product-slug-de","en":"product-slug-en"},
+                    "key":"productkey","masterVariant":{"sku":"1234","variantId":"1","prices":[]},
+                    "variants":[]
+                 }',
+            ],
+            // variants
+            [
+                [
+                    'productType'=> 'main',
+                    'slug' => ['de'=>'product-slug-de', 'en' => 'product-slug-en'],
+                    'key' => "productkey",
+                    'variants'=> [
+                                    ["sku"=>"1234","key"=>"productkey","variantId"=>'1'],
+                                    ["key"=>"productkey","variantId"=>'2'],
+                                    ["sku"=>"","key"=>"productkey","variantId"=>'3']
+                                 ]
+                ],
+                '{
+                    "productType":{"typeId":"product-type","key":"main"},
+                    "slug":{"de":"product-slug-de","en":"product-slug-en"},
+                    "key":"productkey",
+                    "masterVariant":{"sku":"1234","variantId":"1","prices":[]},
+                    "variants":[
+                                    {"variantId":"2","prices":[]},
+                                    {"sku":"","variantId":"3","prices":[]}
+                               ]
+                 }',
+            ],
+            //Prices
+            [
+                [
+                    'productType'=> 'main',
+                    'slug' => ['de'=>'product-slug-de', 'en' => 'product-slug-en'],
+                    'key' => "productkey",
+                    'variants'=> [["sku"=>"1234","variantId"=>'1',"prices"=>"EUR 9750;DE-EUR 7800|5460"]]
+                ],
+                '{
+                    "productType":{"typeId":"product-type","key":"main"}, 
+                    "slug":{"de":"product-slug-de","en":"product-slug-en"},
+                    "key":"productkey",
+                    "masterVariant":{
+                                        "sku":"1234","variantId":"1",
+                                        "prices":[
+                                                    {
+                                                        "value": {
+                                                            "currencyCode":"EUR",
+                                                            "centAmount":9750
+                                                        }
+                                                    },
+                                                    {
+                                                        "value": {
+                                                            "currencyCode":"EUR",
+                                                            "centAmount":7800
+                                                        },
+                                                        "country":"DE"
+                                                    }
+                                                 ]
+                                    },
+                    "variants":[]
+                 }',
+            ],
+            //attributes
+            [
+                [
+                    'productType'=> 'main',
+                    'slug' => ['de'=>'product-slug-de', 'en' => 'product-slug-en'],
+                    'key' => "productkey",
+                    'variants'=> [["sku"=>"1234","variantId"=>'1',"prices"=>"","size"=>"35","designer"=>"designerOne"]]
+                ],
+                '{
+                    "productType":{"typeId":"product-type","key":"main"}, 
+                    "slug":{"de":"product-slug-de","en":"product-slug-en"},
+                    "key":"productkey",
+                    "masterVariant":{
+                                        "sku":"1234","variantId":"1",
+                                        "prices":[],
+                                        "attributes":[
+                                                        {
+                                                            "name":"size",
+                                                            "value":"35"
+                                                        },
+                                                        {
+                                                            "name":"designer",
+                                                            "value":"designerOne"
+                                                        }                                                                                                                
+                                                     ]
+                                    },
+                    "variants":[]
+                 }',
+            ],
+            [
+                [
+                    'productType'=> 'main',
+                    'slug' => ['de'=>'product-slug-de', 'en' => 'product-slug-en'],
+                    'key' => "productkey",
+                    'variants'=> [["sku"=>"1234","variantId"=>'1',"prices"=>"","size"=>"","designer"=>""]]
+                ],
+                '{
+                    "productType":{"typeId":"product-type","key":"main"}, 
+                    "slug":{"de":"product-slug-de","en":"product-slug-en"},
+                    "key":"productkey",
+                    "masterVariant":{
+                                        "sku":"1234","variantId":"1",
+                                        "prices":[],
+                                        "attributes":[]
+                                    },
+                    "variants":[]
+                 }',
+            ],
+            [
+                [
+                    'productType'=> 'main',
+                    'slug' => ['de'=>'product-slug-de', 'en' => 'product-slug-en'],
+                    'key' => "productkey",
+                    'variants'=> [
+                        ["sku"=>"1234","key"=>"productkey","variantId"=>'1'],
+                        ["key"=>"productkey","variantId"=>'2',"size"=>"","designer"=>""],
+                        ["sku"=>"123","key"=>"productkey","variantId"=>'3',"size"=>"35","designer"=>"designerOne"]
+                    ]
+                ],
+                '{
+                    "productType":{"typeId":"product-type","key":"main"},
+                    "slug":{"de":"product-slug-de","en":"product-slug-en"},
+                    "key":"productkey",
+                    "masterVariant":{"sku":"1234","variantId":"1","prices":[]},
+                    "variants":[
+                                    {"variantId":"2","prices":[],"attributes":[]},
+                                    {
+                                        "sku":"123","variantId":"3","prices":[],
+                                        "attributes":[
+                                                        {
+                                                            "name":"size",
+                                                            "value":"35"
+                                                        },
+                                                        {
+                                                            "name":"designer",
+                                                            "value":"designerOne"
+                                                        } 
+                                                     ]
+                                    }
+                               ]
+                 }',
+            ],
+            //images
+            [
+                [
+                    'productType'=> 'main',
+                    'slug' => ['de'=>'product-slug-de', 'en' => 'product-slug-en'],
+                    'key' => "productkey",
+                    'variants'=> [
+                        ["sku"=>"1234","key"=>"productkey","variantId"=>'1',"images"=>"imageUrl",],
+                        ["key"=>"productkey","variantId"=>'2',"size"=>"","designer"=>"","images"=>"imageUrl",],
+                        ["sku"=>"123","key"=>"productkey","variantId"=>'3',"images"=>""]
+                    ]
+                ],
+                '{
+                    "productType":{"typeId":"product-type","key":"main"},
+                    "slug":{"de":"product-slug-de","en":"product-slug-en"},
+                    "key":"productkey",
+                    "masterVariant":{
+                                        "sku":"1234","variantId":"1","prices":[],
+                                        "images":[
+                                        {
+                                            "url":"imageUrl",
+                                            "dimensions":{"w":0,"h":0}
+                                        }]
+                                    },
+                    "variants":[
+                                    {
+                                        "variantId":"2","prices":[],"attributes":[],
+                                        "images":[
+                                            {
+                                                "url":"imageUrl",
+                                                "dimensions":{"w":0,"h":0}
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "sku":"123","variantId":"3","prices":[],"images":[]
+                                    }
+                               ]
+                 }',
+            ]
         ];
     }
     //'{"productType":{"typeId":"product-type","key":"main"},"slug":{"de":"product-slug-de","en":"product-slug-en"},"name":{"de":"product name de","en":"product name en"},"key":"productkey"}'
@@ -126,7 +320,55 @@ class ProductsRequestBuilderTest extends \PHPUnit_Framework_TestCase
             return $response;
         });
         $client->execute(Argument::type(ProductTypeQueryRequest::class))->will(function ($args) {
-            $response = new PagedQueryResponse(new Response(200, [], '{ "results": []}'), $args[0]);
+            $response = new PagedQueryResponse(
+                new Response(
+                    200,
+                    [],
+                    '{
+                        "results": [{
+                            "id":"1",
+                            "name":"product",
+                            "key":"main",
+                            "description":"product desc",
+                            "attributes":[
+                                {
+                                    "name":"size",
+                                    "type": {
+                                        "name": "enum",
+                                        "values": [
+                                            {
+                                                "key": "35",
+                                                "label": "35"
+                                            },
+                                            {
+                                                "key": "34",
+                                                "label": "34"
+                                            }
+                                        ]
+                                    }
+                                },
+                                {
+                                    "name":"designer",
+                                    "type": {
+                                        "name": "enum",
+                                        "values": [
+                                            {
+                                                "key": "designerOne",
+                                                "label": "designerOne"
+                                            },
+                                            {
+                                                "key": "designerTwo",
+                                                "label": "designerTwo"
+                                            }
+                                        ]
+                                    }
+                                }
+                            ]
+                        }]
+                    }'
+                ),
+                $args[0]
+            );
 
             return $response;
         });
@@ -139,12 +381,10 @@ class ProductsRequestBuilderTest extends \PHPUnit_Framework_TestCase
 
         $requestBuilder = new ProductsRequestBuilder($client->reveal());
 
-
-
-        $returnedRequest= $requestBuilder->createRequest($data, "key");
+        $returnedRequest = $requestBuilder->createRequest($data, "key");
 
         $this->assertInstanceOf(ProductCreateRequest::class, $returnedRequest);
-        $this->assertEquals(
+        $this->assertJsonStringEqualsJsonString(
             $expected,
             (string)$returnedRequest->httpRequest()->getBody()
         );
@@ -997,6 +1237,30 @@ class ProductsRequestBuilderTest extends \PHPUnit_Framework_TestCase
                 '{"actions":[],
                     "version" :""
                 }'
+            ],
+            //Sku
+            [
+                [
+                    'productType'=> 'main',
+                    'slug' => ['de'=>'product-slug-de', 'en' => 'product-slug-en'],
+                    'key' => "productkey",
+                    'variants'=> [["sku"=>"1234","variantId"=>'1',"prices"=>""]]
+
+                ],
+                '{"results": [{
+                                "productType":{"typeId":"product-type","key":"main","id":"1"},
+                                "version" :"",
+                                "id" :"12345",
+                                "slug":{"de":"product-slug-de","en" : "product-slug-en"},
+                                "key": "productkey","categories": {},
+                                "masterVariant": {"id":"1","sku":"123","prices":[]}, "variants": []}
+                             ]}'
+                ,
+                '{"actions":[
+                    {"action":"setSku","sku":"123","variantId": 1}
+                    ],
+                    "version" :""
+                }'
             ]
         ];
     }
@@ -1075,7 +1339,7 @@ class ProductsRequestBuilderTest extends \PHPUnit_Framework_TestCase
         $returnedRequest= $requestBuilder->createRequest($data, "key");
 
         $this->assertInstanceOf(ProductUpdateRequest::class, $returnedRequest);
-        var_dump((string)$returnedRequest->httpRequest()->getBody());
+
         $this->assertJsonStringEqualsJsonString($expected, (string)$returnedRequest->httpRequest()->getBody());
     }
 

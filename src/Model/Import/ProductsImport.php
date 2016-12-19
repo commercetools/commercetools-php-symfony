@@ -32,6 +32,7 @@ class ProductsImport
         $import = null;
 
         $productData = [];
+
         foreach ($data as $key => $row) {
             if ($key == 0) {
                 $productData = $row;
