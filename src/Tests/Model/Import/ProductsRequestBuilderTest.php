@@ -118,10 +118,10 @@ class ProductsRequestBuilderTest extends \PHPUnit_Framework_TestCase
                     'slug' => ['de'=>'product-slug-de', 'en' => 'product-slug-en'],
                     'key' => "productkey",
                     'variants'=> [
-                                    ["sku"=>"1234","key"=>"productkey","variantId"=>'1'],
-                                    ["key"=>"productkey","variantId"=>'2'],
-                                    ["sku"=>"","key"=>"productkey","variantId"=>'3']
-                                 ]
+                        ["sku"=>"1234","key"=>"productkey","variantId"=>'1'],
+                        ["key"=>"productkey","variantId"=>'2'],
+                        ["sku"=>"","key"=>"productkey","variantId"=>'3']
+                    ]
                 ],
                 '{
                     "productType":{"typeId":"product-type","key":"main"},
@@ -133,6 +133,31 @@ class ProductsRequestBuilderTest extends \PHPUnit_Framework_TestCase
                                     {"sku":"","variantId":"3","prices":[]}
                                ]
                  }',
+            ],
+            [
+                [
+
+                ],
+                '{
+                    "productType":{"typeId":"product-type","key":"main"},
+                    "slug":{"de":"product-slug-de","en":"product-slug-en"},
+                    "key":"productkey",
+                    "masterVariant":{"sku":"1234","variantId":"1","prices":[]},
+                    "variants":[
+                                    {"variantId":"2","prices":[]},
+                                    {"sku":"","variantId":"3","prices":[]}
+                               ]
+                 }',
+                [
+                    'productType'=> 'main',
+                    'slug.de'=>'product-slug-de', 'slug.en' => 'product-slug-en',
+                    'key' => "productkey",
+                    'variants'=> [
+                        ["sku"=>"1234","key"=>"productkey","variantId"=>'1'],
+                        ["key"=>"productkey","variantId"=>'2'],
+                        ["sku"=>"","key"=>"productkey","variantId"=>'3']
+                    ]
+                ]
             ],
             //Prices
             [
@@ -167,6 +192,63 @@ class ProductsRequestBuilderTest extends \PHPUnit_Framework_TestCase
                     "variants":[]
                  }',
             ],
+            [
+                [
+
+                ],
+                '{
+                    "productType":{"typeId":"product-type","key":"main"}, 
+                    "slug":{"de":"product-slug-de","en":"product-slug-en"},
+                    "key":"productkey",
+                    "masterVariant":{
+                                        "sku":"1234","variantId":"1",
+                                        "prices":[
+                                                    {
+                                                        "value": {
+                                                            "currencyCode":"EUR",
+                                                            "centAmount":9750
+                                                        }
+                                                    },
+                                                    {
+                                                        "value": {
+                                                            "currencyCode":"EUR",
+                                                            "centAmount":7800
+                                                        },
+                                                        "country":"DE"
+                                                    }
+                                                 ]
+                                    },
+                    "variants":[]
+                 }',
+                [
+                    'productType'=> 'main',
+                    'slug.de'=>'product-slug-de', 'slug.en' => 'product-slug-en',
+                    'key' => "productkey",
+                    'variants'=> [["sku"=>"1234","variantId"=>'1',"prices"=>"EUR 9750;DE-EUR 7800|5460"]]
+                ]
+            ],
+            [
+                [
+
+                ],
+                '{
+                    "productType":{"typeId":"product-type","key":"main"}, 
+                    "slug":{"de":"product-slug-de","en":"product-slug-en"},
+                    "key":"productkey",
+                    "masterVariant":{
+                                        "sku":"1234","variantId":"1",
+                                        "prices":[]
+                                    },
+                    "variants":[]
+                 }',
+                [
+                    'productType'=> 'main',
+                    'slug.de'=>'product-slug-de', 'slug.en' => 'product-slug-en',
+                    'key' => "productkey",
+                    'variants'=> [["sku"=>"1234","variantId"=>'1',"prices"=>""]]
+                ]
+            ],
+
             //attributes
             [
                 [
@@ -288,7 +370,50 @@ class ProductsRequestBuilderTest extends \PHPUnit_Framework_TestCase
                                     }
                                ]
                  }',
-            ]
+            ],
+            [
+                [
+
+                ],
+                '{
+                    "productType":{"typeId":"product-type","key":"main"},
+                    "slug":{"de":"product-slug-de","en":"product-slug-en"},
+                    "key":"productkey",
+                    "masterVariant":{
+                                        "sku":"1234","variantId":"1","prices":[],
+                                        "images":[
+                                        {
+                                            "url":"imageUrl",
+                                            "dimensions":{"w":0,"h":0}
+                                        }]
+                                    },
+                    "variants":[
+                                    {
+                                        "variantId":"2","prices":[],"attributes":[],
+                                        "images":[
+                                            {
+                                                "url":"imageUrl",
+                                                "dimensions":{"w":0,"h":0}
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "sku":"123","variantId":"3","prices":[],"images":[]
+                                    }
+                               ]
+                 }',
+                [
+                    'productType'=> 'main',
+                    'slug.de'=>'product-slug-de', 'slug.en' => 'product-slug-en',
+                    'key' => "productkey",
+                    'variants'=> [
+                        ["sku"=>"1234","key"=>"productkey","variantId"=>'1',"images"=>"imageUrl",],
+                        ["key"=>"productkey","variantId"=>'2',"size"=>"","designer"=>"","images"=>"imageUrl",],
+                        ["sku"=>"123","key"=>"productkey","variantId"=>'3',"images"=>""]
+                    ]
+                ]
+            ],
+
         ];
     }
     //'{"productType":{"typeId":"product-type","key":"main"},"slug":{"de":"product-slug-de","en":"product-slug-en"},"name":{"de":"product name de","en":"product name en"},"key":"productkey"}'
@@ -1225,7 +1350,7 @@ class ProductsRequestBuilderTest extends \PHPUnit_Framework_TestCase
                     "masterVariant": {},
                     "variants": [
                         {
-                            "id":"2",
+                            "id":2,
                             "sku":"1243",
                             "images":[{"url":"imageUrl","dimensions":{"w":0,"h":0}}],
                             "prices":[],
@@ -1253,15 +1378,108 @@ class ProductsRequestBuilderTest extends \PHPUnit_Framework_TestCase
                                 "id" :"12345",
                                 "slug":{"de":"product-slug-de","en" : "product-slug-en"},
                                 "key": "productkey","categories": {},
-                                "masterVariant": {"id":"1","sku":"123","prices":[]}, "variants": []}
+                                "masterVariant": {"id":1,"sku":"123","prices":[]}, "variants": []}
                              ]}'
                 ,
                 '{"actions":[
-                    {"action":"setSku","sku":"123","variantId": 1}
+                    {"action":"setSku","sku":"1234","variantId": 1}
                     ],
                     "version" :""
                 }'
-            ]
+            ],
+            [
+                [
+                    'productType'=> 'main',
+                    'slug' => ['de'=>'product-slug-de', 'en' => 'product-slug-en'],
+                    'key' => "productkey",
+                    'variants'=> [["sku"=>"1234","variantId"=>'1',"prices"=>""],["sku"=>"12345","variantId"=>'2',"prices"=>""]]
+
+                ],
+                '{"results": [{
+                                "productType":{"typeId":"product-type","key":"main","id":"1"},
+                                "version" :"",
+                                "id" :"12345",
+                                "slug":{"de":"product-slug-de","en" : "product-slug-en"},
+                                "key": "productkey","categories": {},
+                                "masterVariant": {"id":1,"sku":"1234","prices":[]},
+                                "variants": [
+                                                {
+                                                    "id":2,
+                                                    "prices":[],
+                                                    "sku":"1233",
+                                                    "images":[],
+                                                    "attributes":{}
+                                                }
+                                            ]}
+                             ]}'
+                ,
+                '{"actions":[
+                    {"action":"setSku","sku":"12345","variantId": 2}
+                    ],
+                    "version" :""
+                }'
+            ],
+            [
+                [
+                    'productType'=> 'main',
+                    'slug' => ['de'=>'product-slug-de', 'en' => 'product-slug-en'],
+                    'key' => "productkey",
+                    'variants'=> [["sku"=>"1234","variantId"=>'1',"prices"=>""],["sku"=>"12345","variantId"=>'2',"prices"=>""]]
+
+                ],
+                '{"results": [{
+                                "productType":{"typeId":"product-type","key":"main","id":"1"},
+                                "version" :"",
+                                "id" :"12345",
+                                "slug":{"de":"product-slug-de","en" : "product-slug-en"},
+                                "key": "productkey","categories": {},
+                                "masterVariant": {"id":1,"sku":"1234","prices":[]},
+                                "variants": [
+                                                {
+                                                    "id":2,
+                                                    "prices":[],
+                                                    "sku":"12345",
+                                                    "images":[],
+                                                    "attributes":{}
+                                                }
+                                            ]}
+                             ]}'
+                ,
+                '{"actions":[],
+                    "version" :""
+                }'
+            ],
+            [
+                [
+                    'productType'=> 'main',
+                    'slug' => ['de'=>'product-slug-de', 'en' => 'product-slug-en'],
+                    'key' => "productkey",
+                    'variants'=> [["sku"=>"","variantId"=>'1',"prices"=>""],["sku"=>"","variantId"=>'2',"prices"=>""]]
+
+                ],
+                '{"results": [{
+                                "productType":{"typeId":"product-type","key":"main","id":"1"},
+                                "version" :"",
+                                "id" :"12345",
+                                "slug":{"de":"product-slug-de","en" : "product-slug-en"},
+                                "key": "productkey","categories": {},
+                                "masterVariant": {"id":1,"sku":"1234","prices":[]},
+                                "variants": [
+                                                {
+                                                    "id":2,
+                                                    "prices":[],
+                                                    "sku":"12345",
+                                                    "images":[],
+                                                    "attributes":{}
+                                                }
+                                            ]}
+                             ]}'
+                ,
+                '{"actions":[{"action":"setSku","variantId": 1}],
+                    "version" :""
+                }'
+            ],
+
         ];
     }
 
@@ -1339,7 +1557,7 @@ class ProductsRequestBuilderTest extends \PHPUnit_Framework_TestCase
         $returnedRequest= $requestBuilder->createRequest($data, "key");
 
         $this->assertInstanceOf(ProductUpdateRequest::class, $returnedRequest);
-
+//        var_dump((string)$returnedRequest->httpRequest()->getBody());
         $this->assertJsonStringEqualsJsonString($expected, (string)$returnedRequest->httpRequest()->getBody());
     }
 
