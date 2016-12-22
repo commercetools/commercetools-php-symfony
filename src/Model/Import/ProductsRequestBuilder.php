@@ -119,7 +119,6 @@ class ProductsRequestBuilder extends AbstractRequestBuilder
         }
         return $catByPath;
     }
-
     private function getProductTypes()
     {
         $request = ProductTypeQueryRequest::of();
@@ -139,7 +138,6 @@ class ProductsRequestBuilder extends AbstractRequestBuilder
 
         return $productTypesByKey;
     }
-
     private function getCustomerGroups()
     {
         $request = CustomerGroupQueryRequest::of();
@@ -159,7 +157,6 @@ class ProductsRequestBuilder extends AbstractRequestBuilder
 
         return $customerGroupsByName;
     }
-
     private function getTaxCategories()
     {
         $request = TaxCategoryQueryRequest::of();
@@ -177,6 +174,7 @@ class ProductsRequestBuilder extends AbstractRequestBuilder
         }
         return $taxCatReferences;
     }
+
     /**
      * @param $productData
      * @param $identifiedByColumn
@@ -243,6 +241,10 @@ class ProductsRequestBuilder extends AbstractRequestBuilder
         }
 
         $product = $product->toArray();
+
+        if (!isset($product['masterVariant']['prices'])) {
+            $product['masterVariant']['prices']=[];
+        }
         if (isset($product['masterVariant']['attributes'])) {
             foreach ($product['masterVariant']['attributes'] as &$attribute) {
                 if (isset($attribute['value']['key'])) {
@@ -252,6 +254,9 @@ class ProductsRequestBuilder extends AbstractRequestBuilder
         }
         if (isset($product['variants'])) {
             foreach ($product['variants'] as &$variant) {
+                if (!isset($variant['prices'])) {
+                    $variant['prices']=[];
+                }
                 if (isset($variant['attributes'])) {
                     foreach ($variant['attributes'] as &$attribute) {
                         if (isset($attribute['value']['key'])) {
@@ -269,7 +274,6 @@ class ProductsRequestBuilder extends AbstractRequestBuilder
         $intersect = $this->arrayIntersectRecursive($product, $productDataArray);
 
         $toRemove['variants'] = $this->getVariantsDiff($this->productVariantsById, $this->productVariantsDraftById, false);
-//        var_dump($this->productVariantsById, $this->productVariantsDraftById);
 
         $toRemove['categories']=$this->categoriesToRemove($product['categories'], $productDataArray['categories']);
 
@@ -391,8 +395,8 @@ class ProductsRequestBuilder extends AbstractRequestBuilder
                                 );
                             }
                         }
-                        $this->productVariantsBySku=[];  //free the array
-                        $this->productVariantsDraftBySku = []; //free the array
+//                        $this->productVariantsBySku=[];  //free the array
+//                        $this->productVariantsDraftBySku = []; //free the array
                     }
                     break;
             }
@@ -424,7 +428,7 @@ class ProductsRequestBuilder extends AbstractRequestBuilder
         $productVariantsById = [];
         foreach ($productVariants as $variant) {
             $productVariantsById[$variant['id']] = $variant;
-            $this->productVariantsBySku[$variant['sku']] = $variant;
+//            $this->productVariantsBySku[$variant['sku']] = $variant;
         }
         return $productVariantsById;
     }
@@ -448,11 +452,107 @@ class ProductsRequestBuilder extends AbstractRequestBuilder
                 $variant['images'] = $images;
             }
             $productVariantsDraftById[$variant['variantId']] = $variant;
-            $this->productVariantsDraftBySku[$variant['sku']] = $variant;
+//            $this->productVariantsDraftBySku[$variant['sku']] = $variant;
 //            unset($productVariantsDraftById[$variant['variantId']]['variantId']);
         }
         return $productVariantsDraftById;
     }
+
+    private function getPriceToAdd($productVariantDraftPricesByUniqueKey, $ProductPricesByUniqueKey)
+    {
+        $pricesToAdd=[];
+        foreach ($productVariantDraftPricesByUniqueKey as $key => $value) {
+            if (!isset($ProductPricesByUniqueKey[$key])) {
+                $pricesToAdd[] = $key;
+            }
+        }
+        return $pricesToAdd;
+    }
+    private function getPriceToRemove($productVariantDraftPricesByUniqueKey, $ProductPricesById)
+    {
+        $pricesToRemove=[];
+        foreach ($ProductPricesById as $id => $priceArray) {
+            foreach ($priceArray as $key => $price) {
+                if (!isset($productVariantDraftPricesByUniqueKey[$key])) {
+                    $pricesToRemove[] = $id;
+                }
+            }
+        }
+        return $pricesToRemove;
+    }
+    private function getPriceToChange($productVariantDraftPricesByUniqueKey, $ProductPricesById)
+    {
+        $pricesToChange=[];
+        foreach ($ProductPricesById as $id => $priceArray) {
+            foreach ($priceArray as $key => $price) {
+                if (isset($productVariantDraftPricesByUniqueKey[$key]) && $productVariantDraftPricesByUniqueKey[$key]!=$price) {
+                    $pricesToChange[$id]= $priceArray;
+                }
+            }
+        }
+        return $pricesToChange;
+    }
+    private function getProductVariantDraftPricesByUniqueKey($productVariantDraftPrices)
+    {
+        $this->productVariantDraftPricesByUniqueKey=[]; // this var used in updating and changing prices
+        $productVariantDraftPricesByUniqueKey=[];
+
+        foreach ($productVariantDraftPrices as $price) {
+            $keyParts = [];
+            $priceObj=PriceDraft::fromArray($price->toArray());
+            $price=$price->toArray();
+            $keyParts[]=$price['value']['currencyCode'];
+            if (isset($price['country'])) {
+                $keyParts[]=$price['country'];
+            }
+            if (isset($price['customerGroup'])) {
+                $keyParts[]=$price['customerGroup']['obj']['name'];
+            }
+            if (isset($price['channel'])) {
+                $keyParts[]=$price['channel'];
+            }
+            $key=implode('-', $keyParts);
+            $productVariantDraftPricesByUniqueKey[$key]=$price['value']['centAmount'];
+            $this->productVariantDraftPricesByUniqueKey[$key]=$priceObj;
+        }
+        return $productVariantDraftPricesByUniqueKey;
+    }
+    private function getProductPricesByUniqueKeyAndId($ProductPrices)
+    {
+        $ProductPricesById=[];
+        $ProductPricesByUniqueKey=[];
+        foreach ($ProductPrices as $price) {
+            $keyParts = [];
+            $keyParts[]=$price['value']['currencyCode'];
+            if (isset($price['country'])) {
+                $keyParts[]=$price['country'];
+            }
+            if (isset($price['customerGroup'])) {
+                $keyParts[]=$this->customerGroups[$price['customerGroup']['id']];
+            }
+            if (isset($price['channel'])) {
+                $keyParts[]=$price['channel'];
+            }
+            $key=implode('-', $keyParts);
+
+            $ProductPricesById[$price['id']][$key]=$price['value']['centAmount'];
+            $ProductPricesByUniqueKey[$key]=$price['value']['centAmount'];
+        }
+        $formattedProductPrices['id']=$ProductPricesById;
+        $formattedProductPrices['key']=$ProductPricesByUniqueKey;
+        return $formattedProductPrices;
+    }
+    private function getPriceDiff($ProductPrices, $productVariantDraftPrices)
+    {
+        $productVariantDraftPricesByUniqueKey = $this->getProductVariantDraftPricesByUniqueKey($productVariantDraftPrices);
+        $formattedProductPrices = $this->getProductPricesByUniqueKeyAndId($ProductPrices);
+
+        $priceDiff['toChange']=$this->getPriceToChange($productVariantDraftPricesByUniqueKey, $formattedProductPrices['id']);
+        $priceDiff['toRemove']=$this->getPriceToRemove($productVariantDraftPricesByUniqueKey, $formattedProductPrices['id']);
+        $priceDiff['toAdd']=$this->getPriceToAdd($productVariantDraftPricesByUniqueKey, $formattedProductPrices['key']);
+        return $priceDiff;
+    }
+
     private function getVariantsDiff($productVariants, $ProductVariantDraftCollection, $toAddFlag = true)
     {
         if ($toAddFlag) {
@@ -477,80 +577,6 @@ class ProductsRequestBuilder extends AbstractRequestBuilder
 
         return $result;
     }
-    private function getPriceDiff($ProductPrices, $productVariantDraftPrices)
-    {
-        $this->productVariantDraftPricesByUniqueKey=[];
-        $productVariantDraftPricesByUniqueKey=[];
-
-        foreach ($productVariantDraftPrices as $price) {
-            $keyParts = [];
-            $priceObj=PriceDraft::fromArray($price->toArray());
-            $price=$price->toArray();
-            $keyParts[]=$price['value']['currencyCode'];
-            if (isset($price['country'])) {
-                $keyParts[]=$price['country'];
-            }
-            if (isset($price['customerGroup'])) {
-                $keyParts[]=$price['customerGroup']['obj']['name'];
-            }
-            if (isset($price['channel'])) {
-                $keyParts[]=$price['channel'];
-            }
-            $key=implode('-', $keyParts);
-            $productVariantDraftPricesByUniqueKey[$key]=$price['value']['centAmount'];
-            $this->productVariantDraftPricesByUniqueKey[$key]=$priceObj;
-        }
-
-        $ProductPricesById=[];
-        $ProductPricesByUniqueKey=[];
-        foreach ($ProductPrices as $price) {
-            $keyParts = [];
-            $keyParts[]=$price['value']['currencyCode'];
-            if (isset($price['country'])) {
-                $keyParts[]=$price['country'];
-            }
-            if (isset($price['customerGroup'])) {
-                $keyParts[]=$this->customerGroups[$price['customerGroup']['id']];
-            }
-            if (isset($price['channel'])) {
-                $keyParts[]=$price['channel'];
-            }
-            $key=implode('-', $keyParts);
-
-            $ProductPricesById[$price['id']][$key]=$price['value']['centAmount'];
-            $ProductPricesByUniqueKey[$key]=$price['value']['centAmount'];
-        }
-
-        $pricesToChange=[];
-        foreach ($ProductPricesById as $id => $priceArray) {
-            foreach ($priceArray as $key => $price) {
-                if (isset($productVariantDraftPricesByUniqueKey[$key]) && $productVariantDraftPricesByUniqueKey[$key]!=$price) {
-                    $pricesToChange[$id]= $priceArray;
-                }
-            }
-        }
-        $diffToReturn['toChange']=$pricesToChange;
-
-        $pricesToRemove=[];
-        foreach ($ProductPricesById as $id => $priceArray) {
-            foreach ($priceArray as $key => $price) {
-                if (!isset($productVariantDraftPricesByUniqueKey[$key])) {
-                    $pricesToRemove[] = $id;
-                }
-            }
-        }
-        $diffToReturn['toRemove']=$pricesToRemove;
-
-        $pricesToAdd=[];
-        foreach ($productVariantDraftPricesByUniqueKey as $key => $value) {
-            if (!isset($ProductPricesByUniqueKey[$key])) {
-                   $pricesToAdd[] = $key;
-            }
-        }
-        $diffToReturn['toAdd']=$pricesToAdd;
-        return $diffToReturn;
-    }
-
     private function getVariantActions($productVariant, $productVariantDraftArray, $productType)
     {
         $actions = [];
@@ -567,49 +593,45 @@ class ProductsRequestBuilder extends AbstractRequestBuilder
             foreach ($productVariantDraftArray->toArray()['attributes'] as $attribute) {
                 $productDraftAttributes[$attribute['name']] = $attribute;
             }
-        }
-
-        $pricesDiff = $this->getPriceDiff($productVariant['prices'], $productVariantDraftArray->toArray()['prices']);
-
-        $toChange = $this->arrayDiffRecursive($productAttributes, $productDraftAttributes);
-
-        $generalDiffToChange= $this->arrayDiffRecursive($productVariant, $productVariantDraftArray->toArray());
-        if (isset($generalDiffToChange['sku'])) {
-            $toChange['sku']=$generalDiffToChange['sku'];
+        } else {
+            $productVariantDraftArray->toArray()['attributes']=[];
         }
 
         $imagesFromData=[];
         $imagesFromVariant = [];
-
         if (isset($productVariantDraftArray->toArray()['images'])) {
             $imagesFromData=$this->mapImages($productVariantDraftArray->toArray()['images'], true);
         }
-
         if (isset($productVariant['images'])) {
             $imagesFromVariant=$this->mapImages($productVariant['images']);
         }
 
+        $toChange = $this->arrayDiffRecursive($productAttributes, $productDraftAttributes);
+        if (isset($productVariant['prices']) && isset($productVariantDraftArray->toArray()['prices'])) {
+            $pricesDiff = $this->getPriceDiff($productVariant['prices'], $productVariantDraftArray->toArray()['prices']);
+        }
         if (isset($pricesDiff['toChange'])) {
             $toChange['prices'] = $pricesDiff['toChange'];
+        }
+        $generalDiffToChange= $this->arrayDiffRecursive($productVariant, $productVariantDraftArray->toArray());
+        if (isset($generalDiffToChange['sku'])) {
+            $toChange['sku']=$generalDiffToChange['sku'];
         }
 
         $toRemove=[];
         if (isset($pricesDiff['toRemove'])) {
             $toRemove['prices'] = $pricesDiff['toRemove'];
         }
-
-
         $toRemove['images']= array_diff_key($imagesFromVariant, $imagesFromData);
 
         $toAdd=[];
         if (isset($pricesDiff['toAdd'])) {
             $toAdd['prices'] = $pricesDiff['toAdd'];
         }
-        $generalDiffToAdd= $this->arrayDiffRecursive($productVariantDraftArray->toArray(), $productVariant);
+        $generalDiffToAdd= array_diff_key($productVariantDraftArray->toArray(), $productVariant);
         if (isset($generalDiffToAdd['sku'])) {
             $toAdd['sku']=$generalDiffToAdd['sku'];
         }
-
         $toAdd['images']= array_diff_key($imagesFromData, $imagesFromVariant);
 
         /**
@@ -631,7 +653,6 @@ class ProductsRequestBuilder extends AbstractRequestBuilder
                     break;
             }
         }
-
         foreach ($toAdd as $key => $value) {
             switch ($key) {
                 case "prices":
@@ -650,7 +671,7 @@ class ProductsRequestBuilder extends AbstractRequestBuilder
                         $action->setSku($productVariantDraftArray->toArray()[$key]);
                     }
                     if (!empty($productVariantDraftArray->toArray()[$key]) || !empty($productVariant[$key])) {
-                        $actions[$key] = $action;
+                        $actions[] = $action;
                     }
                     break;
             }
@@ -665,9 +686,9 @@ class ProductsRequestBuilder extends AbstractRequestBuilder
                         $action->setSku($productVariantDraftArray->toArray()[$key]);
                     }
                     if (!empty($productVariantDraftArray->toArray()[$key]) || !empty($productVariant[$key])) {
-                        $actions[$key] = $action;
+                        $actions[] = $action;
                     }
-                    var_dump($action);
+
                     break;
                 case "prices":
                     foreach ($value as $id => $price) {
