@@ -1084,14 +1084,7 @@ class ProductsRequestBuilderTest extends \PHPUnit_Framework_TestCase
 
                     "masterVariant": {
                         "id": 1,
-                        "sku":"123",
-                        "attributes":
-                        [
-                            {
-                                "name":"size",
-                                "value": { "key": "34", "label": "34" }
-                            }
-                        ]
+                        "sku":"123"
                     },
                     "variants": [
                         {
@@ -1112,6 +1105,146 @@ class ProductsRequestBuilderTest extends \PHPUnit_Framework_TestCase
                     'slug' => ['de'=>'product-slug-de', 'en' => 'product-slug-en'],
                     'key' => "productkey",
                     'variants'=> [["sku"=>"123","variantId"=>'1',"images"=>"","size"=>"35"],["sku"=>"1234","variantId"=>'2',"images"=>"","size"=>"35"]]
+                ]
+            ],
+            [
+                [],
+                '{"results": [{
+                    "version" :"",
+                    "id" :"12345",
+                    "productType": {"typeId":"product-type","id":"1"},
+                    "slug":{"de":"product-slug-de","en" : "product-slug-en"},
+                    "key": "productkey","categories": {},
+
+                    "masterVariant": {
+                        "id": 1,
+                        "sku":"123"
+                    },
+                    "variants": [
+                        {
+                            "id": 2,
+                            "sku":"1234",
+                            "attributes":
+                            [
+                                {
+                                    "name":"designer",
+                                    "value":"designerOne"
+                                }
+                            ]
+                        }
+                    ]
+                    }]
+                 }',
+                '{"actions":[
+                        {"action":"setAttribute","variantId":1,"name":"size","value":"35"},
+                        {"action":"setAttribute","variantId":2,"name":"designer"},
+                        {"action":"setAttribute","variantId":2,"name":"size","value":"35"}
+                    ],
+                    "version" :""
+                }',
+                [
+                    'productType'=> 'main',
+                    'slug' => ['de'=>'product-slug-de', 'en' => 'product-slug-en'],
+                    'key' => "productkey",
+                    'variants'=> [["sku"=>"123","variantId"=>'1',"images"=>"","size"=>"35"],["sku"=>"1234","variantId"=>'2',"images"=>"","size"=>"35"]]
+                ]
+            ],
+            [
+                [],
+                '{"results": [{
+                    "version" :"",
+                    "id" :"12345",
+                    "productType": {"typeId":"product-type","id":"1"},
+                    "slug":{"de":"product-slug-de","en" : "product-slug-en"},
+                    "key": "productkey","categories": {},
+
+                    "masterVariant": {
+                        "id": 1,
+                        "sku":"123",
+                        "attributes":
+                            [
+                                {
+                                    "name":"designer",
+                                    "value":"designerOne"
+                                }
+                            ]
+                    },
+                    "variants": [
+                        {
+                            "id": 2,
+                            "sku":"1234",
+                            "attributes":
+                            [
+                                {
+                                    "name":"designer",
+                                    "value":"designerOne"
+                                }
+                            ]
+                        }
+                    ]
+                    }]
+                 }',
+                '{"actions":[
+                        {"action":"setAttribute","variantId":1,"name":"designer"},
+                        {"action":"setAttribute","variantId":1,"name":"size","value":"35"},
+                        {"action":"setAttribute","variantId":2,"name":"designer"},
+                        {"action":"setAttribute","variantId":2,"name":"size","value":"35"}
+                    ],
+                    "version" :""
+                }',
+                [
+                    'productType'=> 'main',
+                    'slug' => ['de'=>'product-slug-de', 'en' => 'product-slug-en'],
+                    'key' => "productkey",
+                    'variants'=> [["sku"=>"123","variantId"=>'1',"images"=>"","size"=>"35"],["sku"=>"1234","variantId"=>'2',"images"=>"","size"=>"35"]]
+                ]
+            ],
+            [
+                [],
+                '{"results": [{
+                    "version" :"",
+                    "id" :"12345",
+                    "productType": {"typeId":"product-type","id":"1"},
+                    "slug":{"de":"product-slug-de","en" : "product-slug-en"},
+                    "key": "productkey","categories": {},
+
+                    "masterVariant": {
+                        "id": 1,
+                        "sku":"123",
+                        "attributes":
+                            [
+                                {
+                                    "name":"designer",
+                                    "value":"designerOne"
+                                }
+                            ]
+                    },
+                    "variants": [
+                        {
+                            "id": 2,
+                            "sku":"1234",
+                            "attributes":
+                            [
+                                {
+                                    "name":"designer",
+                                    "value":"designerOne"
+                                }
+                            ]
+                        }
+                    ]
+                    }]
+                 }',
+                '{"actions":[
+                        {"action":"setAttribute","variantId":1,"name":"designer"},
+                        {"action":"setAttribute","variantId":2,"name":"designer"}
+                    ],
+                    "version" :""
+                }',
+                [
+                    'productType'=> 'main',
+                    'slug' => ['de'=>'product-slug-de', 'en' => 'product-slug-en'],
+                    'key' => "productkey",
+                    'variants'=> [["sku"=>"123","variantId"=>'1'],["sku"=>"1234","variantId"=>'2']]
                 ]
             ],
             //master variant
@@ -2259,7 +2392,8 @@ class ProductsRequestBuilderTest extends \PHPUnit_Framework_TestCase
                             "name":"product",
                             "key":"main",
                             "description":"product desc",
-                            "attributes":[{
+                            "attributes":[
+                            {
                                 "name":"size",
                                 "type": {
                                     "name": "enum",
@@ -2274,7 +2408,25 @@ class ProductsRequestBuilderTest extends \PHPUnit_Framework_TestCase
                                         }
                                     ]
                                 }
-                            }]
+                            },
+                                {
+                                    "name":"designer",
+                                    "type": {
+                                        "name": "enum",
+                                        "values": [
+                                            {
+                                                "key": "designerOne",
+                                                "label": "designerOne"
+                                            },
+                                            {
+                                                "key": "designerTwo",
+                                                "label": "designerTwo"
+                                            }
+                                        ]
+                                    }
+                                }
+                            
+                            ]
                         }]
                     }'
                 ),
