@@ -495,7 +495,7 @@ class ProductsRequestBuilder extends AbstractRequestBuilder
         $actions = array_merge_recursive($actions, $this->getUpdateRequestsToChange($toChange, $productDraftArray, $product));
 
         $request->setActions($actions);
-        print_r((string)$request->httpRequest()->getBody());
+//        print_r((string)$request->httpRequest()->getBody());
         return $request;
     }
 
@@ -721,7 +721,12 @@ class ProductsRequestBuilder extends AbstractRequestBuilder
                     }
                     break;
                 case self::VARIANTKEY:
-                    $actions[] = ProductSetProductVariantKeyAction::ofVariantIdAndKey($productVariant[self::ID], $productVariantDraftArray[$key]);
+                    $action = ProductSetProductVariantKeyAction::of()
+                        ->setVariantId($productVariant[self::ID]);
+                    if (!empty($productVariantDraftArray[$key])) {
+                        $action->setKey($productVariantDraftArray[$key]);
+                    }
+                    $actions[] = $action;
                     break;
                 case self::PRICES:
                     foreach ($value as $id => $price) {

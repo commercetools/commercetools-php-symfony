@@ -32,16 +32,13 @@ class ProductsImport
         $import = null;
 
         $productData = [];
-        $baseId=null;
         foreach ($data as $key => $row) {
             if ($key == 0) {
                 $productData = $row;
-                $baseId = $row['baseId'];
                 $productData['variants'][] = $row;
                 continue;
             }
-//            if (!empty($row[$this->identifiedByColumn])) {
-            if ($row['baseId'] !=$baseId) {
+            if (!empty($row[$this->identifiedByColumn])) {
                 $this->client->addBatchRequest(
                     $this->requestBuilder->createRequest($productData, $this->identifiedByColumn)
                 );

@@ -2419,7 +2419,7 @@ class ProductsRequestBuilderTest extends \PHPUnit_Framework_TestCase
                              }]
                 }'
                 ,
-                '{"actions":[{"action":"setProductVariantKey","key":"","variantId": 1},{"action":"setProductVariantKey","key":"","variantId": 2}],
+                '{"actions":[{"action":"setProductVariantKey","variantId": 1},{"action":"setProductVariantKey","variantId": 2}],
                     "version" :""
                 }',
                 [
@@ -2447,7 +2447,7 @@ class ProductsRequestBuilderTest extends \PHPUnit_Framework_TestCase
                              }]
                 }'
                 ,
-                '{"actions":[{"action":"setProductVariantKey","key":"","variantId": 1},{"action":"setProductVariantKey","key":"","variantId": 2}],
+                '{"actions":[{"action":"setProductVariantKey","variantId": 1},{"action":"setProductVariantKey","variantId": 2}],
                     "version" :""
                 }',
                 [
