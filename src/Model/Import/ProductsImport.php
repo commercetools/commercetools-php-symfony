@@ -45,8 +45,8 @@ class ProductsImport
                 $this->requests++;
                 $this->execute();
                 $productData = $row;
-                $productData['variants'][] = $row; // TODO remove with break ;)
-                break;
+//                $productData['variants'][] = $row; // TODO remove with break ;)
+//                break;
             }
             $productData['variants'][] = $row;
         }

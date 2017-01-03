@@ -33,6 +33,7 @@ use Commercetools\Core\Model\ProductType\LocalizedStringType;
 use Commercetools\Core\Model\ProductType\ProductType;
 use Commercetools\Core\Model\ProductType\ProductTypeCollection;
 use Commercetools\Core\Model\ProductType\ProductTypeReference;
+use Commercetools\Core\Model\ProductType\SetType;
 use Commercetools\Core\Model\State\StateReference;
 use Commercetools\Core\Model\TaxCategory\TaxCategoryCollection;
 use Commercetools\Core\Request\Categories\CategoryQueryRequest;
@@ -373,6 +374,8 @@ class ProductsRequestBuilder extends AbstractRequestBuilder
                         $productDraftArray[$heading][self::VARIANTKEY]="";
 
                     }
+                    $product[self::MASTERVARIANT]=$this->getProductVariantsById([$product[self::MASTERVARIANT]])[$product[self::MASTERVARIANT][self::ID]];
+                    $productDraftArray[$heading]=$this->getDataVariantsById([$productDraftArray[$heading]])[$productDraftArray[self::MASTERVARIANT]['variantId']];
                     $actions = array_merge_recursive(
                         $actions,
                         $this->getVariantActions($product[self::MASTERVARIANT], $productDraftArray[$heading], $product['productType'])
@@ -389,8 +392,6 @@ class ProductsRequestBuilder extends AbstractRequestBuilder
                                 );
                             }
                         }
-//                        $this->productVariantsBySku=[];  //free the array
-//                        $this->productVariantsDraftBySku = []; //free the array
                     }
                     break;
             }
@@ -503,8 +504,17 @@ class ProductsRequestBuilder extends AbstractRequestBuilder
     {
         $productVariantsById = [];
         foreach ($productVariants as $variant) {
+            if (isset($variant[self::IMAGES])) {
+                $variant[self::IMAGES]=$this->mapImages($variant[self::IMAGES]);
+            }
+            $attributes=[];
+            if (isset($variant[self::ATTRIBUTES])) {
+                foreach ($variant[self::ATTRIBUTES] as $attribute) {
+                    $attributes[$attribute[self::NAME]] = $attribute;
+                }
+            }
+            $variant[self::ATTRIBUTES]=$attributes;
             $productVariantsById[$variant[self::ID]] = $variant;
-//            $this->productVariantsBySku[$variant[self::SKU]] = $variant;
         }
         return $productVariantsById;
     }
@@ -524,15 +534,19 @@ class ProductsRequestBuilder extends AbstractRequestBuilder
                 foreach ($variant[self::IMAGES] as $image) {
                     $images[] = $image;
                 }
-
-                $variant[self::IMAGES] = $images;
+                $variant[self::IMAGES]=$this->mapImages($images, true);
             }
             if (!isset($variant[self::VARIANTKEY])) {
                 $variant[self::VARIANTKEY]="";
             }
+            $attributes=[];
+            if (isset($variant[self::ATTRIBUTES])) {
+                foreach ($variant[self::ATTRIBUTES] as $attribute) {
+                    $attributes[$attribute[self::NAME]] = $attribute;
+                }
+            }
+            $variant[self::ATTRIBUTES]=$attributes;
             $productVariantsDraftById[$variant['variantId']] = $variant;
-//            $this->productVariantsDraftBySku[$variant[self::SKU]] = $variant;
-//            unset($productVariantsDraftById[$variant['variantId']]['variantId']);
         }
 
         return $productVariantsDraftById;
@@ -704,8 +718,12 @@ class ProductsRequestBuilder extends AbstractRequestBuilder
         }
         return $actions;
     }
-    private function getVariantChangeActions($toChange, $productVariantDraftArray, $productVariant, $productDraftAttributes, $productType)
+    private function getVariantChangeActions($toChange, $productVariantDraftArray, $productVariant, $productType)
     {
+        $productDraftAttributes=[];
+        if (isset($productVariantDraftArray[self::ATTRIBUTES])) {
+            $productDraftAttributes = $productVariantDraftArray[self::ATTRIBUTES];
+        }
         $actions=[];
         foreach ($toChange as $key => $value) {
             switch ($key) {
@@ -755,8 +773,21 @@ class ProductsRequestBuilder extends AbstractRequestBuilder
         }
         return $actions;
     }
-    private function getVariantItemsToChange($productVariantDraftArray, $productVariant, $productDraftAttributes, $productAttributes, $pricesDiff)
+    private function getVariantItemsToChange($productVariantDraftArray, $productVariant)
     {
+        $productDraftAttributes = [];
+        $productAttributes =[];
+        $pricesDiff = [];
+
+        if (isset($productVariantDraftArray[self::ATTRIBUTES])) {
+            $productDraftAttributes = $productVariantDraftArray[self::ATTRIBUTES];
+        }
+        if (isset($productVariant[self::ATTRIBUTES])) {
+            $productAttributes = $productVariant[self::ATTRIBUTES];
+        }
+        if (isset($productVariant[self::PRICES]) && isset($productVariantDraftArray[self::PRICES])) {
+            $pricesDiff = $this->getPriceDiff($productVariant[self::PRICES], $productVariantDraftArray[self::PRICES]);
+        }
         $toChange = array_merge(
             $this->arrayDiffRecursive($productAttributes, $productDraftAttributes),
             $this->arrayDiffRecursive($productDraftAttributes, $productAttributes)
@@ -775,8 +806,21 @@ class ProductsRequestBuilder extends AbstractRequestBuilder
         }
         return $toChange;
     }
-    private function getVariantItemsToAdd($productVariantDraftArray, $productVariant, $imagesFromData, $imagesFromVariant, $pricesDiff)
+    private function getVariantItemsToAdd($productVariantDraftArray, $productVariant)
     {
+        $imagesFromData=[];
+        $imagesFromVariant = [];
+
+        if (isset($productVariantDraftArray[self::IMAGES])) {
+            $imagesFromData = $productVariantDraftArray[self::IMAGES];
+        }
+        if (isset($productVariant[self::IMAGES])) {
+            $imagesFromVariant = $productVariant[self::IMAGES];
+        }
+        if (isset($productVariant[self::PRICES]) && isset($productVariantDraftArray[self::PRICES])) {
+            $pricesDiff = $this->getPriceDiff($productVariant[self::PRICES], $productVariantDraftArray[self::PRICES]);
+        }
+
         $toAdd=[];
         if (isset($pricesDiff['toAdd'])) {
             $toAdd[self::PRICES] = $pricesDiff['toAdd'];
@@ -788,8 +832,22 @@ class ProductsRequestBuilder extends AbstractRequestBuilder
         $toAdd[self::IMAGES]= array_diff_key($imagesFromData, $imagesFromVariant);
         return $toAdd;
     }
-    private function getVariantItemsToRemove($imagesFromVariant, $imagesFromData, $pricesDiff)
+    private function getVariantItemsToRemove($productVariantDraftArray, $productVariant)
     {
+        $imagesFromData=[];
+        $imagesFromVariant = [];
+        $pricesDiff=[];
+
+        if (isset($productVariantDraftArray[self::IMAGES])) {
+            $imagesFromData = $productVariantDraftArray[self::IMAGES];
+        }
+        if (isset($productVariant[self::IMAGES])) {
+            $imagesFromVariant = $productVariant[self::IMAGES];
+        }
+        if (isset($productVariant[self::PRICES]) && isset($productVariantDraftArray[self::PRICES])) {
+            $pricesDiff = $this->getPriceDiff($productVariant[self::PRICES], $productVariantDraftArray[self::PRICES]);
+        }
+
         $toRemove=[];
         if (isset($pricesDiff['toRemove'])) {
             $toRemove[self::PRICES] = $pricesDiff['toRemove'];
@@ -801,38 +859,10 @@ class ProductsRequestBuilder extends AbstractRequestBuilder
     private function getVariantActions($productVariant, $productVariantDraftArray, $productType)
     {
         $actions = [];
-        $productAttributes = [];
-        $productDraftAttributes = [];
 
-        if (isset($productVariant[self::ATTRIBUTES])) {
-            foreach ($productVariant[self::ATTRIBUTES] as $attribute) {
-                $productAttributes[$attribute[self::NAME]] = $attribute;
-            }
-        }
-
-        if (isset($productVariantDraftArray[self::ATTRIBUTES])) {
-            foreach ($productVariantDraftArray[self::ATTRIBUTES] as $attribute) {
-                $productDraftAttributes[$attribute[self::NAME]] = $attribute;
-            }
-        }
-
-        $imagesFromData=[];
-        $imagesFromVariant = [];
-        if (isset($productVariantDraftArray[self::IMAGES])) {
-            $imagesFromData=$this->mapImages($productVariantDraftArray[self::IMAGES], true);
-        }
-        if (isset($productVariant[self::IMAGES])) {
-            $imagesFromVariant=$this->mapImages($productVariant[self::IMAGES]);
-        }
-
-        if (isset($productVariant[self::PRICES]) && isset($productVariantDraftArray[self::PRICES])) {
-            $pricesDiff = $this->getPriceDiff($productVariant[self::PRICES], $productVariantDraftArray[self::PRICES]);
-        }
-
-
-        $toChange = $this->getVariantItemsToChange($productVariantDraftArray, $productVariant, $productDraftAttributes, $productAttributes, $pricesDiff);
-        $toRemove= $this->getVariantItemsToRemove($imagesFromVariant, $imagesFromData, $pricesDiff);
-        $toAdd=$this->getVariantItemsToAdd($productVariantDraftArray, $productVariant, $imagesFromData, $imagesFromVariant, $pricesDiff);
+        $toChange = $this->getVariantItemsToChange($productVariantDraftArray, $productVariant);
+        $toRemove= $this->getVariantItemsToRemove($productVariantDraftArray, $productVariant);
+        $toAdd=$this->getVariantItemsToAdd($productVariantDraftArray, $productVariant);
 
         /**
          * @var ProductType $productType
@@ -847,7 +877,6 @@ class ProductsRequestBuilder extends AbstractRequestBuilder
                 $toChange,
                 $productVariantDraftArray,
                 $productVariant,
-                $productDraftAttributes,
                 $productType
             )
         );
@@ -926,6 +955,11 @@ class ProductsRequestBuilder extends AbstractRequestBuilder
                         if ($attributeDefinition) {
                             $attributeType = $attributeDefinition->getType();
                             switch (true) {
+                                case $attributeType instanceof SetType:
+                                    if (!is_array($value)) {
+                                        $value = explode(';', $value);
+                                    }
+                                    break;
                                 case $attributeType instanceof BooleanType:
                                     $value = $value == 'true' ? true: false;
                                     break;
@@ -996,7 +1030,9 @@ class ProductsRequestBuilder extends AbstractRequestBuilder
                     $categories = CategoryReferenceCollection::of();
                     $productCategories= explode(';', $value);
                     foreach ($productCategories as $category) {
-                        $categories->add($this->categories[$category]);
+                        if (isset($this->categories[$category])) {
+                            $categories->add($this->categories[$category]);
+                        }
                     }
                     $productDraftArray[$key]= $categories;
                     break;
