@@ -37,6 +37,7 @@ use Commercetools\Core\Model\ProductType\SetType;
 use Commercetools\Core\Model\State\StateReference;
 use Commercetools\Core\Model\TaxCategory\TaxCategoryCollection;
 use Commercetools\Core\Request\Categories\CategoryQueryRequest;
+use Commercetools\Core\Request\ClientRequestInterface;
 use Commercetools\Core\Request\CustomerGroups\CustomerGroupQueryRequest;
 use Commercetools\Core\Request\Payments\PaymentUpdateRequest;
 use Commercetools\Core\Request\Products\Command\ProductAddExternalImageAction;
@@ -91,13 +92,31 @@ class ProductsRequestBuilder extends AbstractRequestBuilder
     const TAXCATEGORY='taxCategory';
     const CHANNEL='channel';
     const VARIANTKEY='variantKey';
+    const PUBLISH='publish';
+    const VARIANTID='variantId';
+    const CUSTOMERGROUP='customerGroup';
+    const CURRENCYCODE='currencyCode';
+    const COUNTRY='country';
+    const CENTAMOUNT='centAmount';
+    const PRODUCTTYPE='productType';
+    const TAX='tax';
+    const DIMENSIONS='dimensions';
+    const URL='url';
+    const CREATIONDATE='creationDate';
+    const SEARCHKEYWORDS='searchKeywords';
+    const REFERENCE='reference';
+    const ANCESTORS='ancestors';
+    const TOCHANGE='toChange';
+    const TOADD='toAdd';
+    const TOREMOVE='toRemove';
+    const VERSION='version';
+    const OBJ='obj';
+
     private $categories;
     private $productTypes;
     private $client;
     private $productVariantsById;
     private $productVariantsDraftById;
-    private $productVariantsBySku;
-    private $productVariantsDraftBySku;
     private $productVariantDraftPricesByUniqueKey;
 
     public function __construct(Client $client)
@@ -125,19 +144,19 @@ class ProductsRequestBuilder extends AbstractRequestBuilder
         foreach ($categories as $category) {
             $catReferences[$category->getId()] = [
                 self::NAME => (string)$category->getName(),
-                'reference' => $category->getReference(),
-                'ancestors' => $category->getAncestors()
+                self::REFERENCE => $category->getReference(),
+                self::ANCESTORS => $category->getAncestors()
             ];
         }
         $catByPath = [];
         foreach ($catReferences as $categoryInfo) {
             $path = [];
-            foreach ($categoryInfo['ancestors'] as $ancestor) {
+            foreach ($categoryInfo[self::ANCESTORS] as $ancestor) {
                 $path[] = $catReferences[$ancestor->getId()][self::NAME];
             }
             $path[] = $categoryInfo[self::NAME];
             $categoryPath = implode('>', $path);
-            $catByPath[$categoryPath] = $categoryInfo['reference'];
+            $catByPath[$categoryPath] = $categoryInfo[self::REFERENCE];
         }
         return $catByPath;
     }
@@ -204,11 +223,10 @@ class ProductsRequestBuilder extends AbstractRequestBuilder
      * @param $productData
      * @param $identifiedByColumn
      * @param $identifier
-     * @return ClientRequestInterface
+     * @return ClientRequestInterface|null
      */
     public function createRequest($productData, $identifiedByColumn)
     {
-
         $request = ProductProjectionQueryRequest::of()
             ->where(
                 sprintf(
@@ -228,6 +246,9 @@ class ProductsRequestBuilder extends AbstractRequestBuilder
              */
             $product = $products->current();
             $request = $this->getUpdateRequest($product, $productData);
+            if (!$request->hasActions()) {
+                $request = null;
+            }
         } else {
             $request = $this->getCreateRequest($productData);
         }
@@ -317,9 +338,13 @@ class ProductsRequestBuilder extends AbstractRequestBuilder
                     }
                     break;
                 case self::KEY:
-                    $actions[$heading] = ProductSetKeyAction::ofKey(
-                        $productDraftArray[$heading]
-                    );
+                    $action = ProductSetKeyAction::of();
+                    if (!empty($productDraftArray[$heading])) {
+                        $action->setKey($productDraftArray[$heading]);
+                    }
+                    if (!empty($productDraftArray[$heading]) || !empty($product[$heading])) {
+                        $actions[$heading] = $action;
+                    }
                     break;
                 case self::TAXCATEGORY:
                     $action = ProductSetTaxCategoryAction::of();
@@ -375,10 +400,10 @@ class ProductsRequestBuilder extends AbstractRequestBuilder
 
                     }
                     $product[self::MASTERVARIANT]=$this->getProductVariantsById([$product[self::MASTERVARIANT]])[$product[self::MASTERVARIANT][self::ID]];
-                    $productDraftArray[$heading]=$this->getDataVariantsById([$productDraftArray[$heading]])[$productDraftArray[self::MASTERVARIANT]['variantId']];
+                    $productDraftArray[$heading]=$this->getDataVariantsById([$productDraftArray[$heading]])[$productDraftArray[self::MASTERVARIANT][self::VARIANTID]];
                     $actions = array_merge_recursive(
                         $actions,
-                        $this->getVariantActions($product[self::MASTERVARIANT], $productDraftArray[$heading], $product['productType'])
+                        $this->getVariantActions($product[self::MASTERVARIANT], $productDraftArray[$heading], $product[self::PRODUCTTYPE])
                     );
 
                     break;
@@ -388,7 +413,7 @@ class ProductsRequestBuilder extends AbstractRequestBuilder
                             if (isset($this->productVariantsDraftById[$variant[self::ID]])) {//change sku to id
                                 $actions = array_merge_recursive(
                                     $actions,
-                                    $this->getVariantActions($variant, $this->productVariantsDraftById[$variant[self::ID]], $product['productType'])
+                                    $this->getVariantActions($variant, $this->productVariantsDraftById[$variant[self::ID]], $product[self::PRODUCTTYPE])
                                 );
                             }
                         }
@@ -401,6 +426,9 @@ class ProductsRequestBuilder extends AbstractRequestBuilder
     }
     private function getProductItemsToChange($productDataArray, $product)
     {
+        if (!isset($productDataArray[self::KEY])) {
+            $productDataArray[self::KEY]="";
+        }
         $intersect = $this->arrayIntersectRecursive($product, $productDataArray);
         $toChange = $this->arrayDiffRecursive($productDataArray, $intersect);
         $toChange[self::CATEGORIES]=$this->categoriesToAdd($product[self::CATEGORIES], $productDataArray[self::CATEGORIES]);
@@ -487,7 +515,7 @@ class ProductsRequestBuilder extends AbstractRequestBuilder
 
         $toChange =$this->getProductItemsToChange($productDataArray, $product);
 
-        $request = ProductUpdateRequest::ofIdAndVersion($product[self::ID], $product['version']);
+        $request = ProductUpdateRequest::ofIdAndVersion($product[self::ID], $product[self::VERSION]);
 
         $actions=[];
 
@@ -546,7 +574,7 @@ class ProductsRequestBuilder extends AbstractRequestBuilder
                 }
             }
             $variant[self::ATTRIBUTES]=$attributes;
-            $productVariantsDraftById[$variant['variantId']] = $variant;
+            $productVariantsDraftById[$variant[self::VARIANTID]] = $variant;
         }
 
         return $productVariantsDraftById;
@@ -595,18 +623,18 @@ class ProductsRequestBuilder extends AbstractRequestBuilder
             $keyParts = [];
             $priceObj=PriceDraft::fromArray($price->toArray());
             $price=$price->toArray();
-            $keyParts[]=$price[self::VALUE]['currencyCode'];
-            if (isset($price['country'])) {
-                $keyParts[]=$price['country'];
+            $keyParts[]=$price[self::VALUE][self::CURRENCYCODE];
+            if (isset($price[self::COUNTRY])) {
+                $keyParts[]=$price[self::COUNTRY];
             }
-            if (isset($price['customerGroup'])) {
-                $keyParts[]=$price['customerGroup']['obj'][self::NAME];
+            if (isset($price[self::CUSTOMERGROUP])) {
+                $keyParts[]=$price[self::CUSTOMERGROUP][self::OBJ][self::NAME];
             }
             if (isset($price[self::CHANNEL])) {
                 $keyParts[]=$price[self::CHANNEL];
             }
             $key=implode('-', $keyParts);
-            $productVariantDraftPricesByUniqueKey[$key]=$price[self::VALUE]['centAmount'];
+            $productVariantDraftPricesByUniqueKey[$key]=$price[self::VALUE][self::CENTAMOUNT];
             $this->productVariantDraftPricesByUniqueKey[$key]=$priceObj;
         }
         return $productVariantDraftPricesByUniqueKey;
@@ -617,20 +645,20 @@ class ProductsRequestBuilder extends AbstractRequestBuilder
         $ProductPricesByUniqueKey=[];
         foreach ($ProductPrices as $price) {
             $keyParts = [];
-            $keyParts[]=$price[self::VALUE]['currencyCode'];
-            if (isset($price['country'])) {
-                $keyParts[]=$price['country'];
+            $keyParts[]=$price[self::VALUE][self::CURRENCYCODE];
+            if (isset($price[self::COUNTRY])) {
+                $keyParts[]=$price[self::COUNTRY];
             }
-            if (isset($price['customerGroup'])) {
-                $keyParts[]=$this->customerGroups[$price['customerGroup'][self::ID]];
+            if (isset($price[self::CUSTOMERGROUP])) {
+                $keyParts[]=$this->customerGroups[$price[self::CUSTOMERGROUP][self::ID]];
             }
             if (isset($price[self::CHANNEL])) {
                 $keyParts[]=$price[self::CHANNEL];
             }
             $key=implode('-', $keyParts);
 
-            $ProductPricesById[$price[self::ID]][$key]=$price[self::VALUE]['centAmount'];
-            $ProductPricesByUniqueKey[$key]=$price[self::VALUE]['centAmount'];
+            $ProductPricesById[$price[self::ID]][$key]=$price[self::VALUE][self::CENTAMOUNT];
+            $ProductPricesByUniqueKey[$key]=$price[self::VALUE][self::CENTAMOUNT];
         }
         $formattedProductPrices[self::ID]=$ProductPricesById;
         $formattedProductPrices[self::KEY]=$ProductPricesByUniqueKey;
@@ -641,9 +669,9 @@ class ProductsRequestBuilder extends AbstractRequestBuilder
         $productVariantDraftPricesByUniqueKey = $this->getProductVariantDraftPricesByUniqueKey($productVariantDraftPrices);
         $formattedProductPrices = $this->getProductPricesByUniqueKeyAndId($ProductPrices);
 
-        $priceDiff['toChange']=$this->getPriceToChange($productVariantDraftPricesByUniqueKey, $formattedProductPrices[self::ID]);
-        $priceDiff['toRemove']=$this->getPriceToRemove($productVariantDraftPricesByUniqueKey, $formattedProductPrices[self::ID]);
-        $priceDiff['toAdd']=$this->getPriceToAdd($productVariantDraftPricesByUniqueKey, $formattedProductPrices[self::KEY]);
+        $priceDiff[self::TOCHANGE]=$this->getPriceToChange($productVariantDraftPricesByUniqueKey, $formattedProductPrices[self::ID]);
+        $priceDiff[self::TOREMOVE]=$this->getPriceToRemove($productVariantDraftPricesByUniqueKey, $formattedProductPrices[self::ID]);
+        $priceDiff[self::TOADD]=$this->getPriceToAdd($productVariantDraftPricesByUniqueKey, $formattedProductPrices[self::KEY]);
         return $priceDiff;
     }
 
@@ -653,7 +681,13 @@ class ProductsRequestBuilder extends AbstractRequestBuilder
             $result=[];
             if ($ProductVariantDraftCollection) {
                 foreach ($ProductVariantDraftCollection as $variant) {
-                    if (!isset($productVariants[$variant['variantId']])) {//sku
+                    if (!isset($productVariants[$variant[self::VARIANTID]])) {//sku
+                        if (isset($variant[self::ATTRIBUTES])) {
+                            $variant[self::ATTRIBUTES] = array_values($variant[self::ATTRIBUTES]);
+                        }
+                        if (isset($variant[self::IMAGES])) {
+                            $variant[self::IMAGES] = array_values($variant[self::IMAGES]);
+                        }
                         $result[] = $variant;
                     }
                 }
@@ -663,6 +697,12 @@ class ProductsRequestBuilder extends AbstractRequestBuilder
             if ($productVariants) {
                 foreach ($productVariants as $variant) {
                     if (!isset($ProductVariantDraftCollection[$variant[self::ID]])) {// sku
+                        if (isset($variant[self::ATTRIBUTES])) {
+                            $variant[self::ATTRIBUTES] = array_values($variant[self::ATTRIBUTES]);
+                        }
+                        if (isset($variant[self::IMAGES])) {
+                            $variant[self::IMAGES] = array_values($variant[self::IMAGES]);
+                        }
                         $result[] = $variant;
                     }
                 }
@@ -683,7 +723,7 @@ class ProductsRequestBuilder extends AbstractRequestBuilder
                     break;
                 case self::IMAGES:
                     foreach ($value as $image) {
-                        $actions[]= ProductRemoveImageAction::ofVariantIdAndImageUrl($variantId, $image['url']);
+                        $actions[]= ProductRemoveImageAction::ofVariantIdAndImageUrl($variantId, $image[self::URL]);
                     }
                     break;
             }
@@ -796,8 +836,8 @@ class ProductsRequestBuilder extends AbstractRequestBuilder
             $toChange[self::VARIANTKEY]=$productVariantDraftArray[self::VARIANTKEY];
         }
 
-        if (isset($pricesDiff['toChange'])) {
-            $toChange[self::PRICES] = $pricesDiff['toChange'];
+        if (isset($pricesDiff[self::TOCHANGE])) {
+            $toChange[self::PRICES] = $pricesDiff[self::TOCHANGE];
         }
 
         $generalDiffToChange= $this->arrayDiffRecursive($productVariant, $productVariantDraftArray);
@@ -822,8 +862,8 @@ class ProductsRequestBuilder extends AbstractRequestBuilder
         }
 
         $toAdd=[];
-        if (isset($pricesDiff['toAdd'])) {
-            $toAdd[self::PRICES] = $pricesDiff['toAdd'];
+        if (isset($pricesDiff[self::TOADD])) {
+            $toAdd[self::PRICES] = $pricesDiff[self::TOADD];
         }
         $generalDiffToAdd= array_diff_key($productVariantDraftArray, $productVariant);
         if (isset($generalDiffToAdd[self::SKU])) {
@@ -849,8 +889,8 @@ class ProductsRequestBuilder extends AbstractRequestBuilder
         }
 
         $toRemove=[];
-        if (isset($pricesDiff['toRemove'])) {
-            $toRemove[self::PRICES] = $pricesDiff['toRemove'];
+        if (isset($pricesDiff[self::TOREMOVE])) {
+            $toRemove[self::PRICES] = $pricesDiff[self::TOREMOVE];
         }
         $toRemove[self::IMAGES]= array_diff_key($imagesFromVariant, $imagesFromData);
 
@@ -889,13 +929,13 @@ class ProductsRequestBuilder extends AbstractRequestBuilder
         $imagesArray=[];
         foreach ($images as $image) {
             $keyParts = [];
-            $keyParts[] = $image['url'];
+            $keyParts[] = $image[self::URL];
             if ($imageFromData) {
-                $keyParts[] = implode('-', $image['dimensions']->toArray());
+                $keyParts[] = implode('-', $image[self::DIMENSIONS]->toArray());
             } else {
-                $keyParts[] = implode('-', $image['dimensions']);
+                $keyParts[] = implode('-', $image[self::DIMENSIONS]);
             }
-            $imagesArray [implode('-', $keyParts)] = $image;
+            $imagesArray[implode('-', $keyParts)] = $image;
         }
         return $imagesArray;
     }
@@ -914,15 +954,15 @@ class ProductsRequestBuilder extends AbstractRequestBuilder
                 case self::KEY:
                 case self::SLUG:
                 case self::DESCRIPTION:
-                case "publish":
-                case "tax":
+                case self::PUBLISH:
+                case self::TAX:
                 case self::CATEGORIES:
-                case "productType":
+                case self::PRODUCTTYPE:
                 case self::ID:
-                case "creationDate":
+                case self::CREATIONDATE:
                     break;
                 case self::VARIANTKEY:
-                case "variantId":
+                case self::VARIANTID:
                     $variantDraftArray[$key] = $value;
                     break;
                 case self::SKU:
@@ -934,14 +974,14 @@ class ProductsRequestBuilder extends AbstractRequestBuilder
                     $value=explode(';', $value);
                     foreach ($value as $imageUrl) {
                         if ($imageUrl!='') {
-                            $image['url'] = $imageUrl;
-                            $image['dimensions'] = $dimension;
+                            $image[self::URL] = $imageUrl;
+                            $image[self::DIMENSIONS] = $dimension;
                             $images[]=$image;
                         }
                     }
                     $variantDraftArray[$key] = Image::fromArray($images);
                     break;
-                case "searchKeywords":
+                case self::SEARCHKEYWORDS:
                     break;
                 case self::PRICES:
                     $variantDraftArray[$key]=$this->mapPriceFtomData($value);
@@ -982,17 +1022,17 @@ class ProductsRequestBuilder extends AbstractRequestBuilder
             $price =[];
             $splittedcurrencyAndPrice=explode(' ', $currencyAndPrice);
             if (count($splittedcurrencyAndPrice)>=3) {
-                $price['customerGroup'] = $this->customerGroups[$splittedcurrencyAndPrice[2]];
+                $price[self::CUSTOMERGROUP] = $this->customerGroups[$splittedcurrencyAndPrice[2]];
             }
             $countryCurrency=explode('-', $splittedcurrencyAndPrice[0]);
             if (count($countryCurrency)> 1) {
-                $price['country']=$countryCurrency[0];
+                $price[self::COUNTRY]=$countryCurrency[0];
             } else {
-                $money['currencyCode']=$countryCurrency[0];
+                $money[self::CURRENCYCODE]=$countryCurrency[0];
             }
             if (count($splittedcurrencyAndPrice)>= 2) {
                 $splitedPrice=explode('|', $splittedcurrencyAndPrice[1]);
-                $money['centAmount']= intval($splitedPrice[0]);
+                $money[self::CENTAMOUNT]= intval($splitedPrice[0]);
                 $price[self::VALUE]=Money::fromArray($money);
                 $prices[]= Price::fromArray($price);
             }
@@ -1012,15 +1052,15 @@ class ProductsRequestBuilder extends AbstractRequestBuilder
                 case self::NAME:
                 case self::SLUG:
                 case self::DESCRIPTION:
-                case "publish":
+                case self::PUBLISH:
                     if (!$ignoreEmpty || !empty($value) && $value !== '') {
                         $productDraftArray[$key]= $value;
                     }
                     break;
-                case "productType":
+                case self::PRODUCTTYPE:
                     $productDraftArray[$key]= ProductTypeReference::ofKey($value);
                     break;
-                case "tax":
+                case self::TAX:
                     $productDraftArray[self::TAXCATEGORY]= $this->taxCategories[$value];
                     break;
                 case "state":
@@ -1039,8 +1079,8 @@ class ProductsRequestBuilder extends AbstractRequestBuilder
                 case self::VARIANTS:
                     $variants=[];
                     foreach ($value as $variant) {
-                        $variantData = $this->mapVariantFromData($variant, $this->productTypes[$productData['productType']]);
-                        if ($variantData['variantId'] === '1') {
+                        $variantData = $this->mapVariantFromData($variant, $this->productTypes[$productData[self::PRODUCTTYPE]]);
+                        if ($variantData[self::VARIANTID] === '1') {
                             $productDraftArray[self::MASTERVARIANT]= ProductVariantDraft::fromArray($variantData);
                             continue;
                         }
@@ -1060,6 +1100,9 @@ class ProductsRequestBuilder extends AbstractRequestBuilder
             case self::SLUG:
                 $value = $parts[0].'('.$parts[1]. $query . ')';
                 break;
+            case self::SKU:
+                $value = self::MASTERVARIANT.'('.self::SKU.'= "%1$s") or '. self::VARIANTS.'('.self::SKU.'= "%1$s")';
+                break;
             case self::KEY:
             case self::ID:
                 $value = $parts[0].$query;
@@ -1075,6 +1118,7 @@ class ProductsRequestBuilder extends AbstractRequestBuilder
             case self::SLUG:
                 $value = $row[$parts[0]][$parts[1]];
                 break;
+            case self::SKU:
             case self::KEY:
             case self::ID:
                 $value = $row[$parts[0]];

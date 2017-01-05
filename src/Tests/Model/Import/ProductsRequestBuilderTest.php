@@ -518,11 +518,81 @@ class ProductsRequestBuilderTest extends \PHPUnit_Framework_TestCase
     public function getUpdateTestData()
     {
         return [
-            //description
+            //key
+            [
+                [],
+                '{"results": [{"version" :"","id" :"12345","productType": {"typeId":"product-type","id":"1"},"sku":"1234", "name":{"de":"product name de","en" : "product name en"}, "key": "productkey"}]}',
+                '{"actions":[{"action":"setKey"}],
+                    "version" :""
+                }',
+                ['id' =>'12345','productType'=> 'main','sku' => '1234', 'name.de' => 'product name de', 'name.en' => 'product name en', 'description.de' => '', 'key' => ''],
+            ],
             [
                 [
-
+                    "sku"=>"1234",
+                    'name' => ['de'=>'product name de', 'en' => 'product name en'],
+                    'key' => "",
                 ],
+                '{"results": [{"version" :"","id" :"12345","sku":"1234","name":{"de":"product name de","en" : "product name en"}, "key": "productkey"}]}',
+                '{"actions":[
+                    {"action":"setKey"}
+                    ],
+                    "version" :""
+                }'
+            ],
+            [
+                [],
+                '{"results": [{"version" :"","id" :"12345","sku":"1234","name":{"de":"product name de","en" : "product name en"}, "key": "productkey"}]}',
+                '{"actions":[
+                        {"action":"setKey","key":"newProductkey"}
+                    ],
+                    "version" :""
+                }',
+                ['sku' => '1234', 'name.de' => 'product name de', 'name.en' => 'product name en', 'key' => 'newProductkey']
+            ],
+            [
+                [],
+                '{"results": [{"version" :"","id" :"12345","sku":"1234","description":{"de":"desc"},"name":{"de":"product name de","en" : "product name en"}, "key": "productkey"}]}',
+                '{"actions":[],
+                    "version" :""
+                }',
+                ['sku' => '1234', 'name.de' => 'product name de', 'name.en' => 'product name en', 'description.de' => 'desc', 'key' => 'productkey']
+            ],
+            [
+                [],
+                '{"results": [{"version" :"","id" :"12345","sku":"1234","description":{"de":"desc"},"name":{"de":"product name de","en" : "product name en"}, "key": "productkey"}]}',
+                '{"actions":[{"action":"setKey"}],
+                    "version" :""
+                }',
+                ['id' => '12345','sku' => '1234', 'name.de' => 'product name de', 'name.en' => 'product name en', 'description.de' => 'desc']
+            ],
+            [
+                [],
+                '{"results": [{"version" :"","id" :"12345","sku":"1234","description":{"de":"desc"},"name":{"de":"product name de","en" : "product name en"}, "key": ""}]}',
+                '{"actions":[],
+                    "version" :""
+                }',
+                ['id' => '12345','sku' => '1234', 'name.de' => 'product name de', 'name.en' => 'product name en', 'description.de' => 'desc']
+            ],
+            [
+                [],
+                '{"results": [{"version" :"","id" :"12345","sku":"1234","description":{"de":"desc"},"name":{"de":"product name de","en" : "product name en"}}]}',
+                '{"actions":[],
+                    "version" :""
+                }',
+                ['id' => '12345','sku' => '1234', 'name.de' => 'product name de', 'name.en' => 'product name en', 'description.de' => 'desc']
+            ],
+            [
+                [],
+                '{"results": [{"version" :"","id" :"12345","sku":"1234","description":{"de":"desc"},"name":{"de":"product name de","en" : "product name en"}}]}',
+                '{"actions":[{"action":"setKey","key":"productKey"}],
+                    "version" :""
+                }',
+                ['id' => '12345','sku' => '1234', 'name.de' => 'product name de', 'name.en' => 'product name en', 'description.de' => 'desc','key'=>'productKey']
+            ],
+            //description
+            [
+                [],
                 '{"results": [{"version" :"","id" :"12345","productType": {"typeId":"product-type","id":"1"},"sku":"1234", "name":{"de":"product name de","en" : "product name en"}, "key": "productkey"}]}',
                 '{"actions":[],
                     "version" :""
@@ -807,6 +877,20 @@ class ProductsRequestBuilderTest extends \PHPUnit_Framework_TestCase
                 '{"results": [{"version" :"","id" :"12345","slug":{"de":"product-slug-de","en" : "product-slug-en"}, "key": "productkey","categories": {}, "masterVariant": {}, "variants": []}]}',
                 '{"actions":[
                     {"action":"addVariant","sku":"1234","variantId": 1,"variantKey":"product1"}
+                    ],
+                    "version" :""
+                }'
+            ],
+            [
+                [
+                    'productType'=> 'main',
+                    'slug' => ['de'=>'product-slug-de', 'en' => 'product-slug-en'],
+                    'key' => "productkey",
+                    'variants'=> [["sku"=>"1234","variantKey"=>"product1","variantId"=>"1", "test"=>"test"]]
+                ],
+                '{"results": [{"version" :"","id" :"12345","slug":{"de":"product-slug-de","en" : "product-slug-en"}, "key": "productkey","categories": {}, "masterVariant": {}, "variants": []}]}',
+                '{"actions":[
+                    {"action":"addVariant","sku":"1234","variantId": 1,"variantKey":"product1", "attributes": [{"name": "test", "value": "test"}]}
                     ],
                     "version" :""
                 }'
@@ -2566,7 +2650,7 @@ class ProductsRequestBuilderTest extends \PHPUnit_Framework_TestCase
                     'key' => "productkey",
                     'variants'=> [["variantId"=>'1'],["variantId"=>2]]
                 ]
-            ]
+            ],
         ];
     }
 
@@ -2616,6 +2700,12 @@ class ProductsRequestBuilderTest extends \PHPUnit_Framework_TestCase
                             "description":"product desc",
                             "attributes":[
                             {
+                                "name":"test",
+                                "type": {
+                                    "name": "text"
+                                }
+                            },
+                            {
                                 "name":"size",
                                 "type": {
                                     "name": "enum",
@@ -2660,10 +2750,18 @@ class ProductsRequestBuilderTest extends \PHPUnit_Framework_TestCase
 
         $requestBuilder = new ProductsRequestBuilder($client->reveal());
 
-        $returnedRequest= $requestBuilder->createRequest($data, "key");
+        if(isset($data["key"])){
+            $returnedRequest= $requestBuilder->createRequest($data, "key");
+        } else {
+            $returnedRequest= $requestBuilder->createRequest($data, "id");
+        }
 
-        $this->assertInstanceOf(ProductUpdateRequest::class, $returnedRequest);
-        $this->assertJsonStringEqualsJsonString($expected, (string)$returnedRequest->httpRequest()->getBody());
+        if (is_null($returnedRequest)) {
+            $this->assertJsonStringEqualsJsonString('{"actions":[], "version" :""}', $expected);
+        } else {
+            $this->assertInstanceOf(ProductUpdateRequest::class, $returnedRequest);
+            $this->assertJsonStringEqualsJsonString($expected, (string)$returnedRequest->httpRequest()->getBody());
+        }
     }
 
 }

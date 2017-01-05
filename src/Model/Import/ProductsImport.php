@@ -9,9 +9,13 @@
 namespace Commercetools\Symfony\CtpBundle\Model\Import;
 
 use Commercetools\Core\Client;
+use Commercetools\Core\Request\ClientRequestInterface;
 
 class ProductsImport
 {
+    const VARIANTS='variants';
+    const ID='id';
+
     /**
      * @var Client
      */
@@ -35,24 +39,26 @@ class ProductsImport
         foreach ($data as $key => $row) {
             if ($key == 0) {
                 $productData = $row;
-                $productData['variants'][] = $row;
+                $productData[self::VARIANTS][] = $row;
                 continue;
             }
-            if (!empty($row[$this->identifiedByColumn])) {
-                $this->client->addBatchRequest(
-                    $this->requestBuilder->createRequest($productData, $this->identifiedByColumn)
-                );
-                $this->requests++;
+            if (!empty($row[self::ID])) {
+                $request=$this->requestBuilder->createRequest($productData, $this->identifiedByColumn);
+                if ($request instanceof ClientRequestInterface) {
+                    $this->client->addBatchRequest($request);
+                    $this->requests++;
+                }
                 $this->execute();
                 $productData = $row;
-//                $productData['variants'][] = $row; // TODO remove with break ;)
-//                break;
+                $productData[self::VARIANTS][] = $row; // TODO remove with break ;)
+                break;
             }
-            $productData['variants'][] = $row;
+            $productData[self::VARIANTS][] = $row;
         }
-        $this->client->addBatchRequest(
-            $this->requestBuilder->createRequest($productData, $this->identifiedByColumn)
-        );
+        $request=$this->requestBuilder->createRequest($productData, $this->identifiedByColumn);
+        if ($request instanceof ClientRequestInterface) {
+            $this->client->addBatchRequest($request);
+        }
 
         $this->execute(true);
     }
