@@ -1341,7 +1341,6 @@ class ProductsRequestBuilderTest extends \PHPUnit_Framework_TestCase
                     'productType'=> 'main',
                     'slug' => ['de'=>'product-slug-de', 'en' => 'product-slug-en'],
                     'key' => "productkey",
-
                     'variants'=> [["sku"=>"1243","variantId"=>2,"prices"=>"EUR 9750","images"=>"","attributes"=>[]], ]
 
                 ],
@@ -1351,7 +1350,6 @@ class ProductsRequestBuilderTest extends \PHPUnit_Framework_TestCase
                     "productType": {"typeId":"product-type","id":"1"},
                     "slug":{"de":"product-slug-de","en" : "product-slug-en"},
                     "key": "productkey","categories": {},
-
                     "masterVariant": {},
                     "variants": [
                         {
@@ -2273,23 +2271,18 @@ class ProductsRequestBuilderTest extends \PHPUnit_Framework_TestCase
                 }'
             ],
             [
-                [
-
-                ],
+                [],
                 '{"results": [{
                                 "productType":{"typeId":"product-type","key":"main","id":"1"},
                                 "version" :"",
                                 "id" :"12345",
                                 "slug":{"de":"product-slug-de","en" : "product-slug-en"},
                                 "key": "productkey","categories": {},
-                                "masterVariant": {"id":1,"sku":"1234","prices":[]},
+                                "masterVariant": {"id":1,"sku":"1234"},
                                 "variants": [
                                                 {
                                                     "id":2,
-                                                    "prices":[],
-                                                    "sku":"12345",
-                                                    "images":[],
-                                                    "attributes":{}
+                                                    "sku":"12345"
                                                 }
                                             ]}
                              ]}'
@@ -2318,11 +2311,7 @@ class ProductsRequestBuilderTest extends \PHPUnit_Framework_TestCase
                                 "masterVariant": {"id":1,"prices":[]},
                                 "variants": [
                                                 {
-                                                    "id":2,
-                                                    "prices":[],
-                                                    
-                                                    "images":[],
-                                                    "attributes":{}
+                                                    "id":2
                                                 }
                                             ]}
                              ]}'
@@ -2334,7 +2323,7 @@ class ProductsRequestBuilderTest extends \PHPUnit_Framework_TestCase
                     'productType'=> 'main',
                     'slug.de'=>'product-slug-de', 'slug.en' => 'product-slug-en',
                     'key' => "productkey",
-                    'variants'=> [["variantId"=>'1',"prices"=>""],["variantId"=>'2',"prices"=>""]]
+                    'variants'=> [["variantId"=>'1'],["variantId"=>'2']]
 
                 ]
             ],
@@ -2351,10 +2340,7 @@ class ProductsRequestBuilderTest extends \PHPUnit_Framework_TestCase
                                 "masterVariant": {"id":1,"prices":[]},
                                 "variants": [
                                                 {
-                                                    "id":2,
-                                                    "prices":[],
-                                                    "images":[],
-                                                    "attributes":{}
+                                                    "id":2
                                                 }
                                             ]}
                              ]}'
@@ -2366,27 +2352,22 @@ class ProductsRequestBuilderTest extends \PHPUnit_Framework_TestCase
                     'productType'=> 'main',
                     'slug.de'=>'product-slug-de', 'slug.en' => 'product-slug-en',
                     'key' => "productkey",
-                    'variants'=> [["sku"=>"","variantId"=>'1',"prices"=>""],["sku"=>"","variantId"=>'2',"prices"=>""]]
+                    'variants'=> [["sku"=>"","variantId"=>'1'],["sku"=>"","variantId"=>'2']]
 
                 ]
             ],
             [
-                [
-
-                ],
+                [],
                 '{"results": [{
                                 "productType":{"typeId":"product-type","key":"main","id":"1"},
                                 "version" :"",
                                 "id" :"12345",
                                 "slug":{"de":"product-slug-de","en" : "product-slug-en"},
                                 "key": "productkey","categories": {},
-                                "masterVariant": {"id":1,"prices":[]},
+                                "masterVariant": {"id":1},
                                 "variants": [
                                                 {
-                                                    "id":2,
-                                                    "prices":[],
-                                                    "images":[],
-                                                    "attributes":{}
+                                                    "id":2
                                                 }
                                             ]}
                              ]}'
@@ -2401,7 +2382,7 @@ class ProductsRequestBuilderTest extends \PHPUnit_Framework_TestCase
                     'productType'=> 'main',
                     'slug.de'=>'product-slug-de', 'slug.en' => 'product-slug-en',
                     'key' => "productkey",
-                    'variants'=> [["sku"=>"123","variantId"=>'1',"prices"=>""],["sku"=>"1234","variantId"=>'2',"prices"=>""]]
+                    'variants'=> [["sku"=>"123","variantId"=>'1'],["sku"=>"1234","variantId"=>'2']]
 
                 ]
             ],

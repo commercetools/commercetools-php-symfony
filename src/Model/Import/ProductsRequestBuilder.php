@@ -40,7 +40,6 @@ class ProductsRequestBuilder extends AbstractRequestBuilder
     const VALUE= 'value';
     const SKU= 'sku';
     const PRICES='prices';
-    const IMAGES='images';
     const ATTRIBUTES='attributes';
     const NAME='name';
     const CATEGORIES='categories';
@@ -53,27 +52,11 @@ class ProductsRequestBuilder extends AbstractRequestBuilder
     const METADESCRIPTION='metaDescription';
     const METAKEYWORDS='metaKeywords';
     const TAXCATEGORY='taxCategory';
-    const CHANNEL='channel';
     const VARIANTKEY='variantKey';
-    const PUBLISH='publish';
     const VARIANTID='variantId';
-    const CUSTOMERGROUP='customerGroup';
-    const CURRENCYCODE='currencyCode';
-    const COUNTRY='country';
-    const CENTAMOUNT='centAmount';
     const PRODUCTTYPE='productType';
     const TAX='tax';
-    const DIMENSIONS='dimensions';
-    const URL='url';
-    const CREATIONDATE='creationDate';
-    const SEARCHKEYWORDS='searchKeywords';
-    const REFERENCE='reference';
-    const ANCESTORS='ancestors';
-    const TOCHANGE='toChange';
-    const TOADD='toAdd';
-    const TOREMOVE='toRemove';
     const VERSION='version';
-    const OBJ='obj';
 
     private $productDataObj;
     private $variantDataObj;
@@ -85,8 +68,8 @@ class ProductsRequestBuilder extends AbstractRequestBuilder
     public function __construct(Client $client)
     {
         $this->client = $client;
-        $this->productDataObj = new ProductData($client);
         $this->variantDataObj = new variantData($client);
+        $this->productDataObj = new ProductData($client, $this->variantDataObj);
         $this->productTypes = $this->getProductTypes();
     }
 

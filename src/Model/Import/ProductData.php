@@ -20,11 +20,6 @@ use Commercetools\Core\Model\Category\CategoryReferenceCollection;
 class ProductData
 {
     const ID= 'id';
-    const VALUE= 'value';
-    const SKU= 'sku';
-    const PRICES='prices';
-    const IMAGES='images';
-    const ATTRIBUTES='attributes';
     const NAME='name';
     const CATEGORIES='categories';
     const VARIANTS='variants';
@@ -36,39 +31,25 @@ class ProductData
     const METADESCRIPTION='metaDescription';
     const METAKEYWORDS='metaKeywords';
     const TAXCATEGORY='taxCategory';
-    const CHANNEL='channel';
-    const VARIANTKEY='variantKey';
     const PUBLISH='publish';
     const VARIANTID='variantId';
-    const CUSTOMERGROUP='customerGroup';
-    const CURRENCYCODE='currencyCode';
-    const COUNTRY='country';
-    const CENTAMOUNT='centAmount';
     const PRODUCTTYPE='productType';
     const TAX='tax';
-    const DIMENSIONS='dimensions';
-    const URL='url';
-    const CREATIONDATE='creationDate';
     const SEARCHKEYWORDS='searchKeywords';
     const REFERENCE='reference';
     const ANCESTORS='ancestors';
-    const TOCHANGE='toChange';
-    const TOADD='toAdd';
-    const TOREMOVE='toRemove';
-    const VERSION='version';
-    const OBJ='obj';
 
     private $categories;
     private $client;
     private $taxCategories;
     private $variantDataObj;
 
-    public function __construct(Client $client)
+    public function __construct(Client $client, variantData $variantDataObj)
     {
         $this->client = $client;
         $this->categories = $this->getCategories();
         $this->taxCategories = $this->getTaxCategories();
-        $this->variantDataObj = new variantData($this->client);
+        $this->variantDataObj = $variantDataObj;
     }
     public function mapProductFromData($productData, $productType, $ignoreEmpty = false)
     {
@@ -194,7 +175,6 @@ class ProductData
 
         $helper = new QueryHelper();
         $taxCategories = $helper->getAll($this->client, $request);
-
 
         /**
          * @var TaxCategoryCollection $taxCategories ;
