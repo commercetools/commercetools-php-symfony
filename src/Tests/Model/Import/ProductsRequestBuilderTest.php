@@ -854,7 +854,7 @@ class ProductsRequestBuilderTest extends \PHPUnit_Framework_TestCase
                     'key' => "productkey",
                     'variants'=> [["sku"=>"1234","variantKey"=>"product1","variantId"=>'1']]
                 ],
-                '{"results": [{"version" :"","id" :"12345","slug":{"de":"product-slug-de","en" : "product-slug-en"}, "key": "productkey","categories": {}, "masterVariant": {}, "variants": []}]}',
+                '{"results": [{"version" :"","id" :"12345","slug":{"de":"product-slug-de","en" : "product-slug-en"}, "key": "productkey"}]}',
                 '{"actions":[
                     {"action":"addVariant","sku":"1234","variantId": 1,"variantKey":"product1"}
                     ],

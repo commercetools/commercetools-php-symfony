@@ -59,7 +59,6 @@ class ProductsImport
         if ($request instanceof ClientRequestInterface) {
             $this->client->addBatchRequest($request);
         }
-
         $this->execute(true);
     }
 

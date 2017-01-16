@@ -239,7 +239,6 @@ class VariantData extends AbstractRequestBuilder
                 }
             }
         }
-
         return $result;
     }
     private function getVariantRemoveActions($toRemove)

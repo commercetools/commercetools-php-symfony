@@ -72,7 +72,9 @@ class ProductData
                     $productDraftArray[$key]= ProductTypeReference::ofKey($value);
                     break;
                 case self::TAX:
-                    $productDraftArray[self::TAXCATEGORY]= $this->taxCategories[$value];
+                    if (isset($this->taxCategories[$value])) {
+                        $productDraftArray[self::TAXCATEGORY] = $this->taxCategories[$value];
+                    }
                     break;
                 case "state":
                     $productDraftArray[$key]= StateReference::ofKey($value);
@@ -128,6 +130,13 @@ class ProductData
         }
         return $toRemove;
     }
+//    public function getTaxCategoryRefByName($name)
+//    {
+//        if (isset($this->taxCategories[$name])) {
+//            return $this->taxCategories[$name];
+//        }
+//        return null;
+//    }
     private function searchArray($needle, $haystack)
     {
         if (in_array($needle, $haystack)) {
@@ -185,5 +194,4 @@ class ProductData
         }
         return $taxCatReferences;
     }
-
 }
