@@ -305,7 +305,7 @@ class ProductsRequestBuilder extends AbstractRequestBuilder
         }
         $intersect = $this->arrayIntersectRecursive($product, $productDataArray);
         $toChange = $this->arrayDiffRecursive($productDataArray, $intersect);
-        $toChange[self::CATEGORIES]=$this->productDataObj->categoriesToAdd($product[self::CATEGORIES], $productDataArray[self::CATEGORIES]->toArray());
+        $toChange[self::CATEGORIES]=$this->productDataObj->categoriesToAdd($product[self::CATEGORIES], $productDataArray[self::CATEGORIES]);
 
         if (isset($product[self::TAXCATEGORY]) && isset($productDataArray[self::TAXCATEGORY])) {
             $taxCategoryToChange=$this->productDataObj->taxCategoryDiff($product[self::TAXCATEGORY], $productDataArray[self::TAXCATEGORY]->toArray());
@@ -327,9 +327,11 @@ class ProductsRequestBuilder extends AbstractRequestBuilder
         if (!isset($productDataArray[self::CATEGORIES])) {
             $productDataArray[self::CATEGORIES] = [];
         }
-
         if (!isset($product[self::CATEGORIES])) {
             $product[self::CATEGORIES] = [];
+        }
+        if (isset($productDataArray[self::TAXCATEGORY])) {
+            $productDataArray[self::TAXCATEGORY] = $this->productDataObj->getTaxCategoryRefByName($productDataArray[self::TAXCATEGORY]['obj']['name']);
         }
         if (!isset($product[self::MASTERVARIANT][self::KEY])) {
             $product[self::MASTERVARIANT][self::KEY]="";
@@ -394,7 +396,7 @@ class ProductsRequestBuilder extends AbstractRequestBuilder
 
         $toAdd[self::VARIANTS] = $this->variantDataObj->getVariantsDiff($this->productVariantsById, $this->productVariantsDraftById);
 
-        $toChange =$this->getProductItemsToChange($productDraftArray, $product);
+        $toChange =$this->getProductItemsToChange($productDataArray, $product);
 
         $request = ProductUpdateRequest::ofIdAndVersion($product[self::ID], $product[self::VERSION]);
 

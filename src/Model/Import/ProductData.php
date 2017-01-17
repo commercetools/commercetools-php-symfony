@@ -117,7 +117,7 @@ class ProductData
     public function taxCategoryDiff($productCategory, $dataCategory)
     {
         if ($productCategory[self::ID] != $dataCategory [self::ID]) {
-            return $dataCategory;
+            return $this->taxCategories[$dataCategory['obj']['name']];
         }
     }
     public function categoriesToRemove($productCategories, $dataCategories)
@@ -130,13 +130,13 @@ class ProductData
         }
         return $toRemove;
     }
-//    public function getTaxCategoryRefByName($name)
-//    {
-//        if (isset($this->taxCategories[$name])) {
-//            return $this->taxCategories[$name];
-//        }
-//        return null;
-//    }
+    public function getTaxCategoryRefByName($name)
+    {
+        if (isset($this->taxCategories[$name])) {
+            return $this->taxCategories[$name];
+        }
+        return null;
+    }
     private function searchArray($needle, $haystack)
     {
         if (in_array($needle, $haystack)) {
