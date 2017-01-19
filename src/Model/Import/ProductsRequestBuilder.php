@@ -94,42 +94,89 @@ class ProductsRequestBuilder extends AbstractRequestBuilder
 
         return $productTypesByKey;
     }
-
-    /**
-     * @param $productData
-     * @param $identifiedByColumn
-     * @param $identifier
-     * @return ClientRequestInterface|null
-     */
-    public function createRequest($productData, $identifiedByColumn)
+    private function getProductsByIdentifiedByColumn($products, $identifiedByColumn)
     {
+        $parts = explode('.', $identifiedByColumn);
+        $productsArr=[];
+        foreach ($products as $product) {
+            switch ($parts[0]) {
+                case self::SKU:
+                    if (isset($product->toArray()[self::MASTERVARIANT])) {
+                        $productsArr[$product->toArray()[self::MASTERVARIANT][$identifiedByColumn]] = $product;
+                    } else {
+                        $productsArr[$product->toArray()[self::VARIANTS][0][$identifiedByColumn]] = $product;
+                    }
+                    break;
+                case self::ID:
+                case self::KEY:
+                    $productsArr[$product->toArray()[$identifiedByColumn]] = $product;
+                    break;
+                case self::SLUG:
+                    $productsArr[$product->toArray()[$parts[0]][$parts[1]]] = $product;
+                    break;
+            }
+        }
+        return $productsArr;
+    }
+    private function getProductsDataByIdentifiedByColumn($productsData, $identifiedByColumn)
+    {
+        $productsDataArr=[];
+        $parts = explode('.', $identifiedByColumn);
+        foreach ($productsData as $productData) {
+            switch ($parts[0]) {
+                case self::SKU:
+                case self::ID:
+                case self::KEY:
+                    $productsDataArr[$productData[$identifiedByColumn]] = $productData;
+                    break;
+                case self::SLUG:
+                    $productsDataArr[$productData[$parts[0]][$parts[1]]] = $productData;
+                    break;
+            }
+        }
+        return $productsDataArr;
+    }
+    /**
+     * @param $productsData
+     * @param $identifiedByColumn
+     * @return ClientRequestInterface[]|null
+     */
+    public function createRequest($productsData, $identifiedByColumn)
+    {
+        $requests=[];
         $request = ProductProjectionQueryRequest::of()
             ->where(
                 sprintf(
                     $this->getIdentifierQuery($identifiedByColumn),
-                    $this->getIdentifierFromArray($identifiedByColumn, $productData)
+                    $this->getIdentifierFromArray($identifiedByColumn, $productsData)
                 )
             )
-            ->staged(true)
-            ->limit(1);
+            ->limit(500)
+            ->staged(true);
 
         $response = $request->executeWithClient($this->client);
         $products = $request->mapFromResponse($response);
 
-        if (count($products) > 0) {
-            /**
-             * @var ProductProjection $product
-             */
-            $product = $products->current();
-            $request = $this->getUpdateRequest($product, $productData);
-            if (!$request->hasActions()) {
-                $request = null;
-            }
-        } else {
-            $request = $this->getCreateRequest($productData);
-        }
+        $productsArr=$this->getProductsByIdentifiedByColumn($products, $identifiedByColumn);
+        $productsDataArr=$this->getProductsDataByIdentifiedByColumn($productsData, $identifiedByColumn);
 
-        return $request;
+        /**
+        * @var ProductProjection $product
+        */
+        foreach ($productsDataArr as $key => $productData) {
+            if (isset($productsArr[$key])) {
+                $product = $productsArr[$key];
+                $request = $this->getUpdateRequest($product, $productData);
+                if (!$request->hasActions()) {
+                    $request = null;
+                }
+                $requests []=$request;
+            } else {
+                $request  = $this->getCreateRequest($productData);
+                $requests []= $request;
+            }
+        }
+        return $requests;
     }
 
     private function createVariantAddRequest($variants)
@@ -308,12 +355,14 @@ class ProductsRequestBuilder extends AbstractRequestBuilder
         $toChange[self::CATEGORIES]=$this->productDataObj->categoriesToAdd($product[self::CATEGORIES], $productDataArray[self::CATEGORIES]);
 
         if (isset($product[self::TAXCATEGORY]) && isset($productDataArray[self::TAXCATEGORY])) {
-            $taxCategoryToChange=$this->productDataObj->taxCategoryDiff($product[self::TAXCATEGORY], $productDataArray[self::TAXCATEGORY]->toArray());
+            $taxCategoryToChange=$this->productDataObj->taxCategoryDiff($product[self::TAXCATEGORY], $productDataArray[self::TAXCATEGORY]);
             if ($taxCategoryToChange ==null) {
                 unset($toChange[self::TAXCATEGORY]); //to avoid unnecessary action
+            } else {
+                $toChange[self::TAXCATEGORY ]= $this->productDataObj->getTaxCategoryRefByName($productDataArray[self::TAXCATEGORY]['obj']['name']);
             }
         } elseif (isset($productDataArray[self::TAXCATEGORY])) {
-            $toChange[self::TAXCATEGORY]= $productDataArray[self::TAXCATEGORY];
+            $toChange[self::TAXCATEGORY ]= $this->productDataObj->getTaxCategoryRefByName($productDataArray[self::TAXCATEGORY]['obj']['name']);
         } else {
             $toChange[self::TAXCATEGORY]=[];
         }
@@ -331,7 +380,7 @@ class ProductsRequestBuilder extends AbstractRequestBuilder
             $product[self::CATEGORIES] = [];
         }
         if (isset($productDataArray[self::TAXCATEGORY])) {
-            $productDataArray[self::TAXCATEGORY] = $this->productDataObj->getTaxCategoryRefByName($productDataArray[self::TAXCATEGORY]['obj']['name']);
+            $productDataArray[self::TAXCATEGORY] = $this->productDataObj->getTaxCategoryRefByName($productDataArray[self::TAXCATEGORY]['obj']['name'])->toArray();
         }
         if (!isset($product[self::MASTERVARIANT][self::KEY])) {
             $product[self::MASTERVARIANT][self::KEY]="";
@@ -410,7 +459,7 @@ class ProductsRequestBuilder extends AbstractRequestBuilder
         return $request;
     }
 
-    public function getIdentifierQuery($identifierName, $query = '= "%s"')
+    public function getIdentifierQuery($identifierName, $query = ' in (%s)')
     {
         $parts = explode('.', $identifierName);
         $value="";
@@ -419,7 +468,7 @@ class ProductsRequestBuilder extends AbstractRequestBuilder
                 $value = $parts[0].'('.$parts[1]. $query . ')';
                 break;
             case self::SKU:
-                $value = self::MASTERVARIANT.'('.self::SKU.'= "%1$s") or '. self::VARIANTS.'('.self::SKU.'= "%1$s")';
+                $value = self::MASTERVARIANT.'('.self::SKU.' in (%1$s)) or '. self::VARIANTS.'('.self::SKU.' in (%1$s)  )';
                 break;
             case self::KEY:
             case self::ID:
@@ -428,20 +477,22 @@ class ProductsRequestBuilder extends AbstractRequestBuilder
         }
         return $value;
     }
-    public function getIdentifierFromArray($identifierName, $row)
+    public function getIdentifierFromArray($identifierName, $rows)
     {
         $parts = explode('.', $identifierName);
-        $value="";
-        switch ($parts[0]) {
-            case self::SLUG:
-                $value = $row[$parts[0]][$parts[1]];
-                break;
-            case self::SKU:
-            case self::KEY:
-            case self::ID:
-                $value = $row[$parts[0]];
-                break;
+        $value=[];
+        foreach ($rows as $row) {
+            switch ($parts[0]) {
+                case self::SLUG:
+                    $value []= '"'.$row[$parts[0]][$parts[1]].'"';
+                    break;
+                case self::SKU:
+                case self::KEY:
+                case self::ID:
+                    $value [] = '"'.$row[$parts[0]].'"';
+                    break;
+            }
         }
-        return $value;
+        return implode(',', $value);
     }
 }

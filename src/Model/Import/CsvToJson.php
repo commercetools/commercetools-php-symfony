@@ -29,7 +29,7 @@ class CsvToJson
     {
         $actualPart = array_shift($parts);
 
-        if (count($parts) > 0) {
+        if (!empty($parts)) {
             if (!isset($context[$actualPart])) {
                 $context[$actualPart] = [];
             }

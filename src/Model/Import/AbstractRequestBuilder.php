@@ -9,20 +9,25 @@
 namespace Commercetools\Symfony\CtpBundle\Model\Import;
 
 
+use Commercetools\Core\Model\Common\AbstractJsonDeserializeObject;
+use Commercetools\Core\Model\Common\JsonDeserializeInterface;
+use Commercetools\Core\Model\Common\Price;
+
 abstract class AbstractRequestBuilder
 {
-    public function arrayDiffRecursive($arr1, $arr2)
+    public function arrayDiffRecursive(array $arr1, array $arr2)
     {
         $outputDiff = [];
 
         foreach ($arr1 as $key => $value) {
             //if the key exists in the second array, recursively call this function
             //if it is an array, otherwise check if the value is in arr2
-            if (array_key_exists($key, $arr2)) {
+            if (isset($arr2[$key]) || array_key_exists($key, $arr2)) {
                 if (is_array($value)) {
-                    $recursiveDiff = $this->arrayDiffRecursive($value, $arr2[$key]);
+                    $arr2Value = $arr2[$key];
+                    $recursiveDiff = $this->arrayDiffRecursive($value, $arr2Value);
 
-                    if (count($recursiveDiff)) {
+                    if (!empty($recursiveDiff)) {
                         $outputDiff[$key] = $recursiveDiff;
                     }
                 } elseif ($value != $arr2[$key]) {
@@ -35,15 +40,16 @@ abstract class AbstractRequestBuilder
 
         return $outputDiff;
     }
-    public function arrayIntersectRecursive($arr1, $arr2)
+    public function arrayIntersectRecursive(array $arr1, array $arr2)
     {
         $outputIntersect = [];
 
         foreach ($arr1 as $key => $value) {
-            if (array_key_exists($key, $arr2)) {
+            if (isset($arr2[$key]) || array_key_exists($key, $arr2)) {
                 if (is_array($value)) {
-                    $intersect = $this->arrayIntersectRecursive($value, $arr2[$key]);
-                    if (count($intersect)) {
+                    $arr2Value = $arr2[$key];
+                    $intersect = $this->arrayIntersectRecursive($value, $arr2Value);
+                    if (!empty($intersect)) {
                         $outputIntersect[$key] = $intersect;
                     }
                 } elseif ($value == $arr2[$key]) {

@@ -121,11 +121,7 @@ class VariantData extends AbstractRequestBuilder
         foreach ($images as $image) {
             $keyParts = [];
             $keyParts[] = $image[self::URL];
-            if ($imageFromData) {
-                $keyParts[] = implode('-', $image[self::DIMENSIONS]->toArray());
-            } else {
-                $keyParts[] = implode('-', $image[self::DIMENSIONS]);
-            }
+            $keyParts[] = implode('-', $image[self::DIMENSIONS]);
             $imagesArray[implode('-', $keyParts)] = $image;
         }
         return $imagesArray;
@@ -136,6 +132,7 @@ class VariantData extends AbstractRequestBuilder
         if (!isset($variantData[self::PRICES])) {
             $variantData[self::PRICES]="";
         }
+        $attributes = $productType->getAttributes();
         foreach ($variantData as $key => $value) {
             switch ($key) {
                 case self::METATITLE:
@@ -161,7 +158,7 @@ class VariantData extends AbstractRequestBuilder
                     break;
                 case self::IMAGES:
                     $images=[];
-                    $dimension= ImageDimension::fromArray(["w"=> 0, "h"=> 0]);
+                    $dimension= ["w"=> 0, "h"=> 0];
                     $value=explode(';', $value);
                     foreach ($value as $imageUrl) {
                         if ($imageUrl!='') {
@@ -170,7 +167,7 @@ class VariantData extends AbstractRequestBuilder
                             $images[]=$image;
                         }
                     }
-                    $variantDraftArray[$key] = Image::fromArray($images);
+                    $variantDraftArray[$key] = $images;
                     break;
                 case self::SEARCHKEYWORDS:
                     break;
@@ -182,7 +179,7 @@ class VariantData extends AbstractRequestBuilder
                         $variantDraftArray[self::ATTRIBUTES] = [];
                     }
                     if (!is_null($value) && $value !== '') {
-                        $attributeDefinition = $productType->getAttributes()->getByName($key);
+                        $attributeDefinition = $attributes->getByName($key);
                         if ($attributeDefinition) {
                             $attributeType = $attributeDefinition->getType();
                             switch (true) {

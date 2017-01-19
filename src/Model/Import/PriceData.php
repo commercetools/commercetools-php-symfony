@@ -9,6 +9,7 @@
 namespace Commercetools\Symfony\CtpBundle\Model\Import;
 
 use Commercetools\Core\Client;
+use Commercetools\Core\Model\CustomerGroup\CustomerGroupCollection;
 use Commercetools\Core\Request\CustomerGroups\CustomerGroupQueryRequest;
 use Commercetools\Commons\Helper\QueryHelper;
 use Commercetools\Core\Model\Common\Money;
@@ -47,7 +48,7 @@ class PriceData
          */
         $customerGroupsByName = [];
         foreach ($customerGroups as $customerGroup) {
-            $customerGroupsByName[$customerGroup->getName()] = $customerGroup->getReference();
+            $customerGroupsByName[$customerGroup->getName()] = $customerGroup->getReference()->toArray();
             $customerGroupsByName[$customerGroup->getId()] = $customerGroup->getName();
         }
         return $customerGroupsByName;
@@ -76,8 +77,8 @@ class PriceData
             if (count($splittedcurrencyAndPrice)>= 2) {
                 $splitedPrice=explode('|', $splittedcurrencyAndPrice[1]);
                 $money[self::CENTAMOUNT]= intval($splitedPrice[0]);
-                $price[self::VALUE]=Money::fromArray($money);
-                $prices[]= Price::fromArray($price);
+                $price[self::VALUE]=$money;
+                $prices[]= $price;
             }
         }
 
@@ -125,8 +126,7 @@ class PriceData
 
         foreach ($productVariantDraftPrices as $price) {
             $keyParts = [];
-            $priceObj=PriceDraft::fromArray($price->toArray());
-            $price=$price->toArray();
+            $priceObj=PriceDraft::fromArray($price);
             $keyParts[]=$price[self::VALUE][self::CURRENCYCODE];
             if (isset($price[self::COUNTRY])) {
                 $keyParts[]=$price[self::COUNTRY];

@@ -19,7 +19,8 @@ class CommercetoolsImportProductsCommand extends ContainerAwareCommand
             ->addOption('delimiter', null, InputOption::VALUE_OPTIONAL, 'Column delimiter', ';')
             ->addOption('enclosure', null, InputOption::VALUE_OPTIONAL, 'Column enclosure', '"')
             ->addOption('escape', null, InputOption::VALUE_OPTIONAL, 'Column escape', '\\')
-            ->addOption('identifiedBy', null, InputOption::VALUE_OPTIONAL, 'Column to identify', 'id')
+            ->addOption('identifiedBy', null, InputOption::VALUE_OPTIONAL, 'Column to query the products by', 'id')
+            ->addOption('packedRequests', null, InputOption::VALUE_OPTIONAL, 'number of queries to send together', 10)
         ;
     }
 
@@ -34,10 +35,11 @@ class CommercetoolsImportProductsCommand extends ContainerAwareCommand
         $delimiter = $input->getOption('delimiter');
         $escape = $input->getOption('escape');
         $identifiedByColumn = $input->getOption('identifiedBy');
+        $packedRequests = $input->getOption('packedRequests');
 
         $loader->setCsvControl($delimiter, $enclosure, $escape);
         $data = $loader->load($file);
-        $importer->setOptions($identifiedByColumn);
+        $importer->setOptions($identifiedByColumn, $packedRequests);
         $importer->import($data);
     }
 

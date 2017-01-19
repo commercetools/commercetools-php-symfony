@@ -9,6 +9,7 @@
 namespace Commercetools\Symfony\CtpBundle\Model\Import;
 
 use Commercetools\Commons\Helper\QueryHelper;
+use Commercetools\Core\Model\State\StateReference;
 use Commercetools\Symfony\CtpBundle\Model\Import\VariantData; // TODO dont remove raise exception (it is a symfony issue)
 use Commercetools\Core\Model\ProductType\ProductTypeReference;
 use Commercetools\Core\Model\Product\ProductVariantDraft;
@@ -97,7 +98,7 @@ class ProductData
                             $productDraftArray[self::MASTERVARIANT]= ProductVariantDraft::fromArray($variantData);
                             continue;
                         }
-                        $variants[]= ProductVariantDraft::fromArray($variantData);
+                        $variants[]= ProductVariantDraft::fromArray($variantData)->toArray();
                     }
                     $productDraftArray[$key]= $variants;
             }

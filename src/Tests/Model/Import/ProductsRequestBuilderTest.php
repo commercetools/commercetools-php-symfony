@@ -506,8 +506,8 @@ class ProductsRequestBuilderTest extends \PHPUnit_Framework_TestCase
 
         $requestBuilder = new ProductsRequestBuilder($client->reveal());
 
-        $returnedRequest = $requestBuilder->createRequest($data, "key");
-
+        $returnedRequests = $requestBuilder->createRequest([$data], "key");
+        $returnedRequest = current($returnedRequests);
         $this->assertInstanceOf(ProductCreateRequest::class, $returnedRequest);
         $this->assertJsonStringEqualsJsonString(
             $expected,
@@ -531,6 +531,7 @@ class ProductsRequestBuilderTest extends \PHPUnit_Framework_TestCase
                 [
                     'productType'=> 'main',
                     "sku"=>"1234",
+                    "id" =>"12345",
                     'name' => ['de'=>'product name de', 'en' => 'product name en'],
                     'key' => "",
                 ],
@@ -549,7 +550,7 @@ class ProductsRequestBuilderTest extends \PHPUnit_Framework_TestCase
                     ],
                     "version" :""
                 }',
-                ['productType'=> 'main','sku' => '1234', 'name.de' => 'product name de', 'name.en' => 'product name en', 'key' => 'newProductkey']
+                ['productType'=> 'main','id' =>'12345','sku' => '1234', 'name.de' => 'product name de', 'name.en' => 'product name en', 'key' => 'newProductkey']
             ],
             [
                 [],
@@ -2737,10 +2738,12 @@ class ProductsRequestBuilderTest extends \PHPUnit_Framework_TestCase
 
         $requestBuilder = new ProductsRequestBuilder($client->reveal());
 
-        if(isset($data["key"])){
-            $returnedRequest= $requestBuilder->createRequest($data, "key");
+        if(isset($data["id"])){
+            $returnedRequests = $requestBuilder->createRequest([$data], "id");
+            $returnedRequest = current($returnedRequests);
         } else {
-            $returnedRequest= $requestBuilder->createRequest($data, "id");
+            $returnedRequests = $requestBuilder->createRequest([$data], "key");
+            $returnedRequest = current($returnedRequests);
         }
 
         if (is_null($returnedRequest)) {
