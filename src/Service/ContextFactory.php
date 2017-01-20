@@ -32,7 +32,8 @@ class ContextFactory
     ) {
         $context = Context::of();
         foreach ($this->defaults as $key => $default) {
-            $context[$key] = $default;
+            $method = 'set' . ucfirst($key);
+            $context->$method($default);
         }
         if (is_null($locale)) {
             $locale = $context->getLocale();
