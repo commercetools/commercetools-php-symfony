@@ -21,7 +21,7 @@
             <argument type="service" id="commercetools.cache" />
             <argument type="service" id="commercetools.locale.converter" />
             <argument type="service" id="commercetools.logger" />
-            <argument type="service" id="commercetools.profiler.extension" on-invalid="null"/>
+            <!--<argument type="service" id="commercetools.profiler.extension" on-invalid="null"/>-->
         </service>
         <service id="commercetools.context.factory" class="Commercetools\Symfony\CtpBundle\Service\ContextFactory">
             <argument>%commercetools.fallback_languages%</argument>
@@ -119,6 +119,9 @@
             <argument type="service" id="commercetools.client" />
         </service>
         <service id="commercetools.importer.product" class="Commercetools\Symfony\CtpBundle\Model\Import\ProductsImport">
+            <argument type="service" id="commercetools.client" />
+        </service>
+        <service id="commercetools.importer.order" class="Commercetools\Symfony\CtpBundle\Model\Import\OrdersImport">
             <argument type="service" id="commercetools.client" />
         </service>
     </services>
