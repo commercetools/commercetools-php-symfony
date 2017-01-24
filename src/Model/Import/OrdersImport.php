@@ -19,7 +19,7 @@ class OrdersImport
     private $client;
     private $requestBuilder;
     private $identifiedByColumn;
-    private $packedRequests;
+    private $packedRequests = 25;
 
     public function __construct(Client $client)
     {
@@ -53,8 +53,11 @@ class OrdersImport
                     }
                 }
                 $orderData = $row;
+                continue;
             }
-            $orderData[self::LINENITEMS][] = $row;
+            if (!empty($row[self::LINENITEMS])) {
+                $orderData[self::LINENITEMS][] = $row[self::LINENITEMS];
+            }
         }
         $ordersDataArr[]=$orderData;
         $requests=$this->requestBuilder->createRequest($ordersDataArr, $this->identifiedByColumn);

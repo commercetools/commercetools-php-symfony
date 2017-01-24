@@ -9,10 +9,15 @@
 namespace Commercetools\Symfony\CtpBundle\Model\Import;
 
 use Commercetools\Core\Client;
+use Commercetools\Core\Model\Cart\LineItemDraft;
 use Commercetools\Core\Model\Cart\LineItemDraftCollection;
+use Commercetools\Core\Model\Common\Address;
+use Commercetools\Core\Model\Common\Money;
+use Commercetools\Core\Model\Common\PriceDraft;
 use Commercetools\Core\Model\Order\ImportOrder;
 use Commercetools\Core\Model\Order\LineItemImportDraft;
 use Commercetools\Core\Model\Order\Order;
+use Commercetools\Core\Model\Order\ProductVariantImportDraft;
 use Commercetools\Core\Request\Orders\OrderImportRequest;
 use Commercetools\Core\Request\Orders\OrderQueryRequest;
 
@@ -22,11 +27,24 @@ class OrdersRequestBuilder extends AbstractRequestBuilder
     const NAME ='name';
     const VARIANT ='variant';
     const LINEITEMS ='lineItems';
+    const TOTALPRICE ='totalPrice';
+    const CURRENCYCODE ='currencyCode';
+    const CENTAMOUNT ='centAmount';
+    const BILLINGADDRESS ='billingAddress';
+    const SHIPPINGADDRESS ='shippingAddress';
+    const QUANTITY ='quantity';
+    const PRICE ='price';
+    const VALUE ='value';
+    const PRODUCTID ='productId';
+    const VARIANTID ='variantId';
+
     private $client;
+    private $orderDataObj;
 
     public function __construct(Client $client)
     {
         $this->client = $client;
+        $this->orderDataObj= new OrderData();
     }
 
     private function getOrdersByIdentifiedByColumn($orders, $identifiedByColumn)
@@ -98,32 +116,14 @@ class OrdersRequestBuilder extends AbstractRequestBuilder
 
     private function getCreateRequest($orderDataArray)
     {
-        var_dump($orderDataArray);
-//        $orderDataArray[self::LINEITEMS] = LineItemDraftCollection::fromArray($this->mapLineItemFromData($orderDataArray[self::LINEITEMS]));
-////        var_dump($orderDataArray[self::LINEITEMS]);exit;
-//        $order = ImportOrder::fromArray($orderDataArray);
-//        $request = OrderImportRequest::ofImportOrder($order);
-//        return $request;
+        $orderDataArray= $this->orderDataObj->mapOrderFromData($orderDataArray);
+        $orderDataobj= $this->orderDataObj->getOrderObjsFromArr($orderDataArray);
+
+        $order = ImportOrder::fromArray($orderDataobj);
+        $request = OrderImportRequest::ofImportOrder($order);
+        return $request;
     }
 
-    private function mapLineItemFromData($data)
-    {
-        if (isset($data[self::NAME])) {
-            unset($data[self::NAME]);
-        }
-        if (isset($data[self::VARIANT])) {
-            unset($data[self::VARIANT]);
-        }
-        foreach ($data as &$lineItem) {
-            if (isset($lineItem[self::LINEITEMS])) {
-                if (isset($lineItem[self::LINEITEMS][self::ID])) {
-                    unset($lineItem[self::LINEITEMS][self::ID]);
-                }
-                $lineItem = $lineItem[self::LINEITEMS];
-            }
-        }
-        return $data;
-    }
     public function getIdentifierQuery($identifierName, $query = ' in (%s)')
     {
         $value = '';
