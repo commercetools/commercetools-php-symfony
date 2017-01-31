@@ -79,6 +79,42 @@ class OrderData extends AbstractRequestBuilder
         $this->taxCategories = $this->getTaxGategories();
     }
 
+    private function mapItemFromData($data)
+    {
+        if (isset($data[self::NAME])) {
+            unset($data[self::NAME]);
+        }
+        if (isset($data[self::VARIANT])) {
+            unset($data[self::VARIANT]);
+        }
+        foreach ($data as &$lineItem) {
+            if (isset($lineItem[self::PRICE]) && !empty($lineItem[self::PRICE])) {
+                $lineItem[self::PRICE] = $this->mapPriceFromData($lineItem[self::PRICE])[0];
+            }
+            if (isset($lineItem[self::MONEY]) && !empty($lineItem[self::MONEY])) {
+                $priceParts = explode(' ', $lineItem[self::MONEY]);
+                $price[self::CURRENCYCODE] = $priceParts[0];
+                $price[self::CENTAMOUNT] = (int)$priceParts[1];
+                $lineItem[self::MONEY] = $price;
+            }
+            if (isset($lineItem[self::QUANTITY]) && !empty($lineItem[self::QUANTITY])) {
+                $lineItem[self::QUANTITY] = (int)$lineItem[self::QUANTITY];
+            }
+            if (isset($lineItem[self::PRODUCTID]) && !isset($lineItem[self::VARIANT][self::VARIANTID])) {
+                unset($lineItem[self::PRODUCTID]);
+            }
+            if (isset($lineItem[self::LINEITEMS])) {
+                unset($lineItem[self::LINEITEMS]);
+            }
+            if (isset($lineItem[self::CUSTOMLINEITEMS])) {
+                unset($lineItem[self::CUSTOMLINEITEMS]);
+            }
+            if (isset($lineItem[self::ID])) {
+                unset($lineItem[self::ID]);
+            }
+        }
+        return $data;
+    }
     public function mapOrderFromData($data)
     {
         foreach ($data as $key => $value) {
@@ -126,35 +162,8 @@ class OrderData extends AbstractRequestBuilder
                     break;
                 case self::LINEITEMS:
                 case self::CUSTOMLINEITEMS:
-                    if (isset($data[$key][self::NAME])) {
-                          unset($data[$key][self::NAME]);
-                    }
-                    if (isset($data[$key][self::VARIANT])) {
-                        unset($data[$key][self::VARIANT]);
-                    }
-                    foreach ($data[$key] as &$lineItem) {
-                        if (isset($lineItem[self::PRICE]) && !empty($lineItem[self::PRICE])) {
-                            $lineItem[self::PRICE] = $this->mapPriceFromData($lineItem[self::PRICE])[0];
-                        }
-                        if (isset($lineItem[self::MONEY]) && !empty($lineItem[self::MONEY])) {
-                            $priceParts = explode(' ', $lineItem[self::MONEY]);
-                            $price[self::CURRENCYCODE] = $priceParts[0];
-                            $price[self::CENTAMOUNT] = (int)$priceParts[1];
-                            $lineItem[self::MONEY] = $price;
-                        }
-                        if (isset($lineItem[self::QUANTITY]) && !empty($lineItem[self::QUANTITY])) {
-                            $lineItem[self::QUANTITY] = (int)$lineItem[self::QUANTITY];
-                        }
-                        if (isset($lineItem[self::PRODUCTID]) && !isset($lineItem[self::VARIANT][self::VARIANTID])) {
-                            unset($lineItem[self::PRODUCTID]);
-                        }
-                        if (isset($lineItem[$key])) {
-                            unset($lineItem[$key]);
-                        }
-                        if (isset($lineItem[self::ID])) {
-                            unset($lineItem[self::ID]);
-                        }
-                    }
+                    $data[$key] = $this->mapItemFromData($data[$key]);
+                    var_dump($data[$key]);
                     break;
             }
         }
