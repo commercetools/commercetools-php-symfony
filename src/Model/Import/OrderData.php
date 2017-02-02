@@ -13,6 +13,7 @@ use Commercetools\Core\Model\Cart\LineItemDraft;
 use Commercetools\Core\Model\Channel\ChannelCollection;
 use Commercetools\Core\Model\Common\Address;
 use Commercetools\Core\Model\Common\Image;
+use Commercetools\Core\Model\Common\LocalizedString;
 use Commercetools\Core\Model\Common\Money;
 use Commercetools\Core\Model\Common\PriceDraft;
 use Commercetools\Core\Model\Common\TaxedPrice;
@@ -142,6 +143,10 @@ class OrderData extends AbstractRequestBuilder
                         $data[self::TAXDPRICE][self::TAXPORTIONS][self::NAME] = $data[self::TAXPORTIONS][self::NAME];
                         $data[self::TAXDPRICE][self::TAXPORTIONS][self::RATE] = (int)$data[self::TAXPORTIONS][self::RATE];
                         $data[self::TAXDPRICE][self::TAXPORTIONS][self::AMOUNT] = $data[self::TAXPORTIONS][self::AMOUNT];
+
+                        unset($data[self::TAXPORTIONS]);
+                        unset($data[self::TOTALNET]);
+                        unset($data[self::TOTALGROSS]);
                     }
                     break;
                 case self::TOTALPRICE:
@@ -163,7 +168,6 @@ class OrderData extends AbstractRequestBuilder
                 case self::LINEITEMS:
                 case self::CUSTOMLINEITEMS:
                     $data[$key] = $this->mapItemFromData($data[$key]);
-                    var_dump($data[$key]);
                     break;
             }
         }
@@ -171,44 +175,60 @@ class OrderData extends AbstractRequestBuilder
     }
     private function getItemsObjFromArr($items, $lineItemFlag = true)
     {
-        foreach ($items as &$lineItem) {
-            if (isset($lineItem[self::PRICE]) && !empty($lineItem[self::PRICE])) {
-                $lineItem[self::PRICE] = PriceDraft::fromArray($lineItem[self::PRICE]);
+        foreach ($items as &$item) {
+            if (isset($item[self::NAME]) && !empty($item[self::NAME])) {
+                $item[self::NAME] = LocalizedString::fromArray($item[self::NAME]);
             }
-            if (isset($lineItem[self::MONEY]) && !empty($lineItem[self::MONEY])) {
-                $lineItem[self::MONEY] = Money::fromArray($lineItem[self::MONEY]);
+            if (isset($item[self::PRICE]) && !empty($item[self::PRICE])) {
+                $item[self::PRICE] = PriceDraft::fromArray($item[self::PRICE]);
             }
-            if (isset($lineItem[self::VARIANT]) && !empty($lineItem[self::VARIANT])) {
-                if (isset($lineItem[self::VARIANT][self::IMAGES]) && !empty($lineItem[self::VARIANT][self::IMAGES])) {
-                    $lineItem[self::VARIANT][self::IMAGES] = $this->mapImagesFromData($lineItem[self::VARIANT][self::IMAGES]);
+            if (isset($item[self::MONEY]) && !empty($item[self::MONEY])) {
+                $item[self::MONEY] = Money::fromArray($item[self::MONEY]);
+            }
+            if (isset($item[self::VARIANT]) && !$lineItemFlag) {
+                unset($item[self::VARIANT]);
+            }
+            if (isset($item[self::VARIANT]) && !empty($item[self::VARIANT])) {
+                if (isset($item[self::VARIANT][self::IMAGES]) && !empty($item[self::VARIANT][self::IMAGES])) {
+                    $item[self::VARIANT][self::IMAGES] = $this->mapImagesFromData($item[self::VARIANT][self::IMAGES]);
+                } elseif (isset($item[self::VARIANT][self::IMAGES])) {
+                    unset($item[self::VARIANT][self::IMAGES]);
                 }
-                if (isset($lineItem[self::VARIANT][self::PRICES]) && !empty($lineItem[self::VARIANT][self::PRICES])) {
-                    $prices =$this->mapPriceFromData($lineItem[self::VARIANT][self::PRICES]);
+                if (isset($item[self::VARIANT][self::PRICES]) && !empty($item[self::VARIANT][self::PRICES])) {
+                    $prices =$this->mapPriceFromData($item[self::VARIANT][self::PRICES]);
+                    $item[self::VARIANT][self::PRICES]=[];
                     foreach ($prices as $price) {
-                        $lineItem[self::VARIANT][self::PRICES][] = PriceDraft::fromArray($price);
+                        $price[self::VALUE] = Money::fromArray($price[self::VALUE]);
+                        $item[self::VARIANT][self::PRICES][] = PriceDraft::fromArray($price);
                     }
+                } elseif (isset($item[self::VARIANT][self::PRICES])) {
+                    unset($item[self::VARIANT][self::PRICES]);
                 }
-                $lineItem[self::VARIANT] = ProductVariantImportDraft::fromArray($lineItem[self::VARIANT]);
+                $item[self::VARIANT] = ProductVariantImportDraft::fromArray($item[self::VARIANT]);
             }
-            if (isset($lineItem[self::CUSTOM]) && !empty($lineItem[self::CUSTOM])) {
-                $lineItem[self::CUSTOM] = CustomFieldObjectDraft::fromArray($lineItem[self::CUSTOM]);
+            if (isset($item[self::CUSTOM]) && !empty($item[self::CUSTOM])) {
+                $item[self::CUSTOM] = CustomFieldObjectDraft::fromArray($item[self::CUSTOM]);
+            } elseif (isset($item[self::CUSTOM])) {
+                unset($item[self::CUSTOM]);
             }
-            if (isset($lineItem[self::SUPPLYCHANNEL]) && !empty($lineItem[self::SUPPLYCHANNEL])) {
-                $lineItem[self::SUPPLYCHANNEL] = $this->supplyChannels[$lineItem[self::SUPPLYCHANNEL]];
+            if (isset($item[self::SUPPLYCHANNEL]) && !empty($item[self::SUPPLYCHANNEL])) {
+                $item[self::SUPPLYCHANNEL] = $this->supplyChannels[$item[self::SUPPLYCHANNEL]];
             }
-            if (isset($lineItem[self::TAXRATE]) && !empty($lineItem[self::TAXRATE])) {
-                $lineItem[self::TAXRATE] = TaxRate::fromArray($lineItem[self::TAXRATE]);
+            if (isset($item[self::TAXRATE]) && !empty($item[self::TAXRATE])) {
+                $item[self::TAXRATE] = TaxRate::fromArray($item[self::TAXRATE]);
             }
-            if (isset($lineItem[self::TAXCATEGORY]) && !empty($lineItem[self::TAXCATEGORY])) {
-                $lineItem[self::TAXCATEGORY] = $this->taxCategories[$lineItem[self::TAXCATEGORY]];
+            if (isset($item[self::TAXCATEGORY]) && !empty($item[self::TAXCATEGORY])) {
+                $item[self::TAXCATEGORY] = $this->taxCategories[$item[self::TAXCATEGORY]];
             }
-            if (isset($lineItem[self::EXTERNALTAXRATE]) && !empty($lineItem[self::EXTERNALTAXRATE])) {
-                $lineItem[self::EXTERNALTAXRATE] = ExternalTaxRateDraft::fromArray($lineItem[self::EXTERNALTAXRATE]);
+            if (isset($item[self::EXTERNALTAXRATE]) && !empty($item[self::EXTERNALTAXRATE])) {
+                $item[self::EXTERNALTAXRATE] = ExternalTaxRateDraft::fromArray($item[self::EXTERNALTAXRATE]);
+            } elseif (isset($item[self::EXTERNALTAXRATE])) {
+                unset($item[self::EXTERNALTAXRATE]);
             }
             if ($lineItemFlag) {
-                $lineItem = LineItemDraft::fromArray($lineItem);
+                $item = LineItemDraft::fromArray($item);
             } else {
-                $lineItem = CustomLineItemDraft::fromArray($lineItem);
+                $item = CustomLineItemDraft::fromArray($item);
             }
         }
         return $items;
@@ -223,9 +243,9 @@ class OrderData extends AbstractRequestBuilder
             $OrderArr[self::TAXDPRICE] = TaxedPrice::fromArray($OrderArr[self::TAXDPRICE]);
         }
 
-        if (isset($OrderArr[self::LINEITEMS])&& !empty($lineItem[self::LINEITEMS])) {
+        if (isset($OrderArr[self::LINEITEMS])&& !empty($OrderArr[self::LINEITEMS])) {
             $OrderArr[self::LINEITEMS]= $this->getItemsObjFromArr($OrderArr[self::LINEITEMS]);
-        } elseif (isset($OrderArr[self::CUSTOMLINEITEMS])&& !empty($lineItem[self::CUSTOMLINEITEMS])) {
+        } elseif (isset($OrderArr[self::CUSTOMLINEITEMS])&& !empty($OrderArr[self::CUSTOMLINEITEMS])) {
             $OrderArr[self::CUSTOMLINEITEMS]= $this->getItemsObjFromArr($OrderArr[self::CUSTOMLINEITEMS], false);
         }
 
@@ -288,11 +308,14 @@ class OrderData extends AbstractRequestBuilder
             $price =[];
             $splittedcurrencyAndPrice=explode(' ', $currencyAndPrice);
             if (count($splittedcurrencyAndPrice)>=3) {
-                $price[self::CUSTOMERGROUP] = $this->customerGroups[$splittedcurrencyAndPrice[2]];
+                if (isset($this->customerGroups[$splittedcurrencyAndPrice[2]])) {
+                    $price[self::CUSTOMERGROUP] = $this->customerGroups[$splittedcurrencyAndPrice[2]];
+                }
             }
             $countryCurrency=explode('-', $splittedcurrencyAndPrice[0]);
             if (count($countryCurrency)> 1) {
                 $price[self::COUNTRY]=$countryCurrency[0];
+                $money[self::CURRENCYCODE]=$countryCurrency[1];
             } else {
                 $money[self::CURRENCYCODE]=$countryCurrency[0];
             }
