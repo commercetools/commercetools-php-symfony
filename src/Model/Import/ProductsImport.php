@@ -23,7 +23,7 @@ class ProductsImport
     private $requestBuilder;
     private $identifiedByColumn;
     private $packedRequests = 10;
-    private $requests;
+    private $requests=0;
 
     public function __construct(Client $client)
     {

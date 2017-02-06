@@ -20,6 +20,7 @@ class OrdersImport
     private $requestBuilder;
     private $identifiedByColumn;
     private $packedRequests = 25;
+    private $requests =0;
 
     public function __construct(Client $client)
     {

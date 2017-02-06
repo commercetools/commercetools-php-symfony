@@ -124,5 +124,8 @@
         <service id="commercetools.importer.order" class="Commercetools\Symfony\CtpBundle\Model\Import\OrdersImport">
             <argument type="service" id="commercetools.client" />
         </service>
+        <service id="commercetools.importer.state" class="Commercetools\Symfony\CtpBundle\Model\Import\StatesImport">
+            <argument type="service" id="commercetools.client" />
+        </service>
     </services>
 </container>
