@@ -26,6 +26,7 @@ class OrderRequesBuilderTest extends \PHPUnit_Framework_TestCase
     public function getAddTestData()
     {
         return [
+            //LineItems
             [
                 [],
                 '{
@@ -298,6 +299,139 @@ class OrderRequesBuilderTest extends \PHPUnit_Framework_TestCase
                     "custom"=>""
                 ]
             ],
+            [
+                [],
+                '{
+                    "id":"1",
+                    "totalPrice":{"currencyCode":"EUR","centAmount":2500},
+                    "lineItems":
+                        [
+                            { 
+                                "name":{"en":"nameEN"},
+                                "variant":{"sku":"sku"},
+                                "quantity" : 3,
+                                "price" : {"value":{"currencyCode":"EUR","centAmount":2500}}
+                            }
+                        ]
+                 }',
+                [
+                    'id'=>'1',
+                    'totalPrice'=>'EUR 2500',
+                    'orderNumber'=>'',
+                    'customerId'=>'',
+                    'customerEmail'=>'',
+                    'country'=>'',
+                    'orderState'=>'',
+                    'shipmentState'=>'',
+                    'paymentState'=>'',
+                    'completedAt'=>'',
+                    'inventoryMode'=>'',
+                    'taxRoundingMode'=>'',
+                    'shippingAddress'=>[],
+                    'billingAddress'=>[],
+                    'lineItems.0.id'=>'2',
+                    'lineItems.0.productId'=>'3',
+                    'lineItems.0.name.en'=>'nameEN',
+                    'lineItems.0.variant.sku'=>'sku',
+                    'lineItems.0.quantity'=>'3',
+                    'lineItems.0.price'=>'EUR 2500',
+                    'lineItems.0.custom'=>'',
+                    "custom"=>""
+                ]
+            ],
+            [
+                [],
+                '{
+                    "id":"1",
+                    "totalPrice":{"currencyCode":"EUR","centAmount":2500},
+                    "lineItems":
+                        [
+                            { 
+                                "name":{"en":"nameEN"},
+                                "variant":{"sku":"sku"},
+                                "quantity" : 3,
+                                "price" : {"value":{"currencyCode":"EUR","centAmount":2500}}
+                            }
+                        ]
+                 }',
+                [
+                    'id'=>'1',
+                    'totalPrice'=>'EUR 2500',
+                    'orderNumber'=>'',
+                    'customerId'=>'',
+                    'customerEmail'=>'',
+                    'country'=>'',
+                    'orderState'=>'',
+                    'shipmentState'=>'',
+                    'paymentState'=>'',
+                    'completedAt'=>'',
+                    'inventoryMode'=>'',
+                    'taxRoundingMode'=>'',
+                    'shippingAddress'=>[],
+                    'billingAddress'=>[],
+                    'lineItems.0.id'=>'',
+                    'lineItems.0.productId'=>'',
+                    'lineItems.0.name.en'=>'nameEN',
+                    'lineItems.0.variant.sku'=>'sku',
+                    'lineItems.0.quantity'=>'3',
+                    'lineItems.0.price'=>'EUR 2500',
+                    'lineItems.0.custom'=>'',
+                    "custom"=>""
+                ]
+            ],
+            [
+                [],
+                '{
+                    "id":"1",
+                    "totalPrice":{"currencyCode":"EUR","centAmount":2500},
+                    "lineItems":
+                        [
+                            { 
+                                "name":{"en":"nameEN"},
+                                "variant":{"sku":"sku"},
+                                "quantity" : 3,
+                                "price" : {"value":{"currencyCode":"EUR","centAmount":2500}}
+                            },
+                            { 
+                                "name":{"en":"nameEN"},
+                                "variant":{"sku":"sku"},
+                                "quantity" : 3,
+                                "price" : {"value":{"currencyCode":"EUR","centAmount":2500}}
+                            }
+                        ]
+                 }',
+                [
+                    'id'=>'1',
+                    'totalPrice'=>'EUR 2500',
+                    'orderNumber'=>'',
+                    'customerId'=>'',
+                    'customerEmail'=>'',
+                    'country'=>'',
+                    'orderState'=>'',
+                    'shipmentState'=>'',
+                    'paymentState'=>'',
+                    'completedAt'=>'',
+                    'inventoryMode'=>'',
+                    'taxRoundingMode'=>'',
+                    'shippingAddress'=>[],
+                    'billingAddress'=>[],
+                    'lineItems.0.id'=>'2',
+                    'lineItems.0.productId'=>'3',
+                    'lineItems.0.name.en'=>'nameEN',
+                    'lineItems.0.variant.sku'=>'sku',
+                    'lineItems.0.quantity'=>'3',
+                    'lineItems.0.price'=>'EUR 2500',
+                    'lineItems.0.custom'=>'',
+                    'lineItems.1.id'=>'2',
+                    'lineItems.1.productId'=>'3',
+                    'lineItems.1.name.en'=>'nameEN',
+                    'lineItems.1.variant.sku'=>'sku',
+                    'lineItems.1.quantity'=>'3',
+                    'lineItems.1.price'=>'EUR 2500',
+                    'lineItems.1.custom'=>'',
+                    "custom"=>""
+                ]
+            ],
             //customLineItems
             [
                 [],
@@ -344,6 +478,121 @@ class OrderRequesBuilderTest extends \PHPUnit_Framework_TestCase
                 ]
             ],
             [
+                [],
+                '{
+                    "id":"1",
+                    "customLineItems":
+                        [
+                            { 
+                                "name":{"en":"nameEN"},
+                                "slug":"slug",
+                                "quantity" : 3,
+                                "money":{"currencyCode":"EUR","centAmount":2500},
+                                "externalTaxRate":{"name":"name","amount":0,"country":"DE","state":"Berlin"},
+                                "custom":{
+                                    "type":{"key":"my-category"},
+                                    "fields":{"description":"my description"}
+                                }
+                            }
+                        ]
+                 }',
+                [
+                    'id'=>'1',
+                    'customLineItems.0.name.en'=>'nameEN',
+                    'customLineItems.0.slug'=>'slug',
+                    'customLineItems.0.quantity'=>'3',
+                    'customLineItems.0.money'=>'EUR 2500',
+                    'customLineItems.0.externalTaxRate.name'=>'name',
+                    'customLineItems.0.externalTaxRate.amount'=>0,
+                    'customLineItems.0.externalTaxRate.country'=>'DE',
+                    'customLineItems.0.externalTaxRate.state'=>'Berlin',
+                    'customLineItems.0.custom.type.key'=>'my-category',
+                    'customLineItems.0.custom.fields.description'=>'my description',
+                ]
+            ],
+            [
+                [],
+                '{
+                    "id":"1",
+                    "customLineItems":
+                        [
+                            { 
+                                "name":{"en":"nameEN"},
+                                "slug":"slug",
+                                "quantity" : 3,
+                                "money":{"currencyCode":"EUR","centAmount":2500}
+                            }
+                        ]
+                 }',
+                [
+                    'id'=>'1',
+                    'customLineItems.0.name.en'=>'nameEN',
+                    'customLineItems.0.slug'=>'slug',
+                    'customLineItems.0.quantity'=>'3',
+                    'customLineItems.0.money'=>'EUR 2500',
+                    'customLineItems.0.externalTaxRate.name'=>'',
+                    'customLineItems.0.externalTaxRate.amount'=>'',
+                    'customLineItems.0.externalTaxRate.country'=>'',
+                    'customLineItems.0.externalTaxRate.state'=>'',
+                    'customLineItems.0.custom.type'=>'',
+                    'customLineItems.0.custom.fields'=>'',
+                ]
+            ],
+            [
+                [],
+                '{
+                    "id":"1",
+                    "customLineItems":
+                        [
+                            { 
+                                "name":{"en":"nameEN"},
+                                "slug":"slug",
+                                "quantity" : 3,
+                                "money":{"currencyCode":"EUR","centAmount":2500},
+                                "externalTaxRate":{"name":"name","amount":0,"country":"DE","state":"Berlin"},
+                                "custom":{
+                                    "type":{"key":"my-category"},
+                                    "fields":{"description":"my description"}
+                                }
+                            },
+                            { 
+                                "name":{"en":"nameEN"},
+                                "slug":"slug",
+                                "quantity" : 3,
+                                "money":{"currencyCode":"EUR","centAmount":2500},
+                                "externalTaxRate":{"name":"name","amount":0,"country":"DE","state":"Berlin"},
+                                "custom":{
+                                    "type":{"key":"my-category"},
+                                    "fields":{"description":"my description"}
+                                }
+                            }
+                        ]
+                 }',
+                [
+                    'id'=>'1',
+                    'customLineItems.0.name.en'=>'nameEN',
+                    'customLineItems.0.slug'=>'slug',
+                    'customLineItems.0.quantity'=>'3',
+                    'customLineItems.0.money'=>'EUR 2500',
+                    'customLineItems.0.externalTaxRate.name'=>'name',
+                    'customLineItems.0.externalTaxRate.amount'=>0,
+                    'customLineItems.0.externalTaxRate.country'=>'DE',
+                    'customLineItems.0.externalTaxRate.state'=>'Berlin',
+                    'customLineItems.0.custom.type.key'=>'my-category',
+                    'customLineItems.0.custom.fields.description'=>'my description',
+                    'customLineItems.1.name.en'=>'nameEN',
+                    'customLineItems.1.slug'=>'slug',
+                    'customLineItems.1.quantity'=>'3',
+                    'customLineItems.1.money'=>'EUR 2500',
+                    'customLineItems.1.externalTaxRate.name'=>'name',
+                    'customLineItems.1.externalTaxRate.amount'=>0,
+                    'customLineItems.1.externalTaxRate.country'=>'DE',
+                    'customLineItems.1.externalTaxRate.state'=>'Berlin',
+                    'customLineItems.1.custom.type.key'=>'my-category',
+                    'customLineItems.1.custom.fields.description'=>'my description'
+                ]
+            ],
+            [
                  [],
                 '{
                     "id":"1",
@@ -387,6 +636,162 @@ class OrderRequesBuilderTest extends \PHPUnit_Framework_TestCase
                                     'externalTaxRate'=>[]
                                 ]
                         ]
+                ]
+            ],
+            //both
+            [
+                [],
+                '{
+                    "id":"1",
+                    "totalPrice":{"currencyCode":"EUR","centAmount":2500},
+                    "lineItems":
+                        [
+                            { 
+                                "name":{"en":"nameEN"},
+                                "variant":{"sku":"sku"},
+                                "quantity" : 3,
+                                "price" : {"value":{"currencyCode":"EUR","centAmount":2500}}
+                            }
+                        ]
+                 }',
+                [
+                    'id'=>'1',
+                    'totalPrice'=>'EUR 2500',
+                    'orderNumber'=>'',
+                    'customerId'=>'',
+                    'customerEmail'=>'',
+                    'country'=>'',
+                    'orderState'=>'',
+                    'shipmentState'=>'',
+                    'paymentState'=>'',
+                    'completedAt'=>'',
+                    'inventoryMode'=>'',
+                    'taxRoundingMode'=>'',
+                    'shippingAddress'=>[],
+                    'billingAddress'=>[],
+                    'lineItems.0.id'=>'',
+                    'lineItems.0.productId'=>'',
+                    'lineItems.0.name.en'=>'nameEN',
+                    'lineItems.0.variant.sku'=>'sku',
+                    'lineItems.0.quantity'=>'3',
+                    'lineItems.0.price'=>'EUR 2500',
+                    'lineItems.0.custom'=>'',
+                    'customLineItems.0.name.en'=>'',
+                    'customLineItems.0.slug'=>'',
+                    'customLineItems.0.quantity'=>'',
+                    'customLineItems.0.money'=>'',
+                    'customLineItems.0.externalTaxRate.name'=>'',
+                    'customLineItems.0.externalTaxRate.amount'=>'',
+                    'customLineItems.0.externalTaxRate.country'=>'',
+                    'customLineItems.0.externalTaxRate.state'=>'',
+                    'customLineItems.0.custom.type'=>'',
+                    'customLineItems.0.custom.fields'=>'',
+                    "custom"=>""
+                ]
+            ],
+            [
+                [],
+                '{
+                    "id":"1",
+                    "customLineItems":
+                        [
+                            { 
+                                "name":{"en":"nameEN"},
+                                "slug":"slug",
+                                "quantity" : 3,
+                                "money":{"currencyCode":"EUR","centAmount":2500}
+                            }
+                        ]
+                 }',
+                [
+                    'id'=>'1',
+                    'lineItems.0.id'=>'',
+                    'lineItems.0.productId'=>'',
+                    'lineItems.0.name.en'=>'',
+                    'lineItems.0.variant.sku'=>'',
+                    'lineItems.0.quantity'=>'',
+                    'lineItems.0.price'=>'',
+                    'lineItems.0.custom'=>'',
+                    'customLineItems.0.name.en'=>'nameEN',
+                    'customLineItems.0.slug'=>'slug',
+                    'customLineItems.0.quantity'=>'3',
+                    'customLineItems.0.money'=>'EUR 2500',
+                    'customLineItems.0.externalTaxRate.name'=>'',
+                    'customLineItems.0.externalTaxRate.amount'=>'',
+                    'customLineItems.0.externalTaxRate.country'=>'',
+                    'customLineItems.0.externalTaxRate.state'=>'',
+                    'customLineItems.0.custom.type'=>'',
+                    'customLineItems.0.custom.fields'=>'',
+                ]
+            ],
+            [
+                [],
+                '{
+                    "id":"1",
+                    "customLineItems":
+                        [
+                            { 
+                                "name":{"en":"nameEN"},
+                                "slug":"slug",
+                                "quantity" : 3,
+                                "money":{"currencyCode":"EUR","centAmount":2500}
+                            }
+                        ]
+                 }',
+                [
+                    'id'=>'1',
+                    'lineItems'=>'',
+                    'customLineItems.0.name.en'=>'nameEN',
+                    'customLineItems.0.slug'=>'slug',
+                    'customLineItems.0.quantity'=>'3',
+                    'customLineItems.0.money'=>'EUR 2500',
+                    'customLineItems.0.externalTaxRate.name'=>'',
+                    'customLineItems.0.externalTaxRate.amount'=>'',
+                    'customLineItems.0.externalTaxRate.country'=>'',
+                    'customLineItems.0.externalTaxRate.state'=>'',
+                    'customLineItems.0.custom.type'=>'',
+                    'customLineItems.0.custom.fields'=>'',
+                ]
+            ],
+            [
+                [],
+                '{
+                    "id":"1",
+                    "totalPrice":{"currencyCode":"EUR","centAmount":2500},
+                    "lineItems":
+                        [
+                            { 
+                                "name":{"en":"nameEN"},
+                                "variant":{"sku":"sku"},
+                                "quantity" : 3,
+                                "price" : {"value":{"currencyCode":"EUR","centAmount":2500}}
+                            }
+                        ]
+                 }',
+                [
+                    'id'=>'1',
+                    'totalPrice'=>'EUR 2500',
+                    'orderNumber'=>'',
+                    'customerId'=>'',
+                    'customerEmail'=>'',
+                    'country'=>'',
+                    'orderState'=>'',
+                    'shipmentState'=>'',
+                    'paymentState'=>'',
+                    'completedAt'=>'',
+                    'inventoryMode'=>'',
+                    'taxRoundingMode'=>'',
+                    'shippingAddress'=>[],
+                    'billingAddress'=>[],
+                    'lineItems.0.id'=>'',
+                    'lineItems.0.productId'=>'',
+                    'lineItems.0.name.en'=>'nameEN',
+                    'lineItems.0.variant.sku'=>'sku',
+                    'lineItems.0.quantity'=>'3',
+                    'lineItems.0.price'=>'EUR 2500',
+                    'lineItems.0.custom'=>'',
+                    'customLineItems'=>'',
+                    "custom"=>""
                 ]
             ]
         ];

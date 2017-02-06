@@ -17,6 +17,7 @@ use Commercetools\Core\Request\Orders\OrderQueryRequest;
 class OrdersRequestBuilder extends AbstractRequestBuilder
 {
     const ID ='id';
+    const ORDERNUMBER ='orderNumber';
     const VERSION ='version';
     const NAME ='name';
     const VARIANT ='variant';
@@ -50,6 +51,7 @@ class OrdersRequestBuilder extends AbstractRequestBuilder
         $ordersArr=[];
         foreach ($orders as $order) {
             switch ($parts[0]) {
+                case self::ORDERNUMBER:
                 case self::ID:
                     $ordersArr[$order->toArray()[$identifiedByColumn]] = $order;
                     break;
@@ -63,6 +65,7 @@ class OrdersRequestBuilder extends AbstractRequestBuilder
         $parts = explode('.', $identifiedByColumn);
         foreach ($ordersData as $orderData) {
             switch ($parts[0]) {
+                case self::ORDERNUMBER:
                 case self::ID:
                     $ordersDataArr[$orderData[$identifiedByColumn]] = $orderData;
                     break;
@@ -96,54 +99,13 @@ class OrdersRequestBuilder extends AbstractRequestBuilder
          * @var Order $order
          */
         foreach ($ordersDataArr as $key => $orderData) {
-            if (isset($ordersArr[$key])) {
-//                $order = $ordersArr[$key];
-//                $request = $this->getUpdateRequest($orderData, $order);
-//                if (!$request->hasActions()) {
-//                    $request = null;
-//                }
-//                $requests []=$request;
-            } else {
+            if (!isset($ordersArr[$key])) {
                 $request  = $this->getCreateRequest($orderData);
                 $requests []= $request;
             }
         }
         return $requests;
     }
-
-//    private function getUpdateRequestsToChange($toChange)
-//    {
-//        $actions=[];
-//        foreach ($toChange as $heading => $data) {
-//            switch ($heading) {
-//                case self::ORDERSTATE:
-//                    $actions[$heading] = OrderChangeOrderStateAction::ofOrderState($data);
-//                    break;
-//                case self::SHIPMENTSTATE:
-//                    $actions[$heading] = OrderChangeShipmentStateAction::ofShipmentState($data);
-//                    break;
-//                case self::PAYMENTSTATE:
-//                    $actions[$heading] = OrderChangePaymentStateAction::ofPaymentState($data);
-//                    break;
-//            }
-//        }
-//        return $actions;
-//    }
-//    private function getUpdateRequest($orderDataArray, Order $order)
-//    {
-//        $orderDataArray= $this->orderDataObj->mapOrderFromData($orderDataArray);
-//        $order = $order->toArray();
-//
-//        $toChange = $this->orderDataObj->getOrderItemsToChange($orderDataArray, $order);
-//
-//        $actions=[];
-//        $actions = array_merge_recursive($actions, $this->getUpdateRequestsToChange($toChange));
-//
-//        $request = OrderUpdateRequest::ofIdAndVersion($order[self::ID], $order[self::VERSION]);
-//        $request->setActions($actions);
-//    //        print_r((string)$request->httpRequest()->getBody());
-//        return $request;
-//    }
 
     private function getCreateRequest($orderDataArray)
     {
@@ -158,6 +120,7 @@ class OrdersRequestBuilder extends AbstractRequestBuilder
     {
         $value = '';
         switch ($identifierName) {
+            case self::ORDERNUMBER:
             case self::ID:
                 $value = $identifierName. $query;
                 break;
@@ -170,6 +133,7 @@ class OrdersRequestBuilder extends AbstractRequestBuilder
         $value=[];
         foreach ($rows as $row) {
             switch ($parts[0]) {
+                case self::ORDERNUMBER:
                 case self::ID:
                     $value [] = '"'.$row[$parts[0]].'"';
                     break;

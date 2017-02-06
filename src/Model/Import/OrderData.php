@@ -34,6 +34,7 @@ class OrderData extends AbstractRequestBuilder
 {
     const ID ='id';
     const NAME ='name';
+    const SLUG ='slug';
     const VARIANT ='variant';
     const LINEITEMS ='lineItems';
     const CUSTOMLINEITEMS='customLineItems';
@@ -173,6 +174,26 @@ class OrderData extends AbstractRequestBuilder
         }
         return $data;
     }
+    private function getVariantObjFromArr($variant)
+    {
+        if (isset($variant[self::IMAGES]) && !empty($variant[self::IMAGES])) {
+            $variant[self::IMAGES] = $this->mapImagesFromData($variant[self::IMAGES]);
+        } elseif (isset($variant[self::IMAGES])) {
+            unset($variant[self::IMAGES]);
+        }
+        if (isset($variant[self::PRICES]) && !empty($variant[self::PRICES])) {
+            $prices =$this->mapPriceFromData($variant[self::PRICES]);
+            $variant[self::PRICES]=[];
+            foreach ($prices as $price) {
+                $price[self::VALUE] = Money::fromArray($price[self::VALUE]);
+                $variant[self::PRICES][] = PriceDraft::fromArray($price);
+            }
+        } elseif (isset($variant[self::PRICES])) {
+            unset($variant[self::PRICES]);
+        }
+        $variant = ProductVariantImportDraft::fromArray($variant);
+        return $variant;
+    }
     private function getItemsObjFromArr($items, $lineItemFlag = true)
     {
         foreach ($items as &$item) {
@@ -189,22 +210,7 @@ class OrderData extends AbstractRequestBuilder
                 unset($item[self::VARIANT]);
             }
             if (isset($item[self::VARIANT]) && !empty($item[self::VARIANT])) {
-                if (isset($item[self::VARIANT][self::IMAGES]) && !empty($item[self::VARIANT][self::IMAGES])) {
-                    $item[self::VARIANT][self::IMAGES] = $this->mapImagesFromData($item[self::VARIANT][self::IMAGES]);
-                } elseif (isset($item[self::VARIANT][self::IMAGES])) {
-                    unset($item[self::VARIANT][self::IMAGES]);
-                }
-                if (isset($item[self::VARIANT][self::PRICES]) && !empty($item[self::VARIANT][self::PRICES])) {
-                    $prices =$this->mapPriceFromData($item[self::VARIANT][self::PRICES]);
-                    $item[self::VARIANT][self::PRICES]=[];
-                    foreach ($prices as $price) {
-                        $price[self::VALUE] = Money::fromArray($price[self::VALUE]);
-                        $item[self::VARIANT][self::PRICES][] = PriceDraft::fromArray($price);
-                    }
-                } elseif (isset($item[self::VARIANT][self::PRICES])) {
-                    unset($item[self::VARIANT][self::PRICES]);
-                }
-                $item[self::VARIANT] = ProductVariantImportDraft::fromArray($item[self::VARIANT]);
+                $item[self::VARIANT]=$this->getVariantObjFromArr($item[self::VARIANT]);
             }
             if (isset($item[self::CUSTOM]) && !empty($item[self::CUSTOM])) {
                 $item[self::CUSTOM] = CustomFieldObjectDraft::fromArray($item[self::CUSTOM]);
@@ -243,12 +249,17 @@ class OrderData extends AbstractRequestBuilder
             $OrderArr[self::TAXDPRICE] = TaxedPrice::fromArray($OrderArr[self::TAXDPRICE]);
         }
 
-        if (isset($OrderArr[self::LINEITEMS])&& !empty($OrderArr[self::LINEITEMS])) {
+        if (isset($OrderArr[self::LINEITEMS])&& !empty($OrderArr[self::LINEITEMS][0][self::QUANTITY])) {
             $OrderArr[self::LINEITEMS]= $this->getItemsObjFromArr($OrderArr[self::LINEITEMS]);
-        } elseif (isset($OrderArr[self::CUSTOMLINEITEMS])&& !empty($OrderArr[self::CUSTOMLINEITEMS])) {
+            if (isset($OrderArr[self::CUSTOMLINEITEMS])) {
+                unset($OrderArr[self::CUSTOMLINEITEMS]);
+            }
+        } elseif (isset($OrderArr[self::CUSTOMLINEITEMS])&& !empty($OrderArr[self::CUSTOMLINEITEMS][0][self::SLUG])) {
             $OrderArr[self::CUSTOMLINEITEMS]= $this->getItemsObjFromArr($OrderArr[self::CUSTOMLINEITEMS], false);
+            if (isset($OrderArr[self::LINEITEMS])) {
+                unset($OrderArr[self::LINEITEMS]);
+            }
         }
-
         if (isset($OrderArr[self::BILLINGADDRESS]) && !empty($OrderArr[self::BILLINGADDRESS])) {
             $OrderArr[self::BILLINGADDRESS] = Address::fromArray($OrderArr[self::BILLINGADDRESS]);
         }
