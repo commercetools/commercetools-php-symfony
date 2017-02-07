@@ -18,18 +18,23 @@ class StatesData
     const INITIAL='initial';
     const DESCRIPTION='description';
 
-    private $client;
-
-    public function __construct(Client $client)
-    {
-        $this->client = $client;
-    }
-
     public function getStateObjsFromArr($stateDataArray)
     {
-        $stateDataArray[self::NAME]=LocalizedString::fromArray($stateDataArray[self::NAME]);
-        $stateDataArray[self::DESCRIPTION]=LocalizedString::fromArray($stateDataArray[self::DESCRIPTION]);
-        $stateDataArray[self::INITIAL]=boolval($stateDataArray[self::INITIAL]);
+        if (isset($stateDataArray[self::NAME]) && !empty($stateDataArray[self::NAME])) {
+            $stateDataArray[self::NAME] = LocalizedString::fromArray($stateDataArray[self::NAME]);
+        } elseif (isset($stateDataArray[self::NAME])) {
+            unset($stateDataArray[self::NAME]);
+        }
+        if (isset($stateDataArray[self::DESCRIPTION]) && !empty($stateDataArray[self::DESCRIPTION])) {
+            $stateDataArray[self::DESCRIPTION] = LocalizedString::fromArray($stateDataArray[self::DESCRIPTION]);
+        } elseif (isset($stateDataArray[self::DESCRIPTION])) {
+            unset($stateDataArray[self::DESCRIPTION]);
+        }
+        if (isset($stateDataArray[self::INITIAL])) {
+            $stateDataArray[self::INITIAL] = boolval($stateDataArray[self::INITIAL]);
+        } elseif (isset($stateDataArray[self::INITIAL])) {
+            unset($stateDataArray[self::INITIAL]);
+        }
         $state = StateDraft::fromArray($stateDataArray);
         return $state;
     }
