@@ -97,7 +97,7 @@ class StateRequestBuilderTest extends \PHPUnit_Framework_TestCase
         $config = new Config();
         $client->getConfig()->willReturn($config);
         $client->execute(Argument::type(StateQueryRequest::class))->will(function ($args) {
-            $response = new PagedQueryResponse(new Response(200, [], '{}'), $args[0]);
+            $response = new PagedQueryResponse(new Response(200, [], '{ "results": []}'), $args[0]);
 
             return $response;
         });
@@ -122,7 +122,8 @@ class StateRequestBuilderTest extends \PHPUnit_Framework_TestCase
                     "version" :"1",
                     "id" :"12345",
                     "key" :"key",
-                    "type" :"LineItemState"
+                    "type" :"LineItemState",
+                    "transitions":[]
                 }]}',
                 '{"actions":[{"action":"changeKey","key":"key1"},{"action":"changeType","type":"type1"}],
                     "version" :"1"
@@ -139,7 +140,8 @@ class StateRequestBuilderTest extends \PHPUnit_Framework_TestCase
                     "version" :"",
                     "id" :"12345",
                     "key" :"key",
-                    "type" :"LineItemState"
+                    "type" :"LineItemState",
+                    "transitions":[]
                 }]}',
                 '{
                     "actions":[],
@@ -158,7 +160,8 @@ class StateRequestBuilderTest extends \PHPUnit_Framework_TestCase
                     "version" :"",
                     "id" :"12345",
                     "key" :"key",
-                    "type" :"LineItemState"
+                    "type" :"LineItemState",
+                    "transitions":[]
                 }]}',
                 '{
                     "actions":[{"action":"setName","name":{"en":"name en","de":"name de"}}],
@@ -182,7 +185,8 @@ class StateRequestBuilderTest extends \PHPUnit_Framework_TestCase
                     "name":{
                         "en":"name en",
                         "de":"name de"
-                    }
+                    },
+                    "transitions":[]
                 }]}',
                 '{
                     "actions":[{"action":"setName"}],
@@ -204,7 +208,8 @@ class StateRequestBuilderTest extends \PHPUnit_Framework_TestCase
                     "name":{
                         "en":"name en",
                         "de":"name de"
-                    }
+                    },
+                    "transitions":[]
                 }]}',
                 '{
                     "actions":[],
@@ -225,7 +230,8 @@ class StateRequestBuilderTest extends \PHPUnit_Framework_TestCase
                     "id" :"12345",
                     "key" :"key",
                     "type" :"LineItemState",
-                    "name":{}
+                    "name":{},
+                    "transitions":[]
                 }]}',
                 '{
                     "actions":[],
@@ -249,7 +255,8 @@ class StateRequestBuilderTest extends \PHPUnit_Framework_TestCase
                     "name":{
                         "en":"name",
                         "de":"name"
-                    }
+                    },
+                    "transitions":[]
                 }]}',
                 '{
                     "actions":[{"action":"setName","name":{"en":"name en","de":"name de"}}],
@@ -270,7 +277,8 @@ class StateRequestBuilderTest extends \PHPUnit_Framework_TestCase
                     "version" :"",
                     "id" :"12345",
                     "key" :"key",
-                    "type" :"LineItemState"
+                    "type" :"LineItemState",
+                    "transitions":[]
                 }]}',
                 '{
                     "actions":[{"action":"setDescription","description":{"en":"description en","de":"description de"}}],
@@ -294,7 +302,8 @@ class StateRequestBuilderTest extends \PHPUnit_Framework_TestCase
                     "description":{
                         "en":"description en",
                         "de":"description de"
-                    }
+                    },
+                    "transitions":[]
                 }]}',
                 '{
                     "actions":[{"action":"setDescription"}],
@@ -316,7 +325,8 @@ class StateRequestBuilderTest extends \PHPUnit_Framework_TestCase
                     "description":{
                         "en":"description en",
                         "de":"description de"
-                    }
+                    },
+                    "transitions":[]
                 }]}',
                 '{
                     "actions":[],
@@ -337,7 +347,8 @@ class StateRequestBuilderTest extends \PHPUnit_Framework_TestCase
                     "id" :"12345",
                     "key" :"key",
                     "type" :"LineItemState",
-                    "description":{}
+                    "description":{},
+                    "transitions":[]
                 }]}',
                 '{
                     "actions":[],
@@ -361,7 +372,8 @@ class StateRequestBuilderTest extends \PHPUnit_Framework_TestCase
                     "description":{
                         "en":"description",
                         "de":"description"
-                    }
+                    },
+                    "transitions":[]
                 }]}',
                 '{
                     "actions":[{"action":"setDescription","description":{"en":"description en","de":"description de"}}],
@@ -382,7 +394,8 @@ class StateRequestBuilderTest extends \PHPUnit_Framework_TestCase
                     "version" :"1",
                     "id" :"12345",
                     "key" :"key",
-                    "type" :"LineItemState"
+                    "type" :"LineItemState",
+                    "transitions":[]
                 }]}',
                 '{"actions":[{"action":"changeInitial","initial":true}],
                     "version" :"1"
@@ -401,7 +414,8 @@ class StateRequestBuilderTest extends \PHPUnit_Framework_TestCase
                     "id" :"12345",
                     "key" :"key",
                     "type" :"LineItemState",
-                    "initial":true
+                    "initial":true,
+                    "transitions":[]
                 }]}',
                 '{
                     "actions":[],
@@ -421,7 +435,8 @@ class StateRequestBuilderTest extends \PHPUnit_Framework_TestCase
                     "id" :"12345",
                     "key" :"key",
                     "type" :"LineItemState",
-                    "initial":false
+                    "initial":false,
+                    "transitions":[]
                 }]}',
                 '{
                     "actions":[{"action":"changeInitial","initial":true}],
@@ -441,7 +456,8 @@ class StateRequestBuilderTest extends \PHPUnit_Framework_TestCase
                     "id" :"12345",
                     "key" :"key",
                     "type" :"LineItemState",
-                    "initial":false
+                    "initial":false,
+                    "transitions":[]
                 }]}',
                 '{
                     "actions":[{"action":"changeInitial","initial":true}],
@@ -461,7 +477,8 @@ class StateRequestBuilderTest extends \PHPUnit_Framework_TestCase
                     "id" :"12345",
                     "key" :"key",
                     "type" :"LineItemState",
-                    "initial":true
+                    "initial":true,
+                    "transitions":[]
                 }]}',
                 '{
                     "actions":[],
@@ -491,7 +508,6 @@ class StateRequestBuilderTest extends \PHPUnit_Framework_TestCase
         $client->getConfig()->willReturn($config);
         $client->execute(Argument::type(StateQueryRequest::class))->will(function ($args) use ($response) {
             $response = new PagedQueryResponse(new Response(200, [], $response), $args[0]);
-
             return $response;
         });
 
