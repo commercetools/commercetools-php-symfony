@@ -42,7 +42,6 @@ class CsvFileLoader
                 $headings = array_flip($line);
                 continue;
             }
-
             yield $this->csvToJson->transform($line, $headings);
         }
     }

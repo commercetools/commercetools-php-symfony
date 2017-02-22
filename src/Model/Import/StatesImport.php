@@ -52,6 +52,14 @@ class StatesImport
             }
         }
         $this->execute(true);
+
+        $requests=$this->requestBuilder->getTransitionsUpdate();
+        foreach ($requests as $request) {
+            if ($request instanceof ClientRequestInterface) {
+                $this->client->addBatchRequest($request);
+            }
+        }
+        $this->execute(true);
     }
 
     private function execute($force = false)

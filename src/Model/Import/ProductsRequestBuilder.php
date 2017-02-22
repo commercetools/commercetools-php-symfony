@@ -455,7 +455,6 @@ class ProductsRequestBuilder extends AbstractRequestBuilder
         $actions = array_merge_recursive($actions, $this->getUpdateRequestsToChange($toChange));
 
         $request->setActions($actions);
-//        print_r((string)$request->httpRequest()->getBody());
         return $request;
     }
 

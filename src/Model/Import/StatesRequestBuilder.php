@@ -10,19 +10,20 @@ namespace Commercetools\Symfony\CtpBundle\Model\Import;
 
 use Commercetools\Core\Client;
 use Commercetools\Core\Model\Common\LocalizedString;
-use Commercetools\Core\Model\Common\Reference;
 use Commercetools\Core\Model\State\State;
 use Commercetools\Core\Model\State\StateReference;
 use Commercetools\Core\Model\State\StateReferenceCollection;
+use Commercetools\Core\Model\State\StateRole;
 use Commercetools\Core\Request\States\Command\StateChangeInitialAction;
 use Commercetools\Core\Request\States\Command\StateChangeKeyAction;
 use Commercetools\Core\Request\States\Command\StateChangeTypeAction;
 use Commercetools\Core\Request\States\Command\StateSetDescriptionAction;
 use Commercetools\Core\Request\States\Command\StateSetNameAction;
+use Commercetools\Core\Request\States\Command\StateSetRolesAction;
 use Commercetools\Core\Request\States\Command\StateSetTransitionsAction;
 use Commercetools\Core\Request\States\StateCreateRequest;
-use Commercetools\Core\Request\States\StateQueryRequest;
 use Commercetools\Core\Request\States\StateUpdateRequest;
+use Commercetools\Core\Model\State\StateDraft;
 
 class StatesRequestBuilder extends AbstractRequestBuilder
 {
@@ -35,30 +36,18 @@ class StatesRequestBuilder extends AbstractRequestBuilder
     const TYPE='type';
     const TRANSITION='transitions';
     const OBJ='obj';
+    const ROLES='roles';
 
     private $client;
     private $stateDataObj;
     private $state;
     private $stateData;
+    private $statesToUpdateTransitions;
 
     public function __construct(Client $client)
     {
         $this->client = $client;
         $this->stateDataObj= new StatesData($this->client);
-    }
-    private function getStatesByIdentifiedByColumn($states, $identifiedByColumn)
-    {
-        $parts = explode('.', $identifiedByColumn);
-        $statesArr=[];
-        foreach ($states as $state) {
-            switch ($parts[0]) {
-                case self::KEY:
-                case self::ID:
-                    $statesArr[$state->toArray()[$identifiedByColumn]] = $state;
-                    break;
-            }
-        }
-        return $statesArr;
     }
     private function getStatesDataByIdentifiedByColumn($statesData, $identifiedByColumn)
     {
@@ -82,19 +71,6 @@ class StatesRequestBuilder extends AbstractRequestBuilder
     public function createRequest($statesData, $identifiedByColumn)
     {
         $requests=[];
-//        $request = StateQueryRequest::of()
-//            ->where(
-//                sprintf(
-//                    $this->getIdentifierQuery($identifiedByColumn),
-//                    $this->getIdentifierFromArray($identifiedByColumn, $statesData)
-//                )
-//            )
-//            ->limit(500);
-//
-//        $response = $request->executeWithClient($this->client);
-//        $states = $request->mapFromResponse($response);
-
-//        $statesArr=$this->getStatesByIdentifiedByColumn($states, $identifiedByColumn);
         $statesDataArr=$this->getStatesDataByIdentifiedByColumn($statesData, $identifiedByColumn);
 
         foreach ($statesDataArr as $key => $stateData) {
@@ -112,10 +88,50 @@ class StatesRequestBuilder extends AbstractRequestBuilder
         }
         return $requests;
     }
+    public function getTransitionsUpdate()
+    {
+        $this->stateDataObj= new StatesData($this->client);
+        $requests=[];
+        if (!empty($this->statesToUpdateTransitions)) {
+            foreach ($this->statesToUpdateTransitions as $key => $stateData) {
+                unset($this->statesToUpdateTransitions[$key]);
+                $state = $this->stateDataObj->getState($key);
+                $request = $this->getUpdateRequest($state, $stateData);
+                if (!$request->hasActions()) {
+                    $request = null;
+                }
+                $requests [] = $request;
+            }
+        }
+        return $requests;
+    }
     private function getCreateRequest($stateDataArray)
     {
-        $stateDataobj= $this->stateDataObj->getStateObjsFromArr($stateDataArray);
-        $request = StateCreateRequest::ofDraft($stateDataobj);
+        $stateDataArray= $this->stateDataObj->getStateObjsFromArr($stateDataArray);
+        if (isset($stateDataArray[self::TRANSITION]) && !empty($stateDataArray[self::TRANSITION])) {
+            $transitions = explode(';', $stateDataArray[self::TRANSITION]);
+            $transitionArr=$stateDataArray[self::TRANSITION];
+            $stateDataArray[self::TRANSITION]=[];
+            foreach ($transitions as $key => $value) {
+                $transition = $this->stateDataObj->getStatesRef($value);
+                if ($transition) {
+                    $transition = $transition->toArray();
+                    if (isset($transition[self::OBJ])) {
+                        unset($transition[self::OBJ]);
+                    }
+                    $stateDataArray[self::TRANSITION][] = $transition;
+                } else {
+                    $stateDataArray[self::TRANSITION]=$transitionArr;
+                    $this->statesToUpdateTransitions [$stateDataArray[self::KEY]] = $stateDataArray;
+                    $stateDataArray[self::TRANSITION]=[];
+                    break;
+                }
+            }
+        } else {
+            $stateDataArray[self::TRANSITION] = [];
+        }
+        $stateDataObj = StateDraft::fromArray($stateDataArray);
+        $request = StateCreateRequest::ofDraft($stateDataObj);
         return $request;
     }
     private function getUpdateRequestsToChange($toChange)
@@ -171,6 +187,18 @@ class StatesRequestBuilder extends AbstractRequestBuilder
                     }
                     $actions[$heading] = $action;
                     break;
+                case self::ROLES:
+                    $action = StateSetRolesAction::of();
+//                    if (!empty($this->stateData[$heading])) {
+                    if (!isset($this->stateData[$heading])) {
+                        $this->stateData[$heading]=[];
+                    }
+                        $action->setRoles($this->stateData[$heading]);
+//                    }
+//                    if (!empty($this->stateData[$heading]) || !empty($this->state[$heading])) {
+//                        $actions[$heading] = $action;
+//                    }
+                    break;
             }
         }
         return $actions;
@@ -180,9 +208,12 @@ class StatesRequestBuilder extends AbstractRequestBuilder
         $this->state= $state->toArray();
         if (isset($stateData[self::TRANSITION])) {
             $transitions  = explode(';', $stateData[self::TRANSITION]);
+            $transitionArr=$stateData[self::TRANSITION];
+
             $stateData[self::TRANSITION]=[];
             foreach ($transitions as $key => $value) {
                 $transition = $this->stateDataObj->getStatesRef($value);
+
                 if ($transition) {
                     $transition = $transition->toArray();
                     if (isset($transition[self::OBJ])) {
@@ -190,7 +221,9 @@ class StatesRequestBuilder extends AbstractRequestBuilder
                     }
                     $stateData[self::TRANSITION][] = $transition;
                 } else {
-                    $stateData[self::TRANSITION] [] = [];
+                    $stateData[self::TRANSITION]=$transitionArr;
+                    $this->statesToUpdateTransitions [$stateData[self::KEY]] = $stateData;
+                    break;
                 }
             }
         } else {
@@ -200,7 +233,18 @@ class StatesRequestBuilder extends AbstractRequestBuilder
         if (isset($stateData[self::INITIAL])) {
             $stateData[self::INITIAL] = boolval($stateData[self::INITIAL]);
         }
+
+        if (isset($stateData[self::ROLES])) {
+            $stateData[self::ROLES] = explode(';', $stateData[self::ROLES]);
+        }
         $this->stateData= $stateData;
+
+        //check if we will update transitions later so ignore it now
+        if (isset($this->statesToUpdateTransitions[$stateData[self::KEY]])) {
+            $stateData[self::TRANSITION]=[];
+            $this->state[self::TRANSITION]=[];
+        }
+
         $toChange = $this->arrayDiffRecursive($stateData, $this->state);
         $toChange = array_merge_recursive($toChange, $this->arrayDiffRecursive($this->state, $stateData));
 
@@ -209,7 +253,7 @@ class StatesRequestBuilder extends AbstractRequestBuilder
 
         $request = StateUpdateRequest::ofIdAndVersion($this->state[self::ID], $this->state[self::VERSION]);
         $request->setActions($actions);
-        print_r((string)$request->httpRequest()->getBody());
+
         return $request;
     }
     public function getIdentifierQuery($identifierName, $query = ' in (%s)')

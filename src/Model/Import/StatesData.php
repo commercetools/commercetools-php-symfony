@@ -22,6 +22,7 @@ class StatesData
     const INITIAL='initial';
     const DESCRIPTION='description';
     const TRANSITION='transitions';
+    const OBJ='obj';
 
     private $states=[];
     private $client;
@@ -46,17 +47,31 @@ class StatesData
         if (isset($stateDataArray[self::INITIAL])) {
             $stateDataArray[self::INITIAL] = boolval($stateDataArray[self::INITIAL]);
         }
-        if (isset($stateDataArray[self::TRANSITION]) && !empty($stateDataArray[self::TRANSITION])) {
-            $transitions = explode(';', $stateDataArray[self::TRANSITION]);
-            $stateDataArray[self::TRANSITION]=[];
-            foreach ($transitions as $key => $value) {
-                $stateDataArray[self::TRANSITION][] = $this->getStatesRef($value);
-            }
-        } else {
-            $stateDataArray[self::TRANSITION] = [];
-        }
-        $state = StateDraft::fromArray($stateDataArray);
-        return $state;
+//        if (isset($stateDataArray[self::TRANSITION]) && !empty($stateDataArray[self::TRANSITION])) {
+//            $transitions = explode(';', $stateDataArray[self::TRANSITION]);
+//            $transitionArr=$stateDataArray[self::TRANSITION];
+//            $stateDataArray[self::TRANSITION]=[];
+//            foreach ($transitions as $key => $value) {
+////                $stateDataArray[self::TRANSITION][] = $this->getStatesRef($value);
+//                $transition = $this->getStatesRef($value);
+//
+//                if ($transition) {
+//                    $transition = $transition->toArray();
+//                    if (isset($transition[self::OBJ])) {
+//                        unset($transition[self::OBJ]);
+//                    }
+//                    $stateData[self::TRANSITION][] = $transition;
+//                } else {
+//                    $stateData[self::TRANSITION]=$transitionArr;
+//                    $this->statesToUpdateTransitions [$stateData[self::KEY]] = $stateData;
+//                    break;
+//                }
+//            }
+//        } else {
+//            $stateDataArray[self::TRANSITION] = [];
+//        }
+
+        return $stateDataArray;
     }
     private function setStates()
     {
