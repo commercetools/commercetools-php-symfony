@@ -110,24 +110,7 @@ class StatesRequestBuilder extends AbstractRequestBuilder
     {
         $stateDataArray= $this->stateDataObj->getStateObjsFromArr($stateDataArray);
         if (isset($stateDataArray[self::TRANSITION]) && !empty($stateDataArray[self::TRANSITION])) {
-            $transitions = explode(';', $stateDataArray[self::TRANSITION]);
-            $transitionArr=$stateDataArray[self::TRANSITION];
-            $stateDataArray[self::TRANSITION]=[];
-            foreach ($transitions as $key => $value) {
-                $transition = $this->stateDataObj->getStatesRef($value);
-                if ($transition) {
-                    $transition = $transition->toArray();
-                    if (isset($transition[self::OBJ])) {
-                        unset($transition[self::OBJ]);
-                    }
-                    $stateDataArray[self::TRANSITION][] = $transition;
-                } else {
-                    $stateDataArray[self::TRANSITION]=$transitionArr;
-                    $this->statesToUpdateTransitions [$stateDataArray[self::KEY]] = $stateDataArray;
-                    $stateDataArray[self::TRANSITION]=[];
-                    break;
-                }
-            }
+            $this->getTransitions($stateDataArray);
         } else {
             $stateDataArray[self::TRANSITION] = [];
         }
@@ -232,29 +215,34 @@ class StatesRequestBuilder extends AbstractRequestBuilder
         }
         return $actions;
     }
+    private function getTransitions(&$stateData)
+    {
+        $transitions  = explode(';', $stateData[self::TRANSITION]);
+        $transitionArr=$stateData[self::TRANSITION];
+
+        $stateData[self::TRANSITION]=[];
+        foreach ($transitions as $key => $value) {
+            $transition = $this->stateDataObj->getStatesRef($value);
+
+            if ($transition) {
+                $transition = $transition->toArray();
+                if (isset($transition[self::OBJ])) {
+                    unset($transition[self::OBJ]);
+                }
+                $stateData[self::TRANSITION][] = $transition;
+            } else {
+                $stateData[self::TRANSITION]=$transitionArr;
+                $this->statesToUpdateTransitions [$stateData[self::KEY]] = $stateData;
+                $stateData[self::TRANSITION]=[];
+                break;
+            }
+        }
+    }
     private function getUpdateRequest(State $state, $stateData)
     {
         $this->state= $state->toArray();
         if (isset($stateData[self::TRANSITION])) {
-            $transitions  = explode(';', $stateData[self::TRANSITION]);
-            $transitionArr=$stateData[self::TRANSITION];
-
-            $stateData[self::TRANSITION]=[];
-            foreach ($transitions as $key => $value) {
-                $transition = $this->stateDataObj->getStatesRef($value);
-
-                if ($transition) {
-                    $transition = $transition->toArray();
-                    if (isset($transition[self::OBJ])) {
-                        unset($transition[self::OBJ]);
-                    }
-                    $stateData[self::TRANSITION][] = $transition;
-                } else {
-                    $stateData[self::TRANSITION]=$transitionArr;
-                    $this->statesToUpdateTransitions [$stateData[self::KEY]] = $stateData;
-                    break;
-                }
-            }
+            $this->getTransitions($stateData);
         } else {
             $stateData[self::TRANSITION] = [];
         }
@@ -284,7 +272,6 @@ class StatesRequestBuilder extends AbstractRequestBuilder
 
         //check if we will update transitions later so ignore it now
         if (isset($this->statesToUpdateTransitions[$stateData[self::KEY]])) {
-            $stateData[self::TRANSITION]=[];
             $this->state[self::TRANSITION]=[];
         }
 
@@ -300,6 +287,13 @@ class StatesRequestBuilder extends AbstractRequestBuilder
         $request->setActions($actions);
 
         return $request;
+    }
+    public function getSecondPassFlag()
+    {
+        if (!empty($this->statesToUpdateTransitions)) {
+            return true;
+        }
+        return false;
     }
     public function getIdentifierQuery($identifierName, $query = ' in (%s)')
     {

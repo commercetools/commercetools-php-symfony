@@ -53,13 +53,15 @@ class StatesImport
         }
         $this->execute(true);
 
-        $requests=$this->requestBuilder->getTransitionsUpdate();
-        foreach ($requests as $request) {
-            if ($request instanceof ClientRequestInterface) {
-                $this->client->addBatchRequest($request);
+        if ($this->requestBuilder->getSecondPassFlag()) {
+            $requests = $this->requestBuilder->getTransitionsUpdate();
+            foreach ($requests as $request) {
+                if ($request instanceof ClientRequestInterface) {
+                    $this->client->addBatchRequest($request);
+                }
             }
+            $this->execute(true);
         }
-        $this->execute(true);
     }
 
     private function execute($force = false)
