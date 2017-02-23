@@ -13,10 +13,11 @@ use Commercetools\Core\Model\Common\LocalizedString;
 use Commercetools\Core\Model\State\State;
 use Commercetools\Core\Model\State\StateReference;
 use Commercetools\Core\Model\State\StateReferenceCollection;
-use Commercetools\Core\Model\State\StateRole;
+use Commercetools\Core\Request\States\Command\StateAddRolesAction;
 use Commercetools\Core\Request\States\Command\StateChangeInitialAction;
 use Commercetools\Core\Request\States\Command\StateChangeKeyAction;
 use Commercetools\Core\Request\States\Command\StateChangeTypeAction;
+use Commercetools\Core\Request\States\Command\StateRemoveRolesAction;
 use Commercetools\Core\Request\States\Command\StateSetDescriptionAction;
 use Commercetools\Core\Request\States\Command\StateSetNameAction;
 use Commercetools\Core\Request\States\Command\StateSetRolesAction;
@@ -187,17 +188,45 @@ class StatesRequestBuilder extends AbstractRequestBuilder
                     }
                     $actions[$heading] = $action;
                     break;
+            }
+        }
+        return $actions;
+    }
+    private function getUpdateRequestsToAdd($toAdd)
+    {
+        $actions=[];
+        foreach ($toAdd as $heading => $data) {
+            switch ($heading) {
                 case self::ROLES:
-                    $action = StateSetRolesAction::of();
-//                    if (!empty($this->stateData[$heading])) {
-                    if (!isset($this->stateData[$heading])) {
-                        $this->stateData[$heading]=[];
+                    if (!empty($data)) {
+                        foreach ($data as $role) { //It seems useless but to avoid index issues
+                            $roles [] =$role;
+                        }
+                        if (isset($this->state[self::ROLES])) {
+                            $action = StateAddRolesAction::ofRoles($roles);
+                        } else {
+                            $action = StateSetRolesAction::ofRoles($roles);
+                        }
+                        $actions[$heading."toAdd"] = $action;
                     }
-                        $action->setRoles($this->stateData[$heading]);
-//                    }
-//                    if (!empty($this->stateData[$heading]) || !empty($this->state[$heading])) {
-//                        $actions[$heading] = $action;
-//                    }
+                    break;
+            }
+        }
+        return $actions;
+    }
+    private function getUpdateRequestsToDelete($toDelete)
+    {
+        $actions=[];
+        foreach ($toDelete as $heading => $data) {
+            switch ($heading) {
+                case self::ROLES:
+                    if (!empty($data)) {
+                        foreach ($data as $role) { //It seems useless but to avoid index issues
+                            $roles [] =$role;
+                        }
+                        $action = StateRemoveRolesAction::ofRoles($roles);
+                        $actions[$heading."toRemove"] = $action;
+                    }
                     break;
             }
         }
@@ -234,9 +263,23 @@ class StatesRequestBuilder extends AbstractRequestBuilder
             $stateData[self::INITIAL] = boolval($stateData[self::INITIAL]);
         }
 
-        if (isset($stateData[self::ROLES])) {
+        $toAdd=[];
+        $toDelete=[];
+        if (isset($stateData[self::ROLES]) && !empty($stateData[self::ROLES])) {
             $stateData[self::ROLES] = explode(';', $stateData[self::ROLES]);
+            $toAdd[self::ROLES]= $stateData[self::ROLES];
+            if (isset($this->state[self::ROLES])) {
+                $toAdd[self::ROLES]=array_diff($stateData[self::ROLES], $this->state[self::ROLES]);
+            }
         }
+        if (isset($this->state[self::ROLES]) && !empty($this->state[self::ROLES])) {
+            $toDelete[self::ROLES]= $this->state[self::ROLES];
+
+            if (isset($stateData[self::ROLES])) {
+                $toDelete[self::ROLES]=array_diff($this->state[self::ROLES], $stateData[self::ROLES]);
+            }
+        }
+
         $this->stateData= $stateData;
 
         //check if we will update transitions later so ignore it now
@@ -250,6 +293,8 @@ class StatesRequestBuilder extends AbstractRequestBuilder
 
         $actions=[];
         $actions = array_merge_recursive($actions, $this->getUpdateRequestsToChange($toChange));
+        $actions = array_merge_recursive($actions, $this->getUpdateRequestsToAdd($toAdd));
+        $actions = array_merge_recursive($actions, $this->getUpdateRequestsToDelete($toDelete));
 
         $request = StateUpdateRequest::ofIdAndVersion($this->state[self::ID], $this->state[self::VERSION]);
         $request->setActions($actions);

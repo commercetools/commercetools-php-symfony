@@ -850,7 +850,7 @@ class StateRequestBuilderTest extends \PHPUnit_Framework_TestCase
                     "transitions":[]
                 }]}',
                 '{
-                    "actions":[{"action":"setDescription","description":{"en":"description en","de":"description de"}}],
+                    "actions":[{"action":"setRoles","roles":["ReviewIncludedInStatistics"]}],
                     "version":""
                 }',
                 [
@@ -867,14 +867,54 @@ class StateRequestBuilderTest extends \PHPUnit_Framework_TestCase
                     "id" :"12345",
                     "key" :"key",
                     "type" :"LineItemState",
-                    "description":{
-                        "en":"description en",
-                        "de":"description de"
-                    },
                     "transitions":[]
                 }]}',
                 '{
-                    "actions":[{"action":"setDescription"}],
+                    "actions":[{"action":"setRoles","roles":["ReviewIncludedInStatistics","ReviewIncludedInStatistics2"]}],
+                    "version":""
+                }',
+                [
+                    'id'=>'12345',
+                    'key'=>'key',
+                    'type'=>'LineItemState',
+                    'roles'=>'ReviewIncludedInStatistics;ReviewIncludedInStatistics2',
+                ]
+            ],
+            [
+                [],
+                '{"results": [{
+                    "version" :"",
+                    "id" :"12345",
+                    "key" :"key",
+                    "type" :"LineItemState",
+                    "transitions":[],
+                    "roles":["ReviewIncludedInStatistics"]
+                }]}',
+                '{
+                    "actions":[{"action":"addRoles","roles":["ReviewIncludedInStatistics2"]}],
+                    "version":""
+                }',
+                [
+                    'id'=>'12345',
+                    'key'=>'key',
+                    'type'=>'LineItemState',
+                    'roles'=>'ReviewIncludedInStatistics;ReviewIncludedInStatistics2',
+                ]
+            ],
+            [
+                [],
+                '{"results": [{
+                    "version" :"",
+                    "id" :"12345",
+                    "key" :"key",
+                    "type" :"LineItemState",
+                    "roles":[
+                        "ReviewIncludedInStatistics"
+                    ],
+                    "transitions":[]
+                }]}',
+                '{
+                    "actions":[{"action":"removeRoles","roles":["ReviewIncludedInStatistics"]}],
                     "version":""
                 }',
                 [
@@ -890,10 +930,62 @@ class StateRequestBuilderTest extends \PHPUnit_Framework_TestCase
                     "id" :"12345",
                     "key" :"key",
                     "type" :"LineItemState",
-                    "description":{
-                        "en":"description en",
-                        "de":"description de"
-                    },
+                    "roles":[
+                        "ReviewIncludedInStatistics"
+                    ],
+                    "transitions":[]
+                }]}',
+                '{
+                    "actions":[
+                        {"action":"addRoles","roles":["ReviewIncludedInStatistics2"]},
+                        {"action":"removeRoles","roles":["ReviewIncludedInStatistics"]}
+                    ],
+                    "version":""
+                }',
+                [
+                    'id'=>'12345',
+                    'key'=>'key',
+                    'type'=>'LineItemState',
+                    'roles'=>'ReviewIncludedInStatistics2'
+                ]
+            ],
+            [
+                [],
+                '{"results": [{
+                    "version" :"",
+                    "id" :"12345",
+                    "key" :"key",
+                    "type" :"LineItemState",
+                    "roles":[
+                        "ReviewIncludedInStatistics",
+                        "ReviewIncludedInStatistics2"
+                    ],
+                    "transitions":[]
+                }]}',
+                '{
+                    "actions":[
+                        {"action":"removeRoles","roles":["ReviewIncludedInStatistics"]}
+                    ],
+                    "version":""
+                }',
+                [
+                    'id'=>'12345',
+                    'key'=>'key',
+                    'type'=>'LineItemState',
+                    'roles'=>'ReviewIncludedInStatistics2'
+                ]
+            ],
+            [
+                [],
+                '{"results": [{
+                    "version" :"",
+                    "id" :"12345",
+                    "key" :"key",
+                    "type" :"LineItemState",
+                    "roles":[
+                        "ReviewIncludedInStatistics",
+                        "ReviewIncludedInStatistics2"
+                    ],
                     "transitions":[]
                 }]}',
                 '{
@@ -904,8 +996,7 @@ class StateRequestBuilderTest extends \PHPUnit_Framework_TestCase
                     'id'=>'12345',
                     'key'=>'key',
                     'type'=>'LineItemState',
-                    'description.en'=>'description en',
-                    'description.de'=>'description de'
+                    'roles'=>'ReviewIncludedInStatistics2;ReviewIncludedInStatistics'
                 ]
             ],
             [
@@ -915,7 +1006,7 @@ class StateRequestBuilderTest extends \PHPUnit_Framework_TestCase
                     "id" :"12345",
                     "key" :"key",
                     "type" :"LineItemState",
-                    "description":{},
+                    "roles":[],
                     "transitions":[]
                 }]}',
                 '{
@@ -926,8 +1017,7 @@ class StateRequestBuilderTest extends \PHPUnit_Framework_TestCase
                     'id'=>'12345',
                     'key'=>'key',
                     'type'=>'LineItemState',
-                    'description.en'=>'',
-                    'description.de'=>''
+                    'roles'=>''
                 ]
             ],
             [
@@ -937,22 +1027,69 @@ class StateRequestBuilderTest extends \PHPUnit_Framework_TestCase
                     "id" :"12345",
                     "key" :"key",
                     "type" :"LineItemState",
-                    "description":{
-                        "en":"description",
-                        "de":"description"
-                    },
+                    "roles":[],
                     "transitions":[]
                 }]}',
                 '{
-                    "actions":[{"action":"setDescription","description":{"en":"description en","de":"description de"}}],
+                    "actions":[],
+                    "version":""
+                }',
+                [
+                    'id'=>'12345',
+                    'key'=>'key',
+                    'type'=>'LineItemState'
+                ]
+            ],
+            [
+                [],
+                '{"results": [{
+                    "version" :"",
+                    "id" :"12345",
+                    "key" :"key",
+                    "type" :"LineItemState",
+                    "roles":[
+                        "ReviewIncludedInStatistics3",
+                        "ReviewIncludedInStatistics4"
+                    ],
+                    "transitions":[]
+                }]}',
+                '{
+                    "actions":[
+                        {"action":"addRoles","roles":["ReviewIncludedInStatistics2","ReviewIncludedInStatistics"]},
+                        {"action":"removeRoles","roles":["ReviewIncludedInStatistics3","ReviewIncludedInStatistics4"]}
+                    ],
                     "version":""
                 }',
                 [
                     'id'=>'12345',
                     'key'=>'key',
                     'type'=>'LineItemState',
-                    'description.en'=>'description en',
-                    'description.de'=>'description de'
+                    'roles'=>'ReviewIncludedInStatistics2;ReviewIncludedInStatistics'
+                ]
+            ],
+            [
+                [],
+                '{"results": [{
+                    "version" :"",
+                    "id" :"12345",
+                    "key" :"key",
+                    "type" :"LineItemState",
+                    "roles":[
+                        "ReviewIncludedInStatistics3",
+                        "ReviewIncludedInStatistics4"
+                    ],
+                    "transitions":[]
+                }]}',
+                '{
+                    "actions":[
+                        {"action":"removeRoles","roles":["ReviewIncludedInStatistics3","ReviewIncludedInStatistics4"]}
+                    ],
+                    "version":""
+                }',
+                [
+                    'id'=>'12345',
+                    'key'=>'key',
+                    'type'=>'LineItemState'
                 ]
             ],
         ];
