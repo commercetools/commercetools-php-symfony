@@ -7,9 +7,8 @@ namespace Commercetools\Symfony\CtpBundle\Security\User;
 
 
 use Symfony\Component\Security\Core\User\UserInterface;
-use Symfony\Component\Security\Core\User\EquatableInterface;
 
-class User implements UserInterface, EquatableInterface
+class User implements CtpUser
 {
     private $username;
     private $password;
@@ -102,7 +101,7 @@ class User implements UserInterface, EquatableInterface
 
     public function isEqualTo(UserInterface $user)
     {
-        if (!$user instanceof User) {
+        if (!$user instanceof CtpUser) {
             return false;
         }
 
@@ -115,5 +114,10 @@ class User implements UserInterface, EquatableInterface
         }
 
         return true;
+    }
+
+    public static function create($username, $password, array $roles, $id, $cartId, $cartItemCount)
+    {
+        return new static($username, $password, $roles, $id, $cartId, $cartItemCount);
     }
 }

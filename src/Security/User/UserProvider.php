@@ -15,13 +15,15 @@ use Symfony\Component\Serializer\Exception\UnsupportedException;
 class UserProvider implements UserProviderInterface
 {
     private $session;
+    private $userClass;
 
     /**
      * UserProvider constructor.
      */
-    public function __construct(Session $session)
+    public function __construct(Session $session, $userClass = User::class)
     {
         $this->session = $session;
+        $this->userClass = $userClass;
     }
 
     public function loadUserByUsername($username)
@@ -30,12 +32,13 @@ class UserProvider implements UserProviderInterface
         $cartId = $this->session->get(CartRepository::CART_ID);
         $cartItemCount = $this->session->get(CartRepository::CART_ITEM_COUNT);
 
-        return new User($username, '', ['ROLE_USER'], $id, $cartId, $cartItemCount);
+        $userClass = $this->userClass;
+        return $userClass::create($username, '', ['ROLE_USER'], $id, $cartId, $cartItemCount);
     }
 
     public function refreshUser(UserInterface $user)
     {
-        if (!$user instanceof User) {
+        if (!$user instanceof CtpUser) {
             throw new UnsupportedException(
                 sprintf('Instances of "%s" are not supported.', get_class($user))
             );
@@ -46,6 +49,6 @@ class UserProvider implements UserProviderInterface
 
     public function supportsClass($class)
     {
-        return $class === 'Commercetools\Symfony\CtpBundle\Security\User\User';
+        return in_array(CtpUser::class, class_implements($class));
     }
 }

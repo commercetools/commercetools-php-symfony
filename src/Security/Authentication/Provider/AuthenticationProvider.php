@@ -10,7 +10,7 @@ use Commercetools\Core\Request\Customers\CustomerLoginRequest;
 use Commercetools\Symfony\CtpBundle\Model\AuthSuccess;
 use Commercetools\Symfony\CtpBundle\Model\Repository\CartRepository;
 use Commercetools\Symfony\CtpBundle\Model\Repository\CustomerRepository;
-use Commercetools\Symfony\CtpBundle\Security\User\User;
+use Commercetools\Symfony\CtpBundle\Security\User\CtpUser;
 use Commercetools\Symfony\CtpBundle\Service\ClientFactory;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\EventDispatcher\Event;
@@ -31,7 +31,7 @@ class AuthenticationProvider extends UserAuthenticationProvider
      * @var UserProviderInterface
      */
     private $userProvider;
-    
+
     /**
      * @var Client
      */
@@ -75,7 +75,7 @@ class AuthenticationProvider extends UserAuthenticationProvider
 
             $client = $this->client;
             $cartId = null;
-            if ($user instanceof User) {
+            if ($user instanceof CtpUser) {
                 $cartId = $user->getCartId();
             }
             $request = CustomerLoginRequest::ofEmailAndPassword($token->getUser(), $presentedPassword, $cartId);
@@ -88,7 +88,7 @@ class AuthenticationProvider extends UserAuthenticationProvider
             if ($currentUser !== $customer->getEmail()) {
                 throw new BadCredentialsException('The presented password is invalid.');
             }
-            if ($user instanceof User) {
+            if ($user instanceof CtpUser) {
                 $user->setId($customer->getId());
                 $cart = $result->getCart();
                 if (!is_null($cart)) {

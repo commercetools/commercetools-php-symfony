@@ -7,7 +7,7 @@ namespace Commercetools\Symfony\CtpBundle\EventListener;
 
 use Commercetools\Symfony\CtpBundle\Model\Repository\CartRepository;
 use Commercetools\Symfony\CtpBundle\Model\Repository\CustomerRepository;
-use Commercetools\Symfony\CtpBundle\Security\User\User;
+use Commercetools\Symfony\CtpBundle\Security\User\CtpUser;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use Symfony\Component\Security\Core\AuthenticationEvents;
@@ -35,7 +35,7 @@ class AuthenticationListener implements EventSubscriberInterface
         $token = $event->getAuthenticationToken();
         $user = $token->getUser();
 
-        if ($user instanceof User) {
+        if ($user instanceof CtpUser) {
             $this->session->set(CustomerRepository::CUSTOMER_ID, $user->getId());
 
             if (!is_null($user->getCartItemCount())) {
