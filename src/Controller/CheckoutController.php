@@ -10,6 +10,7 @@ use Commercetools\Core\Model\ShippingMethod\ShippingMethod;
 use Commercetools\Symfony\CtpBundle\Entity\CartEntity;
 use Commercetools\Symfony\CtpBundle\Model\Form\Type\AddressType;
 use Commercetools\Symfony\CtpBundle\Model\Repository\CartRepository;
+use Commercetools\Symfony\CtpBundle\Security\User\CtpUser;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
@@ -46,7 +47,10 @@ class CheckoutController extends Controller
         $cartId = $session->get(CartRepository::CART_ID);
         $shippingMethods = $shippingRepository->getShippingMethodByCart($request->getLocale(), $cartId);
 
-        $customerId = $this->get('security.token_storage')->getToken()->getUser()->getId();
+        $customerId = null;
+        if ($this->get('security.token_storage')->getToken()->getUser() instanceof CtpUser) {
+            $customerId = $this->get('security.token_storage')->getToken()->getUser()->getId();
+        }
         $cart = $this->get('commercetools.repository.cart')->getCart($request->getLocale(), $cartId, $customerId);
 
         if (is_null($cart->getId())) {
@@ -76,7 +80,12 @@ class CheckoutController extends Controller
         if ($form->isSubmitted() && $form->isValid()) {
             $shippingRepository = $this->get('commercetools.repository.shipping_method');
             $shippingMethod = $shippingRepository->getByName($request->getLocale(), $form->get('name')->getData());
-            $cart = $this->get('commercetools.repository.cart')->setShippingMethod($request->getLocale(), $cartId, $shippingMethod->getReference());
+            $cart = $this->get('commercetools.repository.cart')->setShippingMethod(
+                $request->getLocale(),
+                $cartId,
+                $shippingMethod->getReference(),
+                $customerId
+            );
 
             return $this->redirect($this->generateUrl('_ctp_example_checkout_confirm'));
         }
@@ -92,7 +101,10 @@ class CheckoutController extends Controller
         $session = $this->get('session');
 
         $cartId = $session->get(CartRepository::CART_ID);
-        $customerId = $this->get('security.token_storage')->getToken()->getUser()->getId();
+        $customerId = null;
+        if ($this->get('security.token_storage')->getToken()->getUser() instanceof CtpUser) {
+            $customerId = $this->get('security.token_storage')->getToken()->getUser()->getId();
+        }
         $cart = $this->get('commercetools.repository.cart')->getCart($request->getLocale(), $cartId, $customerId);
 
         if (is_null($cart->getId())) {
@@ -114,7 +126,10 @@ class CheckoutController extends Controller
     {
         $session = $this->get('session');
         $cartId = $session->get(CartRepository::CART_ID);
-        $customerId = $this->get('security.token_storage')->getToken()->getUser()->getId();
+        $customerId = null;
+        if ($this->get('security.token_storage')->getToken()->getUser() instanceof CtpUser) {
+            $customerId = $this->get('security.token_storage')->getToken()->getUser()->getId();
+        }
         $cart = $this->get('commercetools.repository.cart')->getCart($request->getLocale(), $cartId, $customerId);
         if (is_null($cart->getId())) {
             return $this->redirect($this->generateUrl('_ctp_example_cart'));
@@ -153,7 +168,7 @@ class CheckoutController extends Controller
             $address = $customer->getDefaultShippingAddress();
             $entity->shippingAddress = $address->toArray();
         }
-        
+
         $form = $this->createFormBuilder($entity)
             ->add('check', CheckboxType::class,
                 [
