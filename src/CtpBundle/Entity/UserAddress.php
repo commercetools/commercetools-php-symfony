@@ -450,7 +450,7 @@ class UserAddress
 
     /**
      * @param mixed $mobile
-     * @param $this
+     * @return $this
      */
     public function setMobile($mobile)
     {
