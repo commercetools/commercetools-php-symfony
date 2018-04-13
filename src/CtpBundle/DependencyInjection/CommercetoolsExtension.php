@@ -7,6 +7,7 @@ namespace Commercetools\Symfony\CtpBundle\DependencyInjection;
 
 use Commercetools\Symfony\CtpBundle\Model\FacetConfig;
 use Symfony\Component\Config\FileLocator;
+use Symfony\Component\DependencyInjection\ChildDefinition;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Extension\Extension;
 use Symfony\Component\DependencyInjection\Loader\XmlFileLoader;
@@ -15,6 +16,16 @@ class CommercetoolsExtension extends Extension
 {
     public function load(array $configs, ContainerBuilder $container)
     {
+//        $configs = [
+//            'api' => [
+//                'default_client' => 'default',
+//                'clients' => [
+//                    'first' => [
+//
+//                    ]
+//                ]
+//            ]
+//        ];
         $loader = new XmlFileLoader($container, new FileLocator(__DIR__ . '/../Resources/config'));
         $loader->load('services.xml');
 
@@ -23,14 +34,27 @@ class CommercetoolsExtension extends Extension
 
         $config = $this->processConfiguration($configuration, $configs);
 
+        $apiConfig = $config['api'];
+        $keys = array_keys($apiConfig['clients']);
+        $apiConfig['default_client'] = isset($apiConfig['clients'][$apiConfig['default_client']]) ? $apiConfig['default_client'] : reset($keys);
+
+
+//        // compatibility
+//        $clientConfig = isset($config['clients'][$config['clients']['default_client']]) ? $config['clients'][$config['clients']['default_client']] : [];
+//        $container->setParameter('commercetools.client.config', $clientConfig);
+
+        $clients = [];
+        foreach ($apiConfig['clients'] as $name => $client) {
+            $clients[$name] = [
+                'service' => sprintf('commercetools.client.%s', $name),
+            ];
+            $this->loadClientDefinition($name, $client, $container);
+        }
+        $container->setParameter('commercetools.clients', $clients);
+        $container->setParameter('commercetools.api.default_client', $apiConfig['default_client']);
+        $container->setAlias('commercetools.client', sprintf('commercetools.client.%s', $apiConfig['default_client']));
+
         $container->setParameter('commercetools.fallback_languages', isset($config['fallback_languages']) ? $config['fallback_languages']: []);
-
-//        if (!isset($config['clients']['default_client'])) {
-//            $keys = array_keys($config['clients']);
-//            $config['clients']['default_client'] = reset($keys);
-//        }
-
-        $container->setParameter('commercetools.clients', $config['clients']);
 
         foreach ($config['defaults'] as $key => $value) {
             $container->setParameter('commercetools.defaults.' . $key, $value);
@@ -48,10 +72,22 @@ class CommercetoolsExtension extends Extension
 
         $facetConfigs = [];
         if (isset($config['facets'])) {
-            foreach ($config['facets'] as $name => $config) {
-                $facetConfigs[$name] = $config;
+            foreach ($config['facets'] as $name => $cfg) {
+                $facetConfigs[$name] = $cfg;
             }
         }
         $container->setParameter('commercetools.facets', $facetConfigs);
+    }
+
+    protected function loadClientDefinition($name, array $client, ContainerBuilder $container)
+    {
+        $container
+            ->setDefinition(sprintf('commercetools.client.%s', $name), new ChildDefinition('commercetools.client'))
+            ->setArguments([
+                null,
+                null,
+                $client,
+            ])
+        ;
     }
 }

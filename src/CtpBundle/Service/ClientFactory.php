@@ -41,14 +41,17 @@ class ClientFactory
     /**
      * @param string $locale
      * @param Context $context
-     * @param Config $config
+     * @param Config|array $config
      * @return Client
      */
     public function build(
         $locale = null,
         Context $context = null,
-        Config $config = null
+        $config = null
     ) {
+        if (is_array($config)) {
+            $config = Config::fromArray($config);
+        }
         if (is_null($config)) {
             $config = $this->config;
         }

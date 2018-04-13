@@ -12,16 +12,16 @@
 
     <testsuites>
         <testsuite name="CtpBundle Test Suite">
-            <directory>./src/Tests/</directory>
+            <directory>./src/CtpBundle/Tests/</directory>
         </testsuite>
     </testsuites>
 
     <filter>
         <whitelist>
-            <directory>./src/</directory>
+            <directory>./src/CtpBundle/</directory>
             <exclude>
-                <directory>./src/Resources</directory>
-                <directory>./src/Tests</directory>
+                <directory>./src/CtpBundle/Resources</directory>
+                <directory>./src/CtpBundle/Tests</directory>
                 <directory>./vendor</directory>
             </exclude>
         </whitelist>
