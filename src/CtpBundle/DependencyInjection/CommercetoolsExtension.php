@@ -39,9 +39,9 @@ class CommercetoolsExtension extends Extension
         $apiConfig['default_client'] = isset($apiConfig['clients'][$apiConfig['default_client']]) ? $apiConfig['default_client'] : reset($keys);
 
 
-//        // compatibility
-//        $clientConfig = isset($config['clients'][$config['clients']['default_client']]) ? $config['clients'][$config['clients']['default_client']] : [];
-//        $container->setParameter('commercetools.client.config', $clientConfig);
+        // compatibility
+        $clientConfig = $apiConfig['clients'][$apiConfig['default_client']];
+        $container->setParameter('commercetools.client.config', $clientConfig);
 
         $clients = [];
         foreach ($apiConfig['clients'] as $name => $client) {
@@ -82,7 +82,7 @@ class CommercetoolsExtension extends Extension
     protected function loadClientDefinition($name, array $client, ContainerBuilder $container)
     {
         $container
-            ->setDefinition(sprintf('commercetools.client.%s', $name), new ChildDefinition('commercetools.client'))
+            ->setDefinition(sprintf('commercetools.client.%s', $name), new ChildDefinition('commercetools.api.client'))
             ->setArguments([
                 null,
                 null,
