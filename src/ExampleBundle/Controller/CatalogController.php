@@ -1,11 +1,11 @@
 <?php
 
-namespace  Commercetools\Symfony\CtpBundle\Controller;
+namespace  Commercetools\Symfony\ExampleBundle\Controller;
 
 use Commercetools\Core\Client;
 use Commercetools\Core\Model\Product\Product;
 use Commercetools\Core\Model\Product\ProductProjection;
-use Commercetools\Symfony\CtpBundle\Model\Form\Type\AddToCartType;
+use Commercetools\Symfony\ExampleBundle\Model\Form\Type\AddToCartType;
 use Commercetools\Symfony\CtpBundle\Model\Repository\ProductRepository;
 use GuzzleHttp\Psr7\Uri;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
@@ -39,7 +39,7 @@ class CatalogController extends Controller
         $form->handleRequest($request);
 
         $search = null;
-        if ($form->isValid() && $form->isSubmitted() ){
+        if ($form->isSubmitted() && $form->isValid()){
             $search = $form->get('search')->getData();
         }
 
@@ -48,7 +48,7 @@ class CatalogController extends Controller
             $request->getLocale(), 12, 1, 'price asc', 'EUR', 'DE', $search, $uri
         );
 
-        return $this->render('CtpBundle:catalog:index.html.twig', [
+        return $this->render('ExampleBundle:catalog:index.html.twig', [
                 'products' => $products,
                 'form' => $form->createView(),
         ]);
@@ -78,7 +78,7 @@ class CatalogController extends Controller
         ];
         $form = $this->createForm(AddToCartType::class, $data, ['action' => $this->generateUrl('_ctp_example_add_lineItem')]);
         $form->handleRequest($request);
-        return $this->render('CtpBundle:catalog:product.html.twig', [
+        return $this->render('ExampleBundle:catalog:product.html.twig', [
                 'product' =>  $product,
                 'form' => $form->createView()
         ]);

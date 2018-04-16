@@ -3,7 +3,7 @@
  * @author: Ylambers <yaron.lambers@commercetools.de>
  */
 
-namespace Commercetools\Symfony\CtpBundle\Model\Form\Type;
+namespace Commercetools\Symfony\ExampleBundle\Model\Form\Type;
 
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;

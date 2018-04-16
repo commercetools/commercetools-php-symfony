@@ -1,84 +1,84 @@
 _ctp_example_index:
     path:     /
-    defaults: { _controller: CtpBundle:Home:index }
+    defaults: { _controller: ExampleBundle:Home:index }
 
 _ctp_example:
     path:     /product
-    defaults: { _controller: CtpBundle:Catalog:index }
+    defaults: { _controller: ExampleBundle:Catalog:index }
 
 _ctp_example_product:
     path:    /product/{slug}
-    defaults: { _controller: CtpBundle:Catalog:detail }
+    defaults: { _controller: ExampleBundle:Catalog:detail }
 
 login:
     path: /login
-    defaults: { _controller: CtpBundle:User:login }
+    defaults: { _controller: ExampleBundle:User:login }
 login_check:
     path: /login_check
-    defaults: { _controller: CtpBundle:User:login }
+    defaults: { _controller: ExampleBundle:User:login }
 logout:
     path: /logout
 
 _ctp_example_user_details:
     path:    /user/details
-    defaults: { _controller: CtpBundle:User:details }
+    defaults: { _controller: ExampleBundle:User:details }
 
 _ctp_example_user_address_book:
     path:    /user/address
-    defaults: { _controller: CtpBundle:User:addressBook }
+    defaults: { _controller: ExampleBundle:User:addressBook }
 
 _ctp_example_user_address_edit:
     path:    /user/address/edit/{addressId}
-    defaults: { _controller: CtpBundle:User:editAddress }
+    defaults: { _controller: ExampleBundle:User:editAddress }
 
 _ctp_example_cart:
     path: /cart
-    defaults: { _controller: CtpBundle:Cart:index}
+    defaults: { _controller: ExampleBundle:Cart:index}
 
 _ctp_example_checkout_signin:
     path: /checkout/signin
-    defaults: { _controller: CtpBundle:Checkout:signin}
+    defaults: { _controller: ExampleBundle:Checkout:signin}
 
 _ctp_example_checkout_shipping:
     path: /checkout/shipping
-    defaults: { _controller: CtpBundle:Checkout:shippingMethod}
+    defaults: { _controller: ExampleBundle:Checkout:shippingMethod}
 
 _ctp_example_checkout_address:
     path: /checkout/address
-    defaults: { _controller: CtpBundle:Checkout:setAddress}
+    defaults: { _controller: ExampleBundle:Checkout:setAddress}
 
 _ctp_example_checkout_confirm:
     path: /checkout/address/confirm
-    defaults: { _controller: CtpBundle:Checkout:confirmation}
+    defaults: { _controller: ExampleBundle:Checkout:confirmation}
 
 _ctp_example_add_lineItem:
     path: /cart/add
-    defaults: { _controller: CtpBundle:Cart:addLineItem}
+    defaults: { _controller: ExampleBundle:Cart:addLineItem}
 
 _ctp_example_change_lineItem:
     path: /cart/change
-    defaults: { _controller: CtpBundle:Cart:changeLineItem}
+    defaults: { _controller: ExampleBundle:Cart:changeLineItem}
 
 _ctp_example_delete_lineItem:
     path: /cart/delete
-    defaults: { _controller: CtpBundle:Cart:deleteLineItem}
+    defaults: { _controller: ExampleBundle:Cart:deleteLineItem}
 
 _ctp_example_checkout_guest:
     path: /checkout/quest
-    defaults: { _controller: CtpBundle:Checkout:setAddress}
+    defaults: { _controller: ExampleBundle:Checkout:setAddress}
 
 _ctp_example_checkout_success:
     path: /checkout/succes
-    defaults: { _controller: CtpBundle:Checkout:success}
+    defaults: { _controller: ExampleBundle:Checkout:success}
 
 _ctp_example_orders_all:
     path: /orders/
-    defaults: { _controller: CtpBundle:User:showOrders}
+    defaults: { _controller: ExampleBundle:User:showOrders}
 
 _ctp_example_order:
     path: /orders/{orderId}
-    defaults: { _controller: CtpBundle:User:showOrder}
+    defaults: { _controller: ExampleBundle:User:showOrder}
 
 _ctp_example_suggest:
     path: /suggest/{searchTerm}
-    defaults: { _controller: CtpBundle:Catalog:suggest}
+    defaults: { _controller: ExampleBundle:Catalog:suggest}

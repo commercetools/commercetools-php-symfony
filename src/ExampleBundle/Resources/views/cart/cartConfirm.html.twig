@@ -1,17 +1,17 @@
-{% extends "CtpBundle::layout.html.twig" %}
+{% extends "ExampleBundle::layout.html.twig" %}
 
 {% block container %}
 
-    {% include 'CtpBundle:partials:address.html.twig' with {address: cart.getShippingAddress} %}
+    {% include 'ExampleBundle:partials:address.html.twig' with {address: cart.getShippingAddress} %}
 
     {% if cart.getBillingAddress %}
-        {% include 'CtpBundle:partials:address.html.twig' with {address: cart.getBillingAddress} %}
+        {% include 'ExampleBundle:partials:address.html.twig' with {address: cart.getBillingAddress} %}
     {% else %}
-        {% include 'CtpBundle:partials:address.html.twig' with {address: cart.getShippingAddress} %}
+        {% include 'ExampleBundle:partials:address.html.twig' with {address: cart.getShippingAddress} %}
     {% endif %}
 
-    {% include 'CtpBundle:partials:shippingProvider.html.twig' with {shippingInfo: cart.getShippingInfo} %}
+    {% include 'ExampleBundle:partials:shippingProvider.html.twig' with {shippingInfo: cart.getShippingInfo} %}
 
-    {% include 'CtpBundle:partials:cartView.html.twig' with {cart: cart} %}
+    {% include 'ExampleBundle:partials:cartView.html.twig' with {cart: cart} %}
 
 {% endblock %}

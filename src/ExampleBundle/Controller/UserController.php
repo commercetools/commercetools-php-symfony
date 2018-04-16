@@ -3,7 +3,7 @@
  * @author: Ylambers <yaron.lambers@commercetools.de>
  */
 
-namespace Commercetools\Symfony\CtpBundle\Controller;
+namespace Commercetools\Symfony\ExampleBundle\Controller;
 
 use Commercetools\Core\Client;
 use Commercetools\Core\Model\Cart\Cart;
@@ -12,8 +12,8 @@ use Commercetools\Core\Request\Customers\CustomerByIdGetRequest;
 use Commercetools\Symfony\CtpBundle\Entity\CartEntity;
 use Commercetools\Symfony\CtpBundle\Entity\UserAddress;
 use Commercetools\Symfony\CtpBundle\Entity\UserDetails;
-use Commercetools\Symfony\CtpBundle\Model\Form\Type\AddressType;
-use Commercetools\Symfony\CtpBundle\Model\Form\Type\UserType;
+use Commercetools\Symfony\ExampleBundle\Model\Form\Type\AddressType;
+use Commercetools\Symfony\ExampleBundle\Model\Form\Type\UserType;
 use Commercetools\Symfony\CtpBundle\Model\Repository\CartRepository;
 use Commercetools\Symfony\CtpBundle\Security\User\User;
 use Commercetools\Symfony\CtpBundle\Tests\Entity\UserAddressTest;
@@ -40,7 +40,7 @@ class UserController extends Controller
          */
         $user = $this->getUser();
 
-        return $this->render('CtpBundle:catalog:index.html.twig',
+        return $this->render('ExampleBundle:catalog:index.html.twig',
             [
                 'user' => $user
             ]
@@ -55,7 +55,7 @@ class UserController extends Controller
 
         $lastUsername = $authenticationUtils->getLastUsername();
 
-        return $this->render('CtpBundle:user:login.html.twig',
+        return $this->render('ExampleBundle:user:login.html.twig',
             [
                 'last_username' => $lastUsername,
                 'error' => $error
@@ -107,7 +107,7 @@ class UserController extends Controller
 
         }
 
-        return $this->render('CtpBundle:User:user.html.twig',
+        return $this->render('ExampleBundle:User:user.html.twig',
             [
                 'formDetails' => $form->createView()
             ]
@@ -122,7 +122,7 @@ class UserController extends Controller
         $customerId = $this->get('security.token_storage')->getToken()->getUser()->getId();
         $customer = $this->get('commercetools.repository.customer')->getCustomer($request->getLocale(), $customerId);
 
-        return $this->render('CtpBundle:User:addressBook.html.twig',
+        return $this->render('ExampleBundle:User:addressBook.html.twig',
             [
                 'customer' => $customer
             ]
@@ -159,7 +159,7 @@ class UserController extends Controller
         }
 
         return $this->render(
-            'CtpBundle:User:editAddress.html.twig',
+            'ExampleBundle:User:editAddress.html.twig',
             [
                 'form_address' => $form->createView()
             ]
@@ -170,7 +170,7 @@ class UserController extends Controller
     {
         $orders = $this->get('commercetools.repository.order')->getOrders($request->getLocale(), $this->getUser()->getId());
 
-        return $this->render('CtpBundle:user:orders.html.twig', [
+        return $this->render('ExampleBundle:user:orders.html.twig', [
             'orders' => $orders
         ]);
     }
@@ -179,7 +179,7 @@ class UserController extends Controller
     {
         $order = $this->get('commercetools.repository.order')->getOrder($request->getLocale(), $orderId);
 
-        return $this->render('CtpBundle:user:order.html.twig', [
+        return $this->render('ExampleBundle:user:order.html.twig', [
             'order' => $order
          ]);
     }

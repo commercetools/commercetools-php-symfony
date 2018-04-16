@@ -3,10 +3,10 @@
  * @author: Ylambers <yaron.lambers@commercetools.de>
  */
 
-namespace Commercetools\Symfony\CtpBundle\Model\Form\Type;
+namespace Commercetools\Symfony\ExampleBundle\Model\Form\Type;
 
 
-use Commercetools\Symfony\CtpBundle\Entity\UserAddress;
+use Commercetools\Symfony\ExampleBundle\Entity\UserAddress;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;

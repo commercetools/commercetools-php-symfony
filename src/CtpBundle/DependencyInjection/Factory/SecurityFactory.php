@@ -6,8 +6,9 @@
 namespace Commercetools\Symfony\CtpBundle\DependencyInjection\Factory;
 
 use Symfony\Bundle\SecurityBundle\DependencyInjection\Security\Factory\FormLoginFactory;
+use Symfony\Component\DependencyInjection\ChildDefinition;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
-use Symfony\Component\DependencyInjection\DefinitionDecorator;
+use Symfony\Component\DependencyInjection\Definition;
 use Symfony\Component\DependencyInjection\Reference;
 
 class SecurityFactory extends FormLoginFactory
@@ -26,7 +27,7 @@ class SecurityFactory extends FormLoginFactory
     {
         $provider = 'security.authentication_provider.commercetools.'.$id;
         $container
-            ->setDefinition($provider, new DefinitionDecorator('security.authentication_provider.commercetools'))
+            ->setDefinition($provider, new ChildDefinition('security.authentication_provider.commercetools'))
             ->replaceArgument(1, new Reference($userProviderId))
             ->replaceArgument(3, $id);
 

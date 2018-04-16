@@ -3,12 +3,12 @@
  * @author: Ylambers <yaron.lambers@commercetools.de>
  */
 
-namespace Commercetools\Symfony\CtpBundle\Controller;
+namespace Commercetools\Symfony\ExampleBundle\Controller;
 
 use Commercetools\Core\Model\Common\Address;
 use Commercetools\Core\Model\ShippingMethod\ShippingMethod;
 use Commercetools\Symfony\CtpBundle\Entity\CartEntity;
-use Commercetools\Symfony\CtpBundle\Model\Form\Type\AddressType;
+use Commercetools\Symfony\ExampleBundle\Model\Form\Type\AddressType;
 use Commercetools\Symfony\CtpBundle\Model\Repository\CartRepository;
 use Commercetools\Symfony\CtpBundle\Security\User\CtpUser;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
@@ -31,7 +31,7 @@ class CheckoutController extends Controller
 
         $lastUsername = $authenticationUtils->getLastUsername();
 
-        return $this->render('CtpBundle:checkout:secureCheckout.html.twig',
+        return $this->render('ExampleBundle:checkout:secureCheckout.html.twig',
             [
                 'last_username' => $lastUsername,
                 'error' => $error
@@ -90,7 +90,7 @@ class CheckoutController extends Controller
             return $this->redirect($this->generateUrl('_ctp_example_checkout_confirm'));
         }
 
-        return $this->render('CtpBundle:checkout:checkoutShipping.html.twig', [
+        return $this->render('ExampleBundle:checkout:checkoutShipping.html.twig', [
             'shipping_methods' => $shippingMethods,
             'form' => $form->createView()
         ]);
@@ -114,7 +114,7 @@ class CheckoutController extends Controller
 
         $customer = $this->get('commercetools.repository.customer')->getCustomer($request->getLocale(), $customerId);
 
-        return $this->render('CtpBundle:cart:cartConfirm.html.twig',
+        return $this->render('ExampleBundle:cart:cartConfirm.html.twig',
             [
                 'cart' => $cart,
                 'customer' => $customer,
@@ -139,7 +139,7 @@ class CheckoutController extends Controller
 
         $placeOrder = $repository->createOrderFromCart($request->getLocale(), $cart);
 
-        return $this->render('CtpBundle:cart:cartSuccess.html.twig');
+        return $this->render('ExampleBundle:cart:cartSuccess.html.twig');
     }
 
 
@@ -208,7 +208,7 @@ class CheckoutController extends Controller
             }
         }
 
-        return $this->render('CtpBundle:checkout:checkout.html.twig',
+        return $this->render('ExampleBundle:checkout:checkout.html.twig',
         [
             'form' => $form->createView(),
         ]);

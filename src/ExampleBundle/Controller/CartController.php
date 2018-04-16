@@ -3,9 +3,9 @@
  * @author: Ylambers <yaron.lambers@commercetools.de>
  */
 
-namespace Commercetools\Symfony\CtpBundle\Controller;
+namespace Commercetools\Symfony\ExampleBundle\Controller;
 
-use Commercetools\Symfony\CtpBundle\Model\Form\Type\AddToCartType;
+use Commercetools\Symfony\ExampleBundle\Model\Form\Type\AddToCartType;
 use Commercetools\Symfony\CtpBundle\Model\Repository\CartRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Commercetools\Core\Model\Cart\Cart;
@@ -43,7 +43,7 @@ class CartController extends Controller
             ->add('quantity', TextType::class)
             ->getForm();
 
-        return $this->render('CtpBundle:cart:index.html.twig', ['cart' => $cart]);
+        return $this->render('ExampleBundle:cart:index.html.twig', ['cart' => $cart]);
     }
 
     public function addLineItemAction(Request $request)
@@ -91,7 +91,7 @@ class CartController extends Controller
         $response->headers->addCacheControlDirective('no-cache');
         $response->headers->addCacheControlDirective('no-store');
 
-        $response = $this->render('CtpBundle:cart:index.html.twig', $response);
+        $response = $this->render('ExampleBundle:cart:index.html.twig', $response);
 
         return $response;
     }
