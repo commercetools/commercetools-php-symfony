@@ -8,10 +8,13 @@
 
 namespace Commercetools\Symfony\ShoppingListBundle\Model\Repository;
 
+use Commercetools\Core\Model\Common\LocalizedString;
 use Commercetools\Core\Model\Customer\CustomerReference;
 use Commercetools\Core\Model\ShoppingList\ShoppingListDraft;
 use Commercetools\Core\Request\ShoppingLists\ShoppingListCreateRequest;
+use Commercetools\Core\Request\ShoppingLists\ShoppingListUpdateRequest;
 use Commercetools\Core\Request\ShoppingLists\ShoppingListQueryRequest;
+use Commercetools\Core\Request\ShoppingLists\Command\ShoppingListAddLineItemAction;
 use Commercetools\Symfony\CtpBundle\Model\Repository;
 use Commercetools\Symfony\CtpBundle\Service\MapperFactory;
 use Commercetools\Core\Client;
@@ -57,12 +60,28 @@ class ShoppingListRepository extends Repository
         return $lists;
     }
 
-    public function createShoppingList($locale, CustomerReference $customer)
+    public function createShoppingList($locale, CustomerReference $customer, $shoppingListName)
     {
         $client = $this->getClient();
         $key = $this->createUniqueKey($customer->getId());
-        $shoppingListDraft = ShoppingListDraft::ofNameAndKey($key, $key);
+        $localizedListName = LocalizedString::ofLangAndText($locale, $shoppingListName);
+        $shoppingListDraft = ShoppingListDraft::ofNameAndKey($localizedListName, $key)
+            ->setCustomer($customer);
         $request = ShoppingListCreateRequest::ofDraft($shoppingListDraft);
+        $response = $request->executeWithClient($client);
+        $list = $request->mapFromResponse(
+            $response,
+            $this->getMapper($locale)
+        );
+
+        return $list;
+    }
+
+    public function addLineItem($locale, $shoppingListId, $version, $productId, $variantId, $quantity = 1)
+    {
+        $client = $this->getClient();
+        $request = ShoppingListUpdateRequest::ofIdAndVersion($shoppingListId, (int)$version)
+            ->addAction(ShoppingListAddLineItemAction::ofProductIdVariantIdAndQuantity($productId, $variantId, 1));
         $response = $request->executeWithClient($client);
         $list = $request->mapFromResponse(
             $response,
