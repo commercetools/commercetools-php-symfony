@@ -21,6 +21,6 @@ class ShoppingListExtension extends Extension
         $container->getParameter('kernel.root_dir');
         $configuration = new Configuration();
 
-        $config = $this->processConfiguration($configuration, $configs);
+        $this->processConfiguration($configuration, $configs);
     }
 }

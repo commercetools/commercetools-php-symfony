@@ -7,11 +7,18 @@
         <parameter key="commercetools.cache.shopping_list" type="string">false</parameter>
     </parameters>
     <services>
-        <service id="Commercetools\Symfony\ShoppingListBundle\Model\Repository\ShoppingListRepository" public="true">
+        <service id="Commercetools\Symfony\ShoppingListBundle\Model\Repository\ShoppingListRepository">
             <argument>%commercetools.cache.shopping_list%</argument>
             <argument type="service" id="commercetools.cache" />
             <argument type="service" id="commercetools.client"/>
             <argument type="service" id="commmercetools.mapper.factory" />
+        </service>
+        <service id="Commercetools\Symfony\ShoppingListBundle\EventListener\ShoppingListSubscriber">
+            <tag name="kernel.event_subscriber"/>
+        </service>
+        <service id="Commercetools\Symfony\ShoppingListBundle\Manager\ShoppingListManager">
+            <argument id="Commercetools\Symfony\ShoppingListBundle\Model\Repository\ShoppingListRepository" type="service"/>
+            <argument id="event_dispatcher" type="service"/>
         </service>
     </services>
 </container>

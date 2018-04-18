@@ -10,6 +10,7 @@ namespace Commercetools\Symfony\ShoppingListBundle\Model\Repository;
 
 use Commercetools\Core\Model\Common\LocalizedString;
 use Commercetools\Core\Model\Customer\CustomerReference;
+use Commercetools\Core\Model\ShoppingList\ShoppingList;
 use Commercetools\Core\Model\ShoppingList\ShoppingListDraft;
 use Commercetools\Core\Request\ShoppingLists\ShoppingListCreateRequest;
 use Commercetools\Core\Request\ShoppingLists\ShoppingListUpdateRequest;
@@ -77,22 +78,22 @@ class ShoppingListRepository extends Repository
         return $list;
     }
 
-    public function addLineItem($locale, $shoppingListId, $version, $productId, $variantId, $quantity = 1)
-    {
-        $client = $this->getClient();
-        $request = ShoppingListUpdateRequest::ofIdAndVersion($shoppingListId, (int)$version)
-            ->addAction(ShoppingListAddLineItemAction::ofProductIdVariantIdAndQuantity($productId, $variantId, 1));
-        $response = $request->executeWithClient($client);
-        $list = $request->mapFromResponse(
-            $response,
-            $this->getMapper($locale)
-        );
-
-        return $list;
-    }
-
     private function createUniqueKey($customerId)
     {
         return $customerId . '-' . uniqid();
+    }
+
+    public function update(ShoppingList $shoppingList, array $actions)
+    {
+        $client = $this->getClient();
+        $request = ShoppingListUpdateRequest::ofIdAndVersion($shoppingList->getId(), $shoppingList->getVersion())
+            ->setActions($actions);
+        $response = $request->executeWithClient($client);
+        $list = $request->mapFromResponse(
+            $response
+        );
+
+        return $list;
+
     }
 }
