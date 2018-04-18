@@ -21,6 +21,13 @@ class CartController extends Controller
 {
     const CSRF_TOKEN_NAME = 'csrfToken';
 
+    private $repository;
+
+    public function __construct(CartRepository $repository)
+    {
+        $this->repository = $repository;
+    }
+
     protected function getCustomerId()
     {
         $user = $this->getUser();
@@ -36,7 +43,7 @@ class CartController extends Controller
     {
         $session = $this->get('session');
         $cartId = $session->get(CartRepository::CART_ID);
-        $cart = $this->get('commercetools.repository.cart')->getCart($request->getLocale(), $cartId, $this->getCustomerId());
+        $cart = $this->repository->getCart($request->getLocale(), $cartId, $this->getCustomerId());
 
         $form = $this->createNamedFormBuilder('')
             ->add('lineItemId', TextType::class)

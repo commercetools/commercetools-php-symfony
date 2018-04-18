@@ -16,6 +16,7 @@ use Commercetools\Core\Request\ShoppingLists\Command\ShoppingListRemoveLineItemA
 use Commercetools\Core\Request\ShoppingLists\Command\ShoppingListChangeLineItemQuantityAction;
 use Commercetools\Symfony\ShoppingListBundle\Event\ShoppingListUpdateEvent;
 use Commercetools\Symfony\ShoppingListBundle\Model\Repository\ShoppingListRepository;
+use Commercetools\Symfony\ShoppingListBundle\Model\ShoppingListUpdate;
 use Commercetools\Symfony\ShoppingListBundle\ShoppingListEvents;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Commercetools\Core\Model\Customer\CustomerReference;
@@ -79,6 +80,20 @@ class ShoppingListManager
         $shoppingList = $this->updateShoppingList($shoppingList, $action);
 
         return $shoppingList;
+    }
+
+    /**
+     * @param ShoppingList $list
+     * @return ShoppingListUpdate
+     */
+    public function update(ShoppingList $list)
+    {
+        return new ShoppingListUpdate($list, $this->dispatcher, $this->manager);
+    }
+
+    public function store($shoppingList, $actions)
+    {
+
     }
 
     public function updateShoppingList(ShoppingList $shoppingList, AbstractAction $action, $eventName = null)
