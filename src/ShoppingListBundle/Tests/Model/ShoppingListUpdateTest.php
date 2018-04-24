@@ -3,168 +3,117 @@ declare(strict_types=1);
 
 namespace Commercetools\Symfony\ShoppingListBundle\Tests\Model;
 
-use Commercetools\Core\Model\Common\LocalizedString;
 use Commercetools\Core\Model\ShoppingList\ShoppingList;
 use Commercetools\Core\Request\ShoppingLists\Command\ShoppingListAddLineItemAction;
+use Commercetools\Core\Request\ShoppingLists\Command\ShoppingListAddTextLineItemAction;
+use Commercetools\Core\Request\ShoppingLists\Command\ShoppingListChangeLineItemQuantityAction;
+use Commercetools\Core\Request\ShoppingLists\Command\ShoppingListChangeLineItemsOrderAction;
 use Commercetools\Core\Request\ShoppingLists\Command\ShoppingListChangeNameAction;
+use Commercetools\Core\Request\ShoppingLists\Command\ShoppingListChangeTextLineItemNameAction;
+use Commercetools\Core\Request\ShoppingLists\Command\ShoppingListChangeTextLineItemQuantityAction;
+use Commercetools\Core\Request\ShoppingLists\Command\ShoppingListChangeTextLineItemsOrderAction;
+use Commercetools\Core\Request\ShoppingLists\Command\ShoppingListRemoveLineItemAction;
+use Commercetools\Core\Request\ShoppingLists\Command\ShoppingListRemoveTextLineItemAction;
+use Commercetools\Core\Request\ShoppingLists\Command\ShoppingListSetCustomerAction;
+use Commercetools\Core\Request\ShoppingLists\Command\ShoppingListSetCustomFieldAction;
+use Commercetools\Core\Request\ShoppingLists\Command\ShoppingListSetCustomTypeAction;
+use Commercetools\Core\Request\ShoppingLists\Command\ShoppingListSetDeleteDaysAfterLastModificationAction;
+use Commercetools\Core\Request\ShoppingLists\Command\ShoppingListSetDescriptionAction;
+use Commercetools\Core\Request\ShoppingLists\Command\ShoppingListSetKeyAction;
+use Commercetools\Core\Request\ShoppingLists\Command\ShoppingListSetLineItemCustomFieldAction;
+use Commercetools\Core\Request\ShoppingLists\Command\ShoppingListSetLineItemCustomTypeAction;
+use Commercetools\Core\Request\ShoppingLists\Command\ShoppingListSetSlugAction;
+use Commercetools\Core\Request\ShoppingLists\Command\ShoppingListSetTextLineItemCustomFieldAction;
+use Commercetools\Core\Request\ShoppingLists\Command\ShoppingListSetTextLineItemCustomTypeAction;
+use Commercetools\Core\Request\ShoppingLists\Command\ShoppingListSetTextLineItemDescriptionAction;
 use Commercetools\Symfony\ShoppingListBundle\Event\ShoppingListUpdateEvent;
 use Commercetools\Symfony\ShoppingListBundle\Manager\ShoppingListManager;
-use Commercetools\Symfony\ShoppingListBundle\Model\ShoppingListUpdate;
+use Commercetools\Symfony\ShoppingListBundle\Model\ShoppingListUpdateBuilder;
 use Prophecy\Argument;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
 class ShoppingListUpdateTest extends \PHPUnit_Framework_TestCase
 {
-    private function getShoppingList()
+    public function getActionProvider()
+    {
+        return [
+            ['addLineItem', ShoppingListAddLineItemAction::class],
+            ['addTextLineItem', ShoppingListAddTextLineItemAction::class],
+            ['changeLineItemQuantity', ShoppingListChangeLineItemQuantityAction::class],
+            ['changeLineItemsOrder', ShoppingListChangeLineItemsOrderAction::class],
+            ['changeName', ShoppingListChangeNameAction::class],
+            ['changeTextLineItemName', ShoppingListChangeTextLineItemNameAction::class],
+            ['changeTextLineItemQuantity', ShoppingListChangeTextLineItemQuantityAction::class],
+            ['changeTextLineItemsOrder', ShoppingListChangeTextLineItemsOrderAction::class],
+            ['removeLineItem', ShoppingListRemoveLineItemAction::class],
+            ['removeTextLineItem', ShoppingListRemoveTextLineItemAction::class],
+            ['setCustomField', ShoppingListSetCustomFieldAction::class],
+            ['setCustomType', ShoppingListSetCustomTypeAction::class],
+            ['setCustomer', ShoppingListSetCustomerAction::class],
+            ['setDeleteDaysAfterLastModification', ShoppingListSetDeleteDaysAfterLastModificationAction::class],
+            ['setDescription', ShoppingListSetDescriptionAction::class],
+            ['setKey', ShoppingListSetKeyAction::class],
+            ['setLineItemCustomField', ShoppingListSetLineItemCustomFieldAction::class],
+            ['setLineItemCustomType', ShoppingListSetLineItemCustomTypeAction::class],
+            ['setSlug', ShoppingListSetSlugAction::class],
+            ['setTextLineItemCustomField', ShoppingListSetTextLineItemCustomFieldAction::class],
+            ['setTextLineItemCustomType', ShoppingListSetTextLineItemCustomTypeAction::class],
+            ['setTextLineItemDescription', ShoppingListSetTextLineItemDescriptionAction::class],
+        ];
+    }
+
+    /**
+     * @dataProvider getActionProvider
+     */
+    public function testUpdateMethods($updateMethod, $actionClass)
     {
         $shoppingList = $this->prophesize(ShoppingList::class);
-        return $shoppingList;
-    }
+        $shoppingListMock = $shoppingList->reveal();
 
-    private function getDispatcher($class)
-    {
-        $dispatcher = $this->prophesize(EventDispatcherInterface::class);
-        $dispatcher->dispatch($class, Argument::type(ShoppingListUpdateEvent::class))
-            ->will(function ($args) { return $args[1]; } )->shouldBeCalledTimes(1);
-
-        return $dispatcher;
-    }
-
-    private function getManager($shoppingList, $class, $callback)
-    {
         $manager = $this->prophesize(ShoppingListManager::class);
         $manager->apply(
             $shoppingList,
             Argument::allOf(
-                Argument::containing(Argument::type($class)),
-                Argument::that($callback)
+                Argument::containing(Argument::type($actionClass))
             )
         )->shouldBeCalledTimes(1);
 
-        return $manager;
+        $manager->dispatch($shoppingListMock, Argument::type($actionClass), Argument::is(null))->will(function ($args) { return [$args[1]]; })->shouldBeCalledTimes(1);
 
-    }
-    public function testAddLineItem()
-    {
-        $shoppingList = $this->getShoppingList();
-        $shoppingListMock = $shoppingList->reveal();
+        $update = new ShoppingListUpdateBuilder($shoppingListMock, $manager->reveal());
 
-        $manager = $this->getManager(
-            $shoppingListMock,
-            ShoppingListAddLineItemAction::class,
-            function ($actions) {
-                $action = current($actions);
-                static::assertSame('12345', $action->getProductId());
-                return true;
-            }
-        );
-        $dispatcher = $this->getDispatcher(ShoppingListAddLineItemAction::class);
-
-
-        $update = new ShoppingListUpdate($shoppingListMock, $dispatcher->reveal(), $manager->reveal());
-
-        $action = ShoppingListAddLineItemAction::of()->setProductId('12345');
-        $update->addLineItem($action);
+        $action = $actionClass::of();
+        $update->$updateMethod($action);
 
         $update->flush();
     }
 
-    public function testAddLineItemCallback()
+    /**
+     * @dataProvider getActionProvider
+     */
+    public function testUpdateMethodsCallback($updateMethod, $actionClass)
     {
-        $shoppingList = $this->getShoppingList();
+        $shoppingList = $this->prophesize(ShoppingList::class);
         $shoppingListMock = $shoppingList->reveal();
 
-        $manager = $this->getManager(
-            $shoppingListMock,
-            ShoppingListAddLineItemAction::class,
-            function ($actions) {
-                $action = current($actions);
-                static::assertSame('12345', $action->getProductId());
-                return true;
-            }
-        );
-        $dispatcher = $this->getDispatcher(ShoppingListAddLineItemAction::class);
+        $manager = $this->prophesize(ShoppingListManager::class);
+        $manager->apply(
+            $shoppingList,
+            Argument::allOf(
+                Argument::containing(Argument::type($actionClass))
+            )
+        )->shouldBeCalledTimes(1);
 
+        $manager->dispatch($shoppingListMock, Argument::type($actionClass), Argument::is(null))->will(function ($args) { return [$args[1]]; })->shouldBeCalledTimes(1);
 
-        $update = new ShoppingListUpdate($shoppingListMock, $dispatcher->reveal(), $manager->reveal());
+        $update = new ShoppingListUpdateBuilder($shoppingListMock, $manager->reveal());
 
-        $callback = function (ShoppingListAddLineItemAction $action) : ShoppingListAddLineItemAction {
-            $action->setProductId('12345');
+        $callback = function ($action) use ($actionClass) {
+            static::assertInstanceOf($actionClass, $action);
             return $action;
         };
-
-        $update->addLineItem($callback);
-
-        $update->flush();
-    }
-
-    public function testChangeName()
-    {
-        $shoppingList = $this->getShoppingList();
-        $shoppingListMock = $shoppingList->reveal();
-
-        $manager = $this->getManager(
-            $shoppingListMock,
-            ShoppingListChangeNameAction::class,
-            function ($actions) {
-                $action = current($actions);
-                static::assertSame('new name', $action->getName()->en);
-                return true;
-            }
-        );
-        $dispatcher = $this->getDispatcher(ShoppingListChangeNameAction::class);
-
-
-        $update = new ShoppingListUpdate($shoppingListMock, $dispatcher->reveal(), $manager->reveal());
-
-        $action = ShoppingListChangeNameAction::ofName(LocalizedString::ofLangAndText('en', 'new name'));
-
-        $update->changeName($action);
+        $update->$updateMethod($callback);
 
         $update->flush();
-    }
-
-    public function testChangeNameCallback()
-    {
-        $shoppingList = $this->getShoppingList();
-        $shoppingListMock = $shoppingList->reveal();
-
-        $manager = $this->getManager(
-            $shoppingListMock,
-            ShoppingListChangeNameAction::class,
-            function ($actions) {
-                $action = current($actions);
-                static::assertSame('new name', $action->getName()->en);
-                return true;
-            }
-        );
-        $dispatcher = $this->getDispatcher(ShoppingListChangeNameAction::class);
-
-
-        $update = new ShoppingListUpdate($shoppingListMock, $dispatcher->reveal(), $manager->reveal());
-
-        $callback = function (ShoppingListChangeNameAction $action) : ShoppingListChangeNameAction {
-            $action->setName(LocalizedString::ofLangAndText('en', 'new name'));
-            return $action;
-        };
-
-        $update->changeName($callback);
-
-        $update->flush();
-    }
-
-    public function testHandle()
-    {
-
-    }
-
-    public function testUpdateShoppingList()
-    {
-
-    }
-
-    public function testFlush()
-    {
-
     }
 }

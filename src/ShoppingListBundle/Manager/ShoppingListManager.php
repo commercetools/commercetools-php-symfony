@@ -11,13 +11,9 @@ namespace Commercetools\Symfony\ShoppingListBundle\Manager;
 
 use Commercetools\Core\Model\ShoppingList\ShoppingList;
 use Commercetools\Core\Request\AbstractAction;
-use Commercetools\Core\Request\ShoppingLists\Command\ShoppingListAddLineItemAction;
-use Commercetools\Core\Request\ShoppingLists\Command\ShoppingListRemoveLineItemAction;
-use Commercetools\Core\Request\ShoppingLists\Command\ShoppingListChangeLineItemQuantityAction;
 use Commercetools\Symfony\ShoppingListBundle\Event\ShoppingListUpdateEvent;
 use Commercetools\Symfony\ShoppingListBundle\Model\Repository\ShoppingListRepository;
-use Commercetools\Symfony\ShoppingListBundle\Model\ShoppingListUpdate;
-use Commercetools\Symfony\ShoppingListBundle\ShoppingListEvents;
+use Commercetools\Symfony\ShoppingListBundle\Model\ShoppingListUpdateBuilder;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Commercetools\Core\Model\Customer\CustomerReference;
 
@@ -62,11 +58,21 @@ class ShoppingListManager
 
     /**
      * @param ShoppingList $list
-     * @return ShoppingListUpdate
+     * @return ShoppingListUpdateBuilder
      */
     public function update(ShoppingList $list)
     {
-        return new ShoppingListUpdate($list, $this->dispatcher, $this);
+        return new ShoppingListUpdateBuilder($list, $this);
+    }
+
+    public function dispatch(ShoppingList $shoppingList, AbstractAction $action, $eventName = null)
+    {
+        $eventName = is_null($eventName) ? get_class($action) : $eventName;
+
+        $event = new ShoppingListUpdateEvent($shoppingList, $action);
+        $event = $this->dispatcher->dispatch($eventName, $event);
+
+        return $event->getActions();
     }
 
     /**
