@@ -80,9 +80,8 @@ class ShoppingListManager
      * @param $actions
      * @return ShoppingList
      */
-    public function apply($shoppingList, $actions)
+    public function apply(ShoppingList $shoppingList, array $actions)
     {
         return $this->repository->update($shoppingList, $actions);
-
     }
 }

@@ -68,7 +68,6 @@ class ShoppingListUpdateTest extends \PHPUnit_Framework_TestCase
     public function testUpdateMethods($updateMethod, $actionClass)
     {
         $shoppingList = $this->prophesize(ShoppingList::class);
-        $shoppingListMock = $shoppingList->reveal();
 
         $manager = $this->prophesize(ShoppingListManager::class);
         $manager->apply(
@@ -78,9 +77,13 @@ class ShoppingListUpdateTest extends \PHPUnit_Framework_TestCase
             )
         )->shouldBeCalledTimes(1);
 
-        $manager->dispatch($shoppingListMock, Argument::type($actionClass), Argument::is(null))->will(function ($args) { return [$args[1]]; })->shouldBeCalledTimes(1);
+        $manager->dispatch(
+            $shoppingList,
+            Argument::type($actionClass),
+            Argument::is(null)
+        )->will(function ($args) { return [$args[1]]; })->shouldBeCalledTimes(1);
 
-        $update = new ShoppingListUpdateBuilder($shoppingListMock, $manager->reveal());
+        $update = new ShoppingListUpdateBuilder($shoppingList->reveal(), $manager->reveal());
 
         $action = $actionClass::of();
         $update->$updateMethod($action);
@@ -94,7 +97,6 @@ class ShoppingListUpdateTest extends \PHPUnit_Framework_TestCase
     public function testUpdateMethodsCallback($updateMethod, $actionClass)
     {
         $shoppingList = $this->prophesize(ShoppingList::class);
-        $shoppingListMock = $shoppingList->reveal();
 
         $manager = $this->prophesize(ShoppingListManager::class);
         $manager->apply(
@@ -104,9 +106,13 @@ class ShoppingListUpdateTest extends \PHPUnit_Framework_TestCase
             )
         )->shouldBeCalledTimes(1);
 
-        $manager->dispatch($shoppingListMock, Argument::type($actionClass), Argument::is(null))->will(function ($args) { return [$args[1]]; })->shouldBeCalledTimes(1);
+        $manager->dispatch(
+            $shoppingList,
+            Argument::type($actionClass),
+            Argument::is(null)
+        )->will(function ($args) { return [$args[1]]; })->shouldBeCalledTimes(1);
 
-        $update = new ShoppingListUpdateBuilder($shoppingListMock, $manager->reveal());
+        $update = new ShoppingListUpdateBuilder($shoppingList->reveal(), $manager->reveal());
 
         $callback = function ($action) use ($actionClass) {
             static::assertInstanceOf($actionClass, $action);
