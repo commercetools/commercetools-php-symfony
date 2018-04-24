@@ -33,7 +33,7 @@ class ShoppingListUpdateTest extends \PHPUnit_Framework_TestCase
     private function getManager($shoppingList, $class, $callback)
     {
         $manager = $this->prophesize(ShoppingListManager::class);
-        $manager->store(
+        $manager->apply(
             $shoppingList,
             Argument::allOf(
                 Argument::containing(Argument::type($class)),

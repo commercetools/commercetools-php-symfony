@@ -55,31 +55,9 @@ class ShoppingListManager
         return $this->repository->getAllShoppingListsByCustomer($locale, $customer);
     }
 
-    public function addLineItem(ShoppingList $shoppingList, $productId, $variantId, $quantity = 1)
+    public function createShoppingList($locale, CustomerReference $customer, $name)
     {
-        $action = ShoppingListAddLineItemAction::ofProductIdVariantIdAndQuantity($productId, (int)$variantId, (int)$quantity);
-
-        $shoppingList = $this->updateShoppingList($shoppingList, $action);
-
-        return $shoppingList;
-    }
-
-    public function removeLineItem(ShoppingList $shoppingList, $lineItemId)
-    {
-        $action = ShoppingListRemoveLineItemAction::ofLineItemId($lineItemId);
-
-        $shoppingList = $this->updateShoppingList($shoppingList, $action);
-
-        return $shoppingList;
-    }
-
-    public function changeLineItemQuantity(ShoppingList $shoppingList, $lineItemId, $quantity)
-    {
-        $action = ShoppingListChangeLineItemQuantityAction::ofLineItemIdAndQuantity($lineItemId, (int)$quantity);
-
-        $shoppingList = $this->updateShoppingList($shoppingList, $action);
-
-        return $shoppingList;
+        return $this->repository->create($locale, $customer, $name);
     }
 
     /**
@@ -88,21 +66,17 @@ class ShoppingListManager
      */
     public function update(ShoppingList $list)
     {
-        return new ShoppingListUpdate($list, $this->dispatcher, $this->manager);
+        return new ShoppingListUpdate($list, $this->dispatcher, $this);
     }
 
-    public function store($shoppingList, $actions)
+    /**
+     * @param $shoppingList
+     * @param $actions
+     * @return ShoppingList
+     */
+    public function apply($shoppingList, $actions)
     {
+        return $this->repository->update($shoppingList, $actions);
 
-    }
-
-    public function updateShoppingList(ShoppingList $shoppingList, AbstractAction $action, $eventName = null)
-    {
-        $eventName = is_null($eventName) ? get_class($action) : $eventName;
-
-        $event = new ShoppingListUpdateEvent($shoppingList, $action);
-        $event = $this->dispatcher->dispatch($eventName, $event);
-
-        return $this->repository->update($event->getShoppingList(), $event->getActions());
     }
 }

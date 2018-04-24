@@ -9,6 +9,9 @@
 namespace Commercetools\Symfony\ShoppingListBundle\Model;
 
 
+use Commercetools\Core\Builder\Request\RequestBuilder;
+use Commercetools\Core\Builder\Update\ActionBuilder;
+use Commercetools\Core\Builder\Update\ShoppingListsActionBuilder;
 use Commercetools\Core\Model\ShoppingList\ShoppingList;
 use Commercetools\Core\Request\AbstractAction;
 use Commercetools\Core\Request\ShoppingLists\Command\ShoppingListAddLineItemAction;
@@ -16,6 +19,7 @@ use Commercetools\Core\Request\ShoppingLists\Command\ShoppingListChangeNameActio
 use Commercetools\Symfony\ShoppingListBundle\Event\ShoppingListUpdateEvent;
 use Commercetools\Symfony\ShoppingListBundle\Manager\ShoppingListManager;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
+use InvalidArgumentException;
 
 class ShoppingListUpdate
 {
@@ -49,35 +53,63 @@ class ShoppingListUpdate
         $this->shoppingList = $shoppingList;
     }
 
-    public function addLineItem($productId, $variantId, $quantity = 1)
+    /**
+     * @param $class
+     * @param $action
+     * @return AbstractAction
+     * @throws InvalidArgumentException
+     */
+    private function resolveAction($class, $action = null)
     {
-        $action = ShoppingListAddLineItemAction::ofProductIdVariantIdAndQuantity($productId, (int)$variantId, (int)$quantity);
-
-        $this->updateShoppingList($this->shoppingList, $action);
-
-        return $this;
-    }
-
-    public function changeName($newName)
-    {
-        $this->handle($this->shoppingList->getName(), $newName, ShoppingListChangeNameAction::class, 'ofName');
-
-        return $this;
-    }
-
-    public function handle($oldValue, $newValue, $action, $builder)
-    {
-        if ($oldValue != $newValue) {
-            $action = $action::$builder($newValue);
-            $this->updateShoppingList($this->shoppingList, $action);
+        if (is_null($action) || is_callable($action)) {
+            $callback = $action;
+            $emptyAction = $class::of();
+            $action = $this->callback($emptyAction, $callback);
         }
+        if ($action instanceof $class) {
+            return $action;
+        }
+        throw new InvalidArgumentException(
+            sprintf('Expected method to be called with or callable to return %s', $class)
+        );
     }
 
-    public function updateShoppingList(ShoppingList $shoppingList, AbstractAction $action, $eventName = null)
+    /**
+     * @param $action
+     * @param callable $callback
+     * @return AbstractAction
+     */
+    private function callback($action, callable $callback = null)
+    {
+        if (!is_null($callback)) {
+            $action = $callback($action);
+        }
+        return $action;
+    }
+
+    /**
+     * @param ShoppingListAddLineItemAction|callable $action
+     * @return $this
+     */
+    public function addLineItem($action)
+    {
+        $this->addAction($this->resolveAction(ShoppingListAddLineItemAction::class, $action));
+
+        return $this;
+    }
+
+    public function changeName($action)
+    {
+        $this->addAction($this->resolveAction(ShoppingListChangeNameAction::class, $action));
+
+        return $this;
+    }
+
+    public function addAction(AbstractAction $action, $eventName = null)
     {
         $eventName = is_null($eventName) ? get_class($action) : $eventName;
 
-        $event = new ShoppingListUpdateEvent($shoppingList, $action);
+        $event = new ShoppingListUpdateEvent($this->shoppingList, $action);
         $event = $this->dispatcher->dispatch($eventName, $event);
 
         return $this->actions = array_merge($this->actions, $event->getActions());
@@ -88,6 +120,6 @@ class ShoppingListUpdate
      */
     public function flush()
     {
-        return $this->manager->store($this->shoppingList, $this->actions);
+        return $this->manager->apply($this->shoppingList, $this->actions);
     }
 }

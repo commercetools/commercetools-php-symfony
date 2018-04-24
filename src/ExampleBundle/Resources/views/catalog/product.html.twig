@@ -4,6 +4,8 @@
     <h3>{{ product.getName }}</h3>
     <img src="{{ product.getMasterVariant.getImages.current.getUrl | default('')}}" width="100">
     <p>{{ product.getDescription }}</p>
+    <p>Blub: {{ product.masterVariant.attributes.test.value }}</p>
+    <p>Bla: {{ attribute(product.masterVariant.attributes, 'custom-attribute').value }}</p>
     <p>{{ product.getMasterVariant.getPrice.getValue }}</p>
     {{ form_start(form) }}
         {% form_theme form 'bootstrap_3_layout.html.twig' %}

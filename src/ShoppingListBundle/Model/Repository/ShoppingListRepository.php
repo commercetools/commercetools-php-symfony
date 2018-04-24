@@ -8,20 +8,15 @@
 
 namespace Commercetools\Symfony\ShoppingListBundle\Model\Repository;
 
+use Commercetools\Core\Builder\Request\RequestBuilder;
 use Commercetools\Core\Model\Common\LocalizedString;
 use Commercetools\Core\Model\Customer\CustomerReference;
 use Commercetools\Core\Model\ShoppingList\ShoppingList;
 use Commercetools\Core\Model\ShoppingList\ShoppingListDraft;
-use Commercetools\Core\Request\ShoppingLists\ShoppingListCreateRequest;
-use Commercetools\Core\Request\ShoppingLists\ShoppingListUpdateRequest;
-use Commercetools\Core\Request\ShoppingLists\ShoppingListQueryRequest;
-use Commercetools\Core\Request\ShoppingLists\Command\ShoppingListAddLineItemAction;
 use Commercetools\Symfony\CtpBundle\Model\Repository;
 use Commercetools\Symfony\CtpBundle\Service\MapperFactory;
 use Commercetools\Core\Client;
-use Commercetools\Core\Request\ShoppingLists\ShoppingListByIdGetRequest;
 use Psr\Cache\CacheItemPoolInterface;
-use Symfony\Component\HttpFoundation\Session\Session;
 
 class ShoppingListRepository extends Repository
 {
@@ -37,7 +32,7 @@ class ShoppingListRepository extends Repository
     public function getShoppingList($locale, $shoppingListId)
     {
         $client = $this->getClient();
-        $request = ShoppingListByIdGetRequest::ofId($shoppingListId);
+        $request = RequestBuilder::of()->shoppingLists()->getById($shoppingListId);
         $response = $request->executeWithClient($client);
         $shoppingList = $request->mapFromResponse(
             $response,
@@ -51,7 +46,7 @@ class ShoppingListRepository extends Repository
     public function getAllShoppingListsByCustomer($locale, CustomerReference $customer)
     {
         $client = $this->getClient();
-        $request = ShoppingListQueryRequest::of()->where('customer(id = "' . $customer->getId() . '")')->sort('createdAt desc');
+        $request = RequestBuilder::of()->shoppingLists()->query()->where('customer(id = "' . $customer->getId() . '")')->sort('createdAt desc');
         $response = $request->executeWithClient($client);
         $lists = $request->mapFromResponse(
             $response,
@@ -61,14 +56,14 @@ class ShoppingListRepository extends Repository
         return $lists;
     }
 
-    public function createShoppingList($locale, CustomerReference $customer, $shoppingListName)
+    public function create($locale, CustomerReference $customer, $shoppingListName)
     {
         $client = $this->getClient();
         $key = $this->createUniqueKey($customer->getId());
         $localizedListName = LocalizedString::ofLangAndText($locale, $shoppingListName);
         $shoppingListDraft = ShoppingListDraft::ofNameAndKey($localizedListName, $key)
             ->setCustomer($customer);
-        $request = ShoppingListCreateRequest::ofDraft($shoppingListDraft);
+        $request = RequestBuilder::of()->shoppingLists()->create($shoppingListDraft);
         $response = $request->executeWithClient($client);
         $list = $request->mapFromResponse(
             $response,
@@ -86,8 +81,7 @@ class ShoppingListRepository extends Repository
     public function update(ShoppingList $shoppingList, array $actions)
     {
         $client = $this->getClient();
-        $request = ShoppingListUpdateRequest::ofIdAndVersion($shoppingList->getId(), $shoppingList->getVersion())
-            ->setActions($actions);
+        $request = RequestBuilder::of()->shoppingLists()->update($shoppingList)->setActions($actions);
         $response = $request->executeWithClient($client);
         $list = $request->mapFromResponse(
             $response
