@@ -48,3 +48,12 @@ commercetools:
     client_secret: "%commercetools.client_secret%"
     project: "%commercetools.project%"
 ```
+
+
+### Usage of SDK Models in templates
+
+Get variables on templates using only variable name:
+```
+{{ product.masterVariant.attributes.test.value }}
+{{ attribute(product.masterVariant.attributes, 'custom-attribute').value }}
+```

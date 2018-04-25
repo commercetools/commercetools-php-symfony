@@ -82,3 +82,25 @@ _ctp_example_order:
 _ctp_example_suggest:
     path: /suggest/{searchTerm}
     defaults: { _controller: ExampleBundle:Catalog:suggest}
+
+shopping_list_index:
+    path: /shoppinglist
+    defaults: { _controller: ExampleBundle:ShoppingList:index }
+
+shopping_list_create:
+    path: /shoppinglist/create
+    defaults: { _controller: ExampleBundle:ShoppingList:create }
+
+_ctp_example_add_lineItem_to_shoppingList:
+    path: /shoppinglist/addlineitem
+    defaults: { _controller: ExampleBundle:ShoppingList:addLineItem }
+
+shopping_list_remove_line_item:
+    path: /shoppinglist/removelineitem
+    controller: App\Controller\ShoppingListController::removeLineItem
+    methods: [POST]
+
+shopping_list_change_line_item_quantity:
+    path: /shoppinglist/changelineitemquantity
+    controller: App\Controller\ShoppingListController::changeLineItemQuantity
+    methods: [POST]

@@ -12,6 +12,7 @@
     </parameters>
     <services>
         <service id="commercetools" synthetic="true" />
+        <service id="Commercetools\Core\Client" alias="commercetools.api.client" />
         <service id="commercetools.api.client" class="Commercetools\Core\Client">
             <factory service="commercetools.client.factory" method="build" />
         </service>

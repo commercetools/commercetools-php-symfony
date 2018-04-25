@@ -1,0 +1,18 @@
+{% extends "ExampleBundle::layout.html.twig" %}
+
+{% block container %}
+
+    <div class="row" id="index-results">
+        {% for list in lists %}
+            <h3>{{ list.name }}</h3>
+            {{ dump(list) }}
+            {% for item in list.lineItems %}
+                <h5>{{ item.name }}</h5>
+                {{ dump(item) }}
+
+            {% endfor %}
+
+        {% endfor %}
+    </div>
+
+{% endblock %}

@@ -5,13 +5,13 @@
             <title>{% block title %}  Awesome webapp by Commercetools {% endblock %}</title>
 
             {% block stylesheets %}
-                <link rel="stylesheet" href="{{ asset('bundles/ctp/css/bootstrap.css') }}" />
-                <link rel="stylesheet" href="{{ asset('bundles/ctp/css/style.css') }}" />
+                <link rel="stylesheet" href="{{ asset('bundles/example/css/bootstrap.css') }}" />
+                <link rel="stylesheet" href="{{ asset('bundles/example/css/style.css') }}" />
             {% endblock %}
 
             {% block javascripts %}
-                <script src="{{ asset('bundles/ctp/js/jquiry-2.3.3.js') }}"></script>
-                <script src="{{ asset('bundles/ctp/js/index.js') }}"></script>
+                <script src="{{ asset('bundles/example/js/jquiry-2.3.3.js') }}"></script>
+                <script src="{{ asset('bundles/example/js/index.js') }}"></script>
             {% endblock %}
         </head>
 {% endblock %}
@@ -19,7 +19,7 @@
 {% block menu %}
     <div class="menu">
        <a href="{{ path('_ctp_example') }}">
-            <img class="menu-logo" src="{{ asset('bundles/ctp/img/CT-logo.svg') }}" alt="example"/>
+            <img class="menu-logo" src="{{ asset('bundles/example/img/CT-logo.svg') }}" alt="example"/>
        </a>
         <ul>
             <li><a href="{{ path('_ctp_example') }}">Home</a> </li>

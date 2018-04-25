@@ -53,6 +53,7 @@ class ShoppingListManager
 
     public function createShoppingList($locale, CustomerReference $customer, $name)
     {
+
         return $this->repository->create($locale, $customer, $name);
     }
 

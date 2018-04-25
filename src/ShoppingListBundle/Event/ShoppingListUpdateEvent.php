@@ -45,4 +45,6 @@ class ShoppingListUpdateEvent extends Event
     {
         return $this->actions;
     }
+
+    // TODO setters/adder for actions
 }

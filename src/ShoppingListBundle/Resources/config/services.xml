@@ -10,13 +10,10 @@
         <service id="Commercetools\Symfony\ShoppingListBundle\Model\Repository\ShoppingListRepository">
             <argument>%commercetools.cache.shopping_list%</argument>
             <argument type="service" id="commercetools.cache" />
-            <argument type="service" id="commercetools.client"/>
+            <argument type="service" id="Commercetools\Core\Client"/>
             <argument type="service" id="commmercetools.mapper.factory" />
         </service>
-        <service id="Commercetools\Symfony\ShoppingListBundle\EventListener\ShoppingListSubscriber">
-            <tag name="kernel.event_subscriber"/>
-        </service>
-        <service id="Commercetools\Symfony\ShoppingListBundle\Manager\ShoppingListManager">
+        <service id="Commercetools\Symfony\ShoppingListBundle\Manager\ShoppingListManager" public="true">
             <argument id="Commercetools\Symfony\ShoppingListBundle\Model\Repository\ShoppingListRepository" type="service"/>
             <argument id="event_dispatcher" type="service"/>
         </service>
