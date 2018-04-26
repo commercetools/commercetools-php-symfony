@@ -8,6 +8,7 @@
 
 namespace Commercetools\Symfony\ShoppingListBundle\Tests\Manager;
 
+use Commercetools\Core\Builder\Request\RequestBuilder;
 use Commercetools\Core\Model\Customer\CustomerReference;
 use Commercetools\Core\Model\ShoppingList\ShoppingList;
 use Commercetools\Core\Model\ShoppingList\ShoppingListCollection;
@@ -45,7 +46,7 @@ class ShoppingListManagerTest extends TestCase
         $repository = $this->prophesize(ShoppingListRepository::class);
         $dispatcher = $this->prophesize(EventDispatcherInterface::class);
 
-        $repository->getAllShoppingListsByCustomer('en', $customer)
+        $repository->getAllShoppingListsByCustomer('en', $customer, null)
             ->willReturn(ShoppingListCollection::of())->shouldBeCalled();
 
         $manager = new ShoppingListManager($repository->reveal(), $dispatcher->reveal());
@@ -94,7 +95,7 @@ class ShoppingListManagerTest extends TestCase
         $repository = $this->prophesize(ShoppingListRepository::class);
         $dispatcher = $this->prophesize(EventDispatcherInterface::class);
 
-        $repository->getShoppingList('en', '123456')
+        $repository->getShoppingListById('en', '123456', null)
             ->willReturn(ShoppingList::of())->shouldBeCalled();
 
         $manager = new ShoppingListManager($repository->reveal(), $dispatcher->reveal());

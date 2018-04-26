@@ -43,7 +43,7 @@ class ShoppingListManager
 
     public function getById($locale, $shoppingListId, QueryParams $params = null)
     {
-        return $this->repository->getShoppingList($locale, $shoppingListId, $params);
+        return $this->repository->getShoppingListById($locale, $shoppingListId, $params);
     }
 
     public function getAllOfCustomer($locale, CustomerReference $customer, QueryParams $params = null)

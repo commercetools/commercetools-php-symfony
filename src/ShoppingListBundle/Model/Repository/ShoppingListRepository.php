@@ -30,30 +30,23 @@ class ShoppingListRepository extends Repository
         parent::__construct($enableCache, $cache, $client, $mapperFactory);
     }
 
-    public function getShoppingList($locale, $shoppingListId, QueryParams $params = null)
+    public function getShoppingListById($locale, $shoppingListId, QueryParams $params = null)
     {
-        $client = $this->getClient();
         $request = RequestBuilder::of()->shoppingLists()->getById($shoppingListId);
 
-        if(!is_null($params)){
-            foreach ($params->getParams() as $param) {
-                $request->addParamObject($param);
-            }
-        }
-
-        $response = $request->executeWithClient($client);
-        $shoppingList = $request->mapFromResponse(
-            $response,
-            $this->mapperFactory->build($locale, $request->getResultClass())
-        );
-
-        return $shoppingList;
+        return $this->getShoppingLists($request, $locale, $params);
     }
 
     public function getAllShoppingListsByCustomer($locale, CustomerReference $customer, QueryParams $params = null)
     {
-        $client = $this->getClient();
         $request = RequestBuilder::of()->shoppingLists()->query()->where('customer(id = "' . $customer->getId() . '")')->sort('createdAt desc');
+
+        return $this->getShoppingLists($request, $locale, $params);
+    }
+
+    private function getShoppingLists(RequestBuilder $request, $locale, QueryParams $params = null)
+    {
+        $client = $this->getClient();
 
         if(!is_null($params)){
             foreach ($params->getParams() as $param) {
