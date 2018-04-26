@@ -77,12 +77,20 @@ class ShoppingListManager
     }
 
     /**
-     * @param $shoppingList
-     * @param $actions
+     * @param ShoppingList $shoppingList
+     * @param array $actions
+     * @param null $eventName
      * @return ShoppingList
      */
-    public function apply(ShoppingList $shoppingList, array $actions)
+    public function apply(ShoppingList $shoppingList, array $actions, $eventName = null)
     {
-        return $this->repository->update($shoppingList, $actions);
+        $update = $this->repository->update($shoppingList, $actions);
+
+        foreach ($actions as $action){
+            $eventName = is_null($eventName) ? get_class($action) . 'PostUpdate' : $eventName;
+            $this->dispatch($shoppingList, $action, $eventName);
+        }
+
+        return $update;
     }
 }

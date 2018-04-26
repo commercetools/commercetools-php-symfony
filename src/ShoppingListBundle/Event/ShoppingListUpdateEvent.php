@@ -46,5 +46,19 @@ class ShoppingListUpdateEvent extends Event
         return $this->actions;
     }
 
-    // TODO setters/adder for actions
+    /**
+     * @param AbstractAction $action
+     */
+    public function setAction(AbstractAction $action)
+    {
+        $this->actions = [$action];
+    }
+
+    /**
+     * @param AbstractAction $action
+     */
+    public function addAction(AbstractAction $action)
+    {
+        $this->actions[] = $action;
+    }
 }
