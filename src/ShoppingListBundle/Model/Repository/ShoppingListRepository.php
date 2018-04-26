@@ -13,6 +13,7 @@ use Commercetools\Core\Model\Common\LocalizedString;
 use Commercetools\Core\Model\Customer\CustomerReference;
 use Commercetools\Core\Model\ShoppingList\ShoppingList;
 use Commercetools\Core\Model\ShoppingList\ShoppingListDraft;
+use Commercetools\Symfony\CtpBundle\Model\QueryParams;
 use Commercetools\Symfony\CtpBundle\Model\Repository;
 use Commercetools\Symfony\CtpBundle\Service\MapperFactory;
 use Commercetools\Core\Client;
@@ -29,24 +30,37 @@ class ShoppingListRepository extends Repository
         parent::__construct($enableCache, $cache, $client, $mapperFactory);
     }
 
-    public function getShoppingList($locale, $shoppingListId)
+    public function getShoppingList($locale, $shoppingListId, QueryParams $params = null)
     {
         $client = $this->getClient();
         $request = RequestBuilder::of()->shoppingLists()->getById($shoppingListId);
+
+        if(!is_null($params)){
+            foreach ($params->getParams() as $param) {
+                $request->addParamObject($param);
+            }
+        }
+
         $response = $request->executeWithClient($client);
         $shoppingList = $request->mapFromResponse(
             $response,
             $this->mapperFactory->build($locale, $request->getResultClass())
         );
 
-
         return $shoppingList;
     }
 
-    public function getAllShoppingListsByCustomer($locale, CustomerReference $customer)
+    public function getAllShoppingListsByCustomer($locale, CustomerReference $customer, QueryParams $params = null)
     {
         $client = $this->getClient();
         $request = RequestBuilder::of()->shoppingLists()->query()->where('customer(id = "' . $customer->getId() . '")')->sort('createdAt desc');
+
+        if(!is_null($params)){
+            foreach ($params->getParams() as $param) {
+                $request->addParamObject($param);
+            }
+        }
+
         $response = $request->executeWithClient($client);
         $lists = $request->mapFromResponse(
             $response,
@@ -56,7 +70,7 @@ class ShoppingListRepository extends Repository
         return $lists;
     }
 
-    public function create($locale, CustomerReference $customer, $shoppingListName)
+    public function create($locale, CustomerReference $customer, $shoppingListName, QueryParams $params = null)
     {
         $client = $this->getClient();
         $key = $this->createUniqueKey($customer->getId());
@@ -64,6 +78,13 @@ class ShoppingListRepository extends Repository
         $shoppingListDraft = ShoppingListDraft::ofNameAndKey($localizedListName, $key)
             ->setCustomer($customer);
         $request = RequestBuilder::of()->shoppingLists()->create($shoppingListDraft);
+
+        if(!is_null($params)){
+            foreach ($params->getParams() as $param) {
+                $request->addParamObject($param);
+            }
+        }
+
         $response = $request->executeWithClient($client);
         $list = $request->mapFromResponse(
             $response,
@@ -78,10 +99,17 @@ class ShoppingListRepository extends Repository
         return $customerId . '-' . uniqid();
     }
 
-    public function update(ShoppingList $shoppingList, array $actions)
+    public function update(ShoppingList $shoppingList, array $actions, QueryParams $params = null)
     {
         $client = $this->getClient();
         $request = RequestBuilder::of()->shoppingLists()->update($shoppingList)->setActions($actions);
+
+        if(!is_null($params)){
+            foreach ($params->getParams() as $param) {
+                $request->addParamObject($param);
+            }
+        }
+
         $response = $request->executeWithClient($client);
         $list = $request->mapFromResponse(
             $response

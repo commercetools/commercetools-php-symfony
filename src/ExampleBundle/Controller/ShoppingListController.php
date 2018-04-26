@@ -6,6 +6,7 @@ namespace Commercetools\Symfony\ExampleBundle\Controller;
 use Commercetools\Core\Client;
 use Commercetools\Core\Model\Customer\CustomerReference;
 use Commercetools\Core\Request\ShoppingLists\Command\ShoppingListAddLineItemAction;
+use Commercetools\Symfony\CtpBundle\Model\QueryParams;
 use Commercetools\Symfony\ExampleBundle\Model\Form\Type\AddToShoppingListType;
 use Commercetools\Symfony\ShoppingListBundle\Manager\ShoppingListManager;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
@@ -36,7 +37,9 @@ class ShoppingListController extends Controller
 
     public function indexAction(Request $request, UserInterface $user)
     {
-        $shoppingLists = $this->manager->getAllOfCustomer($request->getLocale(), CustomerReference::ofId($user->getId()));
+        $params = new QueryParams();
+        $params->add('expand', 'lineItems[*].variant');
+        $shoppingLists = $this->manager->getAllOfCustomer($request->getLocale(), CustomerReference::ofId($user->getId()), $params);
 
         return $this->render('ExampleBundle:shoppinglist:index.html.twig', ['lists' => $shoppingLists]);
     }

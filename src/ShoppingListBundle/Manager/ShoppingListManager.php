@@ -11,6 +11,7 @@ namespace Commercetools\Symfony\ShoppingListBundle\Manager;
 
 use Commercetools\Core\Model\ShoppingList\ShoppingList;
 use Commercetools\Core\Request\AbstractAction;
+use Commercetools\Symfony\CtpBundle\Model\QueryParams;
 use Commercetools\Symfony\ShoppingListBundle\Event\ShoppingListUpdateEvent;
 use Commercetools\Symfony\ShoppingListBundle\Model\Repository\ShoppingListRepository;
 use Commercetools\Symfony\ShoppingListBundle\Model\ShoppingListUpdateBuilder;
@@ -40,15 +41,14 @@ class ShoppingListManager
         $this->dispatcher = $dispatcher;
     }
 
-
-    public function getById($locale, $shoppingListId)
+    public function getById($locale, $shoppingListId, QueryParams $params = null)
     {
-        return $this->repository->getShoppingList($locale, $shoppingListId);
+        return $this->repository->getShoppingList($locale, $shoppingListId, $params);
     }
 
-    public function getAllOfCustomer($locale, CustomerReference $customer)
+    public function getAllOfCustomer($locale, CustomerReference $customer, QueryParams $params = null)
     {
-        return $this->repository->getAllShoppingListsByCustomer($locale, $customer);
+        return $this->repository->getAllShoppingListsByCustomer($locale, $customer, $params);
     }
 
     public function createShoppingList($locale, CustomerReference $customer, $name)

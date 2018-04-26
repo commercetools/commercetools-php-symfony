@@ -4,6 +4,7 @@
 
     <div class="row" id="index-results">
         {% for list in lists %}
+            {{ dump(list) }}
             <h3>{{ list.name }}</h3>
             {{ dump(list) }}
             {% for item in list.lineItems %}
