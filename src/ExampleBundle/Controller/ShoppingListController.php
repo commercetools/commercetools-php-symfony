@@ -48,7 +48,7 @@ class ShoppingListController extends Controller
     {
         $this->manager->createShoppingList($request->getLocale(), CustomerReference::ofId($user->getId()), $request->request->get('_name'));
 
-        return $this->redirectToRoute('shopping_list_index');
+        return $this->redirectToRoute('_ctp_example_shopping_list');
     }
 
     public function addLineItemAction(Request $request, UserInterface $user)
@@ -82,7 +82,7 @@ class ShoppingListController extends Controller
             $updateBuilder->flush();
         }
 
-        return $this->redirectToRoute('shopping_list_index');
+        return $this->redirectToRoute('_ctp_example_shopping_list');
     }
 
     public function removeLineItem(Request $request)
@@ -92,7 +92,7 @@ class ShoppingListController extends Controller
             $request->request->get('_lineItemId')
         );
 
-        return $this->redirectToRoute('shopping_list_index');
+        return $this->redirectToRoute('_ctp_example_shopping_list');
     }
 
     public function changeLineItemQuantity(Request $request)
@@ -103,7 +103,7 @@ class ShoppingListController extends Controller
             (int)$request->request->get('_lineItemQuantity')
         );
 
-        return $this->redirectToRoute('shopping_list_index');
+        return $this->redirectToRoute('_ctp_example_shopping_list');
     }
 
 }
