@@ -65,7 +65,7 @@ class CatalogController extends Controller
 
     }
 
-    public function detailAction(Request $request, $slug, UserInterface $user)
+    public function detailBySlugAction(Request $request, $slug, UserInterface $user)
     {
         /**
          * @var ProductRepository $repository

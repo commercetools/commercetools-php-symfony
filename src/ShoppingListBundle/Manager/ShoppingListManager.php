@@ -86,11 +86,18 @@ class ShoppingListManager
     {
         $update = $this->repository->update($shoppingList, $actions);
 
-        foreach ($actions as $action){
-            $eventName = is_null($eventName) ? get_class($action) . 'PostUpdate' : $eventName;
-            $this->dispatch($shoppingList, $action, $eventName);
-        }
+        $this->dispatchPostUpdateEvents($shoppingList, $actions, $eventName);
 
         return $update;
+    }
+
+    public function dispatchPostUpdateEvents(ShoppingList $shoppingList, array $actions, $eventName = null)
+    {
+        $events = [];
+        foreach ($actions as $action){
+            $eventName = is_null($eventName) ? get_class($action) . 'PostUpdate' : $eventName;
+            $events[] = $this->dispatch($shoppingList, $action, $eventName);
+        }
+        return $events;
     }
 }

@@ -7,8 +7,12 @@ _ctp_example:
     defaults: { _controller: ExampleBundle:Catalog:index }
 
 _ctp_example_product:
-    path:    /product/{slug}
-    defaults: { _controller: ExampleBundle:Catalog:detail }
+    path:    /product/slug/{slug}
+    defaults: { _controller: ExampleBundle:Catalog:detailBySlug }
+
+_ctp_example_product_by_id:
+    path:    /product/id/{id}
+    defaults: { _controller: ExampleBundle:Catalog:detailById }
 
 login:
     path: /login
@@ -83,7 +87,7 @@ _ctp_example_suggest:
     path: /suggest/{searchTerm}
     defaults: { _controller: ExampleBundle:Catalog:suggest}
 
-shopping_list_index:
+_ctp_example_shopping_list:
     path: /shoppinglist
     defaults: { _controller: ExampleBundle:ShoppingList:index }
 
