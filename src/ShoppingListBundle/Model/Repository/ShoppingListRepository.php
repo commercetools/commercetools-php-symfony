@@ -18,7 +18,7 @@ use Commercetools\Symfony\CtpBundle\Model\Repository;
 use Commercetools\Symfony\CtpBundle\Service\MapperFactory;
 use Commercetools\Core\Client;
 use Psr\Cache\CacheItemPoolInterface;
-use Commercetools\Core\Request\AbstractApiRequest;
+use Commercetools\Core\Request\ClientRequestInterface;
 
 class ShoppingListRepository extends Repository
 {
@@ -45,7 +45,7 @@ class ShoppingListRepository extends Repository
         return $this->getShoppingLists($request, $locale, $params);
     }
 
-    private function getShoppingLists(AbstractApiRequest $request, $locale, QueryParams $params = null)
+    private function getShoppingLists(ClientRequestInterface $request, $locale, QueryParams $params = null)
     {
         $client = $this->getClient();
 

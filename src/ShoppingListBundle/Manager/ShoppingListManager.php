@@ -13,6 +13,7 @@ use Commercetools\Core\Model\ShoppingList\ShoppingList;
 use Commercetools\Core\Request\AbstractAction;
 use Commercetools\Symfony\CtpBundle\Model\QueryParams;
 use Commercetools\Symfony\ShoppingListBundle\Event\ShoppingListUpdateEvent;
+use Commercetools\Symfony\ShoppingListBundle\Event\ShoppingListPostUpdateEvent;
 use Commercetools\Symfony\ShoppingListBundle\Model\Repository\ShoppingListRepository;
 use Commercetools\Symfony\ShoppingListBundle\Model\ShoppingListUpdateBuilder;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
@@ -82,22 +83,20 @@ class ShoppingListManager
      * @param null $eventName
      * @return ShoppingList
      */
-    public function apply(ShoppingList $shoppingList, array $actions, $eventName = null)
+    public function apply(ShoppingList $shoppingList, array $actions)
     {
-        $update = $this->repository->update($shoppingList, $actions);
+        $shoppingList = $this->repository->update($shoppingList, $actions);
 
-        $this->dispatchPostUpdateEvents($shoppingList, $actions, $eventName);
+        $this->dispatchPostUpdate($shoppingList, $actions);
 
-        return $update;
+        return $shoppingList;
     }
 
-    public function dispatchPostUpdateEvents(ShoppingList $shoppingList, array $actions, $eventName = null)
+    public function dispatchPostUpdate(ShoppingList $shoppingList, array $actions)
     {
-        $events = [];
-        foreach ($actions as $action){
-            $eventName = is_null($eventName) ? get_class($action) . 'PostUpdate' : $eventName;
-            $events[] = $this->dispatch($shoppingList, $action, $eventName);
-        }
-        return $events;
+        $event = new ShoppingListPostUpdateEvent($shoppingList, $actions);
+        $event = $this->dispatcher->dispatch(ShoppingListPostUpdateEvent::class, $event);
+
+        return $event->getActions();
     }
 }

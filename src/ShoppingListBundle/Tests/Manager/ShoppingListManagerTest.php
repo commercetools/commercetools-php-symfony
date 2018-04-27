@@ -8,12 +8,12 @@
 
 namespace Commercetools\Symfony\ShoppingListBundle\Tests\Manager;
 
-use Commercetools\Core\Builder\Request\RequestBuilder;
 use Commercetools\Core\Model\Customer\CustomerReference;
 use Commercetools\Core\Model\ShoppingList\ShoppingList;
 use Commercetools\Core\Model\ShoppingList\ShoppingListCollection;
 use Commercetools\Core\Request\AbstractAction;
 use Commercetools\Symfony\ShoppingListBundle\Event\ShoppingListUpdateEvent;
+use Commercetools\Symfony\ShoppingListBundle\Event\ShoppingListPostUpdateEvent;
 use Commercetools\Symfony\ShoppingListBundle\Manager\ShoppingListManager;
 use Commercetools\Symfony\ShoppingListBundle\Model\Repository\ShoppingListRepository;
 use Commercetools\Symfony\ShoppingListBundle\Model\ShoppingListUpdateBuilder;
@@ -33,6 +33,10 @@ class ShoppingListManagerTest extends TestCase
         $repository->update($shoppingList, Argument::type('array'))
             ->will(function ($args) { return $args[0]; })->shouldBeCalled();
 
+        $dispatcher->dispatch(
+            Argument::containingString(ShoppingListPostUpdateEvent::class),
+            Argument::type(ShoppingListPostUpdateEvent::class)
+        )->will(function ($args) { return $args[1]; })->shouldBeCalled();
 
         $manager = new ShoppingListManager($repository->reveal(), $dispatcher->reveal());
         $list = $manager->apply($shoppingList->reveal(), []);
