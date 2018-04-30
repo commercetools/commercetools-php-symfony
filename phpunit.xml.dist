@@ -14,6 +14,7 @@
         <testsuite name="CtpBundle Test Suite">
             <directory>./src/CtpBundle/Tests/</directory>
             <directory>./src/ShoppingListBundle/Tests/</directory>
+            <directory>./src/CustomerBundle/Tests/</directory>
         </testsuite>
     </testsuites>
 
@@ -21,11 +22,14 @@
         <whitelist>
             <directory>./src/CtpBundle/</directory>
             <directory>./src/ShoppingListBundle/</directory>
+            <directory>./src/CustomerBundle/</directory>
             <exclude>
                 <directory>./src/CtpBundle/Resources</directory>
                 <directory>./src/CtpBundle/Tests</directory>
                 <directory>./src/ShoppingListBundle/Resources</directory>
                 <directory>./src/ShoppingListBundle/Tests</directory>
+                <directory>./src/CustomerBundle/Resources</directory>
+                <directory>./src/CustomerBundle/Tests</directory>
                 <directory>./vendor</directory>
             </exclude>
         </whitelist>
