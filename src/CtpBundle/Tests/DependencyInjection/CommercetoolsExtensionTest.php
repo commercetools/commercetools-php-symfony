@@ -4,7 +4,6 @@
 
 namespace Commercetools\Symfony\CtpBundle\Tests\DependencyInjection;
 
-use Commercetools\Core\Client;
 use Commercetools\Symfony\CtpBundle\DependencyInjection\CommercetoolsExtension;
 use Commercetools\Symfony\CtpBundle\Tests\ContainerTrait;
 
@@ -146,7 +145,14 @@ class CommercetoolsExtensionTest extends \PHPUnit_Framework_TestCase
         $config = [
             'defaults' => ['country' => 'bar'],
             'cache' => ['foo' => true],
-            'currency' => ['EU' => 'foo']
+            'currency' => ['EU' => 'foo'],
+            'api' => [ 'clients' => [
+                'first' => [
+                    'client_id' => 'foo',
+                    'client_secret' => 'bar',
+                    'project' => 'other'
+                ]
+            ] ]
         ];
 
         $extension->load([

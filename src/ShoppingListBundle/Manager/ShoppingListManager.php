@@ -80,7 +80,6 @@ class ShoppingListManager
     /**
      * @param ShoppingList $shoppingList
      * @param array $actions
-     * @param null $eventName
      * @return ShoppingList
      */
     public function apply(ShoppingList $shoppingList, array $actions)

@@ -26,11 +26,9 @@ use Commercetools\Core\Request\ShoppingLists\Command\ShoppingListSetSlugAction;
 use Commercetools\Core\Request\ShoppingLists\Command\ShoppingListSetTextLineItemCustomFieldAction;
 use Commercetools\Core\Request\ShoppingLists\Command\ShoppingListSetTextLineItemCustomTypeAction;
 use Commercetools\Core\Request\ShoppingLists\Command\ShoppingListSetTextLineItemDescriptionAction;
-use Commercetools\Symfony\ShoppingListBundle\Event\ShoppingListUpdateEvent;
 use Commercetools\Symfony\ShoppingListBundle\Manager\ShoppingListManager;
 use Commercetools\Symfony\ShoppingListBundle\Model\ShoppingListUpdateBuilder;
 use Prophecy\Argument;
-use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
 class ShoppingListUpdateTest extends \PHPUnit_Framework_TestCase
 {
