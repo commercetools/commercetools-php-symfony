@@ -38,4 +38,9 @@ class CartManager
     {
         return $this->repository->getCart($locale, $cartId, $customerId);
     }
+
+    public function addLineItem($locale, $cartId, $productId, $variantId, $quantity, $currency, $country, $customerId = null)
+    {
+        return $this->repository->addLineItem($locale, $cartId, $productId, $variantId, $quantity, $currency, $country, $customerId);
+    }
 }

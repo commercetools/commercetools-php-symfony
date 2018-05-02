@@ -16,6 +16,7 @@ use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Security\Core\User\UserInterface;
 
 
 class CartController extends Controller
@@ -67,7 +68,7 @@ class CartController extends Controller
         return $this->render('ExampleBundle:cart:index.html.twig', ['cart' => $cart]);
     }
 
-    public function addLineItemAction(Request $request)
+    public function addLineItemAction(Request $request, UserInterface $user)
     {
         $locale = $this->get('commercetools.locale.converter')->convert($request->getLocale());
         $session = $this->get('session');
@@ -76,19 +77,15 @@ class CartController extends Controller
         $form->handleRequest($request);
 
         if ($form->isValid() && $form->isSubmitted()) {
-            $productId = $form->get('productId')->getData();
+            $productId = $form->get('_productId')->getData();
             $variantId = (int)$form->get('variantId')->getData();
             $quantity = (int)$form->get('quantity')->getData();
             $slug = $form->get('slug')->getData();
             $cartId = $session->get(CartRepository::CART_ID);
             $country = \Locale::getRegion($locale);
-            $currency = $this->getParameter('commercetools.currency.'. $country);
+            $currency = $this->getParameter(strtolower('commercetools.currency.'. $country));
 
-            /**
-             * @var CartRepository $repository
-             */
-            $repository = $this->get('commercetools.repository.cart');
-            $repository->addLineItem(
+           $this->manager->addLineItem(
                 $request->getLocale(),
                 $cartId,
                 $productId,
@@ -96,7 +93,7 @@ class CartController extends Controller
                 $quantity,
                 $currency,
                 $country,
-                $this->getCustomerId()
+                $user->getId()
             );
             $redirectUrl = $this->generateUrl('_ctp_example_product', ['slug' => $slug]);
         } else {

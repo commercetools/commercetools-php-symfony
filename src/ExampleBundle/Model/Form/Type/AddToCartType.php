@@ -20,7 +20,7 @@ class AddToCartType extends AbstractType
         $quantityChoices = array_combine($quantityChoices, $quantityChoices);
 
         $builder
-            ->add('productId', HiddenType::class);
+            ->add('_productId', HiddenType::class);
 
         if (isset($options['data']['variantIdText']) && $options['data']['variantIdText'] === true) {
             $builder->add(
