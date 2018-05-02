@@ -1,6 +1,7 @@
 {% extends  "ExampleBundle::layout.html.twig" %}
 
 {% block container %}
+    {{ dump(customer) }}
     <table class="table-condensed">
         {% for address in customer.getAddresses %}
             <tr class="active">

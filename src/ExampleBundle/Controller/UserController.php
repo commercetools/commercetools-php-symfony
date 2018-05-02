@@ -81,7 +81,7 @@ class UserController extends Controller
             ->add('submit', SubmitType::class);
         $form->handleRequest($request);
 
-        if ($form->isValid() && $form->isSubmitted()){
+        if ($form->isSubmitted() && $form->isValid()){
 
             $firstName = $form->get('firstName')->getData();
             $lastName = $form->get('lastName')->getData();
@@ -119,13 +119,9 @@ class UserController extends Controller
         );
     }
 
-    public function addressBookAction(Request $request)
+    public function addressBookAction(Request $request, UserInterface $user)
     {
-        /**
-         * @var User $user
-         */
-        $customerId = $this->get('security.token_storage')->getToken()->getUser()->getId();
-        $customer = $this->get('commercetools.repository.customer')->getCustomer($request->getLocale(), $customerId);
+        $customer = $this->manager->getById($request->getLocale(), $user->getId());
 
         return $this->render('ExampleBundle:User:addressBook.html.twig',
             [
