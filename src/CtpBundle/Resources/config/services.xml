@@ -41,7 +41,7 @@
         <service id="commercetools.cache" parent="cache.app">
             <tag name="cache.pool" />
         </service>
-        <service id="commercetools.locale.converter" class="Commercetools\Symfony\CtpBundle\Service\LocaleConverter">
+        <service id="commercetools.locale.converter" class="Commercetools\Symfony\CtpBundle\Service\LocaleConverter" public="true">
             <argument>%commercetools.defaults.country%</argument>
         </service>
         <service id="commercetools.repository.product" class="Commercetools\Symfony\CtpBundle\Model\Repository\ProductRepository" public="true">
