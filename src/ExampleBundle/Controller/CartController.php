@@ -1,15 +1,16 @@
 <?php
 /**
- * @author: Ylambers <yaron.lambers@commercetools.de>
+ * @author: NikosSo <nikolaos.sotiropoulos@commercetools.de>
  */
 
 namespace Commercetools\Symfony\ExampleBundle\Controller;
 
 use Commercetools\Symfony\ExampleBundle\Model\Form\Type\AddToCartType;
-use Commercetools\Symfony\CtpBundle\Model\Repository\CartRepository;
+use Commercetools\Symfony\CartBundle\Model\Repository\CartRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Commercetools\Core\Model\Cart\Cart;
-use Commercetools\Core\Model\Common\Money;
+use Commercetools\Core\Client;
+use Commercetools\Symfony\CartBundle\Manager\CartManager;
 use Symfony\Component\Form\Extension\Core\Type\FormType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\HttpFoundation\RedirectResponse;
@@ -21,12 +22,25 @@ class CartController extends Controller
 {
     const CSRF_TOKEN_NAME = 'csrfToken';
 
-    private $repository;
+    /**
+     * @var Client
+     */
+    private $client;
 
-    public function __construct(CartRepository $repository)
+    /**
+     * @var CartManager
+     */
+    private $manager;
+
+    /**
+     * CartController constructor.
+     */
+    public function __construct(Client $client, CartManager $manager)
     {
-        $this->repository = $repository;
+        $this->client = $client;
+        $this->manager = $manager;
     }
+
 
     protected function getCustomerId()
     {
@@ -43,7 +57,7 @@ class CartController extends Controller
     {
         $session = $this->get('session');
         $cartId = $session->get(CartRepository::CART_ID);
-        $cart = $this->repository->getCart($request->getLocale(), $cartId, $this->getCustomerId());
+        $cart = $this->manager->getCart($request->getLocale(), $cartId, $this->getCustomerId());
 
         $form = $this->createNamedFormBuilder('')
             ->add('lineItemId', TextType::class)

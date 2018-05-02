@@ -3,7 +3,7 @@
  * @author: Ylambers <yaron.lambers@commercetools.de>
  */
 
-namespace Commercetools\Symfony\ShoppingListBundle\DependencyInjection;
+namespace Commercetools\Symfony\CartBundle\DependencyInjection;
 
 use Commercetools\Symfony\CtpBundle\DependencyInjection\Configuration;
 use Symfony\Component\Config\FileLocator;
@@ -11,7 +11,7 @@ use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Extension\Extension;
 use Symfony\Component\DependencyInjection\Loader\XmlFileLoader;
 
-class ShoppingListExtension extends Extension
+class CartExtension extends Extension
 {
     public function load(array $configs, ContainerBuilder $container)
     {
@@ -21,6 +21,6 @@ class ShoppingListExtension extends Extension
         $container->getParameter('kernel.root_dir');
         $configuration = new Configuration();
 
-        $config = $this->processConfiguration($configuration, $configs);
+        $this->processConfiguration($configuration, $configs);
     }
 }

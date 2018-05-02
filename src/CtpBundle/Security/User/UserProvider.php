@@ -5,7 +5,7 @@
 
 namespace Commercetools\Symfony\CtpBundle\Security\User;
 
-use Commercetools\Symfony\CtpBundle\Model\Repository\CartRepository;
+use Commercetools\Symfony\CartBundle\Model\Repository\CartRepository;
 use Commercetools\Symfony\CtpBundle\Model\Repository\CustomerRepository;
 use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\Security\Core\User\UserInterface;
