@@ -8,8 +8,13 @@
 
 namespace Commercetools\Symfony\CartBundle\Manager;
 
+use Commercetools\Core\Model\Cart\Cart;
+use Commercetools\Core\Request\AbstractAction;
+use Commercetools\Symfony\CartBundle\Event\CartPostUpdateEvent;
+use Commercetools\Symfony\CartBundle\Event\CartUpdateEvent;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Commercetools\Symfony\CartBundle\Model\Repository\CartRepository;
+use Commercetools\Symfony\CartBundle\Model\CartUpdateBuilder;
 
 class CartManager
 {
@@ -42,5 +47,56 @@ class CartManager
     public function addLineItem($locale, $cartId, $productId, $variantId, $quantity, $currency, $country, $customerId = null)
     {
         return $this->repository->addLineItem($locale, $cartId, $productId, $variantId, $quantity, $currency, $country, $customerId);
+    }
+
+    public function changeLineItemQuantity($locale, $cartId, $lineItemId, $lineItemCount, $userId)
+    {
+        return $this->repository->changeLineItemQuantity($locale, $cartId, $lineItemId, $lineItemCount, $userId);
+    }
+
+    public function deleteLineItem($locale, $cartId, $lineItemId, $userId)
+    {
+        return $this->repository->deleteLineItem($locale, $cartId, $lineItemId, $userId);
+    }
+
+    /**
+     * @param Cart $cart
+     * @return CartUpdateBuilder
+     */
+    public function update(Cart $cart)
+    {
+        return new CartUpdateBuilder($cart, $this);
+    }
+
+    public function dispatch(Cart $cart, AbstractAction $action, $eventName = null)
+    {
+        $eventName = is_null($eventName) ? get_class($action) : $eventName;
+
+        $event = new CartUpdateEvent($cart, $action);
+        $event = $this->dispatcher->dispatch($eventName, $event);
+
+        return $event->getActions();
+    }
+
+    /**
+     * @param Cart $cart
+     * @param array $actions
+     * @return Cart
+     */
+    public function apply(Cart $cart, array $actions)
+    {
+        $cart = $this->repository->update($cart, $actions);
+
+        $this->dispatchPostUpdate($cart, $actions);
+
+        return $cart;
+    }
+
+    public function dispatchPostUpdate(Cart $cart, array $actions)
+    {
+        $event = new CartPostUpdateEvent($cart, $actions);
+        $event = $this->dispatcher->dispatch(CartPostUpdateEvent::class, $event);
+
+        return $event->getActions();
     }
 }

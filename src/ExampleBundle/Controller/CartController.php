@@ -114,27 +114,24 @@ class CartController extends Controller
         return $response;
     }
 
-    public function changeLineItemAction(Request $request)
+    public function changeLineItemAction(Request $request, UserInterface $user)
     {
         $session = $this->get('session');
         $lineItemId = $request->get('lineItemId');
         $lineItemCount = (int)$request->get('quantity');
         $cartId = $session->get(CartRepository::CART_ID);
-        /**
-         * @var CartRepository $repository
-         */
-        $repository = $this->get('commercetools.repository.cart');
-        $repository->changeLineItemQuantity($request->getLocale(), $cartId, $lineItemId, $lineItemCount, $this->getCustomerId());
+
+        $this->manager->changeLineItemQuantity($request->getLocale(), $cartId, $lineItemId, $lineItemCount, $user->getId());
 
         return new RedirectResponse($this->generateUrl('_ctp_example_cart'));
     }
 
-    public function deleteLineItemAction(Request $request)
+    public function deleteLineItemAction(Request $request, UserInterface $user)
     {
         $session = $this->get('session');
         $lineItemId = $request->get('lineItemId');
         $cartId = $session->get(CartRepository::CART_ID);
-        $this->get('commercetools.repository.cart')->deleteLineItem($request->getLocale(), $cartId, $lineItemId, $this->getCustomerId());
+        $this->manager->deleteLineItem($request->getLocale(), $cartId, $lineItemId, $user->getId());
 
         return new RedirectResponse($this->generateUrl('_ctp_example_cart'));
     }
