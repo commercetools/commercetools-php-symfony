@@ -17,6 +17,10 @@ use Commercetools\Core\Model\Common\Address;
 use Commercetools\Core\Model\Customer\CustomerReference;
 use Commercetools\Core\Model\Customer\Customer;
 use Commercetools\Core\Model\Customer\CustomerDraft;
+use Commercetools\Core\Request\Customers\Command\CustomerChangeEmailAction;
+use Commercetools\Core\Request\Customers\Command\CustomerSetFirstNameAction;
+use Commercetools\Core\Request\Customers\Command\CustomerSetLastNameAction;
+use Commercetools\Core\Request\Customers\CustomerPasswordChangeRequest;
 use Commercetools\Symfony\CtpBundle\Model\QueryParams;
 use Commercetools\Symfony\CtpBundle\Service\MapperFactory;
 use Commercetools\Symfony\CtpBundle\Model\Repository;
@@ -72,11 +76,13 @@ class CustomerRepository extends Repository
 
     public function setCustomerDetails($locale, Customer $customer, $firstName, $lastName, $email)
     {
-//        $request = CustomerUpdateRequest::ofIdAndVersion($customer->getId(), $customer->getVersion());
-        $request = RequestBuilder::of()->customers()->update($customer)->setActions($actions);
+        $request = RequestBuilder::of()->customers()->update($customer);
 
-        if ($customer->getFirstName() != $firstName || $customer->getLastName() != $lastName) {
-            $request->addAction(CustomerChangeNameAction::ofFirstNameAndLastName($firstName, $lastName));
+        if ($customer->getFirstName() != $firstName){
+            $request->addAction(CustomerSetFirstNameAction::of()->setFirstName($firstName));
+        }
+        if ($customer->getLastName() != $lastName){
+            $request->addAction(CustomerSetLastNameAction::of()->setLastName($lastName));
         }
         if ($customer->getEmail() != $email) {
             $request->addAction(CustomerChangeEmailAction::ofEmail($email));
@@ -88,56 +94,24 @@ class CustomerRepository extends Repository
     public function setNewPassword($locale, Customer $customer, $currentPassword, $newPassword)
     {
         if ($currentPassword == $newPassword) {
-            throw new \InvalidArgumentException('form.type.password');
+            throw new \InvalidArgumentException();
         }
         if (!empty($currentPassword) && !empty($newPassword)) {
-            $request = CustomerPasswordChangeRequest::ofIdVersionAndPasswords(
-                $customer->getId(),
-                $customer->getVersion(),
-                $currentPassword,
-                $newPassword
-            );
+            $request = RequestBuilder::of()->customers()->update($customer)
+                ->setActions([CustomerPasswordChangeRequest::ofIdVersionAndPasswords(
+                    $customer->getId(),
+                    $customer->getVersion(),
+                    $currentPassword,
+                    $newPassword
+                )]);
 
-            $response = $request->executeWithClient($client);
+            return $this->executeRequest($request, $locale);
 
-            if ($response->isError()) {
-                throw new \InvalidArgumentException('wrong_password');
-            }
-            $customer = $request->mapFromResponse(
-                $response,
-                $this->getMapper($locale)
-            );
-
-            return $customer;
         }
 
         return null;
     }
 
-//    public function create($locale, CustomerReference $customer, $shoppingListName, QueryParams $params = null)
-//    {
-//        $client = $this->getClient();
-//        $key = $this->createUniqueKey($customer->getId());
-//        $localizedListName = LocalizedString::ofLangAndText($locale, $shoppingListName);
-//        $shoppingListDraft = ShoppingListDraft::ofNameAndKey($localizedListName, $key)
-//            ->setCustomer($customer);
-//        $request = RequestBuilder::of()->shoppingLists()->create($shoppingListDraft);
-//
-//        if(!is_null($params)){
-//            foreach ($params->getParams() as $param) {
-//                $request->addParamObject($param);
-//            }
-//        }
-//
-//        $response = $request->executeWithClient($client);
-//        $list = $request->mapFromResponse(
-//            $response,
-//            $this->getMapper($locale)
-//        );
-//
-//        return $list;
-//    }
-//
     public function update(Customer $customer, array $actions, QueryParams $params = null)
     {
         $client = $this->getClient();
@@ -150,9 +124,7 @@ class CustomerRepository extends Repository
         }
 
         $response = $request->executeWithClient($client);
-        $customer = $request->mapFromResponse(
-            $response
-        );
+        $customer = $request->mapFromResponse($response);
 
         return $customer;
 

@@ -90,8 +90,7 @@ class UserController extends Controller
             $currentPassword = $form->get('currentPassword')->getData();
             $newPassword = $form->get('newPassword')->getData();
 
-            $customer = $this->get('commercetools.repository.customer')
-                ->setCustomerDetails($request->getLocale(), $customer, $firstName, $lastName, $email);
+            $customer = $this->manager->setCustomerDetails($request->getLocale(), $customer, $firstName, $lastName, $email);
 
             if (is_null($customer)){
                 $this->addFlash('error', 'Error updating user!');
@@ -102,12 +101,11 @@ class UserController extends Controller
 
             if (isset($newPassword)){
                 try{
-                    $this->get('commercetools.repository.customer')
-                        ->setNewPassword($request->getLocale(), $customer, $currentPassword, $newPassword);
+                    $this->manager->setNewPassword($request->getLocale(), $customer, $currentPassword, $newPassword);
                 } catch (\InvalidArgumentException $e){
-                    $this->addFlash('error', $this->get($e->getMessage(), [] , 'customers'));
-                    dump($e->getMessage());
-                    return new Response($e->getMessage());
+                    $this->addFlash('error', 'something wrong');
+//                    dump($e->getMessage());
+//                    return new Response($e->getMessage());
                 }
             }
 
@@ -138,7 +136,6 @@ class UserController extends Controller
 
         $entity = UserAddress::ofAddress($address);
 
-//        $form = $this->createForm(AddressType::class, ['address' => $entity->toArray()])
         $form = $this->createFormBuilder(['address' => $entity->toArray()])
             ->add('address', AddressType::class)
             ->add('Submit', SubmitType::class)

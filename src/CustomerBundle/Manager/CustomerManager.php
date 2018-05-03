@@ -55,6 +55,16 @@ class CustomerManager
 
     }
 
+    public function setCustomerDetails($locale, Customer $customer, $firstName, $lastName, $email)
+    {
+        return $this->repository->setCustomerDetails($locale, $customer, $firstName, $lastName, $email);
+    }
+
+    public function setNewPassword($locale, $customer, $currentPassword, $newPassword)
+    {
+        return $this->repository->setNewPassword($locale, $customer, $currentPassword, $newPassword);
+    }
+
     /**
      * @param Customer $customer
      * @return CustomerUpdateBuilder
