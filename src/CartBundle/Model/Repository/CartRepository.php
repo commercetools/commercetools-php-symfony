@@ -9,6 +9,7 @@
 namespace Commercetools\Symfony\CartBundle\Model\Repository;
 
 
+use Commercetools\Core\Builder\Request\RequestBuilder;
 use Commercetools\Core\Model\ShippingMethod\ShippingMethodReference;
 use Commercetools\Core\Request\Carts\Command\CartSetBillingAddressAction;
 use Commercetools\Core\Request\Carts\Command\CartSetShippingAddressAction;
@@ -100,84 +101,6 @@ class CartRepository extends Repository
         return $cart;
     }
 
-    /**
-     * @param $cartId
-     * @param $productId
-     * @param $variantId
-     * @param $quantity
-     * @return Cart|null
-     */
-    public function addLineItem($locale, $cartId, $productId, $variantId, $quantity, $currency, $country, $customerId = null)
-    {
-        $cart = null;
-        if (!is_null($cartId)) {
-            $cart = $this->getCart($locale, $cartId, $customerId);
-        }
-
-        if (is_null($cart)) {
-            $lineItems = LineItemDraftCollection::of()->add(
-                LineItemDraft::of()->setProductId($productId)
-                    ->setVariantId($variantId)
-                    ->setQuantity($quantity)
-            );
-            $cart = $this->createCart($locale, $currency, $country, $lineItems, $customerId);
-        } else {
-            $client = $this->getClient();
-
-            $cartUpdateRequest = CartUpdateRequest::ofIdAndVersion($cart->getId(), $cart->getVersion());
-            $cartUpdateRequest->addAction(
-                CartAddLineItemAction::ofProductIdVariantIdAndQuantity($productId, $variantId, $quantity)
-            );
-            $cartResponse = $cartUpdateRequest->executeWithClient($client);
-            if ($cartResponse->isError()) {
-                throw new \InvalidArgumentException();
-            }
-            $cart = $cartUpdateRequest->mapFromResponse(
-                $cartResponse,
-                $this->getMapper($locale)
-            );
-            $this->session->set(self::CART_ITEM_COUNT, $cart->getLineItemCount());
-        }
-
-        return $cart;
-    }
-
-    public function deleteLineItem($locale, $cartId, $lineItemId, $customerId = null)
-    {
-        $client = $this->getClient();
-        $cart = $this->getCart($locale, $cartId, $customerId);
-
-        $cartUpdateRequest = CartUpdateRequest::ofIdAndVersion($cart->getId(), $cart->getVersion());
-        $cartUpdateRequest->addAction(
-            CartRemoveLineItemAction::ofLineItemId($lineItemId)
-        );
-        $cartResponse = $cartUpdateRequest->executeWithClient($client);
-        $cart = $cartUpdateRequest->mapFromResponse(
-            $cartResponse,
-            $this->getMapper($locale)
-        );
-        $this->session->set(self::CART_ITEM_COUNT, $cart->getLineItemCount());
-
-        return $cart;
-    }
-
-    public function changeLineItemQuantity($locale, $cartId, $lineItemId, $quantity, $customerId = null)
-    {
-        $cart = $this->getCart($locale, $cartId, $customerId);
-        $client = $this->getClient();
-        $cartUpdateRequest = CartUpdateRequest::ofIdAndVersion($cart->getId(), $cart->getVersion());
-        $cartUpdateRequest->addAction(
-            CartChangeLineItemQuantityAction::ofLineItemIdAndQuantity($lineItemId, $quantity)
-        );
-        $cartResponse = $cartUpdateRequest->executeWithClient($client);
-        $cart = $cartUpdateRequest->mapFromResponse(
-            $cartResponse,
-            $this->getMapper($locale)
-        );
-        $this->session->set(self::CART_ITEM_COUNT, $cart->getLineItemCount());
-
-        return $cart;
-    }
 
     public function setAddresses($locale, $cartId, Address $shippingAddress, Address $billingAddress = null, $customerId = null)
     {
@@ -253,5 +176,24 @@ class CartRepository extends Repository
         $this->session->set(self::CART_ITEM_COUNT, $cart->getLineItemCount());
 
         return $cart;
+    }
+
+    public function update(Cart $cart, array $actions, QueryParams $params = null)
+    {
+        $client = $this->getClient();
+        $request = RequestBuilder::of()->carts()->update($cart)->setActions($actions);
+
+        if(!is_null($params)){
+            foreach ($params->getParams() as $param) {
+                $request->addParamObject($param);
+            }
+        }
+
+        $response = $request->executeWithClient($client);
+        $list = $request->mapFromResponse(
+            $response
+        );
+
+        return $list;
     }
 }

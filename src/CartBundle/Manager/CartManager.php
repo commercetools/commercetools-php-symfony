@@ -44,21 +44,6 @@ class CartManager
         return $this->repository->getCart($locale, $cartId, $customerId);
     }
 
-    public function addLineItem($locale, $cartId, $productId, $variantId, $quantity, $currency, $country, $customerId = null)
-    {
-        return $this->repository->addLineItem($locale, $cartId, $productId, $variantId, $quantity, $currency, $country, $customerId);
-    }
-
-    public function changeLineItemQuantity($locale, $cartId, $lineItemId, $lineItemCount, $userId)
-    {
-        return $this->repository->changeLineItemQuantity($locale, $cartId, $lineItemId, $lineItemCount, $userId);
-    }
-
-    public function deleteLineItem($locale, $cartId, $lineItemId, $userId)
-    {
-        return $this->repository->deleteLineItem($locale, $cartId, $lineItemId, $userId);
-    }
-
     /**
      * @param Cart $cart
      * @return CartUpdateBuilder

@@ -110,6 +110,5 @@ class ShoppingListRepository extends Repository
         );
 
         return $list;
-
     }
 }

@@ -37,4 +37,20 @@ class CartPostUpdateEvent extends Event
     {
         return $this->actions;
     }
+
+    /**
+     * @return Cart
+     */
+    public function getCart()
+    {
+        return $this->cart;
+    }
+
+    /**
+     * @param Cart $cart
+     */
+    public function setCart(Cart $cart)
+    {
+        $this->cart = $cart;
+    }
 }
