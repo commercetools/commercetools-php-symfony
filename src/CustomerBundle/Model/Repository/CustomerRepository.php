@@ -66,52 +66,6 @@ class CustomerRepository extends Repository
         return $this->executeRequest($request, $locale, $params);
     }
 
-    public function setAddress($locale, Customer $customer, Address $address, $addressId)
-    {
-        $request = RequestBuilder::of()->customers()->update($customer)
-            ->setActions([CustomerChangeAddressAction::ofAddressIdAndAddress($addressId, $address)]);
-
-        return $this->executeRequest($request, $locale);
-    }
-
-    public function setCustomerDetails($locale, Customer $customer, $firstName, $lastName, $email)
-    {
-        $request = RequestBuilder::of()->customers()->update($customer);
-
-        if ($customer->getFirstName() != $firstName){
-            $request->addAction(CustomerSetFirstNameAction::of()->setFirstName($firstName));
-        }
-        if ($customer->getLastName() != $lastName){
-            $request->addAction(CustomerSetLastNameAction::of()->setLastName($lastName));
-        }
-        if ($customer->getEmail() != $email) {
-            $request->addAction(CustomerChangeEmailAction::ofEmail($email));
-        }
-
-        return $this->executeRequest($request, $locale);
-    }
-
-    public function setNewPassword($locale, Customer $customer, $currentPassword, $newPassword)
-    {
-        if ($currentPassword == $newPassword) {
-            throw new \InvalidArgumentException();
-        }
-        if (!empty($currentPassword) && !empty($newPassword)) {
-            $request = RequestBuilder::of()->customers()->update($customer)
-                ->setActions([CustomerPasswordChangeRequest::ofIdVersionAndPasswords(
-                    $customer->getId(),
-                    $customer->getVersion(),
-                    $currentPassword,
-                    $newPassword
-                )]);
-
-            return $this->executeRequest($request, $locale);
-
-        }
-
-        return null;
-    }
-
     public function update(Customer $customer, array $actions, QueryParams $params = null)
     {
         $client = $this->getClient();

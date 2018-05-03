@@ -8,7 +8,12 @@ namespace Commercetools\Symfony\ExampleBundle\Controller;
 use Commercetools\Core\Client;
 use Commercetools\Core\Model\Common\Address;
 use Commercetools\Core\Model\Customer\Customer;
+use Commercetools\Core\Request\Customers\Command\CustomerChangeAddressAction;
+use Commercetools\Core\Request\Customers\Command\CustomerChangeEmailAction;
+use Commercetools\Core\Request\Customers\Command\CustomerSetFirstNameAction;
+use Commercetools\Core\Request\Customers\Command\CustomerSetLastNameAction;
 use Commercetools\Core\Request\Customers\CustomerByIdGetRequest;
+use Commercetools\Core\Request\Customers\CustomerPasswordChangeRequest;
 use Commercetools\Symfony\CtpBundle\Entity\UserAddress;
 use Commercetools\Symfony\CtpBundle\Entity\UserDetails;
 use Commercetools\Symfony\ExampleBundle\Model\Form\Type\AddressType;
@@ -90,25 +95,28 @@ class UserController extends Controller
             $currentPassword = $form->get('currentPassword')->getData();
             $newPassword = $form->get('newPassword')->getData();
 
-            $customer = $this->manager->setCustomerDetails($request->getLocale(), $customer, $firstName, $lastName, $email);
+            $customerBuilder = $this->manager->update($customer);
+            $customerBuilder->setActions([
+                CustomerSetFirstNameAction::of()->setFirstName($firstName),
+                CustomerSetLastNameAction::of()->setLastName($lastName),
+                CustomerChangeEmailAction::ofEmail($email)
+            ]);
 
-            if (is_null($customer)){
-                $this->addFlash('error', 'Error updating user!');
-                return $this->redirect($this->generateUrl('_ctp_example_user_details'));
-            }else{
-                $this->addFlash('notice', 'User updated');
+//            if (isset($newPassword)){
+//                $customerBuilder->addAction(CustomerPasswordChangeRequest::ofIdVersionAndPasswords(
+//                    $customer->getId(),
+//                    $customer->getVersion(),
+//                    $currentPassword,
+//                    $newPassword
+//                ));
+//            }
+
+            try{
+                $customerBuilder->flush();
             }
-
-            if (isset($newPassword)){
-                try{
-                    $this->manager->setNewPassword($request->getLocale(), $customer, $currentPassword, $newPassword);
-                } catch (\InvalidArgumentException $e){
-                    $this->addFlash('error', 'something wrong');
-//                    dump($e->getMessage());
-//                    return new Response($e->getMessage());
-                }
+            catch (\Exception $e){
+                $this->addFlash('error', 'something wrong');
             }
-
         }
 
         return $this->render('ExampleBundle:User:user.html.twig',
@@ -145,12 +153,9 @@ class UserController extends Controller
         if ($form->isSubmitted() && $form->isValid()){
             $address = Address::fromArray($form->get('address')->getData());
 
-            $this->manager->setAddress(
-                $request->getLocale(),
-                $customer,
-                $address,
-                $addressId
-            );
+            $customerBuilder = $this->manager->update($customer)
+                ->setActions([CustomerChangeAddressAction::ofAddressIdAndAddress($addressId, $address)]);
+            $customerBuilder->flush();
         }
 
         return $this->render(

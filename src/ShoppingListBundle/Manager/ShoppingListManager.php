@@ -86,9 +86,7 @@ class ShoppingListManager
     {
         $shoppingList = $this->repository->update($shoppingList, $actions);
 
-        $this->dispatchPostUpdate($shoppingList, $actions);
-
-        return $shoppingList;
+        return $this->dispatchPostUpdate($shoppingList, $actions);
     }
 
     public function dispatchPostUpdate(ShoppingList $shoppingList, array $actions)
@@ -96,6 +94,6 @@ class ShoppingListManager
         $event = new ShoppingListPostUpdateEvent($shoppingList, $actions);
         $event = $this->dispatcher->dispatch(ShoppingListPostUpdateEvent::class, $event);
 
-        return $event->getActions();
+        return $event->getShoppingList();
     }
 }

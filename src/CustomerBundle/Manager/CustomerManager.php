@@ -49,22 +49,6 @@ class CustomerManager
         return $this->repository->getCustomerById($locale, $customerId, $params);
     }
 
-    public function setAddress($locale, Customer $customer, Address $address, $addressId)
-    {
-        return $this->repository->setAddress($locale, $customer, $address, $addressId);
-
-    }
-
-    public function setCustomerDetails($locale, Customer $customer, $firstName, $lastName, $email)
-    {
-        return $this->repository->setCustomerDetails($locale, $customer, $firstName, $lastName, $email);
-    }
-
-    public function setNewPassword($locale, $customer, $currentPassword, $newPassword)
-    {
-        return $this->repository->setNewPassword($locale, $customer, $currentPassword, $newPassword);
-    }
-
     /**
      * @param Customer $customer
      * @return CustomerUpdateBuilder
@@ -93,9 +77,7 @@ class CustomerManager
     {
         $customer = $this->repository->update($customer, $actions);
 
-        $this->dispatchPostUpdate($customer, $actions);
-
-        return $customer;
+        return $this->dispatchPostUpdate($customer, $actions);
     }
 
     public function dispatchPostUpdate(Customer $customer, array $actions)
@@ -103,6 +85,6 @@ class CustomerManager
         $event = new CustomerPostUpdateEvent($customer, $actions);
         $event = $this->dispatcher->dispatch(CustomerPostUpdateEvent::class, $event);
 
-        return $event->getActions();
+        return $event->getCustomer();
     }
 }
