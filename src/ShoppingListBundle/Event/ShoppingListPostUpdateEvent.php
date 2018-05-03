@@ -1,9 +1,5 @@
 <?php
 /**
- * Created by PhpStorm.
- * User: nsotiropoulos
- * Date: 17/04/2018
- * Time: 15:13
  */
 
 namespace Commercetools\Symfony\ShoppingListBundle\Event;

@@ -1,9 +1,5 @@
 <?php
 /**
- * Created by PhpStorm.
- * User: nsotiropoulos
- * Date: 16/04/2018
- * Time: 11:15
  */
 
 namespace Commercetools\Symfony\CustomerBundle\Model\Repository;

@@ -1,9 +1,5 @@
 <?php
 /**
- * Created by PhpStorm.
- * User: nsotiropoulos
- * Date: 24/04/2018
- * Time: 12:24
  */
 
 namespace Commercetools\Symfony\CustomerBundle\Tests\Manager;
