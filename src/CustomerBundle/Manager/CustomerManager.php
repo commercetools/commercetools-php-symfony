@@ -48,17 +48,6 @@ class CustomerManager
     {
         return $this->repository->getCustomerById($locale, $customerId, $params);
     }
-//
-//    public function getAllOfCustomer($locale, CustomerReference $customer, QueryParams $params = null)
-//    {
-//        return $this->repository->getAllShoppingListsByCustomer($locale, $customer, $params);
-//    }
-//
-//    public function createShoppingList($locale, CustomerReference $customer, $name)
-//    {
-//
-//        return $this->repository->create($locale, $customer, $name);
-//    }
 
     public function setAddress($locale, Customer $customer, Address $address, $addressId)
     {

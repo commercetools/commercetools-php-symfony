@@ -9,6 +9,7 @@
 namespace Commercetools\Symfony\CustomerBundle\Model\Repository;
 
 use Commercetools\Core\Builder\Request\RequestBuilder;
+use Commercetools\Core\Request\Customers\Command\CustomerChangeAddressAction;
 use Commercetools\Core\Builder\Update\ActionBuilder;
 use Commercetools\Core\Builder\Update\CustomersActionBuilder;
 use Commercetools\Core\Model\Common\LocalizedString;
@@ -63,10 +64,8 @@ class CustomerRepository extends Repository
 
     public function setAddress($locale, Customer $customer, Address $address, $addressId)
     {
-//        $action = ActionBuilder::of()->customers()->
-        $request = RequestBuilder::of()->customers()->update($customer)->setActions($action);
-
-        $request->addAction(CustomerChangeAddressAction::ofAddressIdAndAddress($addressId, $address));
+        $request = RequestBuilder::of()->customers()->update($customer)
+            ->setActions([CustomerChangeAddressAction::ofAddressIdAndAddress($addressId, $address)]);
 
         return $this->executeRequest($request, $locale);
     }

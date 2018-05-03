@@ -4,7 +4,7 @@
 {% block container %}
         {{ form_start(form_address) }}
             <div id="form_address">
-                 {#{% form_theme form 'bootstrap_3_layout.html.twig' %}#}
+                 {% form_theme form_address 'bootstrap_3_layout.html.twig' %}
                 {{ form_widget(form_address) }}
             </div>
     {{ form_end(form_address) }}

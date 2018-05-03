@@ -7,6 +7,7 @@ namespace Commercetools\Symfony\ExampleBundle\Controller;
 
 use Commercetools\Core\Client;
 use Commercetools\Core\Model\Common\Address;
+use Commercetools\Core\Model\Customer\Customer;
 use Commercetools\Core\Request\Customers\CustomerByIdGetRequest;
 use Commercetools\Symfony\CtpBundle\Entity\UserAddress;
 use Commercetools\Symfony\CtpBundle\Entity\UserDetails;
@@ -130,28 +131,24 @@ class UserController extends Controller
         );
     }
 
-    public function editAddressAction(Request $request, $addressId)
+    public function editAddressAction(Request $request, UserInterface $user, $addressId)
     {
-        /**
-         * @var User $user
-         */
-        $customerId = $this->get('security.token_storage')->getToken()->getUser()->getId();
-        $repository = $this->get('commercetools.repository.customer');
-        $customer = $repository->getCustomer($request->getLocale(), $customerId);
+        $customer = $this->manager->getById($request->getLocale(), $user->getId());
         $address = $customer->getAddresses()->getById($addressId);
 
         $entity = UserAddress::ofAddress($address);
 
+//        $form = $this->createForm(AddressType::class, ['address' => $entity->toArray()])
         $form = $this->createFormBuilder(['address' => $entity->toArray()])
             ->add('address', AddressType::class)
             ->add('Submit', SubmitType::class)
             ->getForm();
         $form->handleRequest($request);
 
-        if ($form->isValid() && $form->isSubmitted()){
+        if ($form->isSubmitted() && $form->isValid()){
             $address = Address::fromArray($form->get('address')->getData());
 
-            $submit = $repository->setAddresses(
+            $this->manager->setAddress(
                 $request->getLocale(),
                 $customer,
                 $address,
