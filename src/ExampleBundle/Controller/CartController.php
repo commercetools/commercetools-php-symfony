@@ -1,32 +1,50 @@
 <?php
 /**
- * @author: Ylambers <yaron.lambers@commercetools.de>
+ * @author: NikosSo <nikolaos.sotiropoulos@commercetools.de>
  */
 
 namespace Commercetools\Symfony\ExampleBundle\Controller;
 
+use Commercetools\Core\Request\Carts\Command\CartAddLineItemAction;
+use Commercetools\Core\Request\Carts\Command\CartChangeLineItemQuantityAction;
+use Commercetools\Core\Request\Carts\Command\CartRemoveLineItemAction;
 use Commercetools\Symfony\ExampleBundle\Model\Form\Type\AddToCartType;
-use Commercetools\Symfony\CtpBundle\Model\Repository\CartRepository;
+use Commercetools\Symfony\CartBundle\Model\Repository\CartRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Commercetools\Core\Model\Cart\Cart;
-use Commercetools\Core\Model\Common\Money;
+use Commercetools\Core\Client;
+use Commercetools\Symfony\CartBundle\Manager\CartManager;
 use Symfony\Component\Form\Extension\Core\Type\FormType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Security\Core\User\UserInterface;
 
 
 class CartController extends Controller
 {
     const CSRF_TOKEN_NAME = 'csrfToken';
 
-    private $repository;
+    /**
+     * @var Client
+     */
+    private $client;
 
-    public function __construct(CartRepository $repository)
+    /**
+     * @var CartManager
+     */
+    private $manager;
+
+    /**
+     * CartController constructor.
+     */
+    public function __construct(Client $client, CartManager $manager)
     {
-        $this->repository = $repository;
+        $this->client = $client;
+        $this->manager = $manager;
     }
+
 
     protected function getCustomerId()
     {
@@ -43,7 +61,7 @@ class CartController extends Controller
     {
         $session = $this->get('session');
         $cartId = $session->get(CartRepository::CART_ID);
-        $cart = $this->repository->getCart($request->getLocale(), $cartId, $this->getCustomerId());
+        $cart = $this->manager->getCart($request->getLocale(), $cartId, $this->getCustomerId());
 
         $form = $this->createNamedFormBuilder('')
             ->add('lineItemId', TextType::class)
@@ -53,37 +71,25 @@ class CartController extends Controller
         return $this->render('ExampleBundle:cart:index.html.twig', ['cart' => $cart]);
     }
 
-    public function addLineItemAction(Request $request)
+    public function addLineItemAction(Request $request, UserInterface $user)
     {
-        $locale = $this->get('commercetools.locale.converter')->convert($request->getLocale());
         $session = $this->get('session');
 
         $form = $this->createForm(AddToCartType::class, ['variantIdText' => true]);
         $form->handleRequest($request);
 
         if ($form->isValid() && $form->isSubmitted()) {
-            $productId = $form->get('productId')->getData();
+            $productId = $form->get('_productId')->getData();
             $variantId = (int)$form->get('variantId')->getData();
             $quantity = (int)$form->get('quantity')->getData();
             $slug = $form->get('slug')->getData();
             $cartId = $session->get(CartRepository::CART_ID);
-            $country = \Locale::getRegion($locale);
-            $currency = $this->getParameter('commercetools.currency.'. $country);
+            $cart = $this->manager->getCart($request->getLocale(), $cartId, $this->getCustomerId());
 
-            /**
-             * @var CartRepository $repository
-             */
-            $repository = $this->get('commercetools.repository.cart');
-            $repository->addLineItem(
-                $request->getLocale(),
-                $cartId,
-                $productId,
-                $variantId,
-                $quantity,
-                $currency,
-                $country,
-                $this->getCustomerId()
-            );
+            $cartBuilder = $this->manager->update($cart);
+            $cartBuilder->addAction(CartAddLineItemAction::ofProductIdVariantIdAndQuantity($productId, $variantId, $quantity));
+            $cartBuilder->flush();
+
             $redirectUrl = $this->generateUrl('_ctp_example_product', ['slug' => $slug]);
         } else {
             $redirectUrl = $this->generateUrl('_ctp_example');
@@ -103,27 +109,31 @@ class CartController extends Controller
         return $response;
     }
 
-    public function changeLineItemAction(Request $request)
+    public function changeLineItemAction(Request $request, UserInterface $user)
     {
         $session = $this->get('session');
         $lineItemId = $request->get('lineItemId');
-        $lineItemCount = (int)$request->get('quantity');
+        $quantity = (int)$request->get('quantity');
         $cartId = $session->get(CartRepository::CART_ID);
-        /**
-         * @var CartRepository $repository
-         */
-        $repository = $this->get('commercetools.repository.cart');
-        $repository->changeLineItemQuantity($request->getLocale(), $cartId, $lineItemId, $lineItemCount, $this->getCustomerId());
+        $cart = $this->manager->getCart($request->getLocale(), $cartId, $this->getCustomerId());
+
+        $cartBuilder = $this->manager->update($cart);
+        $cartBuilder->addAction(CartChangeLineItemQuantityAction::ofLineItemIdAndQuantity($lineItemId, $quantity));
+        $cartBuilder->flush();
 
         return new RedirectResponse($this->generateUrl('_ctp_example_cart'));
     }
 
-    public function deleteLineItemAction(Request $request)
+    public function deleteLineItemAction(Request $request, UserInterface $user)
     {
         $session = $this->get('session');
         $lineItemId = $request->get('lineItemId');
         $cartId = $session->get(CartRepository::CART_ID);
-        $this->get('commercetools.repository.cart')->deleteLineItem($request->getLocale(), $cartId, $lineItemId, $this->getCustomerId());
+        $cart = $this->manager->getCart($request->getLocale(), $cartId, $this->getCustomerId());
+
+        $cartBuilder = $this->manager->update($cart);
+        $cartBuilder->addAction(CartRemoveLineItemAction::ofLineItemId($lineItemId));
+        $cartBuilder->flush();
 
         return new RedirectResponse($this->generateUrl('_ctp_example_cart'));
     }
