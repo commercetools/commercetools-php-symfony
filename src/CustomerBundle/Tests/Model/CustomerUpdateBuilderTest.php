@@ -28,8 +28,8 @@ use Commercetools\Core\Request\Customers\Command\CustomerSetVatIdAction;
 use Commercetools\Core\Request\Customers\Command\CustomerAddShippingAddressAction;
 use Commercetools\Core\Request\Customers\Command\CustomerRemoveBillingAddressAction;
 use Commercetools\Core\Request\Customers\Command\CustomerRemoveShippingAddressAction;
-//use Commercetools\Core\Request\Customers\Command\CustomerSetCustomFieldAction;
-//use Commercetools\Core\Request\Customers\Command\CustomerSetCustomTypeAction;
+use Commercetools\Core\Request\Customers\Command\CustomerSetCustomFieldAction;
+use Commercetools\Core\Request\Customers\Command\CustomerSetCustomTypeAction;
 use Commercetools\Symfony\CustomerBundle\Manager\CustomerManager;
 use Commercetools\Symfony\CustomerBundle\Model\CustomerUpdateBuilder;
 use Prophecy\Argument;
@@ -48,8 +48,8 @@ class CustomerUpdateBuilderTest extends \PHPUnit_Framework_TestCase
            ['removeBillingAddressId', CustomerRemoveBillingAddressAction::class],
            ['removeShippingAddressId', CustomerRemoveShippingAddressAction::class],
            ['setCompanyName', CustomerSetCompanyNameAction::class],
-//           ['setCustomField', CustomerSetCustomFieldAction::class],
-//           ['setCustomType', CustomerSetCustomTypeAction::class],
+           ['setCustomField', CustomerSetCustomFieldAction::class],
+           ['setCustomType', CustomerSetCustomTypeAction::class],
            ['setCustomerGroup', CustomerSetCustomerGroupAction::class],
            ['setCustomerNumber', CustomerSetCustomerNumberAction::class],
            ['setDateOfBirth', CustomerSetDateOfBirthAction::class],

@@ -38,22 +38,6 @@ class CustomerManagerTest extends TestCase
         $this->assertInstanceOf(Customer::class, $customer);
     }
 
-//    public function testGetAllOfCustomer()
-//    {
-//        $customer = $this->prophesize(CustomerReference::class);
-//        $repository = $this->prophesize(ShoppingListRepository::class);
-//        $dispatcher = $this->prophesize(EventDispatcherInterface::class);
-//
-//        $repository->getAllShoppingListsByCustomer('en', $customer, null)
-//            ->willReturn(ShoppingListCollection::of())->shouldBeCalled();
-//
-//        $manager = new ShoppingListManager($repository->reveal(), $dispatcher->reveal());
-//        $lists = $manager->getAllOfCustomer('en', $customer->reveal());
-//
-//        $this->assertInstanceOf(ShoppingListCollection::class, $lists);
-//
-//    }
-
     public function testDispatch()
     {
         $customer = $this->prophesize(Customer::class);
