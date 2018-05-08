@@ -6,6 +6,7 @@
     <parameters>
         <parameter key="commercetools.cache.cart" type="string">false</parameter>
         <parameter key="commercetools.cache.shipping_method" type="string">false</parameter>
+        <parameter key="commercetools.cache.order" type="string">false</parameter>
     </parameters>
     <services>
         <service id="Commercetools\Symfony\CartBundle\Model\Repository\CartRepository" public="true">
@@ -20,11 +21,22 @@
             <argument id="Commercetools\Symfony\CartBundle\Model\Repository\CartRepository" type="service"/>
             <argument id="event_dispatcher" type="service"/>
         </service>
+        <service id="Commercetools\Symfony\CartBundle\Manager\OrderManager" public="true">
+            <argument id="Commercetools\Symfony\CartBundle\Model\Repository\OrderRepository" type="service"/>
+            <argument id="event_dispatcher" type="service"/>
+        </service>
         <service id="Commercetools\Symfony\CartBundle\Model\Repository\ShippingMethodRepository" public="true">
-            <argument>%commercetools.cache.shipping_method%%</argument>
+            <argument>%commercetools.cache.shipping_method%</argument>
             <argument type="service" id="commercetools.cache" />
             <argument type="service" id="commercetools.client"/>
             <argument type="service" id="commmercetools.mapper.factory" />
+        </service>
+        <service id="Commercetools\Symfony\CartBundle\Model\Repository\OrderRepository" public="true">
+            <argument>%commercetools.cache.order%</argument>
+            <argument type="service" id="commercetools.cache" />
+            <argument type="service" id="commercetools.client"/>
+            <argument type="service" id="commmercetools.mapper.factory" />
+            <argument type="service" id="session"/>
         </service>
     </services>
 </container>

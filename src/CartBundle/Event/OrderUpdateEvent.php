@@ -4,34 +4,34 @@
 
 namespace Commercetools\Symfony\CartBundle\Event;
 
-use Commercetools\Core\Model\Cart\Cart;
+use Commercetools\Core\Model\Order\Order;
 use Commercetools\Core\Request\AbstractAction;
 use Symfony\Component\EventDispatcher\Event;
 
-class CartUpdateEvent extends Event
+class OrderUpdateEvent extends Event
 {
     /**
-     * @var Cart
+     * @var Order
      */
-    private $cart;
+    private $order;
 
     /**
      * @var AbstractAction[]
      */
     private $actions;
 
-    public function __construct(Cart $cart, AbstractAction $action)
+    public function __construct(Order $order, AbstractAction $action)
     {
-        $this->cart = $cart;
+        $this->order = $order;
         $this->actions = [$action];
     }
 
     /**
-     * @return Cart
+     * @return Order
      */
-    public function getCart()
+    public function getOrder()
     {
-        return $this->cart;
+        return $this->order;
     }
 
     /**
