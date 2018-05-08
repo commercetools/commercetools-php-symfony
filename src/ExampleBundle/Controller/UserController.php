@@ -1,6 +1,5 @@
 <?php
 /**
- * @author: Ylambers <yaron.lambers@commercetools.de>
  */
 
 namespace Commercetools\Symfony\ExampleBundle\Controller;
@@ -164,24 +163,6 @@ class UserController extends Controller
                 'form_address' => $form->createView()
             ]
         );
-    }
-
-    public function showOrdersAction(Request $request)
-    {
-        $orders = $this->get('commercetools.repository.order')->getOrders($request->getLocale(), $this->getUser()->getId());
-
-        return $this->render('ExampleBundle:user:orders.html.twig', [
-            'orders' => $orders
-        ]);
-    }
-
-    public function showOrderAction(Request $request, $orderId)
-    {
-        $order = $this->get('commercetools.repository.order')->getOrder($request->getLocale(), $orderId);
-
-        return $this->render('ExampleBundle:user:order.html.twig', [
-            'order' => $order
-         ]);
     }
 
     protected function getCustomer(User $user)

@@ -1,9 +1,8 @@
 <?php
 /**
- * @author: Ylambers <yaron.lambers@commercetools.de>
  */
 
-namespace Commercetools\Symfony\CtpBundle\Model\Repository;
+namespace Commercetools\Symfony\CartBundle\Model\Repository;
 
 
 use Commercetools\Core\Client;
