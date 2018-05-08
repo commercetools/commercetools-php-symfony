@@ -16,6 +16,8 @@ use Commercetools\Core\Request\Orders\Command\OrderImportLineItemStateAction;
 use Commercetools\Core\Request\Orders\Command\OrderRemoveDeliveryAction;
 use Commercetools\Core\Request\Orders\Command\OrderRemoveParcelFromDeliveryAction;
 use Commercetools\Core\Request\Orders\Command\OrderRemovePaymentAction;
+use Commercetools\Core\Request\Orders\Command\OrderSetBillingAddress;
+use Commercetools\Core\Request\Orders\Command\OrderSetCustomerEmail;
 use Commercetools\Core\Request\Orders\Command\OrderSetCustomFieldAction;
 use Commercetools\Core\Request\Orders\Command\OrderSetCustomTypeAction;
 use Commercetools\Core\Request\Orders\Command\OrderSetDeliveryAddressAction;
@@ -27,6 +29,7 @@ use Commercetools\Core\Request\Orders\Command\OrderSetParcelMeasurementsAction;
 use Commercetools\Core\Request\Orders\Command\OrderSetParcelTrackingDataAction;
 use Commercetools\Core\Request\Orders\Command\OrderSetReturnPaymentStateAction;
 use Commercetools\Core\Request\Orders\Command\OrderSetReturnShipmentStateAction;
+use Commercetools\Core\Request\Orders\Command\OrderSetShippingAddress;
 use Commercetools\Core\Request\Orders\Command\OrderTransitionCustomLineItemStateAction;
 use Commercetools\Core\Request\Orders\Command\OrderTransitionLineItemStateAction;
 use Commercetools\Core\Request\Orders\Command\OrderTransitionStateAction;
@@ -52,12 +55,12 @@ class OrderUpdateTest extends \PHPUnit_Framework_TestCase
             ['removeDelivery', OrderRemoveDeliveryAction::class],
             ['removeParcelFromDelivery', OrderRemoveParcelFromDeliveryAction::class],
             ['removePayment', OrderRemovePaymentAction::class],
-//            ['setBillingAddress', OrderSetBillingAddressAction::class],
+            ['setBillingAddress', OrderSetBillingAddress::class],
             ['setCustomField', OrderSetCustomFieldAction::class],
 //            ['setCustomLineItemCustomField', OrderSetCustomLineItemCustomFieldAction::class],
 //            ['setCustomLineItemCustomType', OrderSetCustomLineItemCustomTypeAction::class],
             ['setCustomType', OrderSetCustomTypeAction::class],
-//            ['setCustomerEmail', OrderSetCustomerEmailAction::class],
+            ['setCustomerEmail', OrderSetCustomerEmail::class],
             ['setDeliveryAddress', OrderSetDeliveryAddressAction::class],
             ['setDeliveryItems', OrderSetDeliveryItemsAction::class],
 //            ['setLineItemCustomField', OrderSetLineItemCustomFieldAction::class],
@@ -69,7 +72,7 @@ class OrderUpdateTest extends \PHPUnit_Framework_TestCase
             ['setParcelTrackingData', OrderSetParcelTrackingDataAction::class],
             ['setReturnPaymentState', OrderSetReturnPaymentStateAction::class],
             ['setReturnShipmentState', OrderSetReturnShipmentStateAction::class],
-//            ['setShippingAddress', OrderSetShippingAddressAction::class],
+            ['setShippingAddress', OrderSetShippingAddress::class], // 'Action' missing in class name
             ['transitionCustomLineItemState', OrderTransitionCustomLineItemStateAction::class],
             ['transitionLineItemState', OrderTransitionLineItemStateAction::class],
             ['transitionState', OrderTransitionStateAction::class],
