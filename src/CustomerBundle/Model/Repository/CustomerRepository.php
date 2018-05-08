@@ -36,7 +36,7 @@ class CustomerRepository extends Repository
         parent::__construct($enableCache, $cache, $client, $mapperFactory);
     }
 
-    private function executeRequest(ClientRequestInterface $request, $locale, QueryParams $params = null)
+    public function executeRequest(ClientRequestInterface $request, $locale, QueryParams $params = null)
     {
         $client = $this->getClient();
 
