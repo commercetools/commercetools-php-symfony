@@ -10,8 +10,9 @@ use Commercetools\Core\Model\Customer\Customer;
 use Commercetools\Core\Request\Customers\Command\CustomerSetCustomTypeAction;
 use Commercetools\Core\Request\Customers\Command\CustomerSetFirstNameAction;
 use Commercetools\Symfony\CustomerBundle\Event\CustomerUpdateEvent;
+use PHPUnit\Framework\TestCase;
 
-class CustomerUpdateEventTest extends \PHPUnit_Framework_TestCase
+class CustomerUpdateEventTest extends TestCase
 {
     public function testCustomerUpdateEvent()
     {

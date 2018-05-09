@@ -32,9 +32,10 @@ use Commercetools\Core\Request\Customers\Command\CustomerSetCustomFieldAction;
 use Commercetools\Core\Request\Customers\Command\CustomerSetCustomTypeAction;
 use Commercetools\Symfony\CustomerBundle\Manager\CustomerManager;
 use Commercetools\Symfony\CustomerBundle\Model\CustomerUpdateBuilder;
+use PHPUnit\Framework\TestCase;
 use Prophecy\Argument;
 
-class CustomerUpdateBuilderTest extends \PHPUnit_Framework_TestCase
+class CustomerUpdateBuilderTest extends TestCase
 {
     public function getActionProvider()
     {

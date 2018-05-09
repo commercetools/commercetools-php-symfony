@@ -8,8 +8,9 @@ namespace Commercetools\Symfony\CustomerBundle\Tests\Event;
 
 use Commercetools\Core\Model\Customer\Customer;
 use Commercetools\Symfony\CustomerBundle\Event\CustomerPostUpdateEvent;
+use PHPUnit\Framework\TestCase;
 
-class CustomerPostUpdateEventTest extends \PHPUnit_Framework_TestCase
+class CustomerPostUpdateEventTest extends TestCase
 {
     public function testCustomerPostUpdateEvent()
     {
