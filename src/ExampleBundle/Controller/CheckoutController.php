@@ -5,20 +5,42 @@
 
 namespace Commercetools\Symfony\ExampleBundle\Controller;
 
+use Commercetools\Core\Client;
 use Commercetools\Core\Model\Common\Address;
 use Commercetools\Core\Model\ShippingMethod\ShippingMethod;
+use Commercetools\Symfony\CartBundle\Manager\CartManager;
 use Commercetools\Symfony\CtpBundle\Entity\CartEntity;
 use Commercetools\Symfony\ExampleBundle\Model\Form\Type\AddressType;
-use Commercetools\Symfony\CtpBundle\Model\Repository\CartRepository;
+use Commercetools\Symfony\CartBundle\Model\Repository\CartRepository;
 use Commercetools\Symfony\CtpBundle\Security\User\CtpUser;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\Security\Core\User\UserInterface;
 
 class CheckoutController extends Controller
 {
+    /**
+     * @var Client
+     */
+    private $client;
+
+    /**
+     * @var CartManager
+     */
+    private $manager;
+
+    /**
+     * CheckoutController constructor.
+     */
+    public function __construct(Client $client, CartManager $manager)
+    {
+        $this->client = $client;
+        $this->manager = $manager;
+    }
+
     public function signinAction(Request $request)
     {
         if ($this->get('security.authorization_checker')->isGranted('IS_AUTHENTICATED_FULLY')) {
@@ -143,20 +165,19 @@ class CheckoutController extends Controller
     }
 
 
-    public function setAddressAction(Request $request)
+    public function setAddressAction(Request $request, UserInterface $user)
     {
-        $user = $this->getUser();
+        $customerId = null;
+        $customer = null;
+
         if (!is_null($user)){
-            $customerId = $this->get('security.token_storage')->getToken()->getUser()->getId();
-            $customer = $this->get('commercetools.repository.customer')->getCustomer($request->getLocale(), $customerId);
-        }else{
-            $customerId = null;
-            $customer = null;
+            $customerId = $user->getId();
+            $customer = $user;
         }
 
         $session = $this->get('session');
         $cartId = $session->get(CartRepository::CART_ID);
-        $cart = $this->get('commercetools.repository.cart')->getCart($request->getLocale(), $cartId, $customerId);
+        $cart = $this->manager->getCart($request->getLocale(), $cartId, $customerId);
 
 
         if (is_null($cart->getId())) {
@@ -182,9 +203,9 @@ class CheckoutController extends Controller
             ->getForm();
         $form->handleRequest($request);
 
-        $repository = $this->get('commercetools.repository.cart');
+        $cart = $this->manager->getCart();
 
-        if ($form->isValid() && $form->isSubmitted()) {
+        if ($form->isSubmitted() && $form->isValid()) {
 
             $check = $form->get('check')->getData();
             $shippingAddress = Address::fromArray($form->get('shippingAddress')->getData());
@@ -195,7 +216,7 @@ class CheckoutController extends Controller
                 $billingAddress = Address::fromArray($form->get('billingAddress')->getData());
             }
 
-            $cart = $repository->setAddresses(
+            $cart = $cart->setAddresses(
                 $request->getLocale(),
                 $cartId,
                 $shippingAddress,
