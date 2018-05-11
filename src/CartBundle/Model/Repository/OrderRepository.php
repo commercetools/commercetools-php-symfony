@@ -99,4 +99,9 @@ class OrderRepository extends Repository
     {
         return (string)time();
     }
+
+    public function update()
+    {
+        return true;
+    }
 }

@@ -40,6 +40,11 @@ class OrderManager
         return $this->repository->getOrders($locale, $customerId);
     }
 
+    public function getOrder($locale, $orderId)
+    {
+        return $this->repository->getOrder($locale, $orderId);
+    }
+
     /**
      * @param Order $order
      * @return OrderUpdateBuilder

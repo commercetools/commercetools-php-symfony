@@ -13,10 +13,11 @@ use Commercetools\Symfony\CartBundle\Event\CartUpdateEvent;
 use Commercetools\Symfony\CartBundle\Manager\CartManager;
 use Commercetools\Symfony\CartBundle\Model\CartUpdateBuilder;
 use Commercetools\Symfony\CartBundle\Model\Repository\CartRepository;
+use PHPUnit\Framework\TestCase;
 use Prophecy\Argument;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
-class CartManagerTest extends \PHPUnit_Framework_TestCase
+class CartManagerTest extends TestCase
 {
     public function testApply()
     {
@@ -72,17 +73,17 @@ class CartManagerTest extends \PHPUnit_Framework_TestCase
 
     }
 
-    public function testGetById()
+    public function testGetCart()
     {
         $repository = $this->prophesize(CartRepository::class);
         $dispatcher = $this->prophesize(EventDispatcherInterface::class);
-//
-//        $repository->getCartById('en', '123456', null)
-//            ->willReturn(Cart::of())->shouldBeCalled();
+
+        $repository->getCart('en', null, null)
+            ->willReturn(Cart::of())->shouldBeCalled();
 
         $manager = new CartManager($repository->reveal(), $dispatcher->reveal());
-//        $list = $manager->getById('en', '123456');
-//
-//        $this->assertInstanceOf(Cart::class, $list);
+        $cart = $manager->getCart('en');
+
+        $this->assertInstanceOf(Cart::class, $cart);
     }
 }

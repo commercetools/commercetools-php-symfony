@@ -30,15 +30,15 @@ class CheckoutController extends Controller
     /**
      * @var CartManager
      */
-    private $manager;
+    private $cartManager;
 
     /**
      * CheckoutController constructor.
      */
-    public function __construct(Client $client, CartManager $manager)
+    public function __construct(Client $client, CartManager $cartManager)
     {
         $this->client = $client;
-        $this->manager = $manager;
+        $this->cartManager = $cartManager;
     }
 
     public function signinAction(Request $request)
