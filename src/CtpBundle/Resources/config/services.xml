@@ -7,7 +7,6 @@
         <parameter key="commercetools.cache.order" type="string">false</parameter>
         <parameter key="commercetools.cache.cart" type="string">false</parameter>
         <parameter key="commercetools.cache.shipping_method" type="string">false</parameter>
-        <parameter key="commercetools.cache.customer" type="string">false</parameter>
         <parameter key="commercetools.cache.product" type="string">false</parameter>
     </parameters>
     <services>
@@ -52,12 +51,6 @@
             <argument type="service" id="commercetools.client"/>
             <argument type="service" id="commmercetools.mapper.factory" />
             <argument type="service" id="commercetools.search" />
-        </service>
-        <service id="commercetools.repository.customer" class="Commercetools\Symfony\CtpBundle\Model\Repository\CustomerRepository">
-            <argument>%commercetools.cache.customer%</argument>
-            <argument type="service" id="commercetools.cache" />
-            <argument type="service" id="commercetools.client"/>
-            <argument type="service" id="commmercetools.mapper.factory" />
         </service>
         <service id="commercetools.repository.order" class="Commercetools\Symfony\CtpBundle\Model\Repository\OrderRepository">
             <argument>%commercetools.cache.order%</argument>

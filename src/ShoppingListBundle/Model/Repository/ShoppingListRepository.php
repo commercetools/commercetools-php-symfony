@@ -1,9 +1,5 @@
 <?php
 /**
- * Created by PhpStorm.
- * User: nsotiropoulos
- * Date: 16/04/2018
- * Time: 11:15
  */
 
 namespace Commercetools\Symfony\ShoppingListBundle\Model\Repository;
@@ -105,9 +101,7 @@ class ShoppingListRepository extends Repository
         }
 
         $response = $request->executeWithClient($client);
-        $list = $request->mapFromResponse(
-            $response
-        );
+        $list = $request->mapFromResponse($response);
 
         return $list;
 
