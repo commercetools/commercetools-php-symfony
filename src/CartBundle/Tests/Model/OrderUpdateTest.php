@@ -36,9 +36,10 @@ use Commercetools\Core\Request\Orders\Command\OrderTransitionStateAction;
 use Commercetools\Core\Request\Orders\Command\OrderUpdateSyncInfoAction;
 use Commercetools\Symfony\CartBundle\Manager\OrderManager;
 use Commercetools\Symfony\CartBundle\Model\OrderUpdateBuilder;
+use PHPUnit\Framework\TestCase;
 use Prophecy\Argument;
 
-class OrderUpdateTest extends \PHPUnit_Framework_TestCase
+class OrderUpdateTest extends TestCase
 {
     public function getActionProvider()
     {

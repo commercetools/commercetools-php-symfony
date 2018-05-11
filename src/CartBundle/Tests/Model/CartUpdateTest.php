@@ -50,9 +50,10 @@ use Commercetools\Core\Request\Carts\Command\CartSetShippingMethodTaxRateAction;
 use Commercetools\Core\Request\Carts\Command\CartSetShippingRateInputAction;
 use Commercetools\Symfony\CartBundle\Manager\CartManager;
 use Commercetools\Symfony\CartBundle\Model\CartUpdateBuilder;
+use PHPUnit\Framework\TestCase;
 use Prophecy\Argument;
 
-class CartUpdateTest extends \PHPUnit_Framework_TestCase
+class CartUpdateTest extends TestCase
 {
     public function getActionProvider()
     {
