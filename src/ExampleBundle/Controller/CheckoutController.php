@@ -9,6 +9,7 @@ use Commercetools\Core\Client;
 use Commercetools\Core\Model\Common\Address;
 use Commercetools\Core\Model\ShippingMethod\ShippingMethod;
 use Commercetools\Symfony\CartBundle\Manager\CartManager;
+use Commercetools\Symfony\CartBundle\Manager\ShippingMethodManager;
 use Commercetools\Symfony\CtpBundle\Entity\CartEntity;
 use Commercetools\Symfony\ExampleBundle\Model\Form\Type\AddressType;
 use Commercetools\Symfony\CartBundle\Model\Repository\CartRepository;
@@ -33,12 +34,17 @@ class CheckoutController extends Controller
     private $cartManager;
 
     /**
+     * @var ShippingMethodManager
+     */
+    private $shippingMethodManager;
+    /**
      * CheckoutController constructor.
      */
-    public function __construct(Client $client, CartManager $cartManager)
+    public function __construct(Client $client, CartManager $cartManager, ShippingMethodManager $shippingMethodManager)
     {
         $this->client = $client;
         $this->cartManager = $cartManager;
+        $this->shippingMethodManager = $shippingMethodManager;
     }
 
     public function signinAction(Request $request)
@@ -63,11 +69,9 @@ class CheckoutController extends Controller
 
     public function shippingMethodAction(Request $request)
     {
-        $shippingRepository = $this->get('commercetools.repository.shipping_method');
-
         $session = $this->get('session');
         $cartId = $session->get(CartRepository::CART_ID);
-        $shippingMethods = $shippingRepository->getShippingMethodByCart($request->getLocale(), $cartId);
+        $shippingMethods = $this->shippingMethodManager->getShippingMethodByCart($request->getLocale(), $cartId);
 
         $customerId = null;
         if ($this->get('security.token_storage')->getToken()->getUser() instanceof CtpUser) {
@@ -165,7 +169,7 @@ class CheckoutController extends Controller
     }
 
 
-    public function setAddressAction(Request $request, UserInterface $user)
+    public function setAddressAction(Request $request, UserInterface $user = null)
     {
         $customerId = null;
         $customer = null;
@@ -177,7 +181,7 @@ class CheckoutController extends Controller
 
         $session = $this->get('session');
         $cartId = $session->get(CartRepository::CART_ID);
-        $cart = $this->manager->getCart($request->getLocale(), $cartId, $customerId);
+        $cart = $this->cartManager->getCart($request->getLocale(), $cartId, $customerId);
 
 
         if (is_null($cart->getId())) {
@@ -203,7 +207,7 @@ class CheckoutController extends Controller
             ->getForm();
         $form->handleRequest($request);
 
-        $cart = $this->manager->getCart();
+        $cart = $this->cartManager->getCart('en');
 
         if ($form->isSubmitted() && $form->isValid()) {
 

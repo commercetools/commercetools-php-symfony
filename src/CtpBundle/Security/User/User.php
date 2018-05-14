@@ -16,6 +16,8 @@ class User implements CtpUser
     private $id;
     private $cartId;
     private $cartItemCount;
+    private $shippingAddresses;
+    private $defaultShippingAddress;
 
     public function __construct($username, $password, array $roles, $id, $cartId, $cartItemCount)
     {
@@ -114,6 +116,38 @@ class User implements CtpUser
         }
 
         return true;
+    }
+
+    /**
+     * @param mixed $defaultShippingAddress
+     */
+    public function setDefaultShippingAddress($defaultShippingAddress)
+    {
+        $this->defaultShippingAddress = $defaultShippingAddress;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getDefaultShippingAddress()
+    {
+        return $this->defaultShippingAddress;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getShippingAddresses()
+    {
+        return $this->shippingAddresses;
+    }
+
+    /**
+     * @param mixed $shippingAddresses
+     */
+    public function setShippingAddresses($shippingAddresses)
+    {
+        $this->shippingAddresses = $shippingAddresses;
     }
 
     public static function create($username, $password, array $roles, $id, $cartId, $cartItemCount)

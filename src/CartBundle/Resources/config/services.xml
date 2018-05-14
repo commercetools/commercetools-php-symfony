@@ -38,5 +38,9 @@
             <argument type="service" id="commercetools.client"/>
             <argument type="service" id="commmercetools.mapper.factory" />
         </service>
+        <service id="Commercetools\Symfony\CartBundle\Manager\ShippingMethodManager" public="true">
+            <argument id="Commercetools\Symfony\CartBundle\Model\Repository\ShippingMethodRepository" type="service"/>
+            <argument id="event_dispatcher" type="service"/>
+        </service>
     </services>
 </container>

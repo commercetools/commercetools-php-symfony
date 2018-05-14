@@ -91,6 +91,7 @@ class AuthenticationProvider extends UserAuthenticationProvider
             if ($user instanceof CtpUser) {
                 $user->setId($customer->getId());
                 $cart = $result->getCart();
+                // XXX handle shipping addresses
                 if (!is_null($cart)) {
                     $user->setCartId($cart->getId());
                     $user->setCartItemCount($cart->getLineItemCount());
