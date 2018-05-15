@@ -1,6 +1,5 @@
 <?php
 /**
- * @author: Ylambers <yaron.lambers@commercetools.de>
  */
 
 namespace Commercetools\Symfony\CtpBundle\Security\User;
@@ -16,15 +15,17 @@ class User implements CtpUser
     private $id;
     private $cartId;
     private $cartItemCount;
+    private $shippingAddresses;
+    private $defaultShippingAddress;
 
     public function __construct($username, $password, array $roles, $id, $cartId, $cartItemCount)
     {
         $this->username = $username;
         $this->password = $password;
         $this->roles = $roles;
-        $this->id= $id;
-        $this->cartItemCount= $cartItemCount;
-        $this->cartId= $cartId;
+        $this->id = $id;
+        $this->cartItemCount = $cartItemCount;
+        $this->cartId = $cartId;
     }
 
     public function getRoles()
@@ -114,6 +115,38 @@ class User implements CtpUser
         }
 
         return true;
+    }
+
+    /**
+     * @param mixed $defaultShippingAddress
+     */
+    public function setDefaultShippingAddress($defaultShippingAddress)
+    {
+        $this->defaultShippingAddress = $defaultShippingAddress;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getDefaultShippingAddress()
+    {
+        return $this->defaultShippingAddress;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getShippingAddresses()
+    {
+        return $this->shippingAddresses;
+    }
+
+    /**
+     * @param mixed $shippingAddresses
+     */
+    public function setShippingAddresses($shippingAddresses)
+    {
+        $this->shippingAddresses = $shippingAddresses;
     }
 
     public static function create($username, $password, array $roles, $id, $cartId, $cartItemCount)

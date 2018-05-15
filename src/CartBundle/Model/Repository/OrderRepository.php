@@ -5,13 +5,13 @@
 namespace Commercetools\Symfony\CartBundle\Model\Repository;
 
 
+use Commercetools\Core\Builder\Request\RequestBuilder;
 use Commercetools\Core\Client;
 use Commercetools\Core\Model\Cart\Cart;
 use Commercetools\Core\Model\Order\Order;
 use Commercetools\Core\Model\Order\OrderCollection;
-use Commercetools\Core\Request\Orders\OrderByIdGetRequest;
-use Commercetools\Core\Request\Orders\OrderCreateFromCartRequest;
 use Commercetools\Core\Request\Orders\OrderQueryRequest;
+use Commercetools\Symfony\CtpBundle\Model\QueryParams;
 use Commercetools\Symfony\CtpBundle\Model\Repository;
 use Commercetools\Symfony\CtpBundle\Service\MapperFactory;
 use Psr\Cache\CacheItemPoolInterface;
@@ -42,6 +42,20 @@ class OrderRepository extends Repository
         $this->session = $session;
     }
 
+    public function executeRequest($locale, $request)
+    {
+        $client = $this->getClient();
+
+        $response = $request->executeWithClient($client);
+
+        $shippingMethods = $request->mapFromResponse(
+            $response,
+            $this->getMapper($locale)
+        );
+
+        return $shippingMethods;
+    }
+
     /**
      * @param $locale
      * @param $customerId
@@ -49,15 +63,9 @@ class OrderRepository extends Repository
      */
     public function getOrders($locale, $customerId)
     {
-        $client = $this->getClient();
-        $request = OrderQueryRequest::of()->where('customerId = "' . $customerId . '"')->sort('createdAt desc');
-        $response = $request->executeWithClient($client);
-        $orders = $request->mapFromResponse(
-            $response,
-            $this->getMapper($locale)
-        );
+        $request = RequestBuilder::of()->orders()->query()->where('customerId = "' . $customerId . '"')->sort('createdAt desc');
 
-        return $orders;
+        return $this->executeRequest($locale, $request);
     }
 
     /**
@@ -67,27 +75,16 @@ class OrderRepository extends Repository
      */
     public function getOrder($locale, $orderId)
     {
-        $client = $this->getClient();
-        $request = OrderByIdGetRequest::ofId($orderId);
-        $response = $request->executeWithClient($client);
-        $order = $request->mapFromResponse(
-            $response,
-            $this->getMapper($locale)
-        );
+        $request = RequestBuilder::of()->orders()->getById($orderId);
 
-        return $order;
+        return $this->executeRequest($locale, $request);
     }
 
     public function createOrderFromCart($locale, Cart $cart)
     {
-        $client = $this->getClient();
-        $request = OrderCreateFromCartRequest::ofCartIdAndVersion($cart->getId(), $cart->getVersion());
-        $request->setOrderNumber($this->createOrderNumber());
-        $response = $request->executeWithClient($client);
-        $order = $request->mapFromResponse(
-            $response,
-            $this->getMapper($locale)
-        );
+        $request = RequestBuilder::of()->orders()->createFromCart($cart);
+
+        $order = $this->executeRequest($locale, $request);
 
         $this->session->remove(CartRepository::CART_ID);
         $this->session->remove(CartRepository::CART_ITEM_COUNT);
@@ -100,8 +97,22 @@ class OrderRepository extends Repository
         return (string)time();
     }
 
-    public function update()
+    // XXX do we need update?
+    public function update(Order $order, array $actions, QueryParams $params = null)
     {
-        return true;
+        $client = $this->getClient();
+        $request = RequestBuilder::of()->orders()->update($order)->setActions($actions);
+
+        if(!is_null($params)){
+            foreach ($params->getParams() as $param) {
+                $request->addParamObject($param);
+            }
+        }
+
+        $response = $request->executeWithClient($client);
+        $order = $request->mapFromResponse($response);
+
+        return $order;
+
     }
 }

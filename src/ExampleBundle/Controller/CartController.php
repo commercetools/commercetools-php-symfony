@@ -1,10 +1,12 @@
 <?php
 /**
- * @author: NikosSo <nikolaos.sotiropoulos@commercetools.de>
  */
 
 namespace Commercetools\Symfony\ExampleBundle\Controller;
 
+use Commercetools\Core\Model\Cart\LineItemDraft;
+use Commercetools\Core\Model\Cart\LineItemDraftCollection;
+use Commercetools\Core\Model\Zone\Location;
 use Commercetools\Core\Request\Carts\Command\CartAddLineItemAction;
 use Commercetools\Core\Request\Carts\Command\CartChangeLineItemQuantityAction;
 use Commercetools\Core\Request\Carts\Command\CartRemoveLineItemAction;
@@ -71,7 +73,7 @@ class CartController extends Controller
         return $this->render('ExampleBundle:cart:index.html.twig', ['cart' => $cart]);
     }
 
-    public function addLineItemAction(Request $request, UserInterface $user)
+    public function addLineItemAction(Request $request, UserInterface $user = null)
     {
         $session = $this->get('session');
 
@@ -79,18 +81,34 @@ class CartController extends Controller
         $form->handleRequest($request);
 
         if ($form->isValid() && $form->isSubmitted()) {
+
             $productId = $form->get('_productId')->getData();
             $variantId = (int)$form->get('variantId')->getData();
             $quantity = (int)$form->get('quantity')->getData();
             $slug = $form->get('slug')->getData();
+
             $cartId = $session->get(CartRepository::CART_ID);
-            $cart = $this->manager->getCart($request->getLocale(), $cartId, $this->getCustomerId());
 
-            $cartBuilder = $this->manager->update($cart);
-            $cartBuilder->addAction(CartAddLineItemAction::ofProductIdVariantIdAndQuantity($productId, $variantId, $quantity));
-            $cartBuilder->flush();
+            if(!is_null($cartId)){
+                $cart = $this->manager->getCart($request->getLocale(), $cartId, $this->getCustomerId());
+                $cartBuilder = $this->manager->update($cart);
+                $cartBuilder->addAction(CartAddLineItemAction::ofProductIdVariantIdAndQuantity($productId, $variantId, $quantity));
+                $cartBuilder->flush();
 
+            } else {
+                // XXX
+                $lineItem = LineItemDraft::ofProductId($productId)->setVariantId($variantId)->setQuantity($quantity);
+                $lineItemDraftCollection = LineItemDraftCollection::of()->add($lineItem);
+                $country = Location::of()->setCountry('DE');
+                if(is_null($user)){
+                    $this->manager->createCart($request->getLocale(), 'EUR', $country, $lineItemDraftCollection, null, $session->getId());
+                } else {
+                    $this->manager->createCart($request->getLocale(), 'EUR', $country, $lineItemDraftCollection, $user->getID());
+                }
+            }
             $redirectUrl = $this->generateUrl('_ctp_example_product', ['slug' => $slug]);
+
+
         } else {
             $redirectUrl = $this->generateUrl('_ctp_example');
         }
@@ -109,7 +127,7 @@ class CartController extends Controller
         return $response;
     }
 
-    public function changeLineItemAction(Request $request, UserInterface $user)
+    public function changeLineItemAction(Request $request)
     {
         $session = $this->get('session');
         $lineItemId = $request->get('lineItemId');
@@ -124,7 +142,7 @@ class CartController extends Controller
         return new RedirectResponse($this->generateUrl('_ctp_example_cart'));
     }
 
-    public function deleteLineItemAction(Request $request, UserInterface $user)
+    public function deleteLineItemAction(Request $request)
     {
         $session = $this->get('session');
         $lineItemId = $request->get('lineItemId');

@@ -6,6 +6,8 @@ namespace Commercetools\Symfony\CartBundle\Manager;
 
 use Commercetools\Core\Model\Order\Order;
 use Commercetools\Core\Request\AbstractAction;
+use Commercetools\Symfony\CartBundle\Event\OrderCreateEvent;
+use Commercetools\Symfony\CartBundle\Event\OrderPostCreateEvent;
 use Commercetools\Symfony\CartBundle\Event\OrderPostUpdateEvent;
 use Commercetools\Symfony\CartBundle\Event\OrderUpdateEvent;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
@@ -43,6 +45,20 @@ class OrderManager
     public function getOrder($locale, $orderId)
     {
         return $this->repository->getOrder($locale, $orderId);
+    }
+
+    public function createOrderFromCart($locale, $cart)
+    {
+        // XXX
+        $event = new OrderCreateEvent();
+        $this->dispatcher->dispatch(OrderCreateEvent::class, $event);
+
+        $cart = $this->repository->createOrderFromCart($locale, $cart);
+
+        $eventPost = new OrderPostCreateEvent();
+        $this->dispatcher->dispatch(OrderPostCreateEvent::class, $eventPost);
+
+        return $cart;
     }
 
     /**

@@ -6,6 +6,8 @@ namespace Commercetools\Symfony\CartBundle\Manager;
 
 use Commercetools\Core\Model\Cart\Cart;
 use Commercetools\Core\Request\AbstractAction;
+use Commercetools\Symfony\CartBundle\Event\CartCreateEvent;
+use Commercetools\Symfony\CartBundle\Event\CartPostCreateEvent;
 use Commercetools\Symfony\CartBundle\Event\CartPostUpdateEvent;
 use Commercetools\Symfony\CartBundle\Event\CartUpdateEvent;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
@@ -38,6 +40,20 @@ class CartManager
     public function getCart($locale, $cartId = null, $customerId = null)
     {
         return $this->repository->getCart($locale, $cartId, $customerId);
+    }
+
+    public function createCart($locale, $currency, $country, $lineItems, $customerId = null, $anonymousId = null)
+    {
+        // XXX
+        $event = new CartCreateEvent();
+        $this->dispatcher->dispatch(CartCreateEvent::class, $event);
+
+        $cart = $this->repository->createCart($locale, $currency, $country, $lineItems, $customerId, $anonymousId);
+
+        $eventPost = new CartPostCreateEvent();
+        $this->dispatcher->dispatch(CartPostCreateEvent::class, $eventPost);
+
+        return $cart;
     }
 
     /**

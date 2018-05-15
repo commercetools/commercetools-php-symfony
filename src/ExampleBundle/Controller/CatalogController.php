@@ -65,7 +65,7 @@ class CatalogController extends Controller
 
     }
 
-    public function detailBySlugAction(Request $request, $slug, UserInterface $user)
+    public function detailBySlugAction(Request $request, $slug, UserInterface $user = null)
     {
         /**
          * @var ProductRepository $repository
@@ -80,8 +80,12 @@ class CatalogController extends Controller
             $variantIds[$variant->getSku()] = $variant->getId();
         }
 
-        $shoppingLists = $this->manager->getAllOfCustomer($request->getLocale(), CustomerReference::ofId($user->getId()));
+        // XXX anonymous users
+        $shoppingLists = [];
         $shoppingListsIds = [];
+        if(!is_null($user)){
+            $shoppingLists = $this->manager->getAllOfCustomer($request->getLocale(), CustomerReference::ofId($user->getId()));
+        }
 
         foreach ($shoppingLists as $shoppingList) {
             /** @var ShoppingList $shoppingList */
