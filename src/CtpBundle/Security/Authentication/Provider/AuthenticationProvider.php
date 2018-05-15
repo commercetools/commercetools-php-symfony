@@ -88,13 +88,18 @@ class AuthenticationProvider extends UserAuthenticationProvider
             if ($currentUser !== $customer->getEmail()) {
                 throw new BadCredentialsException('The presented password is invalid.');
             }
+
             if ($user instanceof CtpUser) {
                 $user->setId($customer->getId());
                 $cart = $result->getCart();
-                // XXX handle shipping addresses
                 if (!is_null($cart)) {
                     $user->setCartId($cart->getId());
                     $user->setCartItemCount($cart->getLineItemCount());
+                }
+
+                $defaultShippingAddress = $customer->getDefaultShippingAddress();
+                if (!is_null($defaultShippingAddress)) {
+                    $user->setDefaultShippingAddress($defaultShippingAddress);
                 }
             }
         }

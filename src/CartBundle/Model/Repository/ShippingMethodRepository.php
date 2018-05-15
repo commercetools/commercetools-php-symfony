@@ -47,4 +47,19 @@ class ShippingMethodRepository extends Repository
         return $shippingMethod;
     }
 
+    public function getShippingMethodById($locale, $id)
+    {
+        $client = $this->getClient();
+
+        $request = RequestBuilder::of()->shippingMethods()->getById($id);
+
+        $response = $request->executeWithClient($client);
+
+        $shippingMethod = $request->mapFromResponse(
+            $response,
+            $this->getMapper($locale)
+        );
+
+        return $shippingMethod;
+    }
 }

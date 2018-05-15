@@ -38,6 +38,11 @@ class ShippingMethodManager
         return $this->repository->getShippingMethodsByLocation($locale, $location, $currency);
     }
 
+    public function getShippingMethodById($locale, $id)
+    {
+        return $this->repository->getShippingMethodById($locale, $id);
+    }
+
     public function getShippingMethodByCart($locale, $cartId)
     {
         return $this->repository->getShippingMethodByCart($locale, $cartId);

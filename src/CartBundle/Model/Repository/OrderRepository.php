@@ -5,6 +5,7 @@
 namespace Commercetools\Symfony\CartBundle\Model\Repository;
 
 
+use Commercetools\Core\Builder\Request\RequestBuilder;
 use Commercetools\Core\Client;
 use Commercetools\Core\Model\Cart\Cart;
 use Commercetools\Core\Model\Order\Order;
@@ -12,6 +13,7 @@ use Commercetools\Core\Model\Order\OrderCollection;
 use Commercetools\Core\Request\Orders\OrderByIdGetRequest;
 use Commercetools\Core\Request\Orders\OrderCreateFromCartRequest;
 use Commercetools\Core\Request\Orders\OrderQueryRequest;
+use Commercetools\Symfony\CtpBundle\Model\QueryParams;
 use Commercetools\Symfony\CtpBundle\Model\Repository;
 use Commercetools\Symfony\CtpBundle\Service\MapperFactory;
 use Psr\Cache\CacheItemPoolInterface;
@@ -68,7 +70,8 @@ class OrderRepository extends Repository
     public function getOrder($locale, $orderId)
     {
         $client = $this->getClient();
-        $request = OrderByIdGetRequest::ofId($orderId);
+        $request = RequestBuilder::of()->orders()->getById($orderId);
+
         $response = $request->executeWithClient($client);
         $order = $request->mapFromResponse(
             $response,
@@ -81,8 +84,9 @@ class OrderRepository extends Repository
     public function createOrderFromCart($locale, Cart $cart)
     {
         $client = $this->getClient();
-        $request = OrderCreateFromCartRequest::ofCartIdAndVersion($cart->getId(), $cart->getVersion());
-        $request->setOrderNumber($this->createOrderNumber());
+
+        $request = RequestBuilder::of()->orders()->createFromCart($cart);
+
         $response = $request->executeWithClient($client);
         $order = $request->mapFromResponse(
             $response,
@@ -100,8 +104,21 @@ class OrderRepository extends Repository
         return (string)time();
     }
 
-    public function update()
+    public function update(Order $order, array $actions, QueryParams $params = null)
     {
-        return true;
+        $client = $this->getClient();
+        $request = RequestBuilder::of()->orders()->update($order)->setActions($actions);
+
+        if(!is_null($params)){
+            foreach ($params->getParams() as $param) {
+                $request->addParamObject($param);
+            }
+        }
+
+        $response = $request->executeWithClient($client);
+        $order = $request->mapFromResponse($response);
+
+        return $order;
+
     }
 }

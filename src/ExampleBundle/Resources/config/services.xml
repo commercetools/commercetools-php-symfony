@@ -24,6 +24,7 @@
             <argument type="service" id="Commercetools\Core\Client"/>
             <argument type="service" id="Commercetools\Symfony\CartBundle\Manager\CartManager"/>
             <argument type="service" id="Commercetools\Symfony\CartBundle\Manager\ShippingMethodManager"/>
+            <argument type="service" id="Commercetools\Symfony\CartBundle\Manager\OrderManager"/>
         </service>
     </services>
 </container>

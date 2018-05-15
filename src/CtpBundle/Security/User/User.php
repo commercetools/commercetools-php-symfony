@@ -24,9 +24,9 @@ class User implements CtpUser
         $this->username = $username;
         $this->password = $password;
         $this->roles = $roles;
-        $this->id= $id;
-        $this->cartItemCount= $cartItemCount;
-        $this->cartId= $cartId;
+        $this->id = $id;
+        $this->cartItemCount = $cartItemCount;
+        $this->cartId = $cartId;
     }
 
     public function getRoles()
