@@ -10,7 +10,6 @@ use Commercetools\Core\Client;
 use Commercetools\Core\Model\Cart\Cart;
 use Commercetools\Core\Model\Order\Order;
 use Commercetools\Core\Model\Order\OrderCollection;
-use Commercetools\Core\Request\Orders\OrderQueryRequest;
 use Commercetools\Symfony\CtpBundle\Model\QueryParams;
 use Commercetools\Symfony\CtpBundle\Model\Repository;
 use Commercetools\Symfony\CtpBundle\Service\MapperFactory;
@@ -40,20 +39,6 @@ class OrderRepository extends Repository
     ) {
         parent::__construct($enableCache, $cache, $client, $mapperFactory);
         $this->session = $session;
-    }
-
-    public function executeRequest($locale, $request)
-    {
-        $client = $this->getClient();
-
-        $response = $request->executeWithClient($client);
-
-        $shippingMethods = $request->mapFromResponse(
-            $response,
-            $this->getMapper($locale)
-        );
-
-        return $shippingMethods;
     }
 
     /**
@@ -97,7 +82,6 @@ class OrderRepository extends Repository
         return (string)time();
     }
 
-    // XXX do we need update?
     public function update(Order $order, array $actions, QueryParams $params = null)
     {
         $client = $this->getClient();

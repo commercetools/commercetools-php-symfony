@@ -53,12 +53,12 @@ class OrderManager
         $event = new OrderCreateEvent();
         $this->dispatcher->dispatch(OrderCreateEvent::class, $event);
 
-        $cart = $this->repository->createOrderFromCart($locale, $cart);
+        $order = $this->repository->createOrderFromCart($locale, $cart);
 
         $eventPost = new OrderPostCreateEvent();
         $this->dispatcher->dispatch(OrderPostCreateEvent::class, $eventPost);
 
-        return $cart;
+        return $order;
     }
 
     /**

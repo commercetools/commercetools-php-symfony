@@ -8,6 +8,7 @@ namespace Commercetools\Symfony\CartBundle\Tests\Manager;
 
 use Commercetools\Core\Model\Cart\Cart;
 use Commercetools\Core\Model\Cart\LineItemDraftCollection;
+use Commercetools\Core\Model\Zone\Location;
 use Commercetools\Core\Request\AbstractAction;
 use Commercetools\Symfony\CartBundle\Event\CartPostUpdateEvent;
 use Commercetools\Symfony\CartBundle\Event\CartUpdateEvent;
@@ -62,14 +63,16 @@ class CartManagerTest extends TestCase
     {
         $repository = $this->prophesize(CartRepository::class);
         $lineItemsCollection = $this->prophesize(LineItemDraftCollection::class);
+        $location = $this->prophesize(Location::class);
 
-        $repository->createCart('en', 'EUR', 'DE', $lineItemsCollection->reveal(), null, '123')->
+        $repository->createCart('en', 'EUR', $location->reveal(), $lineItemsCollection->reveal(), null, '123')->
             willReturn(Cart::of())->shouldBeCalled();
 
         $dispatcher = $this->prophesize(EventDispatcherInterface::class);
 
         $manager = new CartManager($repository->reveal(), $dispatcher->reveal());
-        $cart = $manager->createCart('en', 'EUR', 'DE', $lineItemsCollection->reveal(), null, '123');
+
+        $cart = $manager->createCart('en', 'EUR', $location->reveal(), $lineItemsCollection->reveal(), null, '123');
         $this->assertInstanceOf(Cart::class, $cart);
     }
 
