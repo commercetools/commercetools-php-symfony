@@ -42,6 +42,20 @@ class OrderRepository extends Repository
         $this->session = $session;
     }
 
+    public function executeRequest($locale, $request)
+    {
+        $client = $this->getClient();
+
+        $response = $request->executeWithClient($client);
+
+        $shippingMethods = $request->mapFromResponse(
+            $response,
+            $this->getMapper($locale)
+        );
+
+        return $shippingMethods;
+    }
+
     /**
      * @param $locale
      * @param $customerId
@@ -49,15 +63,9 @@ class OrderRepository extends Repository
      */
     public function getOrders($locale, $customerId)
     {
-        $client = $this->getClient();
-        $request = OrderQueryRequest::of()->where('customerId = "' . $customerId . '"')->sort('createdAt desc');
-        $response = $request->executeWithClient($client);
-        $orders = $request->mapFromResponse(
-            $response,
-            $this->getMapper($locale)
-        );
+        $request = RequestBuilder::of()->orders()->query()->where('customerId = "' . $customerId . '"')->sort('createdAt desc');
 
-        return $orders;
+        return $this->executeRequest($locale, $request);
     }
 
     /**
@@ -67,29 +75,16 @@ class OrderRepository extends Repository
      */
     public function getOrder($locale, $orderId)
     {
-        $client = $this->getClient();
         $request = RequestBuilder::of()->orders()->getById($orderId);
 
-        $response = $request->executeWithClient($client);
-        $order = $request->mapFromResponse(
-            $response,
-            $this->getMapper($locale)
-        );
-
-        return $order;
+        return $this->executeRequest($locale, $request);
     }
 
     public function createOrderFromCart($locale, Cart $cart)
     {
-        $client = $this->getClient();
-
         $request = RequestBuilder::of()->orders()->createFromCart($cart);
 
-        $response = $request->executeWithClient($client);
-        $order = $request->mapFromResponse(
-            $response,
-            $this->getMapper($locale)
-        );
+        $order = $this->executeRequest($locale, $request);
 
         $this->session->remove(CartRepository::CART_ID);
         $this->session->remove(CartRepository::CART_ITEM_COUNT);
@@ -102,6 +97,7 @@ class OrderRepository extends Repository
         return (string)time();
     }
 
+    // XXX do we need update?
     public function update(Order $order, array $actions, QueryParams $params = null)
     {
         $client = $this->getClient();
