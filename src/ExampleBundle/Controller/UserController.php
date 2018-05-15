@@ -5,29 +5,18 @@
 namespace Commercetools\Symfony\ExampleBundle\Controller;
 
 use Commercetools\Core\Client;
-use Commercetools\Core\Model\Cart\Cart;
 use Commercetools\Core\Model\Common\Address;
 use Commercetools\Core\Request\Customers\CustomerByIdGetRequest;
-use Commercetools\Symfony\CtpBundle\Entity\CartEntity;
 use Commercetools\Symfony\CtpBundle\Entity\UserAddress;
 use Commercetools\Symfony\CtpBundle\Entity\UserDetails;
 use Commercetools\Symfony\ExampleBundle\Model\Form\Type\AddressType;
 use Commercetools\Symfony\ExampleBundle\Model\Form\Type\UserType;
 use Commercetools\Symfony\CtpBundle\Model\Repository\CartRepository;
 use Commercetools\Symfony\CtpBundle\Security\User\User;
-use Commercetools\Symfony\CtpBundle\Tests\Entity\UserAddressTest;
-use Doctrine\Common\Collections\ArrayCollection;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
-use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
-use Symfony\Component\Form\Extension\Core\Type\EmailType;
-use Symfony\Component\Form\Extension\Core\Type\TextareaType;
-use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\Form\Extension\Core\Type\RepeatedType;
-use Symfony\Component\Form\Extension\Core\Type\PasswordType;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
-use Symfony\Component\Validator\Constraints\DateTime;
 
 
 class UserController extends Controller

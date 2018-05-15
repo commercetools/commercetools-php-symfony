@@ -1,24 +1,13 @@
 <?php
 /**
- * @author: NikosSo <nikolaos.sotiropoulos@commercetools.de>
  */
 
 namespace Commercetools\Symfony\ExampleBundle\Controller;
 
-use Commercetools\Core\Request\Carts\Command\CartAddLineItemAction;
-use Commercetools\Core\Request\Carts\Command\CartChangeLineItemQuantityAction;
-use Commercetools\Core\Request\Carts\Command\CartRemoveLineItemAction;
-use Commercetools\Symfony\ExampleBundle\Model\Form\Type\AddToCartType;
-use Commercetools\Symfony\CartBundle\Model\Repository\CartRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
-use Commercetools\Core\Model\Cart\Cart;
 use Commercetools\Core\Client;
 use Commercetools\Symfony\CartBundle\Manager\OrderManager;
-use Symfony\Component\Form\Extension\Core\Type\FormType;
-use Symfony\Component\Form\Extension\Core\Type\TextType;
-use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Security\Core\User\UserInterface;
 
 
