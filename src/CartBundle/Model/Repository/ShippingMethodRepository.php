@@ -19,20 +19,20 @@ class ShippingMethodRepository extends Repository
     {
         $request = RequestBuilder::of()->shippingMethods()->getByLocation($location, $currency);
 
-        return $this->executeRequest($locale, $request);
+        return $this->executeRequest($request, $locale);
     }
 
     public function getShippingMethodByCart($locale, $cartId)
     {
         $request = RequestBuilder::of()->shippingMethods()->getByCartId($cartId);
 
-        return $this->executeRequest($locale, $request);
+        return $this->executeRequest($request, $locale);
     }
 
     public function getShippingMethodById($locale, $id)
     {
         $request = RequestBuilder::of()->shippingMethods()->getById($id);
 
-        return $this->executeRequest($locale, $request);
+        return $this->executeRequest($request, $locale);
     }
 }

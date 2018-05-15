@@ -50,7 +50,7 @@ class OrderRepository extends Repository
     {
         $request = RequestBuilder::of()->orders()->query()->where('customerId = "' . $customerId . '"')->sort('createdAt desc');
 
-        return $this->executeRequest($locale, $request);
+        return $this->executeRequest($request, $locale);
     }
 
     /**
@@ -62,14 +62,14 @@ class OrderRepository extends Repository
     {
         $request = RequestBuilder::of()->orders()->getById($orderId);
 
-        return $this->executeRequest($locale, $request);
+        return $this->executeRequest($request, $locale);
     }
 
     public function createOrderFromCart($locale, Cart $cart)
     {
         $request = RequestBuilder::of()->orders()->createFromCart($cart);
 
-        $order = $this->executeRequest($locale, $request);
+        $order = $this->executeRequest($request, $locale);
 
         $this->session->remove(CartRepository::CART_ID);
         $this->session->remove(CartRepository::CART_ITEM_COUNT);
