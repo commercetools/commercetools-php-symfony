@@ -6,6 +6,7 @@
 namespace Commercetools\Symfony\OrderBundle\Tests\Manager;
 
 
+use Commercetools\Core\Model\Cart\Cart;
 use Commercetools\Core\Model\Order\Order;
 use Commercetools\Core\Model\Order\OrderCollection;
 use Commercetools\Core\Request\AbstractAction;
@@ -58,9 +59,19 @@ class OrderManagerTest extends TestCase
         $this->assertCount(1, $actions);
     }
 
-    public function testCreateOrder()
+    public function testCreateOrderFromCart()
     {
+        $repository = $this->prophesize(OrderRepository::class);
+        $dispatcher = $this->prophesize(EventDispatcherInterface::class);
+        $cart = $this->prophesize(Cart::class);
 
+        $repository->createOrderFromCart('en', $cart->reveal())
+            ->willReturn(Order::of())->shouldBeCalled();
+
+        $manager = new OrderManager($repository->reveal(), $dispatcher->reveal());
+        $order = $manager->createOrderFromCart('en', $cart->reveal());
+
+        $this->assertInstanceOf(Order::class, $order);
     }
 
     public function testUpdate()
