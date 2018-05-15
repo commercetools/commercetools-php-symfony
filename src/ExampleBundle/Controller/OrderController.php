@@ -59,7 +59,7 @@ class OrderController extends Controller
 
     public function showOrderAction(Request $request, $orderId)
     {
-        $order = $this->get('commercetools.repository.order')->getOrder($request->getLocale(), $orderId);
+        $order = $this->manager->getOrder($request->getLocale(), $orderId);
 
         return $this->render('ExampleBundle:user:order.html.twig', [
             'order' => $order
