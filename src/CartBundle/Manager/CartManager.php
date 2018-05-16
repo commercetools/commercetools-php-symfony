@@ -7,8 +7,10 @@ namespace Commercetools\Symfony\CartBundle\Manager;
 use Commercetools\Core\Model\Cart\Cart;
 use Commercetools\Core\Request\AbstractAction;
 use Commercetools\Symfony\CartBundle\Event\CartCreateEvent;
+use Commercetools\Symfony\CartBundle\Event\CartGetEvent;
 use Commercetools\Symfony\CartBundle\Event\CartPostCreateEvent;
 use Commercetools\Symfony\CartBundle\Event\CartPostUpdateEvent;
+use Commercetools\Symfony\CartBundle\Event\CartRemoveEvent;
 use Commercetools\Symfony\CartBundle\Event\CartUpdateEvent;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Commercetools\Symfony\CartBundle\Model\Repository\CartRepository;
@@ -47,6 +49,7 @@ class CartManager
             $this->dispatcher->dispatch(CartGetEvent::class, $event);
 
         } else {
+            $cart = Cart::of(); // this temporary helps on the template
             $event = new CartRemoveEvent();
             $this->dispatcher->dispatch(CartRemoveEvent::class, $event);
         }
