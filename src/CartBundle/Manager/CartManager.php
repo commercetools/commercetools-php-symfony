@@ -49,7 +49,7 @@ class CartManager
             $this->dispatcher->dispatch(CartGetEvent::class, $event);
 
         } else {
-            $cart = Cart::of(); // <- this only helps on the template
+            $cart = Cart::of(); // this temporary helps on the template
             $event = new CartRemoveEvent();
             $this->dispatcher->dispatch(CartRemoveEvent::class, $event);
         }
