@@ -39,7 +39,19 @@ class CartManager
 
     public function getCart($locale, $cartId = null, $customerId = null)
     {
-        return $this->repository->getCart($locale, $cartId, $customerId);
+        $cart = $this->repository->getCart($locale, $cartId, $customerId);
+
+        // XXX
+        if (!is_null($cart)){
+            $event = new CartGetEvent($cart);
+            $this->dispatcher->dispatch(CartGetEvent::class, $event);
+
+        } else {
+            $event = new CartRemoveEvent();
+            $this->dispatcher->dispatch(CartRemoveEvent::class, $event);
+        }
+
+        return $cart;
     }
 
     public function createCart($locale, $currency, $country, $lineItems, $customerId = null, $anonymousId = null)
