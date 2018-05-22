@@ -8,9 +8,9 @@ namespace Commercetools\Symfony\ExampleBundle\EventSubscriber;
 
 use Commercetools\Symfony\CartBundle\Event\CartCreateEvent;
 use Commercetools\Symfony\CartBundle\Event\CartGetEvent;
+use Commercetools\Symfony\CartBundle\Event\CartNotFoundEvent;
 use Commercetools\Symfony\CartBundle\Event\CartPostCreateEvent;
 use Commercetools\Symfony\CartBundle\Event\CartPostUpdateEvent;
-use Commercetools\Symfony\CartBundle\Event\CartRemoveEvent;
 use Commercetools\Symfony\CartBundle\Event\CartUpdateEvent;
 use Commercetools\Symfony\CartBundle\Model\Repository\CartRepository;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
@@ -33,7 +33,7 @@ class CartSubscriber implements EventSubscriberInterface
             CartUpdateEvent::class => 'onCartUpdate',
             CartPostUpdateEvent::class => 'onCartPostUpdate',
             CartGetEvent::class => 'onCartGet',
-            CartRemoveEvent::class => 'onCartRemove'
+            CartNotFoundEvent::class => 'onCartNotFound'
         ];
     }
 
@@ -50,17 +50,23 @@ class CartSubscriber implements EventSubscriberInterface
         $this->session->set(CartRepository::CART_ITEM_COUNT, $cart->getLineItemCount());
     }
 
-    public function onCartPostCreate()
+    public function onCartPostCreate(CartPostCreateEvent $event)
     {
-        return true;
+        $cart = $event->getCart();
+
+        $this->session->set(CartRepository::CART_ID, $cart->getId());
+        $this->session->set(CartRepository::CART_ITEM_COUNT, $cart->getLineItemCount());
     }
 
-    public function onCartPostUpdate()
+    public function onCartPostUpdate(CartPostUpdateEvent $event)
     {
-        return true;
+        $cart = $event->getCart();
+
+        $this->session->set(CartRepository::CART_ID, $cart->getId());
+        $this->session->set(CartRepository::CART_ITEM_COUNT, $cart->getLineItemCount());
     }
 
-    public function onCartRemove()
+    public function onCartNotFound()
     {
         $this->session->remove(CartRepository::CART_ID);
         $this->session->remove(CartRepository::CART_ITEM_COUNT);

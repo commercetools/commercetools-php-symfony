@@ -23,7 +23,7 @@
        </a>
         <ul>
             <li><a href="{{ path('_ctp_example') }}">Home</a> </li>
-            <li><a href="{{ path('_ctp_example_cart') }}">Cart</a> </li>
+            <li><a href="{{ path('_ctp_example_cart') }}">Cart ({{ app.session.get('cart.itemCount') }})</a> </li>
             <li><a href="{{ path('_ctp_example_shopping_list') }}">Lists</a> </li>
             {% if app.user %}
                 <li><a href="{{ path('_ctp_example_user_details') }}">User</a> </li>
