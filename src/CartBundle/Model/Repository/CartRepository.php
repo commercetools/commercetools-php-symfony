@@ -8,7 +8,6 @@ namespace Commercetools\Symfony\CartBundle\Model\Repository;
 use Commercetools\Core\Builder\Request\RequestBuilder;
 use Commercetools\Core\Model\Zone\Location;
 use Commercetools\Core\Model\Cart\CartState;
-use Commercetools\Core\Request\ClientRequestInterface;
 use Commercetools\Symfony\CtpBundle\Model\QueryParams;
 use Commercetools\Symfony\CtpBundle\Model\Repository;
 use Commercetools\Core\Client;
@@ -16,10 +15,8 @@ use Commercetools\Core\Model\Cart\Cart;
 use Commercetools\Core\Model\Cart\CartDraft;
 use Commercetools\Core\Model\Cart\LineItemDraftCollection;
 use Commercetools\Core\Model\Common\Address;
-use Commercetools\Core\Request\Carts\CartCreateRequest;
 use Commercetools\Symfony\CtpBundle\Service\MapperFactory;
 use Psr\Cache\CacheItemPoolInterface;
-use Symfony\Component\HttpFoundation\Session\Session;
 
 
 class CartRepository extends Repository

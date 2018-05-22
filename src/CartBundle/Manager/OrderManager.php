@@ -49,7 +49,7 @@ class OrderManager
 
     public function createOrderFromCart($locale, $cart)
     {
-        // XXX
+        // TODO: whatever
         $event = new OrderCreateEvent();
         $this->dispatcher->dispatch(OrderCreateEvent::class, $event);
 
