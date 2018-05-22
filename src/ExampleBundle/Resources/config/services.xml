@@ -34,5 +34,9 @@
             <tag name="kernel.event_subscriber"/>
             <argument type="service" id="session"/>
         </service>
+        <service id="Commercetools\Symfony\ExampleBundle\EventSubscriber\OrderSubscriber">
+            <tag name="kernel.event_subscriber"/>
+            <argument type="service" id="session"/>
+        </service>
     </services>
 </container>

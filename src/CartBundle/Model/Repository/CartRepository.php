@@ -46,7 +46,7 @@ class CartRepository extends Repository
         $this->shippingMethodRepository = $shippingMethodRepository;
     }
 
-    public function getCart($locale, $cartId = null, $customerId = null)
+    public function getCart($locale, $cartId = null, $customerId = null, $anonymousId = null)
     {
         $cart = null;
 
@@ -68,6 +68,15 @@ class CartRepository extends Repository
                     throw new \InvalidArgumentException();
                 }
             }
+        } elseif (!is_null($anonymousId)) {
+            $cartRequest = RequestBuilder::of()->carts()->query();
+
+            $predicate = 'cartState = "' . CartState::ACTIVE . '" and anonymousId="' . $customerId . '"';
+
+            $cartRequest->where($predicate)->limit(1);
+
+            $carts = $this->executeRequest($cartRequest, $locale);
+            $cart = $carts->current();
         }
 
         return $cart;

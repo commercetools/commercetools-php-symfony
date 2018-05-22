@@ -40,9 +40,9 @@ class CartManager
         $this->dispatcher = $dispatcher;
     }
 
-    public function getCart($locale, $cartId = null, $customerId = null)
+    public function getCart($locale, $cartId = null, $customerId = null, $anonymousId = null)
     {
-        $cart = $this->repository->getCart($locale, $cartId, $customerId);
+        $cart = $this->repository->getCart($locale, $cartId, $customerId, $anonymousId);
 
         // XXX
         if (!is_null($cart)){

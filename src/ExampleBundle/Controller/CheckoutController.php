@@ -136,7 +136,7 @@ class CheckoutController extends Controller
         ]);
     }
 
-    public function confirmationAction(Request $request, UserInterface $user)
+    public function confirmationAction(Request $request, UserInterface $user = null)
     {
         $session = $this->get('session');
 
