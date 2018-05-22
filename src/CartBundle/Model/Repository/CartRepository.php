@@ -106,9 +106,6 @@ class CartRepository extends Repository
         $cartCreateRequest = RequestBuilder::of()->carts()->create($cartDraft);
         $cart = $this->executeRequest($cartCreateRequest, $locale);
 
-        $this->session->set(self::CART_ID, $cart->getId());
-        $this->session->set(self::CART_ITEM_COUNT, $cart->getLineItemCount());
-
         return $cart;
     }
 
