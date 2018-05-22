@@ -25,7 +25,6 @@ use Symfony\Component\HttpFoundation\Session\Session;
 class CartRepository extends Repository
 {
     protected $shippingMethodRepository;
-    protected $session;
 
     const NAME = 'cart';
     const CART_ID = 'cart.id';
@@ -38,19 +37,16 @@ class CartRepository extends Repository
      * @param Client $client
      * @param MapperFactory $mapperFactory
      * @param ShippingMethodRepository $shippingMethodRepository
-     * @param Session $session
      */
     public function __construct(
         $enableCache,
         CacheItemPoolInterface $cache,
         Client $client,
         MapperFactory $mapperFactory,
-        ShippingMethodRepository $shippingMethodRepository,
-        Session $session
+        ShippingMethodRepository $shippingMethodRepository
     ) {
         parent::__construct($enableCache, $cache, $client, $mapperFactory);
         $this->shippingMethodRepository = $shippingMethodRepository;
-        $this->session = $session;
     }
 
     public function getCart($locale, $cartId = null, $customerId = null)
@@ -75,15 +71,6 @@ class CartRepository extends Repository
                     throw new \InvalidArgumentException();
                 }
             }
-        }
-
-        if (is_null($cart)) {
-            $cart = Cart::of($this->getClient()->getConfig()->getContext());
-            $this->session->remove(self::CART_ID);
-            $this->session->remove(self::CART_ITEM_COUNT);
-        } else {
-            $this->session->set(self::CART_ID, $cart->getId());
-            $this->session->set(self::CART_ITEM_COUNT, $cart->getLineItemCount());
         }
 
         return $cart;

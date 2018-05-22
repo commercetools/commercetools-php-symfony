@@ -7,8 +7,10 @@ namespace Commercetools\Symfony\CartBundle\Manager;
 use Commercetools\Core\Model\Cart\Cart;
 use Commercetools\Core\Request\AbstractAction;
 use Commercetools\Symfony\CartBundle\Event\CartCreateEvent;
+use Commercetools\Symfony\CartBundle\Event\CartGetEvent;
 use Commercetools\Symfony\CartBundle\Event\CartPostCreateEvent;
 use Commercetools\Symfony\CartBundle\Event\CartPostUpdateEvent;
+use Commercetools\Symfony\CartBundle\Event\CartRemoveEvent;
 use Commercetools\Symfony\CartBundle\Event\CartUpdateEvent;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Commercetools\Symfony\CartBundle\Model\Repository\CartRepository;
@@ -39,7 +41,20 @@ class CartManager
 
     public function getCart($locale, $cartId = null, $customerId = null)
     {
-        return $this->repository->getCart($locale, $cartId, $customerId);
+        $cart = $this->repository->getCart($locale, $cartId, $customerId);
+
+        // XXX
+        if (!is_null($cart)){
+            $event = new CartGetEvent($cart);
+            $this->dispatcher->dispatch(CartGetEvent::class, $event);
+
+        } else {
+            $cart = Cart::of(); // this temporary helps on the template
+            $event = new CartRemoveEvent();
+            $this->dispatcher->dispatch(CartRemoveEvent::class, $event);
+        }
+
+        return $cart;
     }
 
     public function createCart($locale, $currency, $country, $lineItems, $customerId = null, $anonymousId = null)
