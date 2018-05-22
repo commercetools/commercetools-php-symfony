@@ -5,7 +5,7 @@
     <img src="{{ product.getMasterVariant.getImages.current.getUrl | default('')}}" width="100">
     <p>{{ product.getDescription }}</p>
 
-    <p>{{ product.masterVariant.price.value }}</p>
+    <p>{{ product.masterVariant.getPrices.current.value }}</p>
 
     {{ form_start(form) }}
         {% form_theme form 'bootstrap_3_layout.html.twig' %}

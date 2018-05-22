@@ -74,6 +74,23 @@ class CatalogController extends Controller
 
         $product = $repository->getProductBySlug($slug, $request->getLocale(), 'EUR', 'DE');
 
+        return $this->productDetails($request, $product, $user);
+    }
+
+    public function detailByIdAction(Request $request, $id, UserInterface $user = null)
+    {
+        /**
+         * @var ProductRepository $repository
+         */
+        $repository = $this->get('commercetools.repository.product');
+
+        $product = $repository->getProductById($id, $request->getLocale(), 'EUR', 'DE');
+
+        return $this->productDetails($request, $product, $user);
+    }
+
+    private function productDetails(Request $request, $product, UserInterface $user = null)
+    {
         $variantIds = [];
 
         foreach ($product->getAllVariants() as $variant) {
@@ -107,9 +124,9 @@ class CatalogController extends Controller
         $shoppingListForm->handleRequest($request);
 
         return $this->render('ExampleBundle:catalog:product.html.twig', [
-                'product' =>  $product,
-                'form' => $form->createView(),
-                'shoppingListForm' => $shoppingListForm->createView()
+            'product' =>  $product,
+            'form' => $form->createView(),
+            'shoppingListForm' => $shoppingListForm->createView()
         ]);
     }
 
