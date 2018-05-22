@@ -80,10 +80,10 @@ class CatalogController extends Controller
             $variantIds[$variant->getSku()] = $variant->getId();
         }
 
-        // XXX anonymous users
-        $shoppingLists = [];
         $shoppingListsIds = [];
-        if(!is_null($user)){
+        if(is_null($user)){
+            $shoppingLists = $this->manager->getAllOfAnonymous($request->getLocale(), $this->get('session')->getId());
+        } else {
             $shoppingLists = $this->manager->getAllOfCustomer($request->getLocale(), CustomerReference::ofId($user->getId()));
         }
 

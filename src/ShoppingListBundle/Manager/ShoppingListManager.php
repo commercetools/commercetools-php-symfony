@@ -48,10 +48,19 @@ class ShoppingListManager
         return $this->repository->getAllShoppingListsByCustomer($locale, $customer, $params);
     }
 
-    public function createShoppingList($locale, CustomerReference $customer, $name)
+    public function getAllOfAnonymous($locale, $anonymousId, QueryParams $params = null)
     {
+        return $this->repository->getAllShoppingListsByAnonymousId($locale, $anonymousId, $params);
+    }
 
-        return $this->repository->create($locale, $customer, $name);
+    public function createShoppingListByCustomer($locale, CustomerReference $customer, $name)
+    {
+        return $this->repository->createByCustomer($locale, $customer, $name);
+    }
+
+    public function createShoppingListByAnonymous($locale, $anonymousId, $name)
+    {
+        return $this->repository->createByAnonymous($locale, $anonymousId, $name);
     }
 
     /**

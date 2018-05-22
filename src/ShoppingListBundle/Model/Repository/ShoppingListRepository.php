@@ -31,57 +31,43 @@ class ShoppingListRepository extends Repository
     {
         $request = RequestBuilder::of()->shoppingLists()->getById($shoppingListId);
 
-        return $this->getShoppingLists($request, $locale, $params);
+        return $this->executeRequest($request, $locale, $params);
     }
 
     public function getAllShoppingListsByCustomer($locale, CustomerReference $customer, QueryParams $params = null)
     {
         $request = RequestBuilder::of()->shoppingLists()->query()->where('customer(id = "' . $customer->getId() . '")')->sort('createdAt desc');
 
-        return $this->getShoppingLists($request, $locale, $params);
+        return $this->executeRequest($request, $locale, $params);
     }
 
-    private function getShoppingLists(ClientRequestInterface $request, $locale, QueryParams $params = null)
+    public function getAllShoppingListsByAnonymousId($locale, $anonymousId, QueryParams $params = null)
     {
-        $client = $this->getClient();
+        $request = RequestBuilder::of()->shoppingLists()->query()->where('anonymousId = "' . $anonymousId . '"')->sort('createdAt desc');
 
-        if(!is_null($params)){
-            foreach ($params->getParams() as $param) {
-                $request->addParamObject($param);
-            }
-        }
-
-        $response = $request->executeWithClient($client);
-        $lists = $request->mapFromResponse(
-            $response,
-            $this->getMapper($locale)
-        );
-
-        return $lists;
+        return $this->executeRequest($request, $locale, $params);
     }
 
-    public function create($locale, CustomerReference $customer, $shoppingListName, QueryParams $params = null)
+    public function createByCustomer($locale, CustomerReference $customer, $shoppingListName, QueryParams $params = null)
     {
-        $client = $this->getClient();
         $key = $this->createUniqueKey($customer->getId());
         $localizedListName = LocalizedString::ofLangAndText($locale, $shoppingListName);
         $shoppingListDraft = ShoppingListDraft::ofNameAndKey($localizedListName, $key)
             ->setCustomer($customer);
         $request = RequestBuilder::of()->shoppingLists()->create($shoppingListDraft);
 
-        if(!is_null($params)){
-            foreach ($params->getParams() as $param) {
-                $request->addParamObject($param);
-            }
-        }
+        return $this->executeRequest($request, $locale, $params);
+    }
 
-        $response = $request->executeWithClient($client);
-        $list = $request->mapFromResponse(
-            $response,
-            $this->getMapper($locale)
-        );
+    public function createByAnonymous($locale, $anonymousId, $shoppingListName, QueryParams $params = null)
+    {
+        $key = $this->createUniqueKey($anonymousId);
+        $localizedListName = LocalizedString::ofLangAndText($locale, $shoppingListName);
+        $shoppingListDraft = ShoppingListDraft::ofNameAndKey($localizedListName, $key)
+            ->setAnonymousId($anonymousId);
+        $request = RequestBuilder::of()->shoppingLists()->create($shoppingListDraft);
 
-        return $list;
+        return $this->executeRequest($request, $locale, $params);
     }
 
     private function createUniqueKey($customerId)
