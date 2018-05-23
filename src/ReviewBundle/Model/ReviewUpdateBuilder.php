@@ -2,15 +2,15 @@
 /**
  */
 
-namespace Commercetools\Symfony\CustomerBundle\Model;
+namespace Commercetools\Symfony\ReviewBundle\Model;
 
 
-use Commercetools\Core\Builder\Update\CustomersActionBuilder;
-use Commercetools\Core\Model\Customer\Customer;
+use Commercetools\Core\Builder\Update\ReviewsActionBuilder;
+use Commercetools\Core\Model\Review\Review;
 use Commercetools\Core\Request\AbstractAction;
-use Commercetools\Symfony\CustomerBundle\Manager\ReviewManager;
+use Commercetools\Symfony\ReviewBundle\Manager\ReviewManager;
 
-class ReviewUpdateBuilder extends CustomersActionBuilder
+class ReviewUpdateBuilder extends ReviewsActionBuilder
 {
     /**
      * @var ReviewManager
@@ -18,16 +18,16 @@ class ReviewUpdateBuilder extends CustomersActionBuilder
     private $manager;
 
     /**
-     * @var Customer
+     * @var Review
      */
     private $review;
 
     /**
-     * ShoppingListUpdate constructor.
+     * ReviewUpdate constructor.
      * @param ReviewManager $manager
-     * @param Customer $review
+     * @param Review $review
      */
-    public function __construct(Customer $review, ReviewManager $manager)
+    public function __construct(Review $review, ReviewManager $manager)
     {
         $this->manager = $manager;
         $this->review = $review;
@@ -44,7 +44,7 @@ class ReviewUpdateBuilder extends CustomersActionBuilder
     }
 
     /**
-     * @return Customer
+     * @return Review
      */
     public function flush()
     {

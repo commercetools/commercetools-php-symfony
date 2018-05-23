@@ -23,7 +23,7 @@ class CustomerUpdateBuilder extends CustomersActionBuilder
     private $customer;
 
     /**
-     * ShoppingListUpdate constructor.
+     * CustomerUpdate constructor.
      * @param CustomerManager $manager
      * @param Customer $customer
      */

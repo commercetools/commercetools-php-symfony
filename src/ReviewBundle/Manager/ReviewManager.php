@@ -5,7 +5,6 @@
 namespace Commercetools\Symfony\ReviewBundle\Manager;
 
 
-use Commercetools\Core\Model\Common\Address;
 use Commercetools\Core\Request\AbstractAction;
 use Commercetools\Core\Model\Review\Review;
 use Commercetools\Symfony\CtpBundle\Model\QueryParams;
@@ -13,9 +12,7 @@ use Commercetools\Symfony\ReviewBundle\Event\ReviewUpdateEvent;
 use Commercetools\Symfony\ReviewBundle\Event\ReviewPostUpdateEvent;
 use Commercetools\Symfony\ReviewBundle\Model\Repository\ReviewRepository;
 use Commercetools\Symfony\ReviewBundle\Model\ReviewUpdateBuilder;
-use Commercetools\Symfony\ExampleBundle\Model\Form\Type\AddressType;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
-use Commercetools\Core\Model\Review\ReviewReference;
 
 class ReviewManager
 {
@@ -30,7 +27,7 @@ class ReviewManager
     private $dispatcher;
 
     /**
-     * ShoppingListManager constructor.
+     * ReviewManager constructor.
      * @param ReviewRepository $repository
      * @param EventDispatcherInterface $dispatcher
      */

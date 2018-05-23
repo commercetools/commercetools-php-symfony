@@ -26,25 +26,6 @@ class CustomerRepository extends Repository
         parent::__construct($enableCache, $cache, $client, $mapperFactory);
     }
 
-    public function executeRequest(ClientRequestInterface $request, $locale, QueryParams $params = null)
-    {
-        $client = $this->getClient();
-
-        if(!is_null($params)){
-            foreach ($params->getParams() as $param) {
-                $request->addParamObject($param);
-            }
-        }
-
-        $response = $request->executeWithClient($client);
-        $customers = $request->mapFromResponse(
-            $response,
-            $this->getMapper($locale)
-        );
-
-        return $customers;
-    }
-
     public function getCustomerById($locale, $customerId, QueryParams $params = null)
     {
         $request = RequestBuilder::of()->customers()->getById($customerId);

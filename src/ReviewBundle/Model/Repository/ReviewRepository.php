@@ -11,7 +11,6 @@ use Commercetools\Symfony\CtpBundle\Service\MapperFactory;
 use Commercetools\Symfony\CtpBundle\Model\Repository;
 use Commercetools\Core\Client;
 use Psr\Cache\CacheItemPoolInterface;
-use Commercetools\Core\Request\ClientRequestInterface;
 
 class ReviewRepository extends Repository
 {
@@ -22,25 +21,6 @@ class ReviewRepository extends Repository
         MapperFactory $mapperFactory
     ) {
         parent::__construct($enableCache, $cache, $client, $mapperFactory);
-    }
-
-    public function executeRequest(ClientRequestInterface $request, $locale, QueryParams $params = null)
-    {
-        $client = $this->getClient();
-
-        if(!is_null($params)){
-            foreach ($params->getParams() as $param) {
-                $request->addParamObject($param);
-            }
-        }
-
-        $response = $request->executeWithClient($client);
-        $reviews = $request->mapFromResponse(
-            $response,
-            $this->getMapper($locale)
-        );
-
-        return $reviews;
     }
 
     public function getReviewById($locale, $reviewId, QueryParams $params = null)
