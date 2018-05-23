@@ -5,6 +5,7 @@
 namespace Commercetools\Symfony\CartBundle\Manager;
 
 use Commercetools\Core\Model\Cart\Cart;
+use Commercetools\Core\Model\Cart\LineItemDraftCollection;
 use Commercetools\Core\Model\Zone\Location;
 use Commercetools\Core\Request\AbstractAction;
 use Commercetools\Symfony\CartBundle\Event\CartCreateEvent;
@@ -58,13 +59,12 @@ class CartManager
         return $cart;
     }
 
-    public function createCart($locale, $currency, Location $location, $lineItems, $customerId = null, $anonymousId = null)
+    public function createCart($locale, $currency, Location $location, LineItemDraftCollection $lineItemDraftCollection, $customerId = null, $anonymousId = null)
     {
-        // XXX
         $event = new CartCreateEvent();
         $this->dispatcher->dispatch(CartCreateEvent::class, $event);
 
-        $cart = $this->repository->createCart($locale, $currency, $location, $lineItems, $customerId, $anonymousId);
+        $cart = $this->repository->createCart($locale, $currency, $location, $lineItemDraftCollection, $customerId, $anonymousId);
 
         $eventPost = new CartPostCreateEvent($cart);
         $this->dispatcher->dispatch(CartPostCreateEvent::class, $eventPost);

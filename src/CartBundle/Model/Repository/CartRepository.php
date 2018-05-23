@@ -46,6 +46,7 @@ class CartRepository extends Repository
         $this->shippingMethodRepository = $shippingMethodRepository;
     }
 
+    // TODO: check/fix
     public function getCart($locale, $cartId = null, $customerId = null, $anonymousId = null)
     {
         $cart = null;
@@ -64,14 +65,14 @@ class CartRepository extends Repository
             $cart = $carts->current();
 
             if (!is_null($cart)) {
-                if ($cart->getCustomerId() !== $customerId) {
+                if ($cart->getCustomerId() !== $customerId) { // accepts null customer id (?)
                     throw new \InvalidArgumentException();
                 }
             }
         } elseif (!is_null($anonymousId)) {
             $cartRequest = RequestBuilder::of()->carts()->query();
 
-            $predicate = 'cartState = "' . CartState::ACTIVE . '" and anonymousId="' . $customerId . '"';
+            $predicate = 'cartState = "' . CartState::ACTIVE . '" and anonymousId="' . $anonymousId . '"';
 
             $cartRequest->where($predicate)->limit(1);
 
@@ -86,31 +87,29 @@ class CartRepository extends Repository
      * @param $locale
      * @param $currency
      * @param Location $location
-     * @param LineItemDraftCollection $lineItems
+     * @param LineItemDraftCollection $lineItemDraftCollection
      * @param $customerId
      * @param $anonymousId
      * @return Cart|null
      */
-    public function createCart($locale, $currency, Location $location, LineItemDraftCollection $lineItems, $customerId = null, $anonymousId = null)
+    public function createCart($locale, $currency, Location $location, LineItemDraftCollection $lineItemDraftCollection, $customerId = null, $anonymousId = null)
     {
         $shippingMethods = $this->shippingMethodRepository->getShippingMethodsByLocation($locale, $location, $currency);
 
         $cartDraft = CartDraft::ofCurrency($currency)->setCountry($location->getCountry())
             ->setShippingAddress(Address::of()->setCountry($location->getCountry()))
-            ->setLineItems($lineItems);
-
-        if (!is_null($anonymousId)) {
-            $cartDraft->setAnonymousId($anonymousId);
-        }
+            ->setLineItems($lineItemDraftCollection);
 
         if (!is_null($customerId)) {
             $cartDraft->setCustomerId($customerId);
+        } else if (!is_null($anonymousId)) {
+            $cartDraft->setAnonymousId($anonymousId);
         }
 
         $cartDraft->setShippingMethod($shippingMethods->current()->getReference());
 
-        $cartCreateRequest = RequestBuilder::of()->carts()->create($cartDraft);
-        $cart = $this->executeRequest($cartCreateRequest, $locale);
+        $request = RequestBuilder::of()->carts()->create($cartDraft);
+        $cart = $this->executeRequest($request, $locale);
 
         return $cart;
     }
