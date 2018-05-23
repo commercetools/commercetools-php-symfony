@@ -120,7 +120,7 @@ class CatalogController extends Controller
         $form = $this->createForm(AddToCartType::class, $data, ['action' => $this->generateUrl('_ctp_example_add_lineItem')]);
         $form->handleRequest($request);
 
-        $shoppingListForm = $this->createForm(AddToShoppingListType::class, $data, ['action' => $this->generateUrl('_ctp_example_add_lineItem_to_shoppingList')]);
+        $shoppingListForm = $this->createForm(AddToShoppingListType::class, $data, ['action' => $this->generateUrl('_ctp_example_shoppingList_add_lineItem')]);
         $shoppingListForm->handleRequest($request);
 
         return $this->render('ExampleBundle:catalog:product.html.twig', [

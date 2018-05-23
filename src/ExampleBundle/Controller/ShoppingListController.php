@@ -3,9 +3,12 @@ declare(strict_types=1);
 
 namespace Commercetools\Symfony\ExampleBundle\Controller;
 
+use Commercetools\Core\Builder\Request\RequestBuilder;
 use Commercetools\Core\Client;
 use Commercetools\Core\Model\Customer\CustomerReference;
 use Commercetools\Core\Request\ShoppingLists\Command\ShoppingListAddLineItemAction;
+use Commercetools\Core\Request\ShoppingLists\Command\ShoppingListChangeLineItemQuantityAction;
+use Commercetools\Core\Request\ShoppingLists\Command\ShoppingListRemoveLineItemAction;
 use Commercetools\Symfony\CtpBundle\Model\QueryParams;
 use Commercetools\Symfony\ExampleBundle\Model\Form\Type\AddToShoppingListType;
 use Commercetools\Symfony\ShoppingListBundle\Manager\ShoppingListManager;
@@ -97,28 +100,30 @@ class ShoppingListController extends Controller
             $updateBuilder->flush();
         }
 
-        return $this->redirectToRoute('_ctp_example_shopping_list');
+        return $this->redirectToRoute('_ctp_example_shoppingList');
     }
 
-    public function removeLineItem(Request $request)
+    public function removeLineItemAction(Request $request)
     {
-        $this->manager->removeLineItem(
-            $this->manager->getById($request->getLocale(), $request->get('_shoppingListId')),
-            $request->request->get('_lineItemId')
-        );
+        $shoppingList = $this->manager->getById($request->getLocale(), $request->get('_shoppingListId'));
+        $builder = $this->manager->update($shoppingList)
+            ->addAction(ShoppingListRemoveLineItemAction::ofLineItemId($request->get('_lineItemId')));
 
-        return $this->redirectToRoute('_ctp_example_shopping_list');
+        $builder->flush();
+
+        return $this->redirectToRoute('_ctp_example_shoppingList');
     }
 
-    public function changeLineItemQuantity(Request $request)
+    public function changeLineItemQuantityAction(Request $request)
     {
-        $this->manager->changeLineItemQuantity(
-            $this->manager->getById($request->getLocale(), $request->get('_shoppingListId')),
-            $request->request->get('_lineItemId'),
-            (int)$request->request->get('_lineItemQuantity')
-        );
+        $shoppingList = $this->manager->getById($request->getLocale(), $request->get('_shoppingListId'));
+        $builder = $this->manager->update($shoppingList)
+            ->addAction(ShoppingListChangeLineItemQuantityAction::ofLineItemIdAndQuantity(
+                $request->get('_lineItemId'), (int)$request->get('_lineItemQuantity')));
 
-        return $this->redirectToRoute('_ctp_example_shopping_list');
+        $builder->flush();
+
+        return $this->redirectToRoute('_ctp_example_shoppingList');
     }
 
 }

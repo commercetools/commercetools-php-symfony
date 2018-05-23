@@ -7,16 +7,63 @@
 
             <h3>list: {{ list.name }}</h3>
 
-            {% for item in list.lineItems %}
-                <div class="col-md-6">
-                    <a href="{{ path('_ctp_example_product_by_id', {id: item.productId}) }}">
-                        <h3>{{ item.name }}</h3>
-                        <img src="{{ item.variant.images.0.url | default('') }}" width="100">
-                        {#<p>{{ item.description }}</p>#}
-                        <p>{{ item.variant.prices.0.value }}</p>
-                    </a>
+            <table>
+                <tr>
+                    <th class="table-40">Product</th>
+                    <th class="table-20">Quantity</th>
+                    <th class="table-20">Price</th>
+                    <th class="table-20">Total Price</th>
+                    <th class="table-20"></th>
+                </tr>
+                {% for lineItem in list.lineItems %}
+                    <tr>
+                        <td class="table-40">{{ lineItem.getName }}</td>
+                        <td class="table-20">
+                            <form action="{{ path('_ctp_example_shoppingList_change_lineItem_quantity') }}" method="post">
+                                <div class="form-group">
+                                    <input type="hidden" name="_lineItemId" value="{{ lineItem.getId }}">
+                                    <input type="hidden" name="_shoppingListId" value="{{ list.getId }}">
+                                    <select name="_lineItemQuantity">
+                                        {% for i in 1..50 %}
+                                            <option value="{{ i }}" {% if lineItem.getQuantity == i %} selected="selected" {% endif %}>{{ i }}</option>
+                                        {% endfor %}
+                                    </select>
+                                    <button class="btn btn-default" type="submit">Change</button>
+                                </div>
+                            </form>
+                        </td>
+                        <td class="table-20">{{ lineItem.getVariant.getPrices.current }}</td>
+                        <td class="table-20">Eurocents: {{ lineItem.getQuantity * lineItem.getVariant.getPrices.current.getValue.getCentAmount }}</td>
+                        <td class="table-20">
+                            <form action="{{ path('_ctp_example_shoppingList_remove_lineItem') }}" method="post">
+                                <div class="form-group">
+                                    <input type="hidden" name="_lineItemId" value="{{ lineItem.getId }}">
+                                    <input type="hidden" name="_shoppingListId" value="{{ list.getId }}">
+                                    <button class="btn btn-default" type="submit">Delete Item</button>
+                                </div>
+                            </form>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </table>
+
+            <form action="{{ path('_ctp_example_add_shoppingList') }}" method="post">
+                <div class="form-group">
+                    <input type="hidden" name="_shoppingListId" value="{{ list.getId }}">
+                    <button class="btn btn-default" type="submit">Add ShoppingList to Cart</button>
                 </div>
-            {% endfor %}
+            </form>
+
+            {#{% for item in list.lineItems %}#}
+                {#<div class="col-md-6">#}
+                    {#<a href="{{ path('_ctp_example_product_by_id', {id: item.productId}) }}">#}
+                        {#<h3>{{ item.name }}</h3>#}
+                        {#<img src="{{ item.variant.images.0.url | default('') }}" width="100">#}
+                        {#<p>{{ item.description }}</p>#}
+                        {#<p>{{ item.variant.prices.0.value }}</p>#}
+                    {#</a>#}
+                {#</div>#}
+            {#{% endfor %}#}
 
         </div>
         <hr>
