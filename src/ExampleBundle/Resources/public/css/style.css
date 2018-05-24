@@ -312,3 +312,15 @@ label[for=form_name_*]{
     0% { transform: rotate(0deg); }
     100% { transform: rotate(360deg); }
 }
+
+/* reviews */
+.review-item{
+    background-color:#ececec;
+    margin:10px 0;
+    border-bottom: 1px white dashed;
+    padding:12px 0;
+}
+.review-author{
+    color: #999;
+    font-style: italic;
+}

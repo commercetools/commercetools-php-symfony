@@ -7,15 +7,29 @@
 
     <p>{{ product.masterVariant.getPrices.current.value }}</p>
 
-    {{ form_start(form) }}
-        {% form_theme form 'bootstrap_3_layout.html.twig' %}
-        {{ form_widget(form) }}
-    {{ form_end(form) }}
+    <div class="row">
 
-    {{ form_start(shoppingListForm) }}
-        {% form_theme form 'bootstrap_3_layout.html.twig' %}
-        {{ form_widget(shoppingListForm) }}
-    {{ form_end(shoppingListForm) }}
+        <div class="col-md-6">
+            {{ form_start(form) }}
+            {% form_theme form 'bootstrap_3_layout.html.twig' %}
+            {{ form_widget(form) }}
+            {{ form_end(form) }}
+        </div>
+
+        <div class="col-md-6">
+            {{ form_start(shoppingListForm) }}
+            {% form_theme form 'bootstrap_3_layout.html.twig' %}
+            {{ form_widget(shoppingListForm) }}
+            {{ form_end(shoppingListForm) }}
+        </div>
+
+    </div>
+
+
+    <!-- reviews -->
+    {{ render(controller(
+        'ExampleBundle:Review:showReviewsForProduct', { 'productId' : product.getId }
+    )) }}
 {% endblock %}
 
 

@@ -113,3 +113,12 @@ _ctp_example_shoppingList_change_lineItem_quantity:
     defaults: { _controller: ExampleBundle:ShoppingList:changeLineItemQuantity }
     methods: [POST]
 
+_ctp_example_review_show:
+    path: /product/id/{productId}/reviews
+    defaults: { _controller: ExampleBundle:Review:showReviewsForProduct }
+
+_ctp_example_review_create:
+    path: /product/id/{productId}/reviews/create
+    defaults: { _controller: ExampleBundle:Review:createReviewForProduct }
+    methods: [POST]
+
