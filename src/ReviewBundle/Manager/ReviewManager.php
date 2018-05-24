@@ -5,6 +5,8 @@
 namespace Commercetools\Symfony\ReviewBundle\Manager;
 
 
+use Commercetools\Core\Model\Customer\CustomerReference;
+use Commercetools\Core\Model\Product\ProductReference;
 use Commercetools\Core\Request\AbstractAction;
 use Commercetools\Core\Model\Review\Review;
 use Commercetools\Symfony\CtpBundle\Model\QueryParams;
@@ -40,6 +42,16 @@ class ReviewManager
     public function getById($locale, $reviewId, QueryParams $params = null)
     {
         return $this->repository->getReviewById($locale, $reviewId, $params);
+    }
+
+    public function getByProductId($locale, $productId, QueryParams $params = null)
+    {
+        return $this->repository->getReviewsByProductId($locale, $productId, $params);
+    }
+
+    public function createForProduct($locale, ProductReference $productReference, CustomerReference $customer, $text = null, $rating = null)
+    {
+        return $this->repository->createReviewForProduct($locale, $productReference, $customer, $text, $rating);
     }
 
     /**
