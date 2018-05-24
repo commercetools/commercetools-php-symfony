@@ -44,9 +44,11 @@ class ReviewRepository extends Repository
         $reviewDraft = ReviewDraft::of()
             ->setText($text)
             ->setRating($rating)
-            ->setCustomer($customerReference)
             ->setTarget($productReference)
             ->setLocale($locale);
+        if (!is_null($customerReference)) {
+            $reviewDraft->setCustomer($customerReference);
+        }
         $request = RequestBuilder::of()->reviews()->create($reviewDraft);
 
         return $this->executeRequest($request, $locale);
