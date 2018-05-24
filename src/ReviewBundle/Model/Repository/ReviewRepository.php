@@ -5,6 +5,7 @@
 namespace Commercetools\Symfony\ReviewBundle\Model\Repository;
 
 use Commercetools\Core\Builder\Request\RequestBuilder;
+use Commercetools\Core\Model\Customer\CustomerReference;
 use Commercetools\Core\Model\Review\Review;
 use Commercetools\Core\Model\Review\ReviewDraft;
 use Commercetools\Symfony\CtpBundle\Model\QueryParams;
@@ -39,16 +40,18 @@ class ReviewRepository extends Repository
         return $this->executeRequest($request, $locale, $params);
     }
 
-    public function createReviewForProduct($locale, $productReference, $customerReference, $text, $rating)
+    public function createReviewForProduct($locale, $productReference, CustomerReference $customerReference = null, $text, $rating)
     {
         $reviewDraft = ReviewDraft::of()
             ->setText($text)
             ->setRating($rating)
             ->setTarget($productReference)
             ->setLocale($locale);
+
         if (!is_null($customerReference)) {
             $reviewDraft->setCustomer($customerReference);
         }
+
         $request = RequestBuilder::of()->reviews()->create($reviewDraft);
 
         return $this->executeRequest($request, $locale);
