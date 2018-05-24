@@ -6,7 +6,7 @@
             <div class="row review-item">
                 <div class="review-message col-md-10">{{ review.text }}</div>
                 <div class="review-rating col-md-2">{{ review.rating }} of 5 stars</div>
-                <div class="review-author col-md-6 col-md-offset-6 text-right">written by: {{ review.customer.obj.firstName }}</div>
+                <div class="review-author col-md-6 col-md-offset-6 text-right">written by {{ review.customer.obj.firstName | default('anonymous') }}</div>
             </div>
         {% endfor %}
         </div>

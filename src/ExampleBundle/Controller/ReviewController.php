@@ -55,7 +55,7 @@ class ReviewController extends Controller
         ]);
     }
 
-    public function createReviewForProductAction(Request $request, UserInterface $user, $productId)
+    public function createReviewForProductAction(Request $request, $productId, UserInterface $user = null)
     {
         $form = $this->createForm(AddReviewType::class);
         $form->handleRequest($request);
@@ -64,7 +64,10 @@ class ReviewController extends Controller
             $text = $form->get('text')->getData();
             $rating = $form->get('rating')->getData();
 
-            $customerReference = CustomerReference::ofId($user->getId());
+            $customerReference = null;
+            if (!is_null($user)) {
+                $customerReference = CustomerReference::ofId($user->getId());
+            }
             $productReference = ProductReference::ofId($productId);
 
             $this->manager->createForProduct($request->getLocale(), $productReference, $customerReference, $text, $rating);
