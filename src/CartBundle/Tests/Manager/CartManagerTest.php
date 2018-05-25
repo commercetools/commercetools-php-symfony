@@ -62,17 +62,17 @@ class CartManagerTest extends TestCase
     public function testCreateCart()
     {
         $repository = $this->prophesize(CartRepository::class);
-        $lineItemsCollection = $this->prophesize(LineItemDraftCollection::class);
+        $lineItemDraftCollection = $this->prophesize(LineItemDraftCollection::class);
         $location = $this->prophesize(Location::class);
 
-        $repository->createCart('en', 'EUR', $location->reveal(), $lineItemsCollection->reveal(), null, '123')->
-            willReturn(Cart::of())->shouldBeCalled();
+        $repository->createCart('en', 'EUR', $location->reveal(), $lineItemDraftCollection->reveal(), null, '123')
+            ->willReturn(Cart::of())->shouldBeCalled();
 
         $dispatcher = $this->prophesize(EventDispatcherInterface::class);
 
         $manager = new CartManager($repository->reveal(), $dispatcher->reveal());
 
-        $cart = $manager->createCart('en', 'EUR', $location->reveal(), $lineItemsCollection->reveal(), null, '123');
+        $cart = $manager->createCart('en', 'EUR', $location->reveal(), $lineItemDraftCollection->reveal(), null, '123');
         $this->assertInstanceOf(Cart::class, $cart);
     }
 
@@ -84,7 +84,6 @@ class CartManagerTest extends TestCase
 
         $manager = new CartManager($repository->reveal(), $dispatcher->reveal());
         $this->assertInstanceOf(CartUpdateBuilder::class, $manager->update($cart->reveal()));
-
     }
 
     public function testGetCart()
