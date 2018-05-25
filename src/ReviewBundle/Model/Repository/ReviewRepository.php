@@ -35,6 +35,7 @@ class ReviewRepository extends Repository
     public function getReviewsByProductId($locale, $productId, QueryParams $params = null)
     {
         $predicate = 'target(id = "' . $productId . '") and target(typeId="product")';
+
         $request = RequestBuilder::of()->reviews()->query()->where($predicate)->sort('createdAt desc');
 
         return $this->executeRequest($request, $locale, $params);
