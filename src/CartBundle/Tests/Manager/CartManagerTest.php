@@ -62,6 +62,7 @@ class CartManagerTest extends TestCase
     public function testCreateCart()
     {
         $repository = $this->prophesize(CartRepository::class);
+        // TODO: LineItemDraftCollection extends Collection which has a final constructor -- cannot be mocked
         $lineItemDraftCollection = $this->prophesize(LineItemDraftCollection::class);
         $location = $this->prophesize(Location::class);
 
@@ -91,11 +92,25 @@ class CartManagerTest extends TestCase
         $repository = $this->prophesize(CartRepository::class);
         $dispatcher = $this->prophesize(EventDispatcherInterface::class);
 
-        $repository->getCart('en', null, null, null)
+        $repository->getCart('en', '123', null, null)
             ->willReturn(Cart::of())->shouldBeCalled();
 
         $manager = new CartManager($repository->reveal(), $dispatcher->reveal());
-        $cart = $manager->getCart('en');
+        $cart = $manager->getCart('en', '123', null);
+
+        $this->assertInstanceOf(Cart::class, $cart);
+    }
+
+    public function testGetCartNotFound()
+    {
+        $repository = $this->prophesize(CartRepository::class);
+        $dispatcher = $this->prophesize(EventDispatcherInterface::class);
+
+        $repository->getCart('en', '123', null, null)
+            ->willReturn(null)->shouldBeCalled();
+
+        $manager = new CartManager($repository->reveal(), $dispatcher->reveal());
+        $cart = $manager->getCart('en', '123', null);
 
         $this->assertInstanceOf(Cart::class, $cart);
     }
