@@ -3,7 +3,7 @@
  * @author @jayS-de <jens.schulze@commercetools.de>
  */
 
-namespace Commercetools\Symfony\CtpBundle\EventListener;
+namespace Commercetools\Symfony\CustomerBundle\EventListener;
 
 use Commercetools\Symfony\CartBundle\Model\Repository\CartRepository;
 use Commercetools\Symfony\CustomerBundle\Model\Repository\CustomerRepository;
