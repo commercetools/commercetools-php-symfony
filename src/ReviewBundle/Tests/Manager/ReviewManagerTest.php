@@ -5,6 +5,7 @@
 namespace Commercetools\Symfony\ReviewBundle\Tests\Manager;
 
 use Commercetools\Core\Model\Cart\LineItemDraftCollection;
+use Commercetools\Core\Model\Product\ProductReference;
 use Commercetools\Core\Model\Review\Review;
 use Commercetools\Core\Model\Zone\Location;
 use Commercetools\Core\Request\AbstractAction;
@@ -60,17 +61,16 @@ class ReviewManagerTest extends TestCase
     public function testCreateReview()
     {
         $repository = $this->prophesize(ReviewRepository::class);
-        $lineItemsCollection = $this->prophesize(LineItemDraftCollection::class);
-        $location = $this->prophesize(Location::class);
+        $productReference = $this->prophesize(ProductReference::class);
 
-        $repository->createReview('en', 'EUR', $location->reveal(), $lineItemsCollection->reveal(), null, '123')->
-        willReturn(Review::of())->shouldBeCalled();
+        $repository->createReviewForProduct('en', $productReference->reveal(), null, 'foo', '2')
+            ->willReturn(Review::of())->shouldBeCalled();
 
         $dispatcher = $this->prophesize(EventDispatcherInterface::class);
 
         $manager = new ReviewManager($repository->reveal(), $dispatcher->reveal());
 
-        $review = $manager->createReview('en', 'EUR', $location->reveal(), $lineItemsCollection->reveal(), null, '123');
+        $review = $manager->createForProduct('en', $productReference->reveal(), null, 'foo','2');
         $this->assertInstanceOf(Review::class, $review);
     }
 
