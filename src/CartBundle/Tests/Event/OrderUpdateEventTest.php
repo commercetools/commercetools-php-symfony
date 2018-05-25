@@ -16,11 +16,11 @@ class OrderUpdateEventTest extends TestCase
 {
     public function testOrderUpdateEvent()
     {
-        $cart = $this->prophesize(Order::class);
+        $order = $this->prophesize(Order::class);
         $action = $this->prophesize(OrderSetCustomerEmail::class);
         $secondAction = $this->prophesize(OrderSetBillingAddress::class);
 
-        $updateEvent = new OrderUpdateEvent($cart->reveal(), $action->reveal());
+        $updateEvent = new OrderUpdateEvent($order->reveal(), $action->reveal());
 
         $this->assertInstanceOf(Order::class, $updateEvent->getOrder());
         $this->assertEquals([$action->reveal()], $updateEvent->getActions());
