@@ -6,23 +6,21 @@ namespace Commercetools\Symfony\ExampleBundle\Controller;
 
 use Commercetools\Core\Client;
 use Commercetools\Core\Model\Common\Address;
-use Commercetools\Core\Model\Customer\Customer;
 use Commercetools\Core\Request\Customers\Command\CustomerChangeAddressAction;
 use Commercetools\Core\Request\Customers\Command\CustomerChangeEmailAction;
 use Commercetools\Core\Request\Customers\Command\CustomerSetFirstNameAction;
 use Commercetools\Core\Request\Customers\Command\CustomerSetLastNameAction;
 use Commercetools\Core\Request\Customers\CustomerByIdGetRequest;
-use Commercetools\Core\Request\Customers\CustomerPasswordChangeRequest;
 use Commercetools\Symfony\CustomerBundle\Entity\UserAddress;
 use Commercetools\Symfony\CustomerBundle\Entity\UserDetails;
 use Commercetools\Symfony\ExampleBundle\Model\Form\Type\AddressType;
 use Commercetools\Symfony\ExampleBundle\Model\Form\Type\UserType;
 use Commercetools\Symfony\CustomerBundle\Manager\CustomerManager;
-use Commercetools\Symfony\CtpBundle\Security\User\User;
+use Commercetools\Symfony\CustomerBundle\Security\User\User;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
+use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
 
 
