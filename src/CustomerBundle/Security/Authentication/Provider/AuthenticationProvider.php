@@ -2,7 +2,7 @@
 /**
  */
 
-namespace Commercetools\Symfony\CtpBundle\Security\Authentication\Provider;
+namespace Commercetools\Symfony\CustomerBundle\Security\Authentication\Provider;
 
 use Commercetools\Core\Client;
 use Commercetools\Core\Request\Customers\CustomerLoginRequest;

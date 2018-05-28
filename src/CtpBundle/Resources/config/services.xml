@@ -32,7 +32,7 @@
             <factory class="Commercetools\Core\Config" method="fromArray"/>
             <argument>%commercetools.client.config%</argument>
         </service>
-        <service id="commercetools.auth.listener" class="Commercetools\Symfony\CtpBundle\EventListener\AuthenticationListener">
+        <service id="commercetools.auth.listener" class="Commercetools\Symfony\CustomerBundle\EventListener\AuthenticationListener">
             <tag name="kernel.event_subscriber"/>
             <argument type="service" id="session"/>
         </service>
@@ -50,11 +50,11 @@
             <argument type="service" id="commercetools.search" />
         </service>
         <service id="commercetools.user_provider"
-                 class="Commercetools\Symfony\CtpBundle\Security\User\UserProvider">
+                 class="Commercetools\Symfony\CustomerBundle\Security\User\UserProvider">
             <argument type="service" id="session" />
         </service>
         <service id="security.authentication_provider.commercetools"
-                 class="Commercetools\Symfony\CtpBundle\Security\Authentication\Provider\AuthenticationProvider"
+                 class="Commercetools\Symfony\CustomerBundle\Security\Authentication\Provider\AuthenticationProvider"
                  abstract="true"
                  public="false"
         >
