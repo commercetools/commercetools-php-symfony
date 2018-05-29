@@ -30,6 +30,7 @@ class AuthenticationListener implements EventSubscriberInterface
             AuthenticationEvents::AUTHENTICATION_FAILURE => 'onAuthenticationFailure'
         ];
     }
+
     public function onAuthenticationSuccess(AuthenticationEvent $event)
     {
         $token = $event->getAuthenticationToken();
@@ -53,7 +54,7 @@ class AuthenticationListener implements EventSubscriberInterface
         }
     }
 
-    public function onAuthenticationFailure(AuthenticationFailureEvent $event )
+    public function onAuthenticationFailure(AuthenticationFailureEvent $event)
     {
 
     }

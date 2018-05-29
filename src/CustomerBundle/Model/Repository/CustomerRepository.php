@@ -48,6 +48,5 @@ class CustomerRepository extends Repository
         $customer = $request->mapFromResponse($response);
 
         return $customer;
-
     }
 }
