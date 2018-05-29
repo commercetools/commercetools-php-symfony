@@ -6,12 +6,12 @@ namespace Commercetools\Symfony\CustomerBundle\Model\Repository;
 
 use Commercetools\Core\Builder\Request\RequestBuilder;
 use Commercetools\Core\Model\Customer\Customer;
+use Commercetools\Core\Request\Customers\CustomerPasswordChangeRequest;
 use Commercetools\Symfony\CtpBundle\Model\QueryParams;
 use Commercetools\Symfony\CtpBundle\Service\MapperFactory;
 use Commercetools\Symfony\CtpBundle\Model\Repository;
 use Commercetools\Core\Client;
 use Psr\Cache\CacheItemPoolInterface;
-use Commercetools\Core\Request\ClientRequestInterface;
 
 class CustomerRepository extends Repository
 {
@@ -35,7 +35,6 @@ class CustomerRepository extends Repository
 
     public function update(Customer $customer, array $actions, QueryParams $params = null)
     {
-        $client = $this->getClient();
         $request = RequestBuilder::of()->customers()->update($customer)->setActions($actions);
 
         if(!is_null($params)){
@@ -44,9 +43,18 @@ class CustomerRepository extends Repository
             }
         }
 
-        $response = $request->executeWithClient($client);
-        $customer = $request->mapFromResponse($response);
+        return $this->executeRequest($request);
+    }
 
-        return $customer;
+    public function changePassword(Customer $customer, $currentPassword, $newPassword)
+    {
+        $request =CustomerPasswordChangeRequest::ofIdVersionAndPasswords(
+            $customer->getId(),
+            $customer->getVersion(),
+            $currentPassword,
+            $newPassword
+        );
+
+        return $this->executeRequest($request);
     }
 }

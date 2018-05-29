@@ -5,7 +5,6 @@
 namespace Commercetools\Symfony\CustomerBundle\Manager;
 
 
-use Commercetools\Core\Model\Common\Address;
 use Commercetools\Core\Request\AbstractAction;
 use Commercetools\Core\Model\Customer\Customer;
 use Commercetools\Symfony\CtpBundle\Model\QueryParams;
@@ -13,9 +12,7 @@ use Commercetools\Symfony\CustomerBundle\Event\CustomerUpdateEvent;
 use Commercetools\Symfony\CustomerBundle\Event\CustomerPostUpdateEvent;
 use Commercetools\Symfony\CustomerBundle\Model\Repository\CustomerRepository;
 use Commercetools\Symfony\CustomerBundle\Model\CustomerUpdateBuilder;
-use Commercetools\Symfony\ExampleBundle\Model\Form\Type\AddressType;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
-use Commercetools\Core\Model\Customer\CustomerReference;
 
 class CustomerManager
 {
@@ -82,5 +79,10 @@ class CustomerManager
         $event = $this->dispatcher->dispatch(CustomerPostUpdateEvent::class, $event);
 
         return $event->getCustomer();
+    }
+
+    public function changePassword(Customer $customer, $currentPassword, $newPassword)
+    {
+        return $this->repository->changePassword($customer, $currentPassword, $newPassword);
     }
 }

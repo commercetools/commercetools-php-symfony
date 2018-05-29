@@ -6,7 +6,6 @@
 namespace Commercetools\Symfony\CtpBundle\Model;
 
 use Commercetools\Core\Client;
-use Commercetools\Core\Model\JsonObjectMapper;
 use Commercetools\Core\Model\MapperInterface;
 use Commercetools\Core\Request\AbstractApiRequest;
 use Commercetools\Core\Request\ClientRequestInterface;
@@ -182,7 +181,7 @@ class Repository
      * @param QueryParams|null $params
      * @return mixed
      */
-    public function executeRequest(ClientRequestInterface $request, $locale, QueryParams $params = null)
+    public function executeRequest(ClientRequestInterface $request, $locale = 'en', QueryParams $params = null)
     {
         $client = $this->getClient();
 
