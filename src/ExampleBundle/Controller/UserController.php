@@ -99,8 +99,12 @@ class UserController extends Controller
                 CustomerChangeEmailAction::ofEmail($email)
             ]);
 
-            $customer = $customerBuilder->flush();
 
+            try {
+                $customer = $customerBuilder->flush();
+            } catch (\Error $e){
+                $this->addFlash('error', $e->getMessage());
+            }
 
             if (isset($newPassword)){
                 $this->manager->changePassword($customer, $currentPassword, $newPassword);
