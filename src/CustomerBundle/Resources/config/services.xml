@@ -21,8 +21,7 @@
             <tag name="kernel.event_subscriber"/>
             <argument type="service" id="session"/>
         </service>
-        <service id="commercetools.user_provider"
-                 class="Commercetools\Symfony\CustomerBundle\Security\User\UserProvider">
+        <service id="Commercetools\Symfony\CustomerBundle\Security\User\UserProvider">
             <argument type="service" id="session" />
         </service>
         <service id="security.authentication_provider.commercetools"
