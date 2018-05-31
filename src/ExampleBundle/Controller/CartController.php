@@ -4,10 +4,8 @@
 
 namespace Commercetools\Symfony\ExampleBundle\Controller;
 
-use Commercetools\Core\Builder\Request\RequestBuilder;
 use Commercetools\Core\Model\Cart\LineItemDraft;
 use Commercetools\Core\Model\Cart\LineItemDraftCollection;
-use Commercetools\Core\Model\ShoppingList\ShoppingList;
 use Commercetools\Core\Model\ShoppingList\ShoppingListReference;
 use Commercetools\Core\Model\Zone\Location;
 use Commercetools\Core\Request\Carts\Command\CartAddLineItemAction;
@@ -155,6 +153,7 @@ class CartController extends Controller
 
         $cartBuilder = $this->manager->update($cart);
         $cartBuilder->addAction(CartRemoveLineItemAction::ofLineItemId($lineItemId));
+
         $cartBuilder->flush();
 
         return new RedirectResponse($this->generateUrl('_ctp_example_cart'));
