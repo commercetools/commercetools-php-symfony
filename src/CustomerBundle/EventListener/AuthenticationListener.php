@@ -51,6 +51,14 @@ class AuthenticationListener implements EventSubscriberInterface
                 $this->session->remove(CartRepository::CART_ID);
                 $this->session->remove(CartRepository::CART_ITEM_COUNT);
             }
+        } else {
+            $customerId = $this->session->get(CustomerRepository::CUSTOMER_ID);
+
+            if (!is_null($customerId)) {
+                $this->session->remove(CustomerRepository::CUSTOMER_ID);
+                $this->session->remove(CartRepository::CART_ID);
+                $this->session->remove(CartRepository::CART_ITEM_COUNT);
+            }
         }
     }
 

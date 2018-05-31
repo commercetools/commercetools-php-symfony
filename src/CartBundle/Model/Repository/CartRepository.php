@@ -65,7 +65,7 @@ class CartRepository extends Repository
             $cart = $carts->current();
 
             if (!is_null($cart)) {
-                if ($cart->getCustomerId() !== $customerId) { // accepts null customer id (?)
+                if ($cart->getCustomerId() !== $customerId && !is_null($customerId)) { // accepts null customer id (?)
                     throw new \InvalidArgumentException();
                 }
             }
