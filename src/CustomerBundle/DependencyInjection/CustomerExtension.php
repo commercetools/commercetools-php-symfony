@@ -2,7 +2,7 @@
 /**
  */
 
-namespace Commercetools\Symfony\ShoppingListBundle\DependencyInjection;
+namespace Commercetools\Symfony\CustomerBundle\DependencyInjection;
 
 use Commercetools\Symfony\CtpBundle\DependencyInjection\Configuration;
 use Symfony\Component\Config\FileLocator;
@@ -10,7 +10,7 @@ use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Extension\Extension;
 use Symfony\Component\DependencyInjection\Loader\XmlFileLoader;
 
-class ShoppingListExtension extends Extension
+class CustomerExtension extends Extension
 {
     public function load(array $configs, ContainerBuilder $container)
     {

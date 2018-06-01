@@ -2,9 +2,11 @@
 
 {% block container %}
 
-    {#{{ form_start(formDetails) }}#}
-    {#{{ form_widget(formDetails) }}#}
-    {#{{ form_end(formDetails) }}#}
+    {% for message in app.flashes('error') %}
+        <div class="flash-notice">
+            {{ message }}
+        </div>
+    {% endfor %}
 
     {{ form_start(formDetails) }}
     {% form_theme formDetails 'bootstrap_3_layout.html.twig' %}

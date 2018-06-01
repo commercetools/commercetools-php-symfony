@@ -1,9 +1,5 @@
 <?php
 /**
- * Created by PhpStorm.
- * User: nsotiropoulos
- * Date: 18/04/2018
- * Time: 14:51
  */
 
 namespace Commercetools\Symfony\ShoppingListBundle\Model;

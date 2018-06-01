@@ -1,6 +1,7 @@
 {% extends  "ExampleBundle::layout.html.twig" %}
 
 {% block container %}
+    {#{{ dump(customer) }}#}
     <table class="table-condensed">
         {% for address in customer.getAddresses %}
             <tr class="active">
@@ -28,7 +29,7 @@
                 <td class="second-table">{{ address.getCompany }}</td>
             </tr>
             <tr class="active">
-                <td class="first-table">StreenName and number</td>
+                <td class="first-table">StreetName and number</td>
                 <td class="second-table"> {{ address.getStreetName }} {{ address.getStreetNumber }}</td>
             </tr>
             <tr class="active">

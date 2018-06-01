@@ -2,36 +2,36 @@
 /**
  */
 
-namespace Commercetools\Symfony\ShoppingListBundle\Event;
+namespace Commercetools\Symfony\CustomerBundle\Event;
 
-use Commercetools\Core\Model\ShoppingList\ShoppingList;
+use Commercetools\Core\Model\Customer\Customer;
 use Commercetools\Core\Request\AbstractAction;
 use Symfony\Component\EventDispatcher\Event;
 
-class ShoppingListUpdateEvent extends Event
+class CustomerUpdateEvent extends Event
 {
     /**
-     * @var ShoppingList
+     * @var Customer
      */
-    private $shoppingList;
+    private $customer;
 
     /**
      * @var AbstractAction[]
      */
     private $actions;
 
-    public function __construct(ShoppingList $shoppingList, AbstractAction $action)
+    public function __construct(Customer $customer, AbstractAction $action)
     {
-        $this->shoppingList = $shoppingList;
+        $this->customer = $customer;
         $this->actions = [$action];
     }
 
     /**
-     * @return ShoppingList
+     * @return Customer
      */
-    public function getShoppingList()
+    public function getCustomer()
     {
-        return $this->shoppingList;
+        return $this->customer;
     }
 
     /**

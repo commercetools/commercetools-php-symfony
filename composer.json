@@ -16,12 +16,12 @@
         "symfony/validator": "^3.1 | ^4.0",
         "symfony/serializer": "^3.1 | ^4.0",
         "symfony/cache": "^3.1 | ^4.0",
-        "commercetools/php-sdk": "dev-request_builder",
+        "commercetools/php-sdk": "^2.4",
         "symfony/var-dumper": "^3.1 | ^4.0",
         "symfony/dotenv": "^4.0"
     },
     "require-dev": {
-        "phpunit/phpunit": "^4.8 | ^5.0",
+        "phpunit/phpunit": "^7.0 | ^6.0 | ^5.0",
         "symfony/phpunit-bridge": "^3.0 | ^4.0",
         "symfony/maker-bundle": "^1.4",
         "commercetools/commercetools-api-reference": "dev-master"
