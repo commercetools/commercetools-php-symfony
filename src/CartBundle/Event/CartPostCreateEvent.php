@@ -5,6 +5,9 @@
 
 namespace Commercetools\Symfony\CartBundle\Event;
 
+use Commercetools\Core\Model\Cart\Cart;
+use Symfony\Component\EventDispatcher\Event;
+
 class CartPostCreateEvent extends Event
 {
     private $cart;
