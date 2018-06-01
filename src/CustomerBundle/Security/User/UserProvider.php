@@ -2,7 +2,7 @@
 /**
  */
 
-namespace Commercetools\Symfony\CtpBundle\Security\User;
+namespace Commercetools\Symfony\CustomerBundle\Security\User;
 
 use Commercetools\Symfony\CartBundle\Model\Repository\CartRepository;
 use Commercetools\Symfony\CustomerBundle\Model\Repository\CustomerRepository;

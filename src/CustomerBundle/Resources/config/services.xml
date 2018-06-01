@@ -17,5 +17,24 @@
             <argument id="Commercetools\Symfony\CustomerBundle\Model\Repository\CustomerRepository" type="service"/>
             <argument id="event_dispatcher" type="service"/>
         </service>
+        <service id="commercetools.auth.listener" class="Commercetools\Symfony\CustomerBundle\EventListener\AuthenticationListener">
+            <tag name="kernel.event_subscriber"/>
+            <argument type="service" id="session"/>
+        </service>
+        <service id="Commercetools\Symfony\CustomerBundle\Security\User\UserProvider">
+            <argument type="service" id="session" />
+        </service>
+        <service id="security.authentication_provider.commercetools"
+                 class="Commercetools\Symfony\CustomerBundle\Security\Authentication\Provider\AuthenticationProvider"
+                 abstract="true"
+                 public="false"
+        >
+            <argument type="service" id="commercetools.client" />
+            <argument /> <!-- User Provider -->
+            <argument type="service" id="security.user_checker" />
+            <argument /> <!-- Provider-shared Key -->
+            <argument>%security.authentication.hide_user_not_found%</argument>
+            <argument type="service" id="logger" />
+        </service>
     </services>
 </container>

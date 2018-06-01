@@ -3,11 +3,11 @@
  * @author @jayS-de <jens.schulze@commercetools.de>
  */
 
-namespace Commercetools\Symfony\CtpBundle\EventListener;
+namespace Commercetools\Symfony\CustomerBundle\EventListener;
 
 use Commercetools\Symfony\CartBundle\Model\Repository\CartRepository;
 use Commercetools\Symfony\CustomerBundle\Model\Repository\CustomerRepository;
-use Commercetools\Symfony\CtpBundle\Security\User\CtpUser;
+use Commercetools\Symfony\CustomerBundle\Security\User\CtpUser;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use Symfony\Component\Security\Core\AuthenticationEvents;
@@ -30,6 +30,7 @@ class AuthenticationListener implements EventSubscriberInterface
             AuthenticationEvents::AUTHENTICATION_FAILURE => 'onAuthenticationFailure'
         ];
     }
+
     public function onAuthenticationSuccess(AuthenticationEvent $event)
     {
         $token = $event->getAuthenticationToken();
@@ -50,10 +51,18 @@ class AuthenticationListener implements EventSubscriberInterface
                 $this->session->remove(CartRepository::CART_ID);
                 $this->session->remove(CartRepository::CART_ITEM_COUNT);
             }
+        } else {
+            $customerId = $this->session->get(CustomerRepository::CUSTOMER_ID);
+
+            if (!is_null($customerId)) {
+                $this->session->remove(CustomerRepository::CUSTOMER_ID);
+                $this->session->remove(CartRepository::CART_ID);
+                $this->session->remove(CartRepository::CART_ITEM_COUNT);
+            }
         }
     }
 
-    public function onAuthenticationFailure(AuthenticationFailureEvent $event )
+    public function onAuthenticationFailure(AuthenticationFailureEvent $event)
     {
 
     }

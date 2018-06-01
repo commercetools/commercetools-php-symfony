@@ -32,10 +32,6 @@
             <factory class="Commercetools\Core\Config" method="fromArray"/>
             <argument>%commercetools.client.config%</argument>
         </service>
-        <service id="commercetools.auth.listener" class="Commercetools\Symfony\CtpBundle\EventListener\AuthenticationListener">
-            <tag name="kernel.event_subscriber"/>
-            <argument type="service" id="session"/>
-        </service>
         <service id="commercetools.cache" parent="cache.app">
             <tag name="cache.pool" />
         </service>
@@ -48,22 +44,6 @@
             <argument type="service" id="commercetools.client"/>
             <argument type="service" id="commmercetools.mapper.factory" />
             <argument type="service" id="commercetools.search" />
-        </service>
-        <service id="commercetools.user_provider"
-                 class="Commercetools\Symfony\CtpBundle\Security\User\UserProvider">
-            <argument type="service" id="session" />
-        </service>
-        <service id="security.authentication_provider.commercetools"
-                 class="Commercetools\Symfony\CtpBundle\Security\Authentication\Provider\AuthenticationProvider"
-                 abstract="true"
-                 public="false"
-        >
-            <argument type="service" id="commercetools.client" />
-            <argument /> <!-- User Provider -->
-            <argument type="service" id="security.user_checker" />
-            <argument /> <!-- Provider-shared Key -->
-            <argument>%security.authentication.hide_user_not_found%</argument>
-            <argument type="service" id="logger" />
         </service>
         <service id="commercetools.search" class="Commercetools\Symfony\CtpBundle\Model\Search">
             <argument>%commercetools.facets%</argument>
