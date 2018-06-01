@@ -7,6 +7,7 @@ namespace Commercetools\Symfony\ReviewBundle\Tests\Manager;
 use Commercetools\Core\Model\Cart\LineItemDraftCollection;
 use Commercetools\Core\Model\Product\ProductReference;
 use Commercetools\Core\Model\Review\Review;
+use Commercetools\Core\Model\Review\ReviewCollection;
 use Commercetools\Core\Model\Zone\Location;
 use Commercetools\Core\Request\AbstractAction;
 use Commercetools\Symfony\ReviewBundle\Event\ReviewPostUpdateEvent;
@@ -97,5 +98,19 @@ class ReviewManagerTest extends TestCase
         $review = $manager->getById('en', '123');
 
         $this->assertInstanceOf(Review::class, $review);
+    }
+
+    public function testGetReviewsByProductId()
+    {
+        $repository = $this->prophesize(ReviewRepository::class);
+        $dispatcher = $this->prophesize(EventDispatcherInterface::class);
+
+        $repository->getReviewsByProductId('en', '123', null)
+            ->willReturn(ReviewCollection::of())->shouldBeCalled();
+
+        $manager = new ReviewManager($repository->reveal(), $dispatcher->reveal());
+        $reviews = $manager->getByProductId('en', '123');
+
+        $this->assertInstanceOf(ReviewCollection::class, $reviews);
     }
 }

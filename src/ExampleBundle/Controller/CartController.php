@@ -98,7 +98,6 @@ class CartController extends Controller
                 $cartBuilder->flush();
 
             } else {
-                // XXX
                 $lineItem = LineItemDraft::ofProductId($productId)->setVariantId($variantId)->setQuantity($quantity);
                 $lineItemDraftCollection = LineItemDraftCollection::of()->add($lineItem);
                 $country = Location::of()->setCountry('DE');
@@ -159,7 +158,7 @@ class CartController extends Controller
         return new RedirectResponse($this->generateUrl('_ctp_example_cart'));
     }
 
-    public function addShoppingListAction(Request $request)
+    public function addShoppingListToCartAction(Request $request)
     {
         $session = $this->get('session');
         $cartId = $session->get(CartRepository::CART_ID);
@@ -169,7 +168,7 @@ class CartController extends Controller
         $shoppingList = ShoppingListReference::ofId($shoppingListId);
 
         $cartBuilder = $this->manager->update($cart);
-        $cartBuilder->addAction(CartAddShoppingListAction::ofShoppingList($shoppingList));
+        $cartBuilder->addShoppingList(CartAddShoppingListAction::ofShoppingList($shoppingList));
         $cartBuilder->flush();
         return new RedirectResponse($this->generateUrl('_ctp_example_cart'));
     }

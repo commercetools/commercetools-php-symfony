@@ -93,11 +93,10 @@ class UserController extends Controller
             $newPassword = $form->get('newPassword')->getData();
 
             $customerBuilder = $this->manager->update($customer);
-            $customerBuilder->setActions([
-                CustomerSetFirstNameAction::of()->setFirstName($firstName),
-                CustomerSetLastNameAction::of()->setLastName($lastName),
-                CustomerChangeEmailAction::ofEmail($email)
-            ]);
+            $customerBuilder
+                ->setFirstName(CustomerSetFirstNameAction::of()->setFirstName($firstName))
+                ->setLastName(CustomerSetLastNameAction::of()->setLastName($lastName))
+                ->changeEmail(CustomerChangeEmailAction::ofEmail($email));
 
 
             try {
@@ -146,7 +145,7 @@ class UserController extends Controller
             $address = Address::fromArray($form->get('address')->getData());
 
             $customerBuilder = $this->manager->update($customer)
-                ->setActions([CustomerChangeAddressAction::ofAddressIdAndAddress($addressId, $address)]);
+                ->changeAddress(CustomerChangeAddressAction::ofAddressIdAndAddress($addressId, $address));
             $customerBuilder->flush();
         }
 
