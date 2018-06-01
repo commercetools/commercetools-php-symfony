@@ -2,7 +2,7 @@
 /**
  */
 
-namespace Commercetools\Symfony\CtpBundle\Security\User;
+namespace Commercetools\Symfony\CustomerBundle\Security\User;
 
 
 use Symfony\Component\Security\Core\User\UserInterface;

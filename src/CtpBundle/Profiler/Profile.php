@@ -39,7 +39,8 @@ class Profile implements \IteratorAggregate, \Serializable
             $this->request = [
                 'method' => $request->getMethod(),
                 'url' => (string)$request->getUri(),
-                'body' => (string)$request->getBody(),
+                'headers' => $request->getHeaders(),
+                'body' => (string)$request->getBody()
             ];
         }
     }

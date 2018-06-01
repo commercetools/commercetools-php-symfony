@@ -152,6 +152,7 @@ class CartController extends Controller
 
         $cartBuilder = $this->manager->update($cart);
         $cartBuilder->addAction(CartRemoveLineItemAction::ofLineItemId($lineItemId));
+
         $cartBuilder->flush();
 
         return new RedirectResponse($this->generateUrl('_ctp_example_cart'));

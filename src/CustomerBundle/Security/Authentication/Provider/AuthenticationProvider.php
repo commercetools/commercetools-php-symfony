@@ -2,13 +2,11 @@
 /**
  */
 
-namespace Commercetools\Symfony\CtpBundle\Security\Authentication\Provider;
+namespace Commercetools\Symfony\CustomerBundle\Security\Authentication\Provider;
 
 use Commercetools\Core\Client;
 use Commercetools\Core\Request\Customers\CustomerLoginRequest;
-use Commercetools\Symfony\CtpBundle\Model\AuthSuccess;
-use Commercetools\Symfony\CtpBundle\Model\Repository\CartRepository;
-use Commercetools\Symfony\CtpBundle\Security\User\CtpUser;
+use Commercetools\Symfony\CustomerBundle\Security\User\CtpUser;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Security\Core\Authentication\Provider\UserAuthenticationProvider;
 use Symfony\Component\Security\Core\Authentication\Token\UsernamePasswordToken;
