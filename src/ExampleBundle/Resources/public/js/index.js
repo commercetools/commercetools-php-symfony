@@ -1,5 +1,4 @@
 /**
- * Created by ylambers on 19/04/16.
  */
 
 var required = false;
@@ -14,6 +13,39 @@ function debounce(fn, delay) {
         }, delay);
     };
 }
+
+jQuery(document).on('submit', '.add-review-form', function(e){
+    e.preventDefault();
+    let data = $(this).serialize();
+    let ajaxUrl = $(this).data('submit-url');
+
+    $.ajax({
+        url: ajaxUrl,
+        type: 'POST',
+        dataType: 'json',
+        data: data,
+        success:function(data){
+
+            if(data.success === true){
+                $.ajax({
+                    url: data.fetchReviewsUrl,
+                    type: 'GET',
+                    dataType: 'html',
+                    success: function(response){
+                        $('.reviews-container').parent().html(response);
+                    }
+                });
+            }
+
+            if(data.success === false){
+                console.log("probably need to handle errors");
+            }
+
+            // $('#loadingSpinner').hide();
+            // $('#mySubmitButton').attr("disabled",false);
+        }
+    });
+});
 
 jQuery(document).ready(function($){
     //Add class to submitbutton form
@@ -114,4 +146,5 @@ jQuery(document).ready(function($){
         });
 
     }, 300));//time ajax request
+
 });

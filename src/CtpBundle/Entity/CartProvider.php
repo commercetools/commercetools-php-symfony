@@ -1,6 +1,6 @@
 <?php
 /**
- * @author: Ylambers <yaron.lambers@commercetools.de>
+ * it's not in use anywhere
  */
 
 namespace Commercetools\Symfony\CtpBundle\Entity;

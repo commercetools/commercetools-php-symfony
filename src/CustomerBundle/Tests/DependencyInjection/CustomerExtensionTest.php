@@ -6,10 +6,9 @@
 namespace Commercetools\Symfony\CustomerBundle\Tests\DependencyInjection;
 
 
-use Commercetools\Symfony\CustomerBundle\DependencyInjection\CustomerExtension;
-use Symfony\Component\DependencyInjection\ContainerBuilder;
+use PHPUnit\Framework\TestCase;
 
-class CustomerExtensionTest extends \PHPUnit_Framework_TestCase
+class CustomerExtensionTest extends TestCase
 {
     public function testLoad()
     {

@@ -13,8 +13,8 @@ use Commercetools\Core\Request\Customers\Command\CustomerSetFirstNameAction;
 use Commercetools\Core\Request\Customers\Command\CustomerSetLastNameAction;
 use Commercetools\Core\Request\Customers\CustomerByIdGetRequest;
 use Commercetools\Core\Request\Customers\CustomerPasswordChangeRequest;
-use Commercetools\Symfony\CtpBundle\Entity\UserAddress;
-use Commercetools\Symfony\CtpBundle\Entity\UserDetails;
+use Commercetools\Symfony\CustomerBundle\Entity\UserAddress;
+use Commercetools\Symfony\CustomerBundle\Entity\UserDetails;
 use Commercetools\Symfony\ExampleBundle\Model\Form\Type\AddressType;
 use Commercetools\Symfony\ExampleBundle\Model\Form\Type\UserType;
 use Commercetools\Symfony\CustomerBundle\Manager\CustomerManager;
@@ -91,6 +91,7 @@ class UserController extends Controller
             $firstName = $form->get('firstName')->getData();
             $lastName = $form->get('lastName')->getData();
             $email = $form->get('email')->getData();
+
             $currentPassword = $form->get('currentPassword')->getData();
             $newPassword = $form->get('newPassword')->getData();
 

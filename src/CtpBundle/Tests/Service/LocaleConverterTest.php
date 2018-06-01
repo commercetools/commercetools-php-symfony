@@ -7,8 +7,9 @@ namespace Commercetools\Symfony\CtpBundle\Tests\Service;
 
 
 use Commercetools\Symfony\CtpBundle\Service\LocaleConverter;
+use PHPUnit\Framework\TestCase;
 
-class LocaleConverterTest extends \PHPUnit_Framework_TestCase
+class LocaleConverterTest extends TestCase
 {
     protected function getConverter($country)
     {

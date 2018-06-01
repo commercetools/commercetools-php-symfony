@@ -1,15 +1,15 @@
 <?php
 /**
- * @author: Ylambers <yaron.lambers@commercetools.de>
  */
 
-namespace Commercetools\Symfony\CtpBundle\Tests\Entity;
+namespace Commercetools\Symfony\CustomerBundle\Tests\Entity;
 
 
 use Commercetools\Core\Model\Common\Address;
-use Commercetools\Symfony\CtpBundle\Entity\UserAddress;
+use Commercetools\Symfony\CustomerBundle\Entity\UserAddress;
+use PHPUnit\Framework\TestCase;
 
-class UserAddressTest extends \PHPUnit_Framework_TestCase
+class UserAddressTest extends TestCase
 {
     public function testOfAddress()
     {
@@ -38,7 +38,7 @@ class UserAddressTest extends \PHPUnit_Framework_TestCase
             ]);
 
         $userAddress = UserAddress::ofAddress($address);
-        $this->assertInstanceOf('\Commercetools\Symfony\CtpBundle\Entity\UserAddress', $userAddress);
+        $this->assertInstanceOf(UserAddress::class, $userAddress);
         $this->assertSame($address->getTitle(), $userAddress->getTitle());
         $this->assertSame($address->getSalutation(), $userAddress->getSalutation());
         $this->assertSame($address->getFirstName(), $userAddress->getFirstName());

@@ -1,13 +1,11 @@
 <?php
 /**
- * @author: Ylambers <yaron.lambers@commercetools.de>
  */
 
-namespace Commercetools\Symfony\CtpBundle\Entity;
+namespace Commercetools\Symfony\CartBundle\Entity;
 
 
 use Commercetools\Core\Model\Cart\Cart;
-use Commercetools\Core\Model\Customer\Customer;
 
 class CartEntity
 {

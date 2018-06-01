@@ -13,7 +13,8 @@ use Commercetools\Core\Request\Carts\Command\CartSetShippingMethodAction;
 use Commercetools\Symfony\CartBundle\Manager\CartManager;
 use Commercetools\Symfony\CartBundle\Manager\OrderManager;
 use Commercetools\Symfony\CartBundle\Manager\ShippingMethodManager;
-use Commercetools\Symfony\CtpBundle\Entity\CartEntity;
+use Commercetools\Symfony\CartBundle\Entity\CartEntity;
+use Commercetools\Symfony\CustomerBundle\Security\User\User;
 use Commercetools\Symfony\ExampleBundle\Model\Form\Type\AddressType;
 use Commercetools\Symfony\CartBundle\Model\Repository\CartRepository;
 use Commercetools\Symfony\CtpBundle\Security\User\CtpUser;
@@ -82,16 +83,13 @@ class CheckoutController extends Controller
         );
     }
 
-    public function shippingMethodAction(Request $request)
+    public function shippingMethodAction(Request $request, UserInterface $user = null)
     {
         $session = $this->get('session');
         $cartId = $session->get(CartRepository::CART_ID);
         $shippingMethods = $this->shippingMethodManager->getShippingMethodByCart($request->getLocale(), $cartId);
 
-        $customerId = null;
-        if ($this->get('security.token_storage')->getToken()->getUser() instanceof CtpUser) {
-            $customerId = $this->get('security.token_storage')->getToken()->getUser()->getId();
-        }
+        $customerId = is_null($user) ? null : $user->getId();
 
         $cart = $this->cartManager->getCart($request->getLocale(), $cartId, $customerId);
 
@@ -141,10 +139,8 @@ class CheckoutController extends Controller
         $session = $this->get('session');
 
         $cartId = $session->get(CartRepository::CART_ID);
-        $customerId = null;
-        if ($this->get('security.token_storage')->getToken()->getUser() instanceof CtpUser) {
-            $customerId = $this->get('security.token_storage')->getToken()->getUser()->getId();
-        }
+        $customerId = is_null($user) ? null : $user->getId();
+
         $cart = $this->cartManager->getCart($request->getLocale(), $cartId, $customerId);
 
         if (is_null($cart->getId())) {
@@ -159,14 +155,12 @@ class CheckoutController extends Controller
         );
     }
 
-    public function successAction(Request $request)
+    public function successAction(Request $request, UserInterface $user = null)
     {
         $session = $this->get('session');
         $cartId = $session->get(CartRepository::CART_ID);
-        $customerId = null;
-        if ($this->get('security.token_storage')->getToken()->getUser() instanceof CtpUser) {
-            $customerId = $this->get('security.token_storage')->getToken()->getUser()->getId();
-        }
+        $customerId = is_null($user) ? null : $user->getId();
+
         $cart = $this->cartManager->getCart($request->getLocale(), $cartId, $customerId);
         if (is_null($cart->getId())) {
             return $this->redirect($this->generateUrl('_ctp_example_cart'));
