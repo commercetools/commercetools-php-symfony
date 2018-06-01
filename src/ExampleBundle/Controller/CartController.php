@@ -96,7 +96,6 @@ class CartController extends Controller
                 $cartBuilder->flush();
 
             } else {
-                // XXX
                 $lineItem = LineItemDraft::ofProductId($productId)->setVariantId($variantId)->setQuantity($quantity);
                 $lineItemDraftCollection = LineItemDraftCollection::of()->add($lineItem);
                 $country = Location::of()->setCountry('DE');
