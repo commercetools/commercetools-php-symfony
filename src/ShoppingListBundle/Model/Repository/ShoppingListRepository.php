@@ -104,6 +104,5 @@ class ShoppingListRepository extends Repository
         $list = $request->mapFromResponse($response);
 
         return $list;
-
     }
 }

@@ -1,6 +1,5 @@
 <?php
 /**
- * @author: Ylambers <yaron.lambers@commercetools.de>
  */
 
 namespace Commercetools\Symfony\CtpBundle\Security\Authentication\Provider;
@@ -9,13 +8,8 @@ use Commercetools\Core\Client;
 use Commercetools\Core\Request\Customers\CustomerLoginRequest;
 use Commercetools\Symfony\CtpBundle\Model\AuthSuccess;
 use Commercetools\Symfony\CtpBundle\Model\Repository\CartRepository;
-use Commercetools\Symfony\CtpBundle\Model\Repository\CustomerRepository;
 use Commercetools\Symfony\CtpBundle\Security\User\CtpUser;
-use Commercetools\Symfony\CtpBundle\Service\ClientFactory;
 use Psr\Log\LoggerInterface;
-use Symfony\Component\EventDispatcher\Event;
-use Symfony\Component\EventDispatcher\EventDispatcherInterface;
-use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\Security\Core\Authentication\Provider\UserAuthenticationProvider;
 use Symfony\Component\Security\Core\Authentication\Token\UsernamePasswordToken;
 use Symfony\Component\Security\Core\Exception\AuthenticationServiceException;
@@ -88,12 +82,18 @@ class AuthenticationProvider extends UserAuthenticationProvider
             if ($currentUser !== $customer->getEmail()) {
                 throw new BadCredentialsException('The presented password is invalid.');
             }
+
             if ($user instanceof CtpUser) {
                 $user->setId($customer->getId());
                 $cart = $result->getCart();
                 if (!is_null($cart)) {
                     $user->setCartId($cart->getId());
                     $user->setCartItemCount($cart->getLineItemCount());
+                }
+
+                $defaultShippingAddress = $customer->getDefaultShippingAddress();
+                if (!is_null($defaultShippingAddress)) {
+                    $user->setDefaultShippingAddress($defaultShippingAddress);
                 }
             }
         }

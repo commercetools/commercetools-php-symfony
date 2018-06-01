@@ -77,11 +77,11 @@ _ctp_example_checkout_success:
 
 _ctp_example_orders_all:
     path: /orders/
-    defaults: { _controller: ExampleBundle:User:showOrders}
+    defaults: { _controller: ExampleBundle:Order:index}
 
 _ctp_example_order:
     path: /orders/{orderId}
-    defaults: { _controller: ExampleBundle:User:showOrder}
+    defaults: { _controller: ExampleBundle:Order:showOrder}
 
 _ctp_example_suggest:
     path: /suggest/{searchTerm}

@@ -1,98 +1,130 @@
 <?php
 /**
- * Created by PhpStorm.
- * User: nsotiropoulos
- * Date: 16/04/2018
- * Time: 11:15
  */
 
 namespace Commercetools\Symfony\CartBundle\Model\Repository;
 
-use Commercetools\Core\Model\Common\LocalizedString;
-use Commercetools\Core\Model\Customer\CustomerReference;
-use Commercetools\Core\Model\ShoppingList\ShoppingListDraft;
-use Commercetools\Core\Request\ShoppingLists\ShoppingListCreateRequest;
-use Commercetools\Core\Request\ShoppingLists\ShoppingListUpdateRequest;
-use Commercetools\Core\Request\ShoppingLists\ShoppingListQueryRequest;
-use Commercetools\Core\Request\ShoppingLists\Command\ShoppingListAddLineItemAction;
+
+use Commercetools\Core\Builder\Request\RequestBuilder;
+use Commercetools\Core\Model\Zone\Location;
+use Commercetools\Core\Model\Cart\CartState;
+use Commercetools\Core\Request\ClientRequestInterface;
+use Commercetools\Symfony\CtpBundle\Model\QueryParams;
 use Commercetools\Symfony\CtpBundle\Model\Repository;
-use Commercetools\Symfony\CtpBundle\Service\MapperFactory;
 use Commercetools\Core\Client;
-use Commercetools\Core\Request\ShoppingLists\ShoppingListByIdGetRequest;
+use Commercetools\Core\Model\Cart\Cart;
+use Commercetools\Core\Model\Cart\CartDraft;
+use Commercetools\Core\Model\Cart\LineItemDraftCollection;
+use Commercetools\Core\Model\Common\Address;
+use Commercetools\Core\Request\Carts\CartCreateRequest;
+use Commercetools\Symfony\CtpBundle\Service\MapperFactory;
 use Psr\Cache\CacheItemPoolInterface;
 use Symfony\Component\HttpFoundation\Session\Session;
 
+
 class CartRepository extends Repository
 {
+    protected $shippingMethodRepository;
+
+    const NAME = 'cart';
+    const CART_ID = 'cart.id';
+    const CART_ITEM_COUNT = 'cart.itemCount';
+
+    /**
+     * CartRepository constructor
+     * @param $enableCache
+     * @param CacheItemPoolInterface $cache
+     * @param Client $client
+     * @param MapperFactory $mapperFactory
+     * @param ShippingMethodRepository $shippingMethodRepository
+     */
     public function __construct(
         $enableCache,
         CacheItemPoolInterface $cache,
         Client $client,
-        MapperFactory $mapperFactory
+        MapperFactory $mapperFactory,
+        ShippingMethodRepository $shippingMethodRepository
     ) {
         parent::__construct($enableCache, $cache, $client, $mapperFactory);
+        $this->shippingMethodRepository = $shippingMethodRepository;
     }
 
-    public function getShoppingList($locale, $shoppingListId)
+    public function getCart($locale, $cartId = null, $customerId = null)
+    {
+        $cart = null;
+
+        if ($cartId) {
+            $cartRequest = RequestBuilder::of()->carts()->query();
+
+            $predicate = 'id = "' . $cartId . '" and cartState = "' . CartState::ACTIVE . '"';
+            if (!is_null($customerId)) {
+                $predicate .= ' and customerId="' . $customerId . '"';
+            }
+
+            $cartRequest->where($predicate)->limit(1);
+
+            $carts = $this->executeRequest($cartRequest, $locale);
+            $cart = $carts->current();
+
+            if (!is_null($cart)) {
+                if ($cart->getCustomerId() !== $customerId) {
+                    throw new \InvalidArgumentException();
+                }
+            }
+        }
+
+        return $cart;
+    }
+
+    /**
+     * @param $locale
+     * @param $currency
+     * @param Location $location
+     * @param LineItemDraftCollection $lineItemDraftCollection
+     * @param $customerId
+     * @param $anonymousId
+     * @return Cart|null
+     */
+    public function createCart($locale, $currency, Location $location, LineItemDraftCollection $lineItemDraftCollection, $customerId = null, $anonymousId = null)
+    {
+        $shippingMethods = $this->shippingMethodRepository->getShippingMethodsByLocation($locale, $location, $currency);
+
+        $cartDraft = CartDraft::ofCurrency($currency)->setCountry($location->getCountry())
+            ->setShippingAddress(Address::of()->setCountry($location->getCountry()))
+            ->setLineItems($lineItemDraftCollection);
+
+        if (!is_null($anonymousId)) {
+            $cartDraft->setAnonymousId($anonymousId);
+        }
+
+        if (!is_null($customerId)) {
+            $cartDraft->setCustomerId($customerId);
+        }
+
+        $cartDraft->setShippingMethod($shippingMethods->current()->getReference());
+
+        $cartCreateRequest = RequestBuilder::of()->carts()->create($cartDraft);
+        $cart = $this->executeRequest($cartCreateRequest, $locale);
+
+        return $cart;
+    }
+
+    public function update(Cart $cart, array $actions, QueryParams $params = null)
     {
         $client = $this->getClient();
-        $request = ShoppingListByIdGetRequest::ofId($shoppingListId);
+        $request = RequestBuilder::of()->carts()->update($cart)->setActions($actions);
+
+        if(!is_null($params)){
+            foreach ($params->getParams() as $param) {
+                $request->addParamObject($param);
+            }
+        }
+
         $response = $request->executeWithClient($client);
-        $shoppingList = $request->mapFromResponse(
-            $response,
-            $this->mapperFactory->build($locale, $request->getResultClass())
+        $cart = $request->mapFromResponse(
+            $response
         );
 
-
-        return $shoppingList;
-    }
-
-    public function getAllShoppingListsByCustomer($locale, CustomerReference $customer)
-    {
-        $client = $this->getClient();
-        $request = ShoppingListQueryRequest::of()->where('customer(id = "' . $customer->getId() . '")')->sort('createdAt desc');
-        $response = $request->executeWithClient($client);
-        $lists = $request->mapFromResponse(
-            $response,
-            $this->getMapper($locale)
-        );
-
-        return $lists;
-    }
-
-    public function createShoppingList($locale, CustomerReference $customer, $shoppingListName)
-    {
-        $client = $this->getClient();
-        $key = $this->createUniqueKey($customer->getId());
-        $localizedListName = LocalizedString::ofLangAndText($locale, $shoppingListName);
-        $shoppingListDraft = ShoppingListDraft::ofNameAndKey($localizedListName, $key)
-            ->setCustomer($customer);
-        $request = ShoppingListCreateRequest::ofDraft($shoppingListDraft);
-        $response = $request->executeWithClient($client);
-        $list = $request->mapFromResponse(
-            $response,
-            $this->getMapper($locale)
-        );
-
-        return $list;
-    }
-
-    public function addLineItem($locale, $shoppingListId, $version, $productId, $variantId, $quantity = 1)
-    {
-        $client = $this->getClient();
-        $request = ShoppingListUpdateRequest::ofIdAndVersion($shoppingListId, $version)
-            ->addAction(ShoppingListAddLineItemAction::ofProductIdVariantIdAndQuantity($productId, $variantId, 1));
-        $response = $request->executeWithClient($client);
-        $list = $request->mapFromResponse(
-            $response,
-            $this->getMapper($locale)
-        );
-
-        return $list;
-    }
-
-    private function createUniqueKey($customerId)
-    {
-        return $customerId . '-' . uniqid();
+        return $cart;
     }
 }

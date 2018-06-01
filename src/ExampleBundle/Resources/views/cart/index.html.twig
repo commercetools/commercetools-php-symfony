@@ -4,7 +4,11 @@
     {#Id: {{ cart.getId }} <br/>#}
     Total price: {{ cart.getTotalPrice }} <br/>
 
+    {#{{ dump(cart) }}#}
+
+
     Total Net : {% if cart.getTaxedPrice %}{{ cart.getTaxedPrice.getTotalNet }}{% endif %} <br/>
+    Shipping Cost : {% if cart.shippingInfo %}{{ cart.shippingInfo.price }}{% endif %} <br/>
     Total Gross : {% if cart.getTaxedPrice %}{{ cart.getTaxedPrice.getTotalGross }}{% endif %} <br/>
 <hr/>
     <table>

@@ -9,6 +9,7 @@ use Commercetools\Core\Client;
 use Commercetools\Core\Model\JsonObjectMapper;
 use Commercetools\Core\Model\MapperInterface;
 use Commercetools\Core\Request\AbstractApiRequest;
+use Commercetools\Core\Request\ClientRequestInterface;
 use Commercetools\Core\Request\QueryAllRequestInterface;
 use Commercetools\Symfony\CtpBundle\Service\MapperFactory;
 use Psr\Cache\CacheItemPoolInterface;
@@ -173,5 +174,31 @@ class Repository
             $item = $this->cache->getItem($cacheKey)->set($data)->expiresAfter($ttl);
             $this->cache->save($item);
         }
+    }
+
+    /**
+     * @param ClientRequestInterface $request
+     * @param $locale
+     * @param QueryParams|null $params
+     * @return mixed
+     */
+    public function executeRequest(ClientRequestInterface $request, $locale, QueryParams $params = null)
+    {
+        $client = $this->getClient();
+
+        if (!is_null($params)) {
+            foreach ($params->getParams() as $param) {
+                $request->addParamObject($param);
+            }
+        }
+
+        $response = $request->executeWithClient($client);
+
+        $mappedResponse = $request->mapFromResponse(
+            $response,
+            $this->getMapper($locale)
+        );
+
+        return $mappedResponse;
     }
 }
