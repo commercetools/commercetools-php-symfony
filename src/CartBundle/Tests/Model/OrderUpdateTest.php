@@ -19,9 +19,13 @@ use Commercetools\Core\Request\Orders\Command\OrderRemovePaymentAction;
 use Commercetools\Core\Request\Orders\Command\OrderSetBillingAddress;
 use Commercetools\Core\Request\Orders\Command\OrderSetCustomerEmail;
 use Commercetools\Core\Request\Orders\Command\OrderSetCustomFieldAction;
+use Commercetools\Core\Request\Orders\Command\OrderSetCustomLineItemCustomFieldAction;
+use Commercetools\Core\Request\Orders\Command\OrderSetCustomLineItemCustomTypeAction;
 use Commercetools\Core\Request\Orders\Command\OrderSetCustomTypeAction;
 use Commercetools\Core\Request\Orders\Command\OrderSetDeliveryAddressAction;
 use Commercetools\Core\Request\Orders\Command\OrderSetDeliveryItemsAction;
+use Commercetools\Core\Request\Orders\Command\OrderSetLineItemCustomFieldAction;
+use Commercetools\Core\Request\Orders\Command\OrderSetLineItemCustomTypeAction;
 use Commercetools\Core\Request\Orders\Command\OrderSetLocaleAction;
 use Commercetools\Core\Request\Orders\Command\OrderSetOrderNumberAction;
 use Commercetools\Core\Request\Orders\Command\OrderSetParcelItemsAction;
@@ -58,14 +62,14 @@ class OrderUpdateTest extends TestCase
             ['removePayment', OrderRemovePaymentAction::class],
             ['setBillingAddress', OrderSetBillingAddress::class],
             ['setCustomField', OrderSetCustomFieldAction::class],
-//            ['setCustomLineItemCustomField', OrderSetCustomLineItemCustomFieldAction::class],
-//            ['setCustomLineItemCustomType', OrderSetCustomLineItemCustomTypeAction::class],
+            ['setCustomLineItemCustomField', OrderSetCustomLineItemCustomFieldAction::class],
+            ['setCustomLineItemCustomType', OrderSetCustomLineItemCustomTypeAction::class],
             ['setCustomType', OrderSetCustomTypeAction::class],
             ['setCustomerEmail', OrderSetCustomerEmail::class],
             ['setDeliveryAddress', OrderSetDeliveryAddressAction::class],
             ['setDeliveryItems', OrderSetDeliveryItemsAction::class],
-//            ['setLineItemCustomField', OrderSetLineItemCustomFieldAction::class],
-//            ['setLineItemCustomType', OrderSetLineItemCustomTypeAction::class],
+            ['setLineItemCustomField', OrderSetLineItemCustomFieldAction::class],
+            ['setLineItemCustomType', OrderSetLineItemCustomTypeAction::class],
             ['setLocale', OrderSetLocaleAction::class],
             ['setOrderNumber', OrderSetOrderNumberAction::class],
             ['setParcelItems', OrderSetParcelItemsAction::class],
@@ -73,7 +77,7 @@ class OrderUpdateTest extends TestCase
             ['setParcelTrackingData', OrderSetParcelTrackingDataAction::class],
             ['setReturnPaymentState', OrderSetReturnPaymentStateAction::class],
             ['setReturnShipmentState', OrderSetReturnShipmentStateAction::class],
-            ['setShippingAddress', OrderSetShippingAddress::class], // 'Action' missing in class name
+            ['setShippingAddress', OrderSetShippingAddress::class],
             ['transitionCustomLineItemState', OrderTransitionCustomLineItemStateAction::class],
             ['transitionLineItemState', OrderTransitionLineItemStateAction::class],
             ['transitionState', OrderTransitionStateAction::class],
