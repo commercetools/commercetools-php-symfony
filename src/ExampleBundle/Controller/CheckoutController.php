@@ -228,10 +228,9 @@ class CheckoutController extends Controller
             }
 
             $cartBuilder = $this->cartManager->update($cart);
-            $cartBuilder->setActions([
-                CartSetShippingAddressAction::of()->setAddress($shippingAddress),
-                CartSetBillingAddressAction::of()->setAddress($billingAddress)
-            ]);
+            $cartBuilder
+                ->setShippingAddress(CartSetShippingAddressAction::of()->setAddress($shippingAddress))
+                ->setBillingAddress(CartSetBillingAddressAction::of()->setAddress($billingAddress));
             $cartBuilder->flush();
 
 
