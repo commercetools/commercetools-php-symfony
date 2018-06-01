@@ -15,7 +15,6 @@
             <argument type="service" id="commercetools.client"/>
             <argument type="service" id="commmercetools.mapper.factory" />
             <argument type="service" id="Commercetools\Symfony\CartBundle\Model\Repository\ShippingMethodRepository"/>
-            <argument type="service" id="session"/>
         </service>
         <service id="Commercetools\Symfony\CartBundle\Manager\CartManager" public="true">
             <argument id="Commercetools\Symfony\CartBundle\Model\Repository\CartRepository" type="service"/>
@@ -26,7 +25,6 @@
             <argument type="service" id="commercetools.cache" />
             <argument type="service" id="commercetools.client"/>
             <argument type="service" id="commmercetools.mapper.factory" />
-            <argument type="service" id="session"/>
         </service>
         <service id="Commercetools\Symfony\CartBundle\Manager\OrderManager" public="true">
             <argument id="Commercetools\Symfony\CartBundle\Model\Repository\OrderRepository" type="service"/>

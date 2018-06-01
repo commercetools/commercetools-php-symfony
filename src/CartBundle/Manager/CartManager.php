@@ -45,7 +45,6 @@ class CartManager
     {
         $cart = $this->repository->getCart($locale, $cartId, $customerId, $anonymousId);
 
-        // XXX
         if (!is_null($cart)){
             $event = new CartGetEvent($cart);
             $this->dispatcher->dispatch(CartGetEvent::class, $event);
