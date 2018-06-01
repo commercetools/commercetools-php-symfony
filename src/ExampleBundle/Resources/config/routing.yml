@@ -59,6 +59,10 @@ _ctp_example_add_lineItem:
     path: /cart/add
     defaults: { _controller: ExampleBundle:Cart:addLineItem}
 
+_ctp_example_add_shoppingList:
+    path: /cart/add_shoppinglist
+    defaults: { _controller: ExampleBundle:Cart:addShoppingList}
+
 _ctp_example_change_lineItem:
     path: /cart/change
     defaults: { _controller: ExampleBundle:Cart:changeLineItem}
@@ -87,24 +91,25 @@ _ctp_example_suggest:
     path: /suggest/{searchTerm}
     defaults: { _controller: ExampleBundle:Catalog:suggest}
 
-_ctp_example_shopping_list:
+_ctp_example_shoppingList:
     path: /shoppinglist
     defaults: { _controller: ExampleBundle:ShoppingList:index }
 
-shopping_list_create:
+_ctp_example_shoppingList_create:
     path: /shoppinglist/create
     defaults: { _controller: ExampleBundle:ShoppingList:create }
 
-_ctp_example_add_lineItem_to_shoppingList:
-    path: /shoppinglist/addlineitem
+_ctp_example_shoppingList_add_lineItem:
+    path: /shoppinglist/add_lineitem
     defaults: { _controller: ExampleBundle:ShoppingList:addLineItem }
 
-shopping_list_remove_line_item:
-    path: /shoppinglist/removelineitem
-    controller: App\Controller\ShoppingListController::removeLineItem
+_ctp_example_shoppingList_remove_lineItem:
+    path: /shoppinglist/remove_lineitem
+    defaults: { _controller: ExampleBundle:ShoppingList:removeLineItem }
     methods: [POST]
 
-shopping_list_change_line_item_quantity:
-    path: /shoppinglist/changelineitemquantity
-    controller: App\Controller\ShoppingListController::changeLineItemQuantity
+_ctp_example_shoppingList_change_lineItem_quantity:
+    path: /shoppinglist/change_lineitem_quantity
+    defaults: { _controller: ExampleBundle:ShoppingList:changeLineItemQuantity }
     methods: [POST]
+

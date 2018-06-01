@@ -6,21 +6,47 @@ namespace Commercetools\Symfony\ExampleBundle\Controller;
 
 use Commercetools\Core\Client;
 use Commercetools\Core\Model\Common\Address;
+use Commercetools\Core\Model\Customer\Customer;
+use Commercetools\Core\Request\Customers\Command\CustomerChangeAddressAction;
+use Commercetools\Core\Request\Customers\Command\CustomerChangeEmailAction;
+use Commercetools\Core\Request\Customers\Command\CustomerSetFirstNameAction;
+use Commercetools\Core\Request\Customers\Command\CustomerSetLastNameAction;
 use Commercetools\Core\Request\Customers\CustomerByIdGetRequest;
+use Commercetools\Core\Request\Customers\CustomerPasswordChangeRequest;
 use Commercetools\Symfony\CtpBundle\Entity\UserAddress;
 use Commercetools\Symfony\CtpBundle\Entity\UserDetails;
 use Commercetools\Symfony\ExampleBundle\Model\Form\Type\AddressType;
 use Commercetools\Symfony\ExampleBundle\Model\Form\Type\UserType;
-use Commercetools\Symfony\CtpBundle\Model\Repository\CartRepository;
+use Commercetools\Symfony\CustomerBundle\Manager\CustomerManager;
 use Commercetools\Symfony\CtpBundle\Security\User\User;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
+use Symfony\Component\Security\Core\User\UserInterface;
 
 
 class UserController extends Controller
 {
+    /**
+     * @var Client
+     */
+    private $client;
+
+    /**
+     * @var CustomerManager
+     */
+    private $manager;
+
+    /**
+     * CustomerController constructor.
+     */
+    public function __construct(Client $client, CustomerManager $manager)
+    {
+        $this->client = $client;
+        $this->manager = $manager;
+    }
+
     public function indexAction()
     {
         /**
@@ -51,20 +77,16 @@ class UserController extends Controller
         );
     }
 
-    public function detailsAction(Request $request)
+    public function detailsAction(Request $request, UserInterface $user)
     {
-        /**
-         * @var User $user
-         */
-        $customerId = $this->get('security.token_storage')->getToken()->getUser()->getId();
-        $customer = $this->get('commercetools.repository.customer')->getCustomer($request->getLocale(), $customerId);
+        $customer = $this->manager->getById($request->getLocale(), $user->getId());
         $entity = UserDetails::ofCustomer($customer);
 
         $form = $this->createForm(UserType::class, $entity)
             ->add('submit', SubmitType::class);
         $form->handleRequest($request);
 
-        if ($form->isValid() && $form->isSubmitted()){
+        if ($form->isSubmitted() && $form->isValid()){
 
             $firstName = $form->get('firstName')->getData();
             $lastName = $form->get('lastName')->getData();
@@ -72,27 +94,27 @@ class UserController extends Controller
             $currentPassword = $form->get('currentPassword')->getData();
             $newPassword = $form->get('newPassword')->getData();
 
-            $customer = $this->get('commercetools.repository.customer')
-                ->setCustomerDetails($request->getLocale(), $customer, $firstName, $lastName, $email);
+            $customerBuilder = $this->manager->update($customer);
+            $customerBuilder
+                ->setFirstName(CustomerSetFirstNameAction::of()->setFirstName($firstName))
+                ->setLastName(CustomerSetLastNameAction::of()->setLastName($lastName))
+                ->changeEmail(CustomerChangeEmailAction::ofEmail($email));
 
-            if (is_null($customer)){
-                $this->addFlash('error', 'Error updating user!');
-                return $this->redirect($this->generateUrl('_ctp_example_user_details'));
-            }else{
-                $this->addFlash('notice', 'User updated');
+//            if (isset($newPassword)){
+//                $customerBuilder->addAction(CustomerPasswordChangeRequest::ofIdVersionAndPasswords(
+//                    $customer->getId(),
+//                    $customer->getVersion(),
+//                    $currentPassword,
+//                    $newPassword
+//                ));
+//            }
+
+            try{
+                $customerBuilder->flush();
             }
-
-            if (isset($newPassword)){
-                try{
-                    $this->get('commercetools.repository.customer')
-                        ->setNewPassword($request->getLocale(), $customer, $currentPassword, $newPassword);
-                } catch (\InvalidArgumentException $e){
-                    $this->addFlash('error', $this->get($e->getMessage(), [] , 'customers'));
-                    dump($e->getMessage());
-                    return new Response($e->getMessage());
-                }
+            catch (\Exception $e){
+                $this->addFlash('error', 'something wrong');
             }
-
         }
 
         return $this->render('ExampleBundle:User:user.html.twig',
@@ -102,13 +124,9 @@ class UserController extends Controller
         );
     }
 
-    public function addressBookAction(Request $request)
+    public function addressBookAction(Request $request, UserInterface $user)
     {
-        /**
-         * @var User $user
-         */
-        $customerId = $this->get('security.token_storage')->getToken()->getUser()->getId();
-        $customer = $this->get('commercetools.repository.customer')->getCustomer($request->getLocale(), $customerId);
+        $customer = $this->manager->getById($request->getLocale(), $user->getId());
 
         return $this->render('ExampleBundle:User:addressBook.html.twig',
             [
@@ -117,14 +135,9 @@ class UserController extends Controller
         );
     }
 
-    public function editAddressAction(Request $request, $addressId)
+    public function editAddressAction(Request $request, UserInterface $user, $addressId)
     {
-        /**
-         * @var User $user
-         */
-        $customerId = $this->get('security.token_storage')->getToken()->getUser()->getId();
-        $repository = $this->get('commercetools.repository.customer');
-        $customer = $repository->getCustomer($request->getLocale(), $customerId);
+        $customer = $this->manager->getById($request->getLocale(), $user->getId());
         $address = $customer->getAddresses()->getById($addressId);
 
         $entity = UserAddress::ofAddress($address);
@@ -135,15 +148,12 @@ class UserController extends Controller
             ->getForm();
         $form->handleRequest($request);
 
-        if ($form->isValid() && $form->isSubmitted()){
+        if ($form->isSubmitted() && $form->isValid()){
             $address = Address::fromArray($form->get('address')->getData());
 
-            $submit = $repository->setAddresses(
-                $request->getLocale(),
-                $customer,
-                $address,
-                $addressId
-            );
+            $customerBuilder = $this->manager->update($customer)
+                ->changeAddress(CustomerChangeAddressAction::ofAddressIdAndAddress($addressId, $address));
+            $customerBuilder->flush();
         }
 
         return $this->render(

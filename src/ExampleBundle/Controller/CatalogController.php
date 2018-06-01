@@ -74,16 +74,33 @@ class CatalogController extends Controller
 
         $product = $repository->getProductBySlug($slug, $request->getLocale(), 'EUR', 'DE');
 
+        return $this->productDetails($request, $product, $user);
+    }
+
+    public function detailByIdAction(Request $request, $id, UserInterface $user = null)
+    {
+        /**
+         * @var ProductRepository $repository
+         */
+        $repository = $this->get('commercetools.repository.product');
+
+        $product = $repository->getProductById($id, $request->getLocale(), 'EUR', 'DE');
+
+        return $this->productDetails($request, $product, $user);
+    }
+
+    private function productDetails(Request $request, $product, UserInterface $user = null)
+    {
         $variantIds = [];
 
         foreach ($product->getAllVariants() as $variant) {
             $variantIds[$variant->getSku()] = $variant->getId();
         }
 
-        // XXX anonymous users
-        $shoppingLists = [];
         $shoppingListsIds = [];
-        if(!is_null($user)){
+        if(is_null($user)){
+            $shoppingLists = $this->manager->getAllOfAnonymous($request->getLocale(), $this->get('session')->getId());
+        } else {
             $shoppingLists = $this->manager->getAllOfCustomer($request->getLocale(), CustomerReference::ofId($user->getId()));
         }
 
@@ -103,13 +120,13 @@ class CatalogController extends Controller
         $form = $this->createForm(AddToCartType::class, $data, ['action' => $this->generateUrl('_ctp_example_add_lineItem')]);
         $form->handleRequest($request);
 
-        $shoppingListForm = $this->createForm(AddToShoppingListType::class, $data, ['action' => $this->generateUrl('_ctp_example_add_lineItem_to_shoppingList')]);
+        $shoppingListForm = $this->createForm(AddToShoppingListType::class, $data, ['action' => $this->generateUrl('_ctp_example_shoppingList_add_lineItem')]);
         $shoppingListForm->handleRequest($request);
 
         return $this->render('ExampleBundle:catalog:product.html.twig', [
-                'product' =>  $product,
-                'form' => $form->createView(),
-                'shoppingListForm' => $shoppingListForm->createView()
+            'product' =>  $product,
+            'form' => $form->createView(),
+            'shoppingListForm' => $shoppingListForm->createView()
         ]);
     }
 

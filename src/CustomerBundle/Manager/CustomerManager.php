@@ -30,7 +30,7 @@ class CustomerManager
     private $dispatcher;
 
     /**
-     * ShoppingListManager constructor.
+     * CustomerManager constructor.
      * @param CustomerRepository $repository
      * @param EventDispatcherInterface $dispatcher
      */

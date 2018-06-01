@@ -8,7 +8,6 @@ namespace Commercetools\Symfony\CartBundle\Model\Repository;
 use Commercetools\Core\Builder\Request\RequestBuilder;
 use Commercetools\Core\Model\Zone\Location;
 use Commercetools\Core\Model\Cart\CartState;
-use Commercetools\Core\Request\ClientRequestInterface;
 use Commercetools\Symfony\CtpBundle\Model\QueryParams;
 use Commercetools\Symfony\CtpBundle\Model\Repository;
 use Commercetools\Core\Client;
@@ -16,10 +15,8 @@ use Commercetools\Core\Model\Cart\Cart;
 use Commercetools\Core\Model\Cart\CartDraft;
 use Commercetools\Core\Model\Cart\LineItemDraftCollection;
 use Commercetools\Core\Model\Common\Address;
-use Commercetools\Core\Request\Carts\CartCreateRequest;
 use Commercetools\Symfony\CtpBundle\Service\MapperFactory;
 use Psr\Cache\CacheItemPoolInterface;
-use Symfony\Component\HttpFoundation\Session\Session;
 
 
 class CartRepository extends Repository
@@ -49,7 +46,8 @@ class CartRepository extends Repository
         $this->shippingMethodRepository = $shippingMethodRepository;
     }
 
-    public function getCart($locale, $cartId = null, $customerId = null)
+    // TODO: check/fix
+    public function getCart($locale, $cartId = null, $customerId = null, $anonymousId = null)
     {
         $cart = null;
 
@@ -67,10 +65,19 @@ class CartRepository extends Repository
             $cart = $carts->current();
 
             if (!is_null($cart)) {
-                if ($cart->getCustomerId() !== $customerId) {
+                if ($cart->getCustomerId() !== $customerId) { // accepts null customer id (?)
                     throw new \InvalidArgumentException();
                 }
             }
+        } elseif (!is_null($anonymousId)) {
+            $cartRequest = RequestBuilder::of()->carts()->query();
+
+            $predicate = 'cartState = "' . CartState::ACTIVE . '" and anonymousId="' . $anonymousId . '"';
+
+            $cartRequest->where($predicate)->limit(1);
+
+            $carts = $this->executeRequest($cartRequest, $locale);
+            $cart = $carts->current();
         }
 
         return $cart;
@@ -93,18 +100,16 @@ class CartRepository extends Repository
             ->setShippingAddress(Address::of()->setCountry($location->getCountry()))
             ->setLineItems($lineItemDraftCollection);
 
-        if (!is_null($anonymousId)) {
-            $cartDraft->setAnonymousId($anonymousId);
-        }
-
         if (!is_null($customerId)) {
             $cartDraft->setCustomerId($customerId);
+        } else if (!is_null($anonymousId)) {
+            $cartDraft->setAnonymousId($anonymousId);
         }
 
         $cartDraft->setShippingMethod($shippingMethods->current()->getReference());
 
-        $cartCreateRequest = RequestBuilder::of()->carts()->create($cartDraft);
-        $cart = $this->executeRequest($cartCreateRequest, $locale);
+        $request = RequestBuilder::of()->carts()->create($cartDraft);
+        $cart = $this->executeRequest($request, $locale);
 
         return $cart;
     }

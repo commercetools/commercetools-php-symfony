@@ -12,6 +12,10 @@
             <argument type="service" id="Commercetools\Core\Client"/>
             <argument type="service" id="Commercetools\Symfony\ShoppingListBundle\Manager\ShoppingListManager"/>
         </service>
+        <service id="Commercetools\Symfony\ExampleBundle\Controller\UserController" public="true">
+            <argument type="service" id="Commercetools\Core\Client"/>
+            <argument type="service" id="Commercetools\Symfony\CustomerBundle\Manager\CustomerManager"/>
+        </service>
         <service id="Commercetools\Symfony\ExampleBundle\Controller\CartController" public="true">
             <argument type="service" id="Commercetools\Core\Client"/>
             <argument type="service" id="Commercetools\Symfony\CartBundle\Manager\CartManager"/>
@@ -25,6 +29,14 @@
             <argument type="service" id="Commercetools\Symfony\CartBundle\Manager\CartManager"/>
             <argument type="service" id="Commercetools\Symfony\CartBundle\Manager\ShippingMethodManager"/>
             <argument type="service" id="Commercetools\Symfony\CartBundle\Manager\OrderManager"/>
+        </service>
+        <service id="Commercetools\Symfony\ExampleBundle\EventSubscriber\CartSubscriber">
+            <tag name="kernel.event_subscriber"/>
+            <argument type="service" id="session"/>
+        </service>
+        <service id="Commercetools\Symfony\ExampleBundle\EventSubscriber\OrderSubscriber">
+            <tag name="kernel.event_subscriber"/>
+            <argument type="service" id="session"/>
         </service>
     </services>
 </container>

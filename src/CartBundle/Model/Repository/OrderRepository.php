@@ -46,9 +46,6 @@ class OrderRepository extends Repository
 
         $order = $this->executeRequest($request, $locale);
 
-        $this->session->remove(CartRepository::CART_ID);
-        $this->session->remove(CartRepository::CART_ITEM_COUNT);
-
         return $order;
     }
 
@@ -72,6 +69,5 @@ class OrderRepository extends Repository
         $order = $request->mapFromResponse($response);
 
         return $order;
-
     }
 }

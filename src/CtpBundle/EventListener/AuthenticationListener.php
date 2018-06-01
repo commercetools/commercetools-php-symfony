@@ -6,7 +6,7 @@
 namespace Commercetools\Symfony\CtpBundle\EventListener;
 
 use Commercetools\Symfony\CartBundle\Model\Repository\CartRepository;
-use Commercetools\Symfony\CtpBundle\Model\Repository\CustomerRepository;
+use Commercetools\Symfony\CustomerBundle\Model\Repository\CustomerRepository;
 use Commercetools\Symfony\CtpBundle\Security\User\CtpUser;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
