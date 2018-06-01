@@ -41,9 +41,9 @@ class CartManager
         $this->dispatcher = $dispatcher;
     }
 
-    public function getCart($locale, $cartId = null, $customerId = null)
+    public function getCart($locale, $cartId = null, $customerId = null, $anonymousId = null)
     {
-        $cart = $this->repository->getCart($locale, $cartId, $customerId);
+        $cart = $this->repository->getCart($locale, $cartId, $customerId, $anonymousId);
 
         if (!is_null($cart)){
             $event = new CartGetEvent($cart);
@@ -60,13 +60,12 @@ class CartManager
 
     public function createCart($locale, $currency, Location $location, LineItemDraftCollection $lineItemDraftCollection, $customerId = null, $anonymousId = null)
     {
-        // XXX
         $event = new CartCreateEvent();
         $this->dispatcher->dispatch(CartCreateEvent::class, $event);
 
         $cart = $this->repository->createCart($locale, $currency, $location, $lineItemDraftCollection, $customerId, $anonymousId);
 
-        $eventPost = new CartPostCreateEvent();
+        $eventPost = new CartPostCreateEvent($cart);
         $this->dispatcher->dispatch(CartPostCreateEvent::class, $eventPost);
 
         return $cart;

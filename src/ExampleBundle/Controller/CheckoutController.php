@@ -13,7 +13,7 @@ use Commercetools\Core\Request\Carts\Command\CartSetShippingMethodAction;
 use Commercetools\Symfony\CartBundle\Manager\CartManager;
 use Commercetools\Symfony\CartBundle\Manager\OrderManager;
 use Commercetools\Symfony\CartBundle\Manager\ShippingMethodManager;
-use Commercetools\Symfony\CtpBundle\Entity\CartEntity;
+use Commercetools\Symfony\CartBundle\Entity\CartEntity;
 use Commercetools\Symfony\ExampleBundle\Model\Form\Type\AddressType;
 use Commercetools\Symfony\CartBundle\Model\Repository\CartRepository;
 use Commercetools\Symfony\CtpBundle\Security\User\CtpUser;
@@ -136,7 +136,7 @@ class CheckoutController extends Controller
         ]);
     }
 
-    public function confirmationAction(Request $request, UserInterface $user)
+    public function confirmationAction(Request $request, UserInterface $user = null)
     {
         $session = $this->get('session');
 

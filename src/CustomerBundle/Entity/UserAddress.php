@@ -1,9 +1,8 @@
 <?php
 /**
- * @author: Ylambers <yaron.lambers@commercetools.de>
  */
 
-namespace Commercetools\Symfony\CtpBundle\Entity;
+namespace Commercetools\Symfony\CustomerBundle\Entity;
 
 
 use Commercetools\Core\Model\Common\Address;

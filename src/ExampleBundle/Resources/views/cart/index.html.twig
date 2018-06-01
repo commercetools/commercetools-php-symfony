@@ -1,12 +1,7 @@
 {% extends "ExampleBundle::layout.html.twig" %}
 
 {% block container %}
-    {#Id: {{ cart.getId }} <br/>#}
     Total price: {{ cart.getTotalPrice }} <br/>
-
-    {#{{ dump(cart) }}#}
-
-
     Total Net : {% if cart.getTaxedPrice %}{{ cart.getTaxedPrice.getTotalNet }}{% endif %} <br/>
     Shipping Cost : {% if cart.shippingInfo %}{{ cart.shippingInfo.price }}{% endif %} <br/>
     Total Gross : {% if cart.getTaxedPrice %}{{ cart.getTaxedPrice.getTotalGross }}{% endif %} <br/>
@@ -27,7 +22,7 @@
                         <div class="form-group">
                             <input type="hidden" name="lineItemId" value="{{ lineItem.getId }}">
                             <select name="quantity">
-                                {% for i in 1..10 %}
+                                {% for i in 1..50 %}
                                     <option value="{{ i }}" {% if lineItem.getQuantity == i %} selected="selected" {% endif %}>{{ i }}</option>
                                 {% endfor %}
                             </select>

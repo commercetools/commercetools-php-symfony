@@ -4,10 +4,14 @@
 
 namespace Commercetools\Symfony\ExampleBundle\Controller;
 
+use Commercetools\Core\Builder\Request\RequestBuilder;
 use Commercetools\Core\Model\Cart\LineItemDraft;
 use Commercetools\Core\Model\Cart\LineItemDraftCollection;
+use Commercetools\Core\Model\ShoppingList\ShoppingList;
+use Commercetools\Core\Model\ShoppingList\ShoppingListReference;
 use Commercetools\Core\Model\Zone\Location;
 use Commercetools\Core\Request\Carts\Command\CartAddLineItemAction;
+use Commercetools\Core\Request\Carts\Command\CartAddShoppingListAction;
 use Commercetools\Core\Request\Carts\Command\CartChangeLineItemQuantityAction;
 use Commercetools\Core\Request\Carts\Command\CartRemoveLineItemAction;
 use Commercetools\Symfony\ExampleBundle\Model\Form\Type\AddToCartType;
@@ -155,6 +159,21 @@ class CartController extends Controller
         return new RedirectResponse($this->generateUrl('_ctp_example_cart'));
     }
 
+    public function addShoppingListAction(Request $request)
+    {
+        $session = $this->get('session');
+        $cartId = $session->get(CartRepository::CART_ID);
+        $cart = $this->manager->getCart($request->getLocale(), $cartId, $this->getCustomerId());
+
+        $shoppingListId = $request->get('_shoppingListId');
+        $shoppingList = ShoppingListReference::ofId($shoppingListId);
+
+        $cartBuilder = $this->manager->update($cart);
+        $cartBuilder->addAction(CartAddShoppingListAction::ofShoppingList($shoppingList));
+        $cartBuilder->flush();
+        return new RedirectResponse($this->generateUrl('_ctp_example_cart'));
+    }
+
     protected function getItemCount(Cart $cart)
     {
         $count = 0;
@@ -179,6 +198,4 @@ class CartController extends Controller
     {
         return $this->container->get('form.factory')->createNamedBuilder($name, FormType::class, $data, $options);
     }
-
-
 }
