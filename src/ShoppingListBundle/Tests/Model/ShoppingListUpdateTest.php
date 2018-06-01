@@ -28,9 +28,10 @@ use Commercetools\Core\Request\ShoppingLists\Command\ShoppingListSetTextLineItem
 use Commercetools\Core\Request\ShoppingLists\Command\ShoppingListSetTextLineItemDescriptionAction;
 use Commercetools\Symfony\ShoppingListBundle\Manager\ShoppingListManager;
 use Commercetools\Symfony\ShoppingListBundle\Model\ShoppingListUpdateBuilder;
+use PHPUnit\Framework\TestCase;
 use Prophecy\Argument;
 
-class ShoppingListUpdateTest extends \PHPUnit_Framework_TestCase
+class ShoppingListUpdateTest extends TestCase
 {
     public function getActionProvider()
     {

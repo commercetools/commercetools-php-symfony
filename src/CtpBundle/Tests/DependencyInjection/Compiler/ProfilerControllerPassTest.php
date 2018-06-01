@@ -6,9 +6,10 @@ namespace Commercetools\Symfony\CtpBundle\Tests\DependencyInjection\Compiler;
 
 use Commercetools\Symfony\CtpBundle\DependencyInjection\Compiler\ProfilerControllerPass;
 use Commercetools\Symfony\CtpBundle\Tests\ContainerTrait;
+use PHPUnit\Framework\TestCase;
 use Symfony\Component\DependencyInjection\Definition;
 
-class ProfilerControllerPassTest extends \PHPUnit_Framework_TestCase
+class ProfilerControllerPassTest extends TestCase
 {
     use ContainerTrait;
 
