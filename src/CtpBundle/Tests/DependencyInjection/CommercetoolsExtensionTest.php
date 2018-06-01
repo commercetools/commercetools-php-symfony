@@ -6,8 +6,9 @@ namespace Commercetools\Symfony\CtpBundle\Tests\DependencyInjection;
 
 use Commercetools\Symfony\CtpBundle\DependencyInjection\CommercetoolsExtension;
 use Commercetools\Symfony\CtpBundle\Tests\ContainerTrait;
+use PHPUnit\Framework\TestCase;
 
-class CommercetoolsExtensionTest extends \PHPUnit_Framework_TestCase
+class CommercetoolsExtensionTest extends TestCase
 {
     use ContainerTrait;
 
