@@ -1,9 +1,8 @@
 <?php
 /**
- * @author @jayS-de <jens.schulze@commercetools.de>
  */
 
-namespace Commercetools\Symfony\CtpBundle\Model;
+namespace Commercetools\Symfony\CatalogBundle\Model;
 
 use Commercetools\Core\Model\Product\Search\FilterRange;
 use Commercetools\Core\Model\Product\Search\FilterRangeCollection;

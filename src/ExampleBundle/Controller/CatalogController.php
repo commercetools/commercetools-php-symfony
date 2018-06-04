@@ -4,8 +4,8 @@ namespace  Commercetools\Symfony\ExampleBundle\Controller;
 
 use Commercetools\Core\Client;
 use Commercetools\Core\Model\Product\ProductProjection;
+use Commercetools\Symfony\CatalogBundle\Manager\CatalogManager;
 use Commercetools\Symfony\ExampleBundle\Model\Form\Type\AddToCartType;
-use Commercetools\Symfony\CtpBundle\Model\Repository\ProductRepository;
 use Commercetools\Symfony\ExampleBundle\Model\Form\Type\AddToShoppingListType;
 use GuzzleHttp\Psr7\Uri;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
@@ -20,21 +20,21 @@ use Commercetools\Core\Model\ShoppingList\ShoppingList;
 
 class CatalogController extends Controller
 {
+    private $client;
+    private $catalogManager;
+    private $shoppingListManager;
+
     /**
      * CatalogController constructor.
      */
-    public function __construct(Client $client, ShoppingListManager $manager)
+    public function __construct(Client $client, CatalogManager $catalogManager = null, ShoppingListManager $shoppingListManager = null)
     {
         $this->client = $client;
-        $this->manager = $manager;
+        $this->catalogManager = $catalogManager;
+        $this->shoppingListManager = $shoppingListManager;
     }
     public function indexAction(Request $request)
     {
-        /**
-         * @var ProductRepository $repository
-         */
-        $repository = $this->get('commercetools.repository.product');
-
         $form = $this->createFormBuilder()
             ->add('search', TextType::class,
                 [
@@ -54,7 +54,7 @@ class CatalogController extends Controller
         }
 
         $uri = new Uri($request->getRequestUri());
-        list($products, $offset) = $repository->getProducts(
+        list($products, $offset) = $this->catalogManager->getProducts(
             $request->getLocale(), 12, 1, 'price asc', 'EUR', 'DE', $search, $uri
         );
 
@@ -67,12 +67,7 @@ class CatalogController extends Controller
 
     public function detailBySlugAction(Request $request, $slug, UserInterface $user = null)
     {
-        /**
-         * @var ProductRepository $repository
-         */
-        $repository = $this->get('commercetools.repository.product');
-
-        $product = $repository->getProductBySlug($slug, $request->getLocale(), 'EUR', 'DE');
+        $product = $this->catalogManager->getProductBySlug($slug, $request->getLocale(), 'EUR', 'DE');
 
         return $this->productDetails($request, $product, $user);
     }
@@ -94,9 +89,9 @@ class CatalogController extends Controller
 
         $shoppingListsIds = [];
         if(is_null($user)){
-            $shoppingLists = $this->manager->getAllOfAnonymous($request->getLocale(), $this->get('session')->getId());
+            $shoppingLists = $this->shoppingListManager->getAllOfAnonymous($request->getLocale(), $this->get('session')->getId());
         } else {
-            $shoppingLists = $this->manager->getAllOfCustomer($request->getLocale(), CustomerReference::ofId($user->getId()));
+            $shoppingLists = $this->shoppingListManager->getAllOfCustomer($request->getLocale(), CustomerReference::ofId($user->getId()));
         }
 
         foreach ($shoppingLists as $shoppingList) {
@@ -127,9 +122,7 @@ class CatalogController extends Controller
 
     public function suggestAction(Request $request, $searchTerm)
     {
-//        $searchTerm = null;
-        $repository = $this->get('commercetools.repository.product');
-        $products = $repository->suggestProducts($request->getLocale(), $searchTerm, 5, 'EUR', 'DE');
+        $products = $this->catalogManager->suggestProducts($request->getLocale(), $searchTerm, 5, 'EUR', 'DE');
 
         $items = [];
 
