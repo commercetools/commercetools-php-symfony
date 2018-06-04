@@ -8,7 +8,7 @@
     </parameters>
     <services>
         <service id="Commercetools\Symfony\ReviewBundle\Model\Repository\ReviewRepository">
-            <argument>%commercetools.cache.customer%</argument>
+            <argument>%commercetools.cache.review%</argument>
             <argument type="service" id="commercetools.cache" />
             <argument type="service" id="Commercetools\Core\Client"/>
             <argument type="service" id="commmercetools.mapper.factory" />
