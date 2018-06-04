@@ -1,9 +1,8 @@
 <?php
 /**
- * @author: Ylambers <yaron.lambers@commercetools.de>
  */
 
-namespace Commercetools\Symfony\CtpBundle\Entity;
+namespace Commercetools\Symfony\CustomerBundle\Entity;
 
 
 use Commercetools\Core\Model\Common\Address;
@@ -14,7 +13,6 @@ use Symfony\Component\Validator\Mapping\ClassMetadata;
 
 class UserAddress
 {
-    private $address;
     private $title;
     private $salutation;
     private $firstName;
@@ -36,23 +34,6 @@ class UserAddress
     private $additionalStreetInfo;
     private $phone;
     private $mobile;
-
-    /**
-     * @return mixed
-     */
-    public function getAddress()
-    {
-        return $this->address;
-    }
-
-    /**
-     * @param mixed $address
-     */
-    public function setAddress($address)
-    {
-        $this->address = $address;
-    }
-
 
 
     /**
@@ -145,6 +126,7 @@ class UserAddress
 
     /**
      * @param mixed $department
+     * @return UserAddress
      */
     public function setDepartment($department)
     {

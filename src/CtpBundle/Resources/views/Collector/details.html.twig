@@ -23,6 +23,25 @@
     </div>
 </div>
 
+<h3>Headers</h3>
+
+<table>
+    <thead>
+    <tr>
+        <th>Name</th>
+        <th>Value</th>
+    </tr>
+    </thead>
+    <tbody>
+    {% for name, value in entry.request.headers %}
+        <tr>
+            <td style="min-width: 120px;">{{ name }}</td>
+            <td>{{ value|join(', ') }}</td>
+        </tr>
+    {% endfor %}
+    </tbody>
+</table>
+
 <h3>Body</h3>
 
 <pre class="sf-dump"><span class="sf-dump-str">{{ entry.request.body }}</span></pre>

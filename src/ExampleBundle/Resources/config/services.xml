@@ -30,6 +30,10 @@
             <argument type="service" id="Commercetools\Symfony\CartBundle\Manager\ShippingMethodManager"/>
             <argument type="service" id="Commercetools\Symfony\CartBundle\Manager\OrderManager"/>
         </service>
+        <service id="Commercetools\Symfony\ExampleBundle\Controller\ReviewController" public="true">
+            <argument type="service" id="Commercetools\Core\Client"/>
+            <argument type="service" id="Commercetools\Symfony\ReviewBundle\Manager\ReviewManager"/>
+        </service>
         <service id="Commercetools\Symfony\ExampleBundle\EventSubscriber\CartSubscriber">
             <tag name="kernel.event_subscriber"/>
             <argument type="service" id="session"/>

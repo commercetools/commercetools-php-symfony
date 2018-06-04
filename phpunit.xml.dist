@@ -16,6 +16,7 @@
             <directory>./src/ShoppingListBundle/Tests/</directory>
             <directory>./src/CustomerBundle/Tests/</directory>
             <directory>./src/CartBundle/Tests/</directory>
+            <directory>./src/ReviewBundle/Tests/</directory>
         </testsuite>
     </testsuites>
 
@@ -25,6 +26,7 @@
             <directory>./src/ShoppingListBundle/</directory>
             <directory>./src/CustomerBundle/</directory>
             <directory>./src/CartBundle/</directory>
+            <directory>./src/ReviewBundle/</directory>
             <exclude>
                 <directory>./src/CtpBundle/Resources</directory>
                 <directory>./src/CtpBundle/Tests</directory>
@@ -34,6 +36,8 @@
                 <directory>./src/CustomerBundle/Tests</directory>
                 <directory>./src/CartBundle/Resources</directory>
                 <directory>./src/CartBundle/Tests</directory>
+                <directory>./src/ReviewBundle/Resources</directory>
+                <directory>./src/ReviewBundle/Tests</directory>
                 <directory>./vendor</directory>
             </exclude>
         </whitelist>

@@ -6,22 +6,19 @@ namespace Commercetools\Symfony\ExampleBundle\Controller;
 
 use Commercetools\Core\Client;
 use Commercetools\Core\Model\Common\Address;
-use Commercetools\Core\Model\Customer\Customer;
 use Commercetools\Core\Request\Customers\Command\CustomerChangeAddressAction;
 use Commercetools\Core\Request\Customers\Command\CustomerChangeEmailAction;
 use Commercetools\Core\Request\Customers\Command\CustomerSetFirstNameAction;
 use Commercetools\Core\Request\Customers\Command\CustomerSetLastNameAction;
 use Commercetools\Core\Request\Customers\CustomerByIdGetRequest;
-use Commercetools\Core\Request\Customers\CustomerPasswordChangeRequest;
-use Commercetools\Symfony\CtpBundle\Entity\UserAddress;
-use Commercetools\Symfony\CtpBundle\Entity\UserDetails;
+use Commercetools\Symfony\CustomerBundle\Entity\UserAddress;
+use Commercetools\Symfony\CustomerBundle\Entity\UserDetails;
 use Commercetools\Symfony\ExampleBundle\Model\Form\Type\AddressType;
 use Commercetools\Symfony\ExampleBundle\Model\Form\Type\UserType;
 use Commercetools\Symfony\CustomerBundle\Manager\CustomerManager;
-use Commercetools\Symfony\CtpBundle\Security\User\User;
+use Commercetools\Symfony\CustomerBundle\Security\User\User;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Security\Core\User\UserInterface;
 
@@ -91,6 +88,7 @@ class UserController extends Controller
             $firstName = $form->get('firstName')->getData();
             $lastName = $form->get('lastName')->getData();
             $email = $form->get('email')->getData();
+
             $currentPassword = $form->get('currentPassword')->getData();
             $newPassword = $form->get('newPassword')->getData();
 
@@ -100,20 +98,15 @@ class UserController extends Controller
                 ->setLastName(CustomerSetLastNameAction::of()->setLastName($lastName))
                 ->changeEmail(CustomerChangeEmailAction::ofEmail($email));
 
-//            if (isset($newPassword)){
-//                $customerBuilder->addAction(CustomerPasswordChangeRequest::ofIdVersionAndPasswords(
-//                    $customer->getId(),
-//                    $customer->getVersion(),
-//                    $currentPassword,
-//                    $newPassword
-//                ));
-//            }
 
-            try{
-                $customerBuilder->flush();
+            try {
+                $customer = $customerBuilder->flush();
+            } catch (\Error $e){
+                $this->addFlash('error', $e->getMessage());
             }
-            catch (\Exception $e){
-                $this->addFlash('error', 'something wrong');
+
+            if (isset($newPassword)){
+                $this->manager->changePassword($customer, $currentPassword, $newPassword);
             }
         }
 

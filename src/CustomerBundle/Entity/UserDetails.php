@@ -1,12 +1,9 @@
 <?php
 
-namespace Commercetools\Symfony\CtpBundle\Entity;
+namespace Commercetools\Symfony\CustomerBundle\Entity;
 
 use Commercetools\Core\Model\Customer\Customer;
 
-/**
- * @author: Ylambers <yaron.lambers@commercetools.de>
- */
 class UserDetails
 {
     private $user;
