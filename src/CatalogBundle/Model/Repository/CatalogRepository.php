@@ -9,7 +9,6 @@ use Commercetools\Core\Client;
 use Commercetools\Core\Model\Common\LocalizedString;
 use Commercetools\Core\Model\Product\ProductProjection;
 use Commercetools\Core\Model\Product\SuggestionCollection;
-use Commercetools\Core\Request\Products\ProductProjectionBySlugGetRequest;
 use Commercetools\Core\Request\Products\ProductsSuggestRequest;
 use Commercetools\Symfony\CtpBundle\Model\Repository;
 use Commercetools\Symfony\CatalogBundle\Model\Search;
@@ -57,8 +56,6 @@ class CatalogRepository extends Repository
 //        $products = $this->retrieve(static::NAME, $cacheKey, $productRequest);
 //        $product = $products->current();
 
-//        $request = RequestBuilder::of()->products()->
-
 //        $productRequest = ProductProjectionBySlugGetRequest::ofSlugAndContext(
 //            $slug,
 //            $client->getConfig()->getContext()
@@ -69,9 +66,9 @@ class CatalogRepository extends Repository
             ->country($country)
             ->currency($currency);
         
-        $product = $this->retrieve($client, $cacheKey, $productRequest, $locale);
+        $productProjection = $this->retrieve($client, $cacheKey, $productRequest, $locale);
 
-        return $product;
+        return $productProjection;
     }
 
     public function getProductById($id, $locale)
@@ -79,9 +76,6 @@ class CatalogRepository extends Repository
         $client = $this->getClient();
         $cacheKey = static::NAME . '-' . $id . '-' . $locale;
 
-//        $productRequest = ProductProjectionByIdGetRequest::ofId(
-//            $id
-//        );
         $productRequest = RequestBuilder::of()->products()->getById($id);
 
         $product = $this->retrieve($client, $cacheKey, $productRequest, $locale);
@@ -107,13 +101,6 @@ class CatalogRepository extends Repository
             }
         }
 
-//        $searchRequest = ProductProjectionSearchRequest::of()
-//            ->limit($limit)
-//            ->currency($currency)
-//            ->country($country)
-//            ->fuzzy(true);
-//        $searchRequest->addParam('text.' . $language, $term);
-
         $searchRequest = RequestBuilder::of()->productProjections()->search()
             ->limit($limit)
             ->currency($currency)
@@ -121,13 +108,7 @@ class CatalogRepository extends Repository
             ->fuzzy(true)
             ->addParam('text.' . $language, $term);
 
-        $response = $searchRequest->executeWithClient($this->getClient());
-        $products = $searchRequest->mapFromResponse(
-            $response,
-            $this->getMapper($locale)
-        );
-
-        return $products;
+        return $this->executeRequest($searchRequest, $locale);
     }
 
     /**
@@ -193,5 +174,21 @@ class CatalogRepository extends Repository
             $this->getMapper($locale)
         );
         return [$products, $response->getFacets(), $response->getOffset(), $response->getTotal()];
+    }
+
+    public function getProductTypes()
+    {
+        // TODO:
+        return $productTypes = RequestBuilder::of()->productTypes()->query();
+    }
+
+    public function getCategories($locale, $itemsPerPage, $currentPage, $sort)
+    {
+        $categoriesRequest = RequestBuilder::of()->categories()->query()
+            ->sort($sort)
+            ->limit($itemsPerPage)
+            ->offset(min($itemsPerPage * ($currentPage - 1),100000));
+
+        return $this->executeRequest($categoriesRequest, $locale);
     }
 }

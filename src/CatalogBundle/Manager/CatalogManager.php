@@ -60,4 +60,15 @@ class CatalogManager
     {
         return $this->repository->getProductById($id, $locale);
     }
+
+    public function getProductTypes()
+    {
+        // TODO:
+        return $this->repository->getProductTypes();
+    }
+
+    public function getCategories($locale, $itemsPerPage, $currentPage, $sort)
+    {
+        return $this->repository->getCategories($locale, $itemsPerPage, $currentPage, $sort);
+    }
 }
