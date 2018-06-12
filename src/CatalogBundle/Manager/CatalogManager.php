@@ -61,10 +61,9 @@ class CatalogManager
         return $this->repository->getProductById($id, $locale);
     }
 
-    public function getProductTypes()
+    public function getProductTypes($locale, $sort)
     {
-        // TODO:
-        return $this->repository->getProductTypes();
+        return $this->repository->getProductTypes($locale, $sort);
     }
 
     public function getCategories($locale, $sort)

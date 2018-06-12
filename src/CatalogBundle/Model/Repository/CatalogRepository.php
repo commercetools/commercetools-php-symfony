@@ -176,10 +176,11 @@ class CatalogRepository extends Repository
         return [$products, $response->getFacets(), $response->getOffset(), $response->getTotal()];
     }
 
-    public function getProductTypes()
+    public function getProductTypes($locale, $sort)
     {
-        // TODO:
-        return $productTypes = RequestBuilder::of()->productTypes()->query();
+        $productTypesRequest = $productTypes = RequestBuilder::of()->productTypes()->query()->sort($sort);
+
+        return $this->executeRequest($productTypesRequest, $locale);
     }
 
     public function getCategories($locale, $sort)
