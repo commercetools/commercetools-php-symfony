@@ -182,12 +182,9 @@ class CatalogRepository extends Repository
         return $productTypes = RequestBuilder::of()->productTypes()->query();
     }
 
-    public function getCategories($locale, $itemsPerPage, $currentPage, $sort)
+    public function getCategories($locale, $sort)
     {
-        $categoriesRequest = RequestBuilder::of()->categories()->query()
-            ->sort($sort)
-            ->limit($itemsPerPage)
-            ->offset(min($itemsPerPage * ($currentPage - 1),100000));
+        $categoriesRequest = RequestBuilder::of()->categories()->query()->sort($sort);
 
         return $this->executeRequest($categoriesRequest, $locale);
     }

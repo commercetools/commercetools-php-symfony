@@ -67,8 +67,8 @@ class CatalogManager
         return $this->repository->getProductTypes();
     }
 
-    public function getCategories($locale, $itemsPerPage, $currentPage, $sort)
+    public function getCategories($locale, $sort)
     {
-        return $this->repository->getCategories($locale, $itemsPerPage, $currentPage, $sort);
+        return $this->repository->getCategories($locale, $sort);
     }
 }
