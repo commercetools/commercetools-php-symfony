@@ -6,6 +6,7 @@ namespace Commercetools\Symfony\CatalogBundle\Model\Repository;
 
 use Commercetools\Core\Builder\Request\RequestBuilder;
 use Commercetools\Core\Client;
+use Commercetools\Core\Error\InvalidArgumentException;
 use Commercetools\Core\Model\Common\LocalizedString;
 use Commercetools\Core\Model\Product\ProductProjection;
 use Commercetools\Core\Model\Product\SuggestionCollection;
@@ -165,6 +166,8 @@ class CatalogRepository extends Repository
                         case 'filter.facets':
                             $searchRequest->addFilterFacets($filter);
                             break;
+                        default:
+                            throw new InvalidArgumentException('unknown filter type provided');
                     }
                 }
             }

@@ -14,12 +14,19 @@ _ctp_example_product_by_id:
     path:    /product/id/{id}
     defaults: { _controller: ExampleBundle:Catalog:detailById }
 
+_ctp_example_products_of_category:
+    path:    /product/category/{categoryId}
+    defaults: { _controller: ExampleBundle:Catalog:index }
+
 login:
     path: /login
     defaults: { _controller: ExampleBundle:User:login }
+
 login_check:
     path: /login_check
     defaults: { _controller: ExampleBundle:User:login }
+    methods: [POST]
+
 logout:
     path: /logout
 
@@ -98,10 +105,12 @@ _ctp_example_shoppingList:
 _ctp_example_shoppingList_create:
     path: /shoppinglist/create
     defaults: { _controller: ExampleBundle:ShoppingList:create }
+    methods: [POST]
 
 _ctp_example_shoppingList_add_lineItem:
     path: /shoppinglist/add_lineitem
     defaults: { _controller: ExampleBundle:ShoppingList:addLineItem }
+    methods: [POST]
 
 _ctp_example_shoppingList_remove_lineItem:
     path: /shoppinglist/remove_lineitem
@@ -111,7 +120,6 @@ _ctp_example_shoppingList_remove_lineItem:
 _ctp_example_shoppingList_change_lineItem_quantity:
     path: /shoppinglist/change_lineitem_quantity
     defaults: { _controller: ExampleBundle:ShoppingList:changeLineItemQuantity }
-    methods: [POST]
 
 _ctp_example_review_show:
     path: /product/id/{productId}/reviews
@@ -121,4 +129,3 @@ _ctp_example_review_create:
     path: /product/id/{productId}/reviews/create
     defaults: { _controller: ExampleBundle:Review:createReviewForProduct }
     methods: [POST]
-

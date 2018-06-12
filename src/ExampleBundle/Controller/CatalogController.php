@@ -4,6 +4,7 @@ namespace  Commercetools\Symfony\ExampleBundle\Controller;
 
 use Commercetools\Core\Client;
 use Commercetools\Core\Model\Product\ProductProjection;
+use Commercetools\Core\Model\Product\Search\Filter;
 use Commercetools\Symfony\CatalogBundle\Manager\CatalogManager;
 use Commercetools\Symfony\ExampleBundle\Model\Form\Type\AddToCartType;
 use Commercetools\Symfony\ExampleBundle\Model\Form\Type\AddToShoppingListType;
@@ -33,7 +34,7 @@ class CatalogController extends Controller
         $this->catalogManager = $catalogManager;
         $this->shoppingListManager = $shoppingListManager;
     }
-    public function indexAction(Request $request)
+    public function indexAction(Request $request, $categoryId = null)
     {
         $form = $this->createFormBuilder()
             ->add('search', TextType::class,
@@ -55,8 +56,13 @@ class CatalogController extends Controller
 
         $uri = new Uri($request->getRequestUri());
 
+        $filter = null;
+        if(!is_null($categoryId)){
+            $filter = ['filter' => [Filter::ofName('categories.id')->setValue($categoryId)]];
+        }
+
         list($products, $offset) = $this->catalogManager->getProducts(
-            $request->getLocale(), 12, 1, 'price asc', 'EUR', 'DE', $uri, $search
+            $request->getLocale(), 12, 1, 'price asc', 'EUR', 'DE', $uri, $search, $filter
         );
 
         $categories = $this->catalogManager->getCategories($request->getLocale(), 100, 1, 'id asc');
