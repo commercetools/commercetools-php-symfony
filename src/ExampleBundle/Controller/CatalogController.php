@@ -34,7 +34,7 @@ class CatalogController extends Controller
         $this->catalogManager = $catalogManager;
         $this->shoppingListManager = $shoppingListManager;
     }
-    public function indexAction(Request $request, $categoryId = null)
+    public function indexAction(Request $request, $categoryId = null, $productTypeId = null)
     {
         $form = $this->createFormBuilder()
             ->add('search', TextType::class,
@@ -58,7 +58,11 @@ class CatalogController extends Controller
 
         $filter = null;
         if(!is_null($categoryId)){
-            $filter = ['filter' => [Filter::ofName('categories.id')->setValue($categoryId)]];
+            $filter['filter'][] = Filter::ofName('categories.id')->setValue($categoryId);
+        }
+
+        if(!is_null($productTypeId)){
+            $filter['filter'][] = Filter::ofName('productType.id')->setValue($productTypeId);
         }
 
         list($products, $offset) = $this->catalogManager->getProducts(
@@ -66,11 +70,13 @@ class CatalogController extends Controller
         );
 
         $categories = $this->catalogManager->getCategories($request->getLocale(),'id asc');
+        $productTypes = $this->catalogManager->getProductTypes($request->getLocale(),'id asc');
 
         return $this->render('ExampleBundle:catalog:index.html.twig', [
                 'products' => $products,
                 'offset' => $offset,
                 'categories' => $categories,
+                'productTypes' => $productTypes,
                 'form' => $form->createView(),
         ]);
 

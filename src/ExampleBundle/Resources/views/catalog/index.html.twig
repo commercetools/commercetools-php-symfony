@@ -3,6 +3,16 @@
 {% block container %}
 
     <div class="row">
+        <h3>Types:</h3>
+        <ul class="list-inline categories-menu">
+            {% for productType in productTypes %}
+                <li class="category-item"><a href="{{ path('_ctp_example_products_of_productType', {productTypeId: productType.id}) }}">{{ productType.name }}</a></li>
+            {% endfor %}
+        </ul>
+    </div>
+
+    <div class="row">
+        <h3>Categories:</h3>
         <ul class="list-inline categories-menu">
             {% for category in categories %}
                 <li class="category-item"><a href="{{ path('_ctp_example_products_of_category', {categoryId: category.id}) }}">{{ category.name }}</a></li>
