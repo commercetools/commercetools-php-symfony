@@ -65,7 +65,7 @@ class CatalogController extends Controller
             $request->getLocale(), 12, 1, 'price asc', 'EUR', 'DE', $uri, $search, $filter
         );
 
-        $categories = $this->catalogManager->getCategories($request->getLocale(), 100, 1, 'id asc');
+        $categories = $this->catalogManager->getCategories($request->getLocale(),'id asc');
 
         return $this->render('ExampleBundle:catalog:index.html.twig', [
                 'products' => $products,
