@@ -1,6 +1,6 @@
 <?php
 
-namespace  Commercetools\Symfony\CtpBundle\Tests\Controller;
+namespace  Commercetools\Symfony\ExampleBundle\Tests\Controller;
 
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 

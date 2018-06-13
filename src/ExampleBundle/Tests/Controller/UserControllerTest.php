@@ -3,7 +3,7 @@
  * @author: Ylambers <yaron.lambers@commercetools.de>
  */
 
-namespace Commercetools\Symfony\CtpBundle\Tests\Controller;
+namespace Commercetools\Symfony\ExampleBundle\Tests\Controller;
 
 use Commercetools\Core\Model\Common\Address;
 use Commercetools\Core\Request\Customers\Command\CustomerChangeAddressAction;
