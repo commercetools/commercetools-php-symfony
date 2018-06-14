@@ -158,7 +158,7 @@ class FacetConfig
     }
 
     /**
-     * @return null
+     * @return string|null
      */
     public function getAlias()
     {

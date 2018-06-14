@@ -149,6 +149,15 @@ class User implements CtpUser
         $this->shippingAddresses = $shippingAddresses;
     }
 
+    /**
+     * @param $username
+     * @param $password
+     * @param array $roles
+     * @param $id
+     * @param $cartId
+     * @param $cartItemCount
+     * @return CtpUser|User
+     */
     public static function create($username, $password, array $roles, $id, $cartId, $cartItemCount)
     {
         return new static($username, $password, $roles, $id, $cartId, $cartItemCount);
