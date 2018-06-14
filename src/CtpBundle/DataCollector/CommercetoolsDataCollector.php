@@ -5,7 +5,6 @@
 
 namespace Commercetools\Symfony\CtpBundle\DataCollector;
 
-use Commercetools\Symfony\CtpBundle\Logger\Logger;
 use Commercetools\Symfony\CtpBundle\Profiler\Profile;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
