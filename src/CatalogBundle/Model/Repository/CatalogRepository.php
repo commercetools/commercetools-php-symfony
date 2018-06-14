@@ -40,6 +40,8 @@ class CatalogRepository extends Repository
     /**
      * @param $slug
      * @param $locale
+     * @param $currency
+     * @param $country
      * @return ProductProjection|null
      */
     public function getProductBySlug($slug, $locale, $currency, $country)
@@ -47,30 +49,21 @@ class CatalogRepository extends Repository
         $client = $this->getClient();
         $cacheKey = static::NAME . '-' . $slug . '-' . $locale;
 
-//        $language = \Locale::getPrimaryLanguage($locale);
-//        $productRequest = ProductProjectionSearchRequest::of();
-//        $productRequest->addFilter(Filter::of()->setName('slug.'.$language)->setValue($slug));
-//        /**
-//         * @var ProductProjectionCollection $products
-//         */
-//        $products = $this->retrieve(static::NAME, $cacheKey, $productRequest);
-//        $product = $products->current();
-
-//        $productRequest = ProductProjectionBySlugGetRequest::ofSlugAndContext(
-//            $slug,
-//            $client->getConfig()->getContext()
-//        )->country($country)->currency($currency);
-
         $productRequest = RequestBuilder::of()->productProjections()
             ->getBySlug($slug, $client->getConfig()->getContext()->getLanguages())
             ->country($country)
             ->currency($currency);
-        
+
         $productProjection = $this->retrieve($client, $cacheKey, $productRequest, $locale);
 
         return $productProjection;
     }
 
+    /**
+     * @param $id
+     * @param $locale
+     * @return \Commercetools\Core\Model\Common\JsonDeserializeInterface|null
+     */
     public function getProductById($id, $locale)
     {
         $client = $this->getClient();
@@ -83,6 +76,14 @@ class CatalogRepository extends Repository
         return $product;
     }
 
+    /**
+     * @param $locale
+     * @param $term
+     * @param $limit
+     * @param $currency
+     * @param $country
+     * @return mixed
+     */
     public function suggestProducts($locale, $term, $limit, $currency, $country)
     {
         $client = $this->getClient();
@@ -118,8 +119,8 @@ class CatalogRepository extends Repository
      * @param $sort
      * @param $currency
      * @param $country
-     * @param $search
      * @param UriInterface $uri
+     * @param $search
      * @param array $filters
      * @return array
      */
@@ -130,8 +131,8 @@ class CatalogRepository extends Repository
         $sort,
         $currency,
         $country,
-        $search = null,
         UriInterface $uri,
+        $search = null,
         $filters = null
     ){
 
@@ -176,6 +177,11 @@ class CatalogRepository extends Repository
         return [$products, $response->getFacets(), $response->getOffset(), $response->getTotal()];
     }
 
+    /**
+     * @param $locale
+     * @param $sort
+     * @return mixed
+     */
     public function getProductTypes($locale, $sort)
     {
         $productTypesRequest = $productTypes = RequestBuilder::of()->productTypes()->query()->sort($sort);
@@ -183,6 +189,11 @@ class CatalogRepository extends Repository
         return $this->executeRequest($productTypesRequest, $locale);
     }
 
+    /**
+     * @param $locale
+     * @param $sort
+     * @return mixed
+     */
     public function getCategories($locale, $sort)
     {
         $categoriesRequest = RequestBuilder::of()->categories()->query()->sort($sort);
