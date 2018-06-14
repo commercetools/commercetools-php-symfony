@@ -79,12 +79,15 @@ class CatalogController extends Controller
 
     public function detailByIdAction(Request $request, $id, UserInterface $user = null)
     {
+<<<<<<< Updated upstream
         /**
          * @var ProductRepository $repository
          */
         $repository = $this->get('commercetools.repository.product');
 
-        $product = $repository->getProductById($id, $request->getLocale(), 'EUR', 'DE');
+=======
+>>>>>>> Stashed changes
+        $product = $this->catalogManager->getProductById($id, $request->getLocale());
 
         return $this->productDetails($request, $product, $user);
     }
