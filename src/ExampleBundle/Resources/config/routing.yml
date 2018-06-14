@@ -18,6 +18,14 @@ _ctp_example_products_of_category:
     path:    /product/category/{categoryId}
     defaults: { _controller: ExampleBundle:Catalog:index }
 
+_ctp_example_product_categories:
+    path:    /product/categories/
+    defaults: { _controller: ExampleBundle:Catalog:getCategories }
+
+_ctp_example_productTypes:
+    path:    /product/productTypes/
+    defaults: { _controller: ExampleBundle:Catalog:getProductTypes }
+
 _ctp_example_products_of_productType:
     path:    /product/type/{productTypeId}
     defaults: { _controller: ExampleBundle:Catalog:index }

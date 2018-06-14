@@ -69,14 +69,11 @@ class CatalogController extends Controller
             $request->getLocale(), 12, 1, 'price asc', 'EUR', 'DE', $uri, $search, $filter
         );
 
-        $categories = $this->catalogManager->getCategories($request->getLocale(),'id asc');
-        $productTypes = $this->catalogManager->getProductTypes($request->getLocale(),'id asc');
+
 
         return $this->render('ExampleBundle:catalog:index.html.twig', [
                 'products' => $products,
                 'offset' => $offset,
-                'categories' => $categories,
-                'productTypes' => $productTypes,
                 'form' => $form->createView(),
         ]);
 
@@ -160,5 +157,23 @@ class CatalogController extends Controller
         $res->setData($items);
 
         return $res;
+    }
+
+    public function getCategoriesAction(Request $request, $sort = 'id asc')
+    {
+        $categories = $this->catalogManager->getCategories($request->getLocale(), $sort);
+
+        return $this->render( 'ExampleBundle:catalog:categoriesList.html.twig', [
+            'categories' => $categories
+        ]);
+    }
+
+    public function getProductTypesAction(Request $request, $sort = 'id asc')
+    {
+        $productTypes = $this->catalogManager->getProductTypes($request->getLocale(), $sort);
+
+        return $this->render( 'ExampleBundle:catalog:productTypesList.html.twig', [
+            'productTypes' => $productTypes
+        ]);
     }
 }
