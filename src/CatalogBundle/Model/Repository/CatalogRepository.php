@@ -169,11 +169,13 @@ class CatalogRepository extends Repository
                 }
             }
         }
+
         $response = $searchRequest->executeWithClient($this->getClient());
         $products = $searchRequest->mapFromResponse(
             $response,
             $this->getMapper($locale)
         );
+
         return [$products, $response->getFacets(), $response->getOffset(), $response->getTotal()];
     }
 

@@ -39,11 +39,11 @@ class CatalogManager
         $sort,
         $currency,
         $country,
-        $search = null,
         UriInterface $uri,
+        $search = null,
         $filters = null
     ){
-        return $this->repository->getProducts($locale, $itemsPerPage, $currentPage, $sort, $currency, $country, $search, $uri, $filters);
+        return $this->repository->getProducts($locale, $itemsPerPage, $currentPage, $sort, $currency, $country, $uri, $search, $filters);
     }
 
     public function getProductBySlug($slug, $locale, $currency, $country)
