@@ -3,7 +3,7 @@
  *
  */
 
-namespace Commercetools\Symfony\OrderBundle\Tests\Event;
+namespace Commercetools\Symfony\CartBundle\Tests\Event;
 
 
 use Commercetools\Core\Model\Order\Order;

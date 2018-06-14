@@ -1,6 +1,6 @@
 <?php
 
-namespace  Commercetools\Symfony\CtpBundle\Tests\Controller;
+namespace  Commercetools\Symfony\ExampleBundle\Tests\Controller;
 
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
@@ -9,7 +9,7 @@ class DefaultControllerTest extends WebTestCase
     public function testIndex()
     {
         $this->markTestIncomplete();
-        $client = static::createClient();
+        $client = parent::createClient();
 
         $crawler = $client->request('GET', '/');
 

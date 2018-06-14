@@ -3,7 +3,7 @@
  *
  */
 
-namespace Commercetools\Symfony\OrderBundle\Tests\Manager;
+namespace Commercetools\Symfony\CartBundle\Tests\Manager;
 
 
 use Commercetools\Core\Model\Cart\Cart;
