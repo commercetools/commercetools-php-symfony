@@ -65,11 +65,12 @@ class CatalogController extends Controller
             $filter['filter'][] = Filter::ofName('productType.id')->setValue($productTypeId);
         }
 
+        $country = $this->getParameter('commercetools.defaults.country');
+        $currency = $this->getParameter('commercetools.currency.' . $country);
+
         list($products, $offset) = $this->catalogManager->getProducts(
-            $request->getLocale(), 12, 1, 'price asc', 'EUR', 'DE', $uri, $search, $filter
+            $request->getLocale(), 12, 1, 'price asc', strtoupper($currency), strtoupper($country), $uri, $search, $filter
         );
-
-
 
         return $this->render('ExampleBundle:catalog:index.html.twig', [
                 'products' => $products,
@@ -81,7 +82,10 @@ class CatalogController extends Controller
 
     public function detailBySlugAction(Request $request, $slug, UserInterface $user = null)
     {
-        $product = $this->catalogManager->getProductBySlug($slug, $request->getLocale(), 'EUR', 'DE');
+        $country = $this->getParameter('commercetools.defaults.country');
+        $currency = $this->getParameter('commercetools.currency.' . $country);
+
+        $product = $this->catalogManager->getProductBySlug($slug, $request->getLocale(), strtoupper($currency), strtoupper($country));
 
         return $this->productDetails($request, $product, $user);
     }
@@ -136,7 +140,10 @@ class CatalogController extends Controller
 
     public function suggestAction(Request $request, $searchTerm)
     {
-        $products = $this->catalogManager->suggestProducts($request->getLocale(), $searchTerm, 5, 'EUR', 'DE');
+        $country = $this->getParameter('commercetools.defaults.country');
+        $currency = $this->getParameter('commercetools.currency.' . $country);
+
+        $products = $this->catalogManager->suggestProducts($request->getLocale(), $searchTerm, 5, strtoupper($currency), strtoupper($country));
 
         $items = [];
 

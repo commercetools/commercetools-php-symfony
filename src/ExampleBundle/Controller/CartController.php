@@ -100,11 +100,15 @@ class CartController extends Controller
             } else {
                 $lineItem = LineItemDraft::ofProductId($productId)->setVariantId($variantId)->setQuantity($quantity);
                 $lineItemDraftCollection = LineItemDraftCollection::of()->add($lineItem);
-                $country = Location::of()->setCountry('DE');
+
+                $countryCode = $this->getParameter('commercetools.defaults.country');
+                $currency = $this->getParameter('commercetools.currency.' . $countryCode);
+
+                $country = Location::of()->setCountry($countryCode);
                 if(is_null($user)){
-                    $this->manager->createCart($request->getLocale(), 'EUR', $country, $lineItemDraftCollection, null, $session->getId());
+                    $this->manager->createCart($request->getLocale(), $currency, $country, $lineItemDraftCollection, null, $session->getId());
                 } else {
-                    $this->manager->createCart($request->getLocale(), 'EUR', $country, $lineItemDraftCollection, $user->getID());
+                    $this->manager->createCart($request->getLocale(), $currency, $country, $lineItemDraftCollection, $user->getID());
                 }
             }
             $redirectUrl = $this->generateUrl('_ctp_example_product', ['slug' => $slug]);
