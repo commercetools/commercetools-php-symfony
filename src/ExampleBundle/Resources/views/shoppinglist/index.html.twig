@@ -2,6 +2,12 @@
 
 {% block container %}
 
+    {% for message in app.flashes('error') %}
+        <div class="flash-notice">
+            {{ message }}
+        </div>
+    {% endfor %}
+
     {% for list in lists %}
         <div class="row" id="index-results">
 

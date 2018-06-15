@@ -67,11 +67,6 @@ class CartController extends Controller
         $cartId = $session->get(CartRepository::CART_ID);
         $cart = $this->manager->getCart($request->getLocale(), $cartId, $this->getCustomerId());
 
-        $form = $this->createNamedFormBuilder('')
-            ->add('lineItemId', TextType::class)
-            ->add('quantity', TextType::class)
-            ->getForm();
-
         return $this->render('ExampleBundle:cart:index.html.twig', ['cart' => $cart]);
     }
 
@@ -82,7 +77,7 @@ class CartController extends Controller
         $form = $this->createForm(AddToCartType::class, ['variantIdText' => true]);
         $form->handleRequest($request);
 
-        if ($form->isValid() && $form->isSubmitted()) {
+        if ($form->isSubmitted() && $form->isValid()) {
 
             $productId = $form->get('_productId')->getData();
             $variantId = (int)$form->get('variantId')->getData();

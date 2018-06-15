@@ -3,9 +3,9 @@ declare(strict_types=1);
 
 namespace Commercetools\Symfony\ExampleBundle\Controller;
 
-use Commercetools\Core\Builder\Request\RequestBuilder;
 use Commercetools\Core\Client;
 use Commercetools\Core\Model\Customer\CustomerReference;
+use Commercetools\Core\Model\ShoppingList\ShoppingList;
 use Commercetools\Core\Request\ShoppingLists\Command\ShoppingListAddLineItemAction;
 use Commercetools\Core\Request\ShoppingLists\Command\ShoppingListChangeLineItemQuantityAction;
 use Commercetools\Core\Request\ShoppingLists\Command\ShoppingListRemoveLineItemAction;
@@ -76,7 +76,7 @@ class ShoppingListController extends Controller
 
         foreach ($shoppingLists as $shoppingList) {
             /** @var ShoppingList $shoppingList */
-            $shoppingListsIds[(string)$shoppingList->getName()] = $shoppingList->getId();
+            $shoppingListsIds[(string)$shoppingList->getName()] = implode( ':', [$shoppingList->getId(), $shoppingList->getVersion()]);
         }
 
         $data = [
@@ -87,17 +87,25 @@ class ShoppingListController extends Controller
         $form = $this->createForm(AddToShoppingListType::class, $data);
         $form->handleRequest($request);
 
-        if ($form->isValid() && $form->isSubmitted()) {
-            $shoppingList = $this->manager->getById($request->getLocale(), $form->get('_shoppingListId')->getData());
-            $updateBuilder = $this->manager->update($shoppingList);
-            $updateBuilder->addLineItem(function (ShoppingListAddLineItemAction $action) use($form): ShoppingListAddLineItemAction {
-                $action->setProductId($form->get('_productId')->getData());
-                $action->setVariantId((int)$form->get('_variantId')->getData());
-                $action->setQuantity(1);
-                return $action;
-            });
+        if ($form->isSubmitted() && $form->isValid()) {
 
-            $updateBuilder->flush();
+            // TODO: attention! php7.1
+            [$shoppingListId, $shoppingListVersion] = explode(':', $form->get('_shoppingListId')->getData());
+
+            if(!is_null($shoppingListId)){
+                $shoppingList = ShoppingList::of()->setId($shoppingListId)->setVersion((int)$shoppingListVersion);
+                $updateBuilder = $this->manager->update($shoppingList);
+                $updateBuilder->addLineItem(function (ShoppingListAddLineItemAction $action) use($form): ShoppingListAddLineItemAction {
+                    $action->setProductId($form->get('_productId')->getData());
+                    $action->setVariantId((int)$form->get('_variantId')->getData());
+                    $action->setQuantity(1);
+                    return $action;
+                });
+
+                $updateBuilder->flush();
+            } else {
+                $this->addFlash('error', 'Not valid shopping list provided');
+            }
         }
 
         return $this->redirectToRoute('_ctp_example_shoppingList');
