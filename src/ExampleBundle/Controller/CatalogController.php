@@ -114,7 +114,7 @@ class CatalogController extends Controller
 
         foreach ($shoppingLists as $shoppingList) {
             /** @var ShoppingList $shoppingList */
-            $shoppingListsIds[(string)$shoppingList->getName()] = implode( ':', [$shoppingList->getId(), $shoppingList->getVersion()]);
+            $shoppingListsIds[(string)$shoppingList->getName()] = $shoppingList->getId();
         }
 
         $data = [

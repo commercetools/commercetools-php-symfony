@@ -76,7 +76,7 @@ class ShoppingListController extends Controller
 
         foreach ($shoppingLists as $shoppingList) {
             /** @var ShoppingList $shoppingList */
-            $shoppingListsIds[(string)$shoppingList->getName()] = implode( ':', [$shoppingList->getId(), $shoppingList->getVersion()]);
+            $shoppingListsIds[(string)$shoppingList->getName()] = $shoppingList->getId();
         }
 
         $data = [
@@ -89,11 +89,10 @@ class ShoppingListController extends Controller
 
         if ($form->isSubmitted() && $form->isValid()) {
 
-            // TODO: attention! php7.1
-            [$shoppingListId, $shoppingListVersion] = explode(':', $form->get('_shoppingListId')->getData());
+            $shoppingListId = $form->get('_shoppingListId')->getData();
 
             if(!is_null($shoppingListId)){
-                $shoppingList = ShoppingList::of()->setId($shoppingListId)->setVersion((int)$shoppingListVersion);
+                $shoppingList = $this->manager->getById($request->getLocale(), $shoppingListId);
                 $updateBuilder = $this->manager->update($shoppingList);
                 $updateBuilder->addLineItem(function (ShoppingListAddLineItemAction $action) use($form): ShoppingListAddLineItemAction {
                     $action->setProductId($form->get('_productId')->getData());
@@ -103,6 +102,7 @@ class ShoppingListController extends Controller
                 });
 
                 $updateBuilder->flush();
+
             } else {
                 $this->addFlash('error', 'Not valid shopping list provided');
             }
