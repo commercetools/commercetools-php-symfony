@@ -55,7 +55,7 @@ class CatalogController extends Controller
 
         $uri = new Uri($request->getRequestUri());
         list($products, $offset) = $this->catalogManager->getProducts(
-            $request->getLocale(), 12, 1, 'price asc', 'EUR', 'DE', $search, $uri
+            $request->getLocale(), 12, 1, 'price asc', 'EUR', 'DE', $uri, $search
         );
 
         return $this->render('ExampleBundle:catalog:index.html.twig', [
