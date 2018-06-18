@@ -69,7 +69,7 @@ class CatalogRepository extends Repository
         $client = $this->getClient();
         $cacheKey = static::NAME . '-' . $id . '-' . $locale;
 
-        $productRequest = RequestBuilder::of()->products()->getById($id);
+        $productRequest = RequestBuilder::of()->productProjections()->getById($id);
 
         $product = $this->retrieve($client, $cacheKey, $productRequest, $locale);
 
