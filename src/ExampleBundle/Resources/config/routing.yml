@@ -78,9 +78,9 @@ _ctp_example_add_lineItem:
     path: /cart/add
     defaults: { _controller: ExampleBundle:Cart:addLineItem}
 
-_ctp_example_add_shoppingList:
+_ctp_example_add_shoppingList_to_cart:
     path: /cart/add_shoppinglist
-    defaults: { _controller: ExampleBundle:Cart:addShoppingList}
+    defaults: { _controller: ExampleBundle:Cart:addShoppingListToCart}
 
 _ctp_example_change_lineItem:
     path: /cart/change

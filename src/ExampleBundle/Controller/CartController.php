@@ -12,6 +12,7 @@ use Commercetools\Core\Request\Carts\Command\CartAddLineItemAction;
 use Commercetools\Core\Request\Carts\Command\CartAddShoppingListAction;
 use Commercetools\Core\Request\Carts\Command\CartChangeLineItemQuantityAction;
 use Commercetools\Core\Request\Carts\Command\CartRemoveLineItemAction;
+use Commercetools\Symfony\CustomerBundle\Security\User\User;
 use Commercetools\Symfony\ExampleBundle\Model\Form\Type\AddToCartType;
 use Commercetools\Symfony\CartBundle\Model\Repository\CartRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
@@ -157,18 +158,34 @@ class CartController extends Controller
         return new RedirectResponse($this->generateUrl('_ctp_example_cart'));
     }
 
-    public function addShoppingListToCartAction(Request $request)
+    public function addShoppingListToCartAction(Request $request, UserInterface $user = null)
     {
         $session = $this->get('session');
         $cartId = $session->get(CartRepository::CART_ID);
-        $cart = $this->manager->getCart($request->getLocale(), $cartId, $this->getCustomerId());
 
         $shoppingListId = $request->get('_shoppingListId');
         $shoppingList = ShoppingListReference::ofId($shoppingListId);
 
+        if(!is_null($cartId)){
+            $cart = $this->manager->getCart($request->getLocale(), $cartId, $this->getCustomerId());
+
+
+        } else {
+            $countryCode = $this->getParameter('commercetools.defaults.country');
+            $currency = $this->getParameter('commercetools.currency.' . $countryCode);
+            $country = Location::of()->setCountry(strtoupper($countryCode));
+
+            if(is_null($user)){
+                $cart = $this->manager->createCart($request->getLocale(), $currency, $country, null, null, $session->getId());
+            } else {
+                $cart = $this->manager->createCart($request->getLocale(), $currency, $country, null, $user->getID());
+            }
+        }
+
         $cartBuilder = $this->manager->update($cart);
         $cartBuilder->addShoppingList(CartAddShoppingListAction::ofShoppingList($shoppingList));
         $cartBuilder->flush();
+
         return new RedirectResponse($this->generateUrl('_ctp_example_cart'));
     }
 

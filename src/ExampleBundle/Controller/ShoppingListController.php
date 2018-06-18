@@ -56,12 +56,12 @@ class ShoppingListController extends Controller
     public function createAction(Request $request, UserInterface $user = null)
     {
         if(is_null($user)){
-            $this->manager->createShoppingListByAnonymous($request->getLocale(), $this->get('session')->getId(), $request->get('_name'));
+            $this->manager->createShoppingListByAnonymous($request->getLocale(), $this->get('session')->getId(), $request->get('_shoppingListName'));
         } else {
-            $this->manager->createShoppingListByCustomer($request->getLocale(), CustomerReference::ofId($user->getId()), $request->get('_name'));
+            $this->manager->createShoppingListByCustomer($request->getLocale(), CustomerReference::ofId($user->getId()), $request->get('_shoppingListName'));
         }
 
-        return $this->redirectToRoute('_ctp_example_shopping_list');
+        return $this->redirectToRoute('_ctp_example_shoppingList');
     }
 
     public function addLineItemAction(Request $request, UserInterface $user = null)

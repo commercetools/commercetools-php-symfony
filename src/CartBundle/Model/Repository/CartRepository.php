@@ -93,13 +93,16 @@ class CartRepository extends Repository
      * @param $anonymousId
      * @return Cart|null
      */
-    public function createCart($locale, $currency, Location $location, LineItemDraftCollection $lineItemDraftCollection, $customerId = null, $anonymousId = null)
+    public function createCart($locale, $currency, Location $location, LineItemDraftCollection $lineItemDraftCollection = null, $customerId = null, $anonymousId = null)
     {
         $shippingMethods = $this->shippingMethodRepository->getShippingMethodsByLocation($locale, $location, $currency);
 
         $cartDraft = CartDraft::ofCurrency($currency)->setCountry($location->getCountry())
-            ->setShippingAddress(Address::of()->setCountry($location->getCountry()))
-            ->setLineItems($lineItemDraftCollection);
+            ->setShippingAddress(Address::of()->setCountry($location->getCountry()));
+
+        if (!is_null($lineItemDraftCollection)) {
+            $cartDraft->setLineItems($lineItemDraftCollection);
+        }
 
         if (!is_null($customerId)) {
             $cartDraft->setCustomerId($customerId);
