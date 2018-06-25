@@ -39,7 +39,7 @@ class CartRepositoryTest extends TestCase
             $this->cache->reveal(),
             $this->client->reveal(),
             $this->mapperFactory->reveal(),
-            $this->shippingMethodRepository->reveal(),
+            $this->shippingMethodRepository->reveal()
         );
 
         $request = $this->prophesize(AbstractApiRequest::class);
