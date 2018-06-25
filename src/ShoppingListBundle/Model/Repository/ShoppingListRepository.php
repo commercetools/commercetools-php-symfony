@@ -91,4 +91,22 @@ class ShoppingListRepository extends Repository
 
         return $list;
     }
+
+    // TODO handle permissions / validate customer
+    public function deleteByCustomer($locale, $customerId, $shoppingListId)
+    {
+        $shoppingList = $this->getShoppingListById($locale, $shoppingListId);
+        $request = RequestBuilder::of()->shoppingLists()->delete($shoppingList);
+
+        return $this->executeRequest($request, $locale);
+    }
+
+    // TODO handle permissions / validate anonymousUser
+    public function deleteByAnonymous($locale, $anonymousId, $shoppingListId)
+    {
+        $shoppingList = $this->getShoppingListById($locale, $shoppingListId);
+        $request = RequestBuilder::of()->shoppingLists()->delete($shoppingList);
+
+        return $this->executeRequest($request, $locale);
+    }
 }

@@ -133,6 +133,10 @@ _ctp_example_shoppingList_change_lineItem_quantity:
     path: /shoppinglist/change_lineitem_quantity
     defaults: { _controller: ExampleBundle:ShoppingList:changeLineItemQuantity }
 
+_ctp_example_shoppingList_delete:
+    path: /shoppinglist/delete/{shoppingListId}
+    defaults: { _controller: ExampleBundle:ShoppingList:deleteById }
+
 _ctp_example_review_show:
     path: /product/id/{productId}/reviews
     defaults: { _controller: ExampleBundle:Review:showReviewsForProduct }

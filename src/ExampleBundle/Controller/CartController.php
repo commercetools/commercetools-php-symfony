@@ -186,7 +186,7 @@ class CartController extends Controller
         $cartBuilder->addShoppingList(CartAddShoppingListAction::ofShoppingList($shoppingList));
         $cartBuilder->flush();
 
-        return new RedirectResponse($this->generateUrl('_ctp_example_cart'));
+        return new RedirectResponse($this->generateUrl('_ctp_example_shoppingList_delete', ['shoppingListId' => $shoppingListId]));
     }
 
     protected function getItemCount(Cart $cart)

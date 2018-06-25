@@ -13,6 +13,7 @@ use Commercetools\Symfony\CtpBundle\Model\QueryParams;
 use Commercetools\Symfony\ExampleBundle\Model\Form\Type\AddToShoppingListType;
 use Commercetools\Symfony\ShoppingListBundle\Manager\ShoppingListManager;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Security\Core\User\UserInterface;
 
@@ -62,6 +63,17 @@ class ShoppingListController extends Controller
         }
 
         return $this->redirectToRoute('_ctp_example_shoppingList');
+    }
+
+    public function deleteByIdAction(Request $request, UserInterface $user = null, $shoppingListId)
+    {
+        if(is_null($user)){
+            $this->manager->deleteShoppingListByAnonymous($request->getLocale(), $this->get('session')->getId(), $shoppingListId);
+        } else {
+            $this->manager->deleteShoppingListByCustomer($request->getLocale(), CustomerReference::ofId($user->getId()), $shoppingListId);
+        }
+
+        return new RedirectResponse($this->generateUrl('_ctp_example_cart'));
     }
 
     public function addLineItemAction(Request $request, UserInterface $user = null)
