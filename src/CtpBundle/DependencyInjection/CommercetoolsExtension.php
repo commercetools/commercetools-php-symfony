@@ -67,6 +67,14 @@ class CommercetoolsExtension extends Extension
             }
         }
         $container->setParameter('commercetools.facets', $facetConfigs);
+
+        if (isset($config['project_settings']['countries'])) {
+            $container->setParameter('commercetools.project_settings.countries', $config['project_settings']['countries']);
+        }
+
+        if (isset($config['project_settings']['languages'])) {
+            $container->setParameter('commercetools.project_settings.languages', $config['project_settings']['languages']);
+        }
     }
 
     protected function loadClientDefinition($name, array $client, ContainerBuilder $container)
