@@ -35,11 +35,11 @@
             <argument type="service" id="Commercetools\Core\Client"/>
             <argument type="service" id="Commercetools\Symfony\ReviewBundle\Manager\ReviewManager"/>
         </service>
-        <service id="Commercetools\Symfony\ExampleBundle\EventSubscriber\CartSubscriber">
+        <service id="Commercetools\Symfony\ExampleBundle\EventListener\CartSubscriber">
             <tag name="kernel.event_subscriber"/>
             <argument type="service" id="session"/>
         </service>
-        <service id="Commercetools\Symfony\ExampleBundle\EventSubscriber\OrderSubscriber">
+        <service id="Commercetools\Symfony\ExampleBundle\EventListener\OrderSubscriber">
             <tag name="kernel.event_subscriber"/>
             <argument type="service" id="session"/>
         </service>
