@@ -7,24 +7,14 @@
         <parameter key="commercetools.cache.setup" type="string">false</parameter>
     </parameters>
     <services>
+        <defaults autowire="true" autoconfigure="true" public="false" />
+        <prototype namespace="Commercetools\Symfony\SetupBundle\Command\" resource="../../Command/*" />
         <service id="Commercetools\Symfony\SetupBundle\Model\Repository\SetupRepository">
             <argument>%commercetools.cache.setup%</argument>
             <argument type="service" id="commercetools.cache" />
             <argument type="service" id="commercetools.client"/>
             <argument type="service" id="commmercetools.mapper.factory" />
             <argument type="service" id="commercetools.logger" />
-        </service>
-        <service id="Commercetools\Symfony\SetupBundle\Command\CommercetoolsProjectInfoCommand">
-            <argument type="service" id="Commercetools\Symfony\SetupBundle\Model\Repository\SetupRepository"/>
-            <tag name="console.command"/>
-        </service>
-        <service id="Commercetools\Symfony\SetupBundle\Command\CommercetoolsProjectSetCountriesCommand">
-            <argument type="service" id="Commercetools\Symfony\SetupBundle\Model\Repository\SetupRepository"/>
-            <tag name="console.command"/>
-        </service>
-        <service id="Commercetools\Symfony\SetupBundle\Command\CommercetoolsProjectSetLanguagesCommand">
-            <argument type="service" id="Commercetools\Symfony\SetupBundle\Model\Repository\SetupRepository"/>
-            <tag name="console.command"/>
         </service>
     </services>
 </container>
