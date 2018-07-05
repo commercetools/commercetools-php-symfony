@@ -10,6 +10,7 @@ use Commercetools\Core\Builder\Request\RequestBuilder;
 use Commercetools\Core\Client;
 use Commercetools\Core\Request\Project\Command\ProjectChangeCountriesAction;
 use Commercetools\Core\Request\Project\Command\ProjectChangeLanguagesAction;
+use Commercetools\Core\Request\Project\Command\ProjectChangeNameAction;
 use Commercetools\Symfony\CtpBundle\Logger\Logger;
 use Commercetools\Symfony\CtpBundle\Model\Repository;
 use Commercetools\Symfony\CtpBundle\Service\MapperFactory;
@@ -50,6 +51,18 @@ class SetupRepository extends Repository
         $project = $this->executeRequest($projectRequest);
 
         $actions[] = ProjectChangeLanguagesAction::of()->setLanguages($languages);
+        $updateRequest = RequestBuilder::of()->project()->update($project)->setActions($actions);
+        $project = $this->executeRequest($updateRequest);
+
+        return $project;
+    }
+
+    public function setName($name)
+    {
+        $projectRequest = RequestBuilder::of()->project()->get();
+        $project = $this->executeRequest($projectRequest);
+
+        $actions[] = ProjectChangeNameAction::of()->setName($name);
         $updateRequest = RequestBuilder::of()->project()->update($project)->setActions($actions);
         $project = $this->executeRequest($updateRequest);
 

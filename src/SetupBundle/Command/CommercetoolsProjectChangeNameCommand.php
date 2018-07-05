@@ -7,7 +7,7 @@ use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
-class CommercetoolsProjectSetLanguagesCommand extends ContainerAwareCommand
+class CommercetoolsProjectChangeNameCommand extends ContainerAwareCommand
 {
     private $repository;
 
@@ -20,18 +20,18 @@ class CommercetoolsProjectSetLanguagesCommand extends ContainerAwareCommand
     protected function configure()
     {
         $this
-            ->setName('commercetools:project-set-languages')
-            ->setDescription('Set the languages of the project via the conf file')
+            ->setName('commercetools:project-change-name')
+            ->setDescription('Set the name of the project via the conf file')
         ;
     }
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $languages = $this->getContainer()->getParameter('commercetools.project_settings.languages');
+        $name = $this->getContainer()->getParameter('commercetools.project_settings.name');
 
-        $project = $this->repository->setLanguages($languages);
+        $project = $this->repository->setName($name);
 
         $output->writeln(sprintf('CTP response: %s', json_encode($project)));
-        $output->writeln(sprintf('Conf file languages %s', implode(', ', $languages)));
+        $output->writeln(sprintf('Conf file name %s', $name));
     }
 }
