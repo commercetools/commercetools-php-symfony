@@ -8,9 +8,7 @@ namespace Commercetools\Symfony\SetupBundle\Model\Repository;
 
 use Commercetools\Core\Builder\Request\RequestBuilder;
 use Commercetools\Core\Client;
-use Commercetools\Core\Request\Project\Command\ProjectChangeCountriesAction;
-use Commercetools\Core\Request\Project\Command\ProjectChangeLanguagesAction;
-use Commercetools\Core\Request\Project\Command\ProjectChangeNameAction;
+use Commercetools\Core\Model\Project\Project;
 use Commercetools\Symfony\CtpBundle\Logger\Logger;
 use Commercetools\Symfony\CtpBundle\Model\Repository;
 use Commercetools\Symfony\CtpBundle\Service\MapperFactory;
@@ -26,43 +24,15 @@ class SetupRepository extends Repository
         $this->logger = $logger;
     }
 
-    public function getProjectInfo()
+    public function getProject()
     {
         $request = RequestBuilder::of()->project()->get();
 
         return $this->executeRequest($request);
     }
 
-    public function setCountries($countries)
+    public function updateProject(Project $project, array $actions)
     {
-        $projectRequest = RequestBuilder::of()->project()->get();
-        $project = $this->executeRequest($projectRequest);
-
-        $actions[] = ProjectChangeCountriesAction::of()->setCountries($countries);
-        $updateRequest = RequestBuilder::of()->project()->update($project)->setActions($actions);
-        $project = $this->executeRequest($updateRequest);
-
-        return $project;
-    }
-
-    public function setLanguages($languages)
-    {
-        $projectRequest = RequestBuilder::of()->project()->get();
-        $project = $this->executeRequest($projectRequest);
-
-        $actions[] = ProjectChangeLanguagesAction::of()->setLanguages($languages);
-        $updateRequest = RequestBuilder::of()->project()->update($project)->setActions($actions);
-        $project = $this->executeRequest($updateRequest);
-
-        return $project;
-    }
-
-    public function setName($name)
-    {
-        $projectRequest = RequestBuilder::of()->project()->get();
-        $project = $this->executeRequest($projectRequest);
-
-        $actions[] = ProjectChangeNameAction::of()->setName($name);
         $updateRequest = RequestBuilder::of()->project()->update($project)->setActions($actions);
         $project = $this->executeRequest($updateRequest);
 

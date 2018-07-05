@@ -2,6 +2,7 @@
 
 namespace Commercetools\Symfony\SetupBundle\Command;
 
+use Commercetools\Core\Request\Project\Command\ProjectChangeCountriesAction;
 use Commercetools\Symfony\SetupBundle\Model\Repository\SetupRepository;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Input\InputInterface;
@@ -29,7 +30,8 @@ class CommercetoolsProjectChangeCountriesCommand extends ContainerAwareCommand
     {
         $countries = $this->getContainer()->getParameter('commercetools.project_settings.countries');
 
-        $project = $this->repository->setCountries($countries);
+        $actions[] = ProjectChangeCountriesAction::of()->setCountries($countries);
+        $project = $this->repository->updateProject($this->repository->getProject(), $actions);
 
         $output->writeln(sprintf('CTP response: %s', json_encode($project)));
         $output->writeln(sprintf('Conf file countries %s', implode(', ', $countries)));

@@ -27,7 +27,7 @@ class CommercetoolsProjectInfoCommand extends ContainerAwareCommand
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $project = $this->repository->getProjectInfo();
+        $project = $this->repository->getProject();
 
         $output->writeln(sprintf('Project\'s key: %s', $project->getKey()));
         $output->writeln(sprintf('Project\'s name: %s', $project->getName()));

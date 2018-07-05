@@ -2,13 +2,13 @@
 
 namespace Commercetools\Symfony\SetupBundle\Command;
 
-use Commercetools\Core\Request\Project\Command\ProjectChangeLanguagesAction;
+use Commercetools\Core\Request\Project\Command\ProjectChangeMessagesEnabledAction;
 use Commercetools\Symfony\SetupBundle\Model\Repository\SetupRepository;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
-class CommercetoolsProjectChangeLanguagesCommand extends ContainerAwareCommand
+class CommercetoolsProjectChangeMessagesEnabledCommand extends ContainerAwareCommand
 {
     private $repository;
 
@@ -21,19 +21,23 @@ class CommercetoolsProjectChangeLanguagesCommand extends ContainerAwareCommand
     protected function configure()
     {
         $this
-            ->setName('commercetools:project-change-languages')
-            ->setDescription('Set the languages of the project via the conf file')
+            ->setName('commercetools:project-change-messages-enabled')
+            ->setDescription('Set the creation of messages on the project via the conf file (true/false)')
         ;
     }
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $languages = $this->getContainer()->getParameter('commercetools.project_settings.languages');
+        $messages = $this->getContainer()->getParameter('commercetools.project_settings.messages');
 
-        $actions[] = ProjectChangeLanguagesAction::of()->setLanguages($languages);
+        if (is_string($messages)) {
+            $messages = ($messages == "true");
+        }
+
+        $actions[] = ProjectChangeMessagesEnabledAction::of()->setMessagesEnabled($messages);
         $project = $this->repository->updateProject($this->repository->getProject(), $actions);
 
         $output->writeln(sprintf('CTP response: %s', json_encode($project)));
-        $output->writeln(sprintf('Conf file languages %s', implode(', ', $languages)));
+        $output->writeln(sprintf('Conf file messages: %s', ($messages ? 'enabled' : 'disabled')));
     }
 }

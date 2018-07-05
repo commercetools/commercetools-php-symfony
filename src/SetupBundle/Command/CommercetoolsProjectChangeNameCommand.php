@@ -2,6 +2,7 @@
 
 namespace Commercetools\Symfony\SetupBundle\Command;
 
+use Commercetools\Core\Request\Project\Command\ProjectChangeNameAction;
 use Commercetools\Symfony\SetupBundle\Model\Repository\SetupRepository;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Input\InputInterface;
@@ -29,7 +30,8 @@ class CommercetoolsProjectChangeNameCommand extends ContainerAwareCommand
     {
         $name = $this->getContainer()->getParameter('commercetools.project_settings.name');
 
-        $project = $this->repository->setName($name);
+        $actions[] = ProjectChangeNameAction::of()->setName($name);
+        $project = $this->repository->updateProject($this->repository->getProject(), $actions);
 
         $output->writeln(sprintf('CTP response: %s', json_encode($project)));
         $output->writeln(sprintf('Conf file name %s', $name));

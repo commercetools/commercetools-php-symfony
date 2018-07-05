@@ -17,6 +17,6 @@
             <argument type="service" id="commmercetools.mapper.factory" />
             <argument type="service" id="commercetools.logger" />
         </service>
-        
+
     </services>
 </container>
