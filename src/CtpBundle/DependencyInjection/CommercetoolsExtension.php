@@ -75,6 +75,10 @@ class CommercetoolsExtension extends Extension
         if (isset($config['project_settings']['languages'])) {
             $container->setParameter('commercetools.project_settings.languages', $config['project_settings']['languages']);
         }
+
+        if (isset($config['project_settings']['name'])) {
+            $container->setParameter('commercetools.project_settings.name', $config['project_settings']['name']);
+        }
     }
 
     protected function loadClientDefinition($name, array $client, ContainerBuilder $container)

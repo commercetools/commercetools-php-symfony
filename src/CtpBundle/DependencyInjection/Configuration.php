@@ -98,6 +98,7 @@ class Configuration implements ConfigurationInterface
                         ->arrayNode('tax_categories')
                             ->prototype('scalar')->end()
                         ->end()
+                        ->scalarNode('name')->end()
                     ->end()
                 ->end()
             ->end()
