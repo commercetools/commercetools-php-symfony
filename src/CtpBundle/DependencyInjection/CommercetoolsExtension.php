@@ -87,6 +87,10 @@ class CommercetoolsExtension extends Extension
         if (isset($config['project_settings']['messages'])) {
             $container->setParameter('commercetools.project_settings.messages', $config['project_settings']['messages']);
         }
+
+        if (isset($config['project_settings']['shipping_rate_input_type'])) {
+            $container->setParameter('commercetools.project_settings.shipping_rate_input_type', $config['project_settings']['shipping_rate_input_type']);
+        }
     }
 
     protected function loadClientDefinition($name, array $client, ContainerBuilder $container)
