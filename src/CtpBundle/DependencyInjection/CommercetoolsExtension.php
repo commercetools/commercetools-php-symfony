@@ -91,6 +91,10 @@ class CommercetoolsExtension extends Extension
         if (isset($config['project_settings']['shipping_rate_input_type'])) {
             $container->setParameter('commercetools.project_settings.shipping_rate_input_type', $config['project_settings']['shipping_rate_input_type']);
         }
+
+        if (isset($config['channels'])) {
+            $container->setParameter('commercetools.channels', $config['channels']);
+        }
     }
 
     protected function loadClientDefinition($name, array $client, ContainerBuilder $container)
