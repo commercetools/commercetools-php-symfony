@@ -33,6 +33,9 @@ class CommercetoolsExtensionTest extends TestCase
                         'project' => 'bar'
                     ]
                 ]
+            ],
+            'project_settings' => [
+                'currencies' => ['EUR']
             ]
         ];
 
@@ -70,6 +73,9 @@ class CommercetoolsExtensionTest extends TestCase
                         'project' => 'bar'
                     ]
                 ]
+            ],
+            'project_settings' => [
+                'currencies' => ['eur']
             ]
         ];
 
@@ -105,6 +111,9 @@ class CommercetoolsExtensionTest extends TestCase
                         'project' => 'bar'
                     ]
                 ]
+            ],
+            'project_settings' => [
+                'currencies' => ['usd']
             ]
         ];
 
@@ -144,16 +153,17 @@ class CommercetoolsExtensionTest extends TestCase
         $container->registerExtension($extension);
 
         $config = [
-            'defaults' => ['country' => 'bar'],
             'cache' => ['foo' => true],
-            'currency' => ['EU' => 'foo'],
             'api' => [ 'clients' => [
                 'first' => [
                     'client_id' => 'foo',
                     'client_secret' => 'bar',
                     'project' => 'other'
                 ]
-            ] ]
+            ] ],
+            'project_settings' => [
+                'currencies' => ['foo']
+            ]
         ];
 
         $extension->load([
@@ -162,8 +172,7 @@ class CommercetoolsExtensionTest extends TestCase
             []
         ], $container);
 
-        $this->assertEquals('bar', $container->getParameter('commercetools.defaults.country'));
         $this->assertTrue($container->getParameter('commercetools.cache.foo'));
-        $this->assertEquals('foo', $container->getParameter('commercetools.currency.eu'));
+        $this->assertEquals(['FOO'], $container->getParameter('commercetools.currencies'));
     }
 }

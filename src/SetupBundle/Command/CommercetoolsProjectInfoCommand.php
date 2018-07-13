@@ -29,6 +29,11 @@ class CommercetoolsProjectInfoCommand extends ContainerAwareCommand
     {
         $project = $this->repository->getProject();
 
+        $output->writeln('all response:');
+        $output->writeln('======================================');
+//        dump($project);
+
+
         $output->writeln(sprintf('Project\'s key: %s', $project->getKey()));
         $output->writeln(sprintf('Project\'s name: %s', $project->getName()));
         $output->writeln(sprintf('Countries: %s', implode(', ', $project->getCountries()->toArray())));
@@ -42,7 +47,7 @@ class CommercetoolsProjectInfoCommand extends ContainerAwareCommand
         }
 
         if($project->getShippingRateInputType()){
-            $output->writeln(sprintf('Shipping rate input type: %s', $project->getShippingRateInputType()));
+            $output->writeln(sprintf('Shipping rate input type: %s', json_encode($project->getShippingRateInputType())));
         }
     }
 }

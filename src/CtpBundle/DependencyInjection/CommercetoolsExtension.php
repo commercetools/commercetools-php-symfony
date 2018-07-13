@@ -23,8 +23,11 @@ class CommercetoolsExtension extends Extension
         $configuration = new Configuration();
 
         $config = $this->processConfiguration($configuration, $configs);
+        $container->setParameter('commercetools.all', $config);
+
 
         $apiConfig = $config['api'];
+
         $keys = array_keys($apiConfig['clients']);
         $apiConfig['default_client'] = isset($apiConfig['clients'][$apiConfig['default_client']]) ? $apiConfig['default_client'] : reset($keys);
 
@@ -61,7 +64,7 @@ class CommercetoolsExtension extends Extension
 //        foreach ($config['currencies'] as $key => $value) {
 //            $container->setParameter('commercetools.currency.' . strtolower($key), $value);
 //        }
-        $container->setParameter('commercetools.currencies', $config['currencies']);
+        $container->setParameter('commercetools.currencies', $config['project_settings']['currencies']);
 
 
         $facetConfigs = [];
