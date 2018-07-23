@@ -76,7 +76,7 @@ class ArrayHelper
         return $arr;
     }
 
-    protected function camelize($scored)
+    public function camelize($scored)
     {
         return lcfirst(
             implode(

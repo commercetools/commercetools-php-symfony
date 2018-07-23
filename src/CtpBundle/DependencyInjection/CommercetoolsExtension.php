@@ -19,18 +19,16 @@ class CommercetoolsExtension extends Extension
         $loader = new XmlFileLoader($container, new FileLocator(__DIR__ . '/../Resources/config'));
         $loader->load('services.xml');
 
-        $container->getParameter('kernel.root_dir');
+//        $container->getParameter('kernel.root_dir');
         $configuration = new Configuration();
 
         $config = $this->processConfiguration($configuration, $configs);
         $container->setParameter('commercetools.all', $config);
 
-
         $apiConfig = $config['api'];
 
         $keys = array_keys($apiConfig['clients']);
         $apiConfig['default_client'] = isset($apiConfig['clients'][$apiConfig['default_client']]) ? $apiConfig['default_client'] : reset($keys);
-
 
         // compatibility
         $clientConfig = $apiConfig['clients'][$apiConfig['default_client']];

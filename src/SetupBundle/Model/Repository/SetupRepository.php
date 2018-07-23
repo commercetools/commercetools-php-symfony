@@ -13,6 +13,7 @@ use Commercetools\Core\Model\Project\Project;
 use Commercetools\Symfony\CtpBundle\Logger\Logger;
 use Commercetools\Symfony\CtpBundle\Model\Repository;
 use Commercetools\Symfony\CtpBundle\Service\MapperFactory;
+use Commercetools\Symfony\SetupBundle\Model\ConfigureProject;
 use Commercetools\Symfony\SetupBundle\Model\ProjectUpdateBuilder;
 use Psr\Cache\CacheItemPoolInterface;
 
@@ -70,6 +71,11 @@ class SetupRepository extends Repository
         $deleteRequest = RequestBuilder::of()->channels()->delete($channel);
 
         return $this->executeRequest($deleteRequest);
+    }
+
+    public function applyConfiguration($config, $online)
+    {
+        return ConfigureProject::of()->update($config, $online, $this->getActionBuilder($online));
     }
 
     /**

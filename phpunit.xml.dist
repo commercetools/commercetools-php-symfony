@@ -11,15 +11,29 @@
     </php>
 
     <testsuites>
-        <testsuite name="CtpBundle Test Suite">
+        <testsuite name="CtpBundle">
             <directory>./src/CtpBundle/Tests/</directory>
-            <directory>./src/ShoppingListBundle/Tests/</directory>
-            <directory>./src/CustomerBundle/Tests/</directory>
-            <directory>./src/CartBundle/Tests/</directory>
-            <directory>./src/ReviewBundle/Tests/</directory>
-            <directory>./src/CatalogBundle/Tests/</directory>
+        </testsuite>
+        <testsuite name="SetupBundle">
             <directory>./src/SetupBundle/Tests/</directory>
+        </testsuite>
+        <testsuite name="CustomerBundle">
+            <directory>./src/CustomerBundle/Tests/</directory>
+        </testsuite>
+        <testsuite name="ShoppingListBundle">
+            <directory>./src/ShoppingListBundle/Tests/</directory>
+        </testsuite>
+        <testsuite name="ReviewBundle">
+            <directory>./src/ReviewBundle/Tests/</directory>
+        </testsuite>
+        <testsuite name="ExampleBundle">
             <directory>./src/ExampleBundle/Tests/</directory>
+        </testsuite>
+        <testsuite name="CatalogBundle">
+            <directory>./src/CatalogBundle/Tests/</directory>
+        </testsuite>
+        <testsuite name="CartBundle">
+            <directory>./src/CartBundle/Tests/</directory>
         </testsuite>
     </testsuites>
 

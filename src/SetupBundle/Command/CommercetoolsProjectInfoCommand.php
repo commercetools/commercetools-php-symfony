@@ -29,13 +29,9 @@ class CommercetoolsProjectInfoCommand extends ContainerAwareCommand
     {
         $project = $this->repository->getProject();
 
-        $output->writeln('all response:');
-        $output->writeln('======================================');
-//        dump($project);
-
-
         $output->writeln(sprintf('Project\'s key: %s', $project->getKey()));
         $output->writeln(sprintf('Project\'s name: %s', $project->getName()));
+        // TODO check following if returning null
         $output->writeln(sprintf('Countries: %s', implode(', ', $project->getCountries()->toArray())));
         $output->writeln(sprintf('Currencies: %s', implode(', ', $project->getCurrencies()->toArray())));
         $output->writeln(sprintf('Languages: %s', implode(', ', $project->getLanguages()->toArray())));
