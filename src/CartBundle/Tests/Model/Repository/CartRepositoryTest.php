@@ -16,14 +16,12 @@ use Commercetools\Symfony\CtpBundle\Service\MapperFactory;
 use PHPUnit\Framework\TestCase;
 use Prophecy\Argument;
 use Psr\Cache\CacheItemPoolInterface;
-use Symfony\Component\HttpFoundation\Session\Session;
 
 class CartRepositoryTest extends TestCase
 {
     private $cache;
     private $client;
     private $mapperFactory;
-    private $session;
     private $shippingMethodRepository;
 
     protected function setUp()
@@ -32,7 +30,6 @@ class CartRepositoryTest extends TestCase
         $this->client = $this->prophesize(Client::class);
         $this->mapperFactory = $this->prophesize(MapperFactory::class);
         $this->shippingMethodRepository = $this->prophesize(ShippingMethodRepository::class);
-        $this->session = $this->prophesize(Session::class);
     }
 
     public function testExecuteRequest()
@@ -42,8 +39,7 @@ class CartRepositoryTest extends TestCase
             $this->cache->reveal(),
             $this->client->reveal(),
             $this->mapperFactory->reveal(),
-            $this->shippingMethodRepository->reveal(),
-            $this->session->reveal()
+            $this->shippingMethodRepository->reveal()
         );
 
         $request = $this->prophesize(AbstractApiRequest::class);

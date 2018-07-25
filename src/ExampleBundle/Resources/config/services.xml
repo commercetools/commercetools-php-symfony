@@ -10,6 +10,7 @@
         </service>
         <service id="Commercetools\Symfony\ExampleBundle\Controller\CatalogController" public="true">
             <argument type="service" id="Commercetools\Core\Client"/>
+            <argument type="service" id="Commercetools\Symfony\CatalogBundle\Manager\CatalogManager"/>
             <argument type="service" id="Commercetools\Symfony\ShoppingListBundle\Manager\ShoppingListManager"/>
         </service>
         <service id="Commercetools\Symfony\ExampleBundle\Controller\UserController" public="true">
