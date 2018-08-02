@@ -31,11 +31,17 @@ class OrderRepository extends Repository
     /**
      * @param $locale
      * @param $orderId
-     * @return Order
+     * @return OrderCollection
      */
-    public function getOrder($locale, $orderId)
+    public function getOrder($locale, $orderId, $customerId = null, $anonymousId = null)
     {
-        $request = RequestBuilder::of()->orders()->getById($orderId);
+        $request = RequestBuilder::of()->orders()->query();
+
+        if (!is_null($customerId)) {
+            $request->where('id = "' . $orderId . '" and customerId = "' . $customerId . '"');
+        } else if (!is_null($anonymousId)) {
+            $request->where('id = "' . $orderId . '" and anonymousId = "' . $anonymousId . '"');
+        } // TODO else throw/raise error ?
 
         return $this->executeRequest($request, $locale);
     }

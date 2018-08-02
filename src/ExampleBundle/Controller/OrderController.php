@@ -8,6 +8,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Commercetools\Core\Client;
 use Commercetools\Symfony\CartBundle\Manager\OrderManager;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
 
 
@@ -57,12 +58,16 @@ class OrderController extends Controller
         ]);
     }
 
-    public function showOrderAction(Request $request, $orderId)
+    public function showOrderAction(Request $request, SessionInterface $session, UserInterface $user = null, $orderId)
     {
-        $order = $this->manager->getOrder($request->getLocale(), $orderId);
+        if(is_null($user)){
+            $order = $this->manager->getOrderForAnonymous($request->getLocale(), $session->getId(), $orderId);
+        } else {
+            $order = $this->manager->getOrderForCustomer($request->getLocale(), $user->getId(), $orderId);
+        }
 
         return $this->render('ExampleBundle:user:order.html.twig', [
-            'order' => $order
+            'order' => $order->current()
         ]);
     }
 
