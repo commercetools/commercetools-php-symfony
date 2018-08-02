@@ -161,6 +161,7 @@ class Repository
                 $response,
                 $this->getMapper($locale)
             );
+
             $this->store($cacheKey, serialize($result), $ttl);
         }
 

@@ -1,26 +1,22 @@
 <?php
 /**
- * @author jayS-de <jens.schulze@commercetools.de>
  */
 
-namespace Commercetools\Symfony\CtpBundle\Model\Repository;
+namespace Commercetools\Symfony\CatalogBundle\Model\Repository;
 
+use Commercetools\Core\Builder\Request\RequestBuilder;
 use Commercetools\Core\Client;
 use Commercetools\Core\Model\Common\LocalizedString;
 use Commercetools\Core\Model\Product\ProductProjection;
 use Commercetools\Core\Model\Product\SuggestionCollection;
-use Commercetools\Core\Request\Products\ProductProjectionByIdGetRequest;
-use Commercetools\Core\Request\Products\ProductProjectionBySlugGetRequest;
-use Commercetools\Core\Request\Products\ProductProjectionSearchRequest;
 use Commercetools\Core\Request\Products\ProductsSuggestRequest;
 use Commercetools\Symfony\CtpBundle\Model\Repository;
-use Commercetools\Symfony\CtpBundle\Model\Search;
+use Commercetools\Symfony\CatalogBundle\Model\Search;
 use Commercetools\Symfony\CtpBundle\Service\MapperFactory;
-use GuzzleHttp\Psr7\Uri;
 use Psr\Cache\CacheItemPoolInterface;
 use Psr\Http\Message\UriInterface;
 
-class ProductRepository extends Repository
+class CatalogRepository extends Repository
 {
     const NAME = 'products';
 
@@ -44,6 +40,8 @@ class ProductRepository extends Repository
     /**
      * @param $slug
      * @param $locale
+     * @param $currency
+     * @param $country
      * @return ProductProjection|null
      */
     public function getProductBySlug($slug, $locale, $currency, $country)
@@ -51,37 +49,41 @@ class ProductRepository extends Repository
         $client = $this->getClient();
         $cacheKey = static::NAME . '-' . $slug . '-' . $locale;
 
-//        $language = \Locale::getPrimaryLanguage($locale);
-//        $productRequest = ProductProjectionSearchRequest::of();
-//        $productRequest->addFilter(Filter::of()->setName('slug.'.$language)->setValue($slug));
-//        /**
-//         * @var ProductProjectionCollection $products
-//         */
-//        $products = $this->retrieve(static::NAME, $cacheKey, $productRequest);
-//        $product = $products->current();
+        $productRequest = RequestBuilder::of()->productProjections()
+            ->getBySlug($slug, $client->getConfig()->getContext()->getLanguages())
+            ->country($country)
+            ->currency($currency);
 
-        $productRequest = ProductProjectionBySlugGetRequest::ofSlugAndContext(
-            $slug,
-            $client->getConfig()->getContext()
-        )->country($country)->currency($currency);
-        $product = $this->retrieve($client, $cacheKey, $productRequest, $locale);
+        $productProjection = $this->retrieve($client, $cacheKey, $productRequest, $locale);
 
-        return $product;
+        return $productProjection;
     }
 
+    /**
+     * @param $id
+     * @param $locale
+     * @return \Commercetools\Core\Model\Common\JsonDeserializeInterface|null
+     */
     public function getProductById($id, $locale)
     {
         $client = $this->getClient();
         $cacheKey = static::NAME . '-' . $id . '-' . $locale;
 
-        $productRequest = ProductProjectionByIdGetRequest::ofId(
-            $id
-        );
+        $productRequest = RequestBuilder::of()->productProjections()->getById($id);
+
         $product = $this->retrieve($client, $cacheKey, $productRequest, $locale);
 
         return $product;
     }
 
+    /**
+     * @param $locale
+     * @param $term
+     * @param $limit
+     * @param $currency
+     * @param $country
+     * @return mixed
+     */
     public function suggestProducts($locale, $term, $limit, $currency, $country)
     {
         $client = $this->getClient();
@@ -100,20 +102,14 @@ class ProductRepository extends Repository
             }
         }
 
-        $searchRequest = ProductProjectionSearchRequest::of()
+        $searchRequest = RequestBuilder::of()->productProjections()->search()
             ->limit($limit)
             ->currency($currency)
             ->country($country)
-            ->fuzzy(true);
-        $searchRequest->addParam('text.' . $language, $term);
+            ->fuzzy(true)
+            ->addParam('text.' . $language, $term);
 
-        $response = $searchRequest->executeWithClient($this->getClient());
-        $products = $searchRequest->mapFromResponse(
-            $response,
-            $this->getMapper($locale)
-        );
-
-        return $products;
+        return $this->executeRequest($searchRequest, $locale);
     }
 
     /**
@@ -123,8 +119,8 @@ class ProductRepository extends Repository
      * @param $sort
      * @param $currency
      * @param $country
-     * @param $search
      * @param UriInterface $uri
+     * @param $search
      * @param array $filters
      * @return array
      */
@@ -135,12 +131,12 @@ class ProductRepository extends Repository
         $sort,
         $currency,
         $country,
-        $search = null,
         UriInterface $uri,
+        $search = null,
         $filters = null
     ){
 
-        $searchRequest = ProductProjectionSearchRequest::of()
+        $searchRequest = RequestBuilder::of()->productProjections()->search()
             ->sort($sort)
             ->limit($itemsPerPage)
             ->currency($currency)
@@ -173,11 +169,37 @@ class ProductRepository extends Repository
                 }
             }
         }
+
         $response = $searchRequest->executeWithClient($this->getClient());
         $products = $searchRequest->mapFromResponse(
             $response,
             $this->getMapper($locale)
         );
+
         return [$products, $response->getFacets(), $response->getOffset(), $response->getTotal()];
+    }
+
+    /**
+     * @param $locale
+     * @param $sort
+     * @return mixed
+     */
+    public function getProductTypes($locale, $sort)
+    {
+        $productTypesRequest = $productTypes = RequestBuilder::of()->productTypes()->query()->sort($sort);
+
+        return $this->executeRequest($productTypesRequest, $locale);
+    }
+
+    /**
+     * @param $locale
+     * @param $sort
+     * @return mixed
+     */
+    public function getCategories($locale, $sort)
+    {
+        $categoriesRequest = RequestBuilder::of()->categories()->query()->sort($sort);
+
+        return $this->executeRequest($categoriesRequest, $locale);
     }
 }

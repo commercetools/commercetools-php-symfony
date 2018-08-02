@@ -1,14 +1,11 @@
 <?php
 /**
- * @author @jayS-de <jens.schulze@commercetools.de>
  */
 
-namespace Commercetools\Symfony\CtpBundle\Model;
+namespace Commercetools\Symfony\CatalogBundle\Model;
 
 use Commercetools\Core\Model\Product\Search\Facet;
 use Commercetools\Core\Model\Product\Search\Filter;
-use Commercetools\Core\Model\Product\Search\FilterRange;
-use Commercetools\Core\Model\Product\Search\FilterRangeCollection;
 use Commercetools\Core\Model\Product\Search\FilterSubtree;
 use Commercetools\Core\Model\Product\Search\FilterSubtreeCollection;
 use Commercetools\Core\Request\Products\ProductProjectionSearchRequest;

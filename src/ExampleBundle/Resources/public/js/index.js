@@ -96,7 +96,7 @@ jQuery(document).ready(function($){
     // ajax handeling
     $("#form_search").on("keyup", debounce(function (event) {
         var searchTerm = $(event.target).val();
-        var productUrl = '/_example/product/';
+        var productUrl = '/_example/product/slug/';
         var itemUrl = '/_example/suggest/';
         var col4 = '<div class="col-md-4">';
 

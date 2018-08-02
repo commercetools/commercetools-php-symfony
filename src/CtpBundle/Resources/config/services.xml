@@ -3,9 +3,6 @@
 <container xmlns="http://symfony.com/schema/dic/services"
            xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
            xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
-    <parameters>
-        <parameter key="commercetools.cache.product" type="string">false</parameter>
-    </parameters>
     <services>
         <service id="commercetools" synthetic="true" />
         <service id="Commercetools\Core\Client" alias="commercetools.api.client" />
@@ -37,16 +34,6 @@
         </service>
         <service id="commercetools.locale.converter" class="Commercetools\Symfony\CtpBundle\Service\LocaleConverter">
             <argument>%commercetools.defaults.country%</argument>
-        </service>
-        <service id="commercetools.repository.product" class="Commercetools\Symfony\CtpBundle\Model\Repository\ProductRepository" public="true">
-            <argument>%commercetools.cache.product%</argument>
-            <argument type="service" id="commercetools.cache" />
-            <argument type="service" id="commercetools.client"/>
-            <argument type="service" id="commmercetools.mapper.factory" />
-            <argument type="service" id="commercetools.search" />
-        </service>
-        <service id="commercetools.search" class="Commercetools\Symfony\CtpBundle\Model\Search">
-            <argument>%commercetools.facets%</argument>
         </service>
         <service id="commercetools.logger" class="Commercetools\Symfony\CtpBundle\Logger\Logger">
             <argument type="service" id="logger" />
