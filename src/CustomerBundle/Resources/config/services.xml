@@ -9,7 +9,7 @@
     <services>
         <service id="Commercetools\Symfony\CustomerBundle\Model\Repository\CustomerRepository"
                  parent="Commercetools\Symfony\CtpBundle\Model\Repository">
-            <argument index="0">%commercetools.cache.customer%</argument>
+            <argument key="$enableCache">%commercetools.cache.customer%</argument>
         </service>
         <service id="Commercetools\Symfony\CustomerBundle\Manager\CustomerManager" public="true">
             <argument id="Commercetools\Symfony\CustomerBundle\Model\Repository\CustomerRepository" type="service"/>

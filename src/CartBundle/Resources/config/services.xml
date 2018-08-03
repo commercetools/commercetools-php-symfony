@@ -11,8 +11,9 @@
     <services>
         <service id="Commercetools\Symfony\CartBundle\Model\Repository\CartRepository"
                  parent="Commercetools\Symfony\CtpBundle\Model\Repository" public="true">
-            <argument index="0">%commercetools.cache.cart%</argument>
-            <argument type="service" id="Commercetools\Symfony\CartBundle\Model\Repository\ShippingMethodRepository"/>
+            <argument key="$enableCache">%commercetools.cache.cart%</argument>
+            <argument key="$shippingMethodRepository" type="service"
+                      id="Commercetools\Symfony\CartBundle\Model\Repository\ShippingMethodRepository"/>
         </service>
         <service id="Commercetools\Symfony\CartBundle\Manager\CartManager" public="true">
             <argument id="Commercetools\Symfony\CartBundle\Model\Repository\CartRepository" type="service"/>
@@ -20,7 +21,7 @@
         </service>
         <service id="Commercetools\Symfony\CartBundle\Model\Repository\OrderRepository"
                  parent="Commercetools\Symfony\CtpBundle\Model\Repository" public="true">
-            <argument index="0">%commercetools.cache.order%</argument>
+            <argument key="$enableCache">%commercetools.cache.order%</argument>
         </service>
         <service id="Commercetools\Symfony\CartBundle\Manager\OrderManager" public="true">
             <argument id="Commercetools\Symfony\CartBundle\Model\Repository\OrderRepository" type="service"/>
@@ -28,7 +29,7 @@
         </service>
         <service id="Commercetools\Symfony\CartBundle\Model\Repository\ShippingMethodRepository"
                  parent="Commercetools\Symfony\CtpBundle\Model\Repository" public="true">
-            <argument index="0">%commercetools.cache.shipping_method%</argument>
+            <argument key="$enableCache">%commercetools.cache.shipping_method%</argument>
         </service>
         <service id="Commercetools\Symfony\CartBundle\Manager\ShippingMethodManager" public="true">
             <argument id="Commercetools\Symfony\CartBundle\Model\Repository\ShippingMethodRepository" type="service"/>

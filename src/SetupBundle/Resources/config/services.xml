@@ -12,8 +12,8 @@
 
         <service id="Commercetools\Symfony\SetupBundle\Model\Repository\SetupRepository"
                  parent="Commercetools\Symfony\CtpBundle\Model\Repository" autowire="true" public="false" autoconfigure="false">
-            <argument index="0">%commercetools.cache.setup%</argument>
-            <argument type="service" id="commercetools.logger" />
+            <argument key="$enableCache">%commercetools.cache.setup%</argument>
+            <argument key="$logger" type="service" id="commercetools.logger" />
         </service>
 
     </services>

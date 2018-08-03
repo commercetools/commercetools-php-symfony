@@ -9,7 +9,7 @@
     <services>
         <service id="Commercetools\Symfony\ShoppingListBundle\Model\Repository\ShoppingListRepository"
                  parent="Commercetools\Symfony\CtpBundle\Model\Repository">
-            <argument index="0">%commercetools.cache.shopping_list%</argument>
+            <argument key="$enableCache">%commercetools.cache.shopping_list%</argument>
         </service>
         <service id="Commercetools\Symfony\ShoppingListBundle\Manager\ShoppingListManager" public="true">
             <argument id="Commercetools\Symfony\ShoppingListBundle\Model\Repository\ShoppingListRepository" type="service"/>

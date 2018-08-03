@@ -9,7 +9,7 @@
     <services>
         <service id="Commercetools\Symfony\ReviewBundle\Model\Repository\ReviewRepository"
                  parent="Commercetools\Symfony\CtpBundle\Model\Repository">
-            <argument index="0">%commercetools.cache.review%</argument>
+            <argument key="$enableCache">%commercetools.cache.review%</argument>
         </service>
         <service id="Commercetools\Symfony\ReviewBundle\Manager\ReviewManager" public="true">
             <argument id="Commercetools\Symfony\ReviewBundle\Model\Repository\ReviewRepository" type="service"/>
