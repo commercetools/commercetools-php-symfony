@@ -7,11 +7,9 @@
         <parameter key="commercetools.cache.shopping_list" type="string">false</parameter>
     </parameters>
     <services>
-        <service id="Commercetools\Symfony\ShoppingListBundle\Model\Repository\ShoppingListRepository">
-            <argument>%commercetools.cache.shopping_list%</argument>
-            <argument type="service" id="commercetools.cache" />
-            <argument type="service" id="Commercetools\Core\Client"/>
-            <argument type="service" id="commmercetools.mapper.factory" />
+        <service id="Commercetools\Symfony\ShoppingListBundle\Model\Repository\ShoppingListRepository"
+                 parent="Commercetools\Symfony\CtpBundle\Model\Repository">
+            <argument index="0">%commercetools.cache.shopping_list%</argument>
         </service>
         <service id="Commercetools\Symfony\ShoppingListBundle\Manager\ShoppingListManager" public="true">
             <argument id="Commercetools\Symfony\ShoppingListBundle\Model\Repository\ShoppingListRepository" type="service"/>

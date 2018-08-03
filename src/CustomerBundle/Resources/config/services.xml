@@ -7,11 +7,9 @@
         <parameter key="commercetools.cache.customer" type="string">false</parameter>
     </parameters>
     <services>
-        <service id="Commercetools\Symfony\CustomerBundle\Model\Repository\CustomerRepository">
-            <argument>%commercetools.cache.customer%</argument>
-            <argument type="service" id="commercetools.cache" />
-            <argument type="service" id="Commercetools\Core\Client"/>
-            <argument type="service" id="commmercetools.mapper.factory" />
+        <service id="Commercetools\Symfony\CustomerBundle\Model\Repository\CustomerRepository"
+                 parent="Commercetools\Symfony\CtpBundle\Model\Repository">
+            <argument index="0">%commercetools.cache.customer%</argument>
         </service>
         <service id="Commercetools\Symfony\CustomerBundle\Manager\CustomerManager" public="true">
             <argument id="Commercetools\Symfony\CustomerBundle\Model\Repository\CustomerRepository" type="service"/>

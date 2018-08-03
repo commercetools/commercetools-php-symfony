@@ -10,11 +10,9 @@
         <defaults autowire="true" autoconfigure="true" public="false" />
         <prototype namespace="Commercetools\Symfony\SetupBundle\Command\" resource="../../Command/*" />
 
-        <service id="Commercetools\Symfony\SetupBundle\Model\Repository\SetupRepository">
-            <argument>%commercetools.cache.setup%</argument>
-            <argument type="service" id="commercetools.cache" />
-            <argument type="service" id="commercetools.client"/>
-            <argument type="service" id="commmercetools.mapper.factory" />
+        <service id="Commercetools\Symfony\SetupBundle\Model\Repository\SetupRepository"
+                 parent="Commercetools\Symfony\CtpBundle\Model\Repository" autowire="true" public="false" autoconfigure="false">
+            <argument index="0">%commercetools.cache.setup%</argument>
             <argument type="service" id="commercetools.logger" />
         </service>
 
