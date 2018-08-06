@@ -42,9 +42,14 @@ class OrderManager
         return $this->repository->getOrders($locale, $customerId);
     }
 
-    public function getOrder($locale, $orderId)
+    public function getOrderForCustomer($locale, $customerId, $orderId)
     {
-        return $this->repository->getOrder($locale, $orderId);
+        return $this->repository->getOrder($locale, $orderId, $customerId);
+    }
+
+    public function getOrderForAnonymous($locale, $anonymousId, $orderId)
+    {
+        return $this->repository->getOrder($locale, $orderId, null, $anonymousId);
     }
 
     public function createOrderFromCart($locale, $cart)

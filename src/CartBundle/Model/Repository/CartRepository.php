@@ -108,7 +108,7 @@ class CartRepository extends Repository
             $cartDraft->setCustomerId($customerId);
         } else if (!is_null($anonymousId)) {
             $cartDraft->setAnonymousId($anonymousId);
-        }
+        } // else throw error?
 
         $cartDraft->setShippingMethod($shippingMethods->current()->getReference());
 

@@ -19,15 +19,16 @@ class CommercetoolsExtension extends Extension
         $loader = new XmlFileLoader($container, new FileLocator(__DIR__ . '/../Resources/config'));
         $loader->load('services.xml');
 
-        $container->getParameter('kernel.root_dir');
+//        $container->getParameter('kernel.root_dir');
         $configuration = new Configuration();
 
         $config = $this->processConfiguration($configuration, $configs);
+        $container->setParameter('commercetools.all', $config);
 
         $apiConfig = $config['api'];
+
         $keys = array_keys($apiConfig['clients']);
         $apiConfig['default_client'] = isset($apiConfig['clients'][$apiConfig['default_client']]) ? $apiConfig['default_client'] : reset($keys);
-
 
         // compatibility
         $clientConfig = $apiConfig['clients'][$apiConfig['default_client']];
@@ -56,9 +57,13 @@ class CommercetoolsExtension extends Extension
             }
             $container->setParameter('commercetools.cache.' . $key, $value);
         }
-        foreach ($config['currency'] as $key => $value) {
-            $container->setParameter('commercetools.currency.' . strtolower($key), $value);
-        }
+
+        // TODO maybe the associative array is not necessary
+//        foreach ($config['currencies'] as $key => $value) {
+//            $container->setParameter('commercetools.currency.' . strtolower($key), $value);
+//        }
+        $container->setParameter('commercetools.currencies', $config['project_settings']['currencies']);
+
 
         $facetConfigs = [];
         if (isset($config['facets'])) {
@@ -67,6 +72,30 @@ class CommercetoolsExtension extends Extension
             }
         }
         $container->setParameter('commercetools.facets', $facetConfigs);
+
+        if (isset($config['project_settings']['countries'])) {
+            $container->setParameter('commercetools.project_settings.countries', $config['project_settings']['countries']);
+        }
+
+        if (isset($config['project_settings']['languages'])) {
+            $container->setParameter('commercetools.project_settings.languages', $config['project_settings']['languages']);
+        }
+
+        if (isset($config['project_settings']['name'])) {
+            $container->setParameter('commercetools.project_settings.name', $config['project_settings']['name']);
+        }
+
+        if (isset($config['project_settings']['messages'])) {
+            $container->setParameter('commercetools.project_settings.messages', $config['project_settings']['messages']);
+        }
+
+        if (isset($config['project_settings']['shipping_rate_input_type'])) {
+            $container->setParameter('commercetools.project_settings.shipping_rate_input_type', $config['project_settings']['shipping_rate_input_type']);
+        }
+
+        if (isset($config['channels'])) {
+            $container->setParameter('commercetools.channels', $config['channels']);
+        }
     }
 
     protected function loadClientDefinition($name, array $client, ContainerBuilder $container)
