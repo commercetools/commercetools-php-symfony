@@ -4,37 +4,9 @@
            xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
            xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
     <services>
-        <service id="Commercetools\Symfony\ExampleBundle\Controller\ShoppingListController" public="true">
-            <argument type="service" id="Commercetools\Core\Client"/>
-            <argument type="service" id="Commercetools\Symfony\ShoppingListBundle\Manager\ShoppingListManager"/>
-        </service>
-        <service id="Commercetools\Symfony\ExampleBundle\Controller\CatalogController" public="true">
-            <argument type="service" id="Commercetools\Core\Client"/>
-            <argument type="service" id="Commercetools\Symfony\CatalogBundle\Manager\CatalogManager"/>
-            <argument type="service" id="Commercetools\Symfony\ShoppingListBundle\Manager\ShoppingListManager"/>
-        </service>
-        <service id="Commercetools\Symfony\ExampleBundle\Controller\UserController" public="true">
-            <argument type="service" id="Commercetools\Core\Client"/>
-            <argument type="service" id="Commercetools\Symfony\CustomerBundle\Manager\CustomerManager"/>
-        </service>
-        <service id="Commercetools\Symfony\ExampleBundle\Controller\CartController" public="true">
-            <argument type="service" id="Commercetools\Core\Client"/>
-            <argument type="service" id="Commercetools\Symfony\CartBundle\Manager\CartManager"/>
-        </service>
-        <service id="Commercetools\Symfony\ExampleBundle\Controller\OrderController" public="true">
-            <argument type="service" id="Commercetools\Core\Client"/>
-            <argument type="service" id="Commercetools\Symfony\CartBundle\Manager\OrderManager"/>
-        </service>
-        <service id="Commercetools\Symfony\ExampleBundle\Controller\CheckoutController" public="true">
-            <argument type="service" id="Commercetools\Core\Client"/>
-            <argument type="service" id="Commercetools\Symfony\CartBundle\Manager\CartManager"/>
-            <argument type="service" id="Commercetools\Symfony\CartBundle\Manager\ShippingMethodManager"/>
-            <argument type="service" id="Commercetools\Symfony\CartBundle\Manager\OrderManager"/>
-        </service>
-        <service id="Commercetools\Symfony\ExampleBundle\Controller\ReviewController" public="true">
-            <argument type="service" id="Commercetools\Core\Client"/>
-            <argument type="service" id="Commercetools\Symfony\ReviewBundle\Manager\ReviewManager"/>
-        </service>
+        <defaults autowire="true" autoconfigure="true" public="true" />
+        <prototype namespace="Commercetools\Symfony\ExampleBundle\Controller\" resource="../../Controller/*" />
+
         <service id="Commercetools\Symfony\ExampleBundle\EventListener\CartSubscriber">
             <tag name="kernel.event_subscriber"/>
             <argument type="service" id="session"/>

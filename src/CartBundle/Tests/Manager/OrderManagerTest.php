@@ -85,16 +85,30 @@ class OrderManagerTest extends TestCase
 
     }
 
-    public function testGetOrder()
+    public function testGetOrderForCustomer()
     {
         $repository = $this->prophesize(OrderRepository::class);
         $dispatcher = $this->prophesize(EventDispatcherInterface::class);
 
-        $repository->getOrder('en', '123', null)
+        $repository->getOrder('en', 'order-id-1', 'customer-id-1')
             ->willReturn(Order::of())->shouldBeCalled();
 
         $manager = new OrderManager($repository->reveal(), $dispatcher->reveal());
-        $order = $manager->getOrder('en', '123');
+        $order = $manager->getOrderForCustomer('en', 'customer-id-1', 'order-id-1');
+
+        $this->assertInstanceOf(Order::class, $order);
+    }
+
+    public function testGetOrderForAnonymous()
+    {
+        $repository = $this->prophesize(OrderRepository::class);
+        $dispatcher = $this->prophesize(EventDispatcherInterface::class);
+
+        $repository->getOrder('en', 'order-id-1', null, 'anonymous-id-1')
+            ->willReturn(Order::of())->shouldBeCalled();
+
+        $manager = new OrderManager($repository->reveal(), $dispatcher->reveal());
+        $order = $manager->getOrderForAnonymous('en', 'anonymous-id-1', 'order-id-1');
 
         $this->assertInstanceOf(Order::class, $order);
     }
