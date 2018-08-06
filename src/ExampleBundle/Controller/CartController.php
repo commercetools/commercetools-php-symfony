@@ -97,8 +97,8 @@ class CartController extends Controller
                 $lineItem = LineItemDraft::ofProductId($productId)->setVariantId($variantId)->setQuantity($quantity);
                 $lineItemDraftCollection = LineItemDraftCollection::of()->add($lineItem);
 
-                $countryCode = $this->getParameter('commercetools.defaults.country');
-                $currency = $this->getParameter('commercetools.currency.' . $countryCode);
+                $countryCode = $this->getCountryFromConfig();
+                $currency = $this->getCurrencyFromConfig();
 
                 $country = Location::of()->setCountry($countryCode);
                 if(is_null($user)){
@@ -171,8 +171,8 @@ class CartController extends Controller
 
 
         } else {
-            $countryCode = $this->getParameter('commercetools.defaults.country');
-            $currency = $this->getParameter('commercetools.currency.' . $countryCode);
+            $countryCode = $this->getCountryFromConfig();
+            $currency = $this->getCurrencyFromConfig();
             $country = Location::of()->setCountry(strtoupper($countryCode));
 
             if(is_null($user)){
@@ -212,5 +212,18 @@ class CartController extends Controller
     protected function createNamedFormBuilder($name, $data = null, array $options = array())
     {
         return $this->container->get('form.factory')->createNamedBuilder($name, FormType::class, $data, $options);
+    }
+
+    private function getCountryFromConfig()
+    {
+        $countries = $this->getParameter('commercetools.project_settings.countries');
+        return current($countries);
+
+    }
+
+    private function getCurrencyFromConfig()
+    {
+        $currencies = $this->getParameter('commercetools.project_settings.currencies');
+        return current($currencies);
     }
 }
