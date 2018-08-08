@@ -23,7 +23,10 @@ class OrderRepository extends Repository
      */
     public function getOrders($locale, $customerId)
     {
-        $request = RequestBuilder::of()->orders()->query()->where('customerId = "' . $customerId . '"')->sort('createdAt desc');
+        $request = RequestBuilder::of()->orders()->query()
+            ->where('customerId = "' . $customerId . '"')
+            ->sort('createdAt desc')
+            ->expand('state');
 
         return $this->executeRequest($request, $locale);
     }
@@ -42,6 +45,8 @@ class OrderRepository extends Repository
         } else if (!is_null($anonymousId)) {
             $request->where('id = "' . $orderId . '" and anonymousId = "' . $anonymousId . '"');
         } // TODO else throw/raise error ?
+
+        $request->expand('state');
 
         return $this->executeRequest($request, $locale);
     }

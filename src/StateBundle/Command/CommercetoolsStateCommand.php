@@ -2,10 +2,12 @@
 
 namespace Commercetools\Symfony\StateBundle\Command;
 
+use Commercetools\Symfony\StateBundle\Model\ProcessStates;
 use Commercetools\Symfony\StateBundle\Model\Repository\StateRepository;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Yaml\Yaml;
 
 class CommercetoolsStateCommand extends ContainerAwareCommand
 {
@@ -28,20 +30,9 @@ class CommercetoolsStateCommand extends ContainerAwareCommand
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $states = $this->repository->getStates();
-
-//        foreach ($channels as $channel) {
-//            $output->writeln(sprintf('Channel\'s key: %s', $channel->getKey()));
-//            $output->writeln(sprintf('Channel\'s name: %s', $channel->getName()));
-//            $output->writeln(sprintf('Channel\'s description: %s', $channel->getDescription()));
-//            $output->writeln(sprintf('Roles: %s', implode(', ', $channel->getRoles())));
-//            $output->writeln(sprintf('Address: %s', json_encode($channel->getAddress())));
-//            $output->writeln(sprintf('Geolocation: %s', json_encode($channel->getGeoLocation())));
-//            $output->writeln(sprintf('Created at: %s', $channel->getCreatedAt()->format('c')));
-//            $output->writeln(sprintf('Last modified at: %s', $channel->lastModifiedAt()->format('c')));
-//            $output->writeln('=========================================================');
-//        }
-        $output->writeln(json_encode($states));
-
-
+        $helper = ProcessStates::of();
+        $stateTypes = $helper->parse($states);
+        dump($stateTypes);
+        dump(Yaml::dump($stateTypes));
     }
 }

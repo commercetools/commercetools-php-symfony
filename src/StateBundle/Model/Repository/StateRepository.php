@@ -26,7 +26,7 @@ class StateRepository extends Repository
     public function getStates()
     {
         // TODO hardcoded predicate
-        $request = RequestBuilder::of()->states()->query()->where('type="OrderState"');
+        $request = RequestBuilder::of()->states()->query();//->where('type="OrderState"');
 
         return $this->executeRequest($request);
     }

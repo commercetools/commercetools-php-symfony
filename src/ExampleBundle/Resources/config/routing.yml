@@ -84,8 +84,12 @@ _ctp_example_orders_all:
     defaults: { _controller: Commercetools\Symfony\ExampleBundle\Controller\OrderController::indexAction }
 
 _ctp_example_order:
-    path: /orders/{orderIdAction }
+    path: /orders/{orderId}
     defaults: { _controller: Commercetools\Symfony\ExampleBundle\Controller\OrderController::showOrderAction }
+
+_ctp_example_order_cancel:
+    path: /orders/cancel/{orderId}
+    defaults: { _controller: Commercetools\Symfony\ExampleBundle\Controller\OrderController::CancelOrderAction }
 
 _ctp_example_suggest:
     path: /suggest/{searchTermAction }

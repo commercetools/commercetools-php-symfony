@@ -6,7 +6,12 @@
         <hr />
         <div class="col-md-12">
             Order number: {{ order.getOrderNumber }}<br />
-            Order date: {{ order.getCreatedAt.getDateTime|date("m/d/Y H:i") }}
+            Order date: {{ order.getCreatedAt.getDateTime|date("m/d/Y H:i") }} <br />
+            {% if order.getState is not null %}
+                Order state: {{ order.getState.getObj.getKey }}<br />
+            {% else %}
+                Order state: not-set<br />
+            {% endif %}
         </div>
 
         {% if order.getBillingAddress is empty %}

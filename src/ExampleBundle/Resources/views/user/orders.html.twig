@@ -11,6 +11,7 @@
                     <th>Total Price</th>
                     {#<th>Version</th>#}
                     <th>View order</th>
+                    <th>Cancel order</th>
                 </tr>
             </thread>
             <tbody>
@@ -21,6 +22,7 @@
                         <td>{{ order.getCreatedAt.getDateTime|date("m/d/Y H:i") }}</td>
                         <td>{{ order.getTotalPrice }} </td>
                         <td><a href="{{ path('_ctp_example_order', {'orderId': order.getId}) }}">Check </a> </td>
+                        <td><a href="{{ path('_ctp_example_order_cancel', {'orderId': order.getId}) }}">Cancel </a> </td>
                     </tr>
                 {% else %}
                     <p>There are no orders yet, go a head and buy something!</p>
