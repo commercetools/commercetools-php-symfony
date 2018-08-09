@@ -31,11 +31,11 @@ class OrderWrapper extends Order
         return $obj->getKey();
     }
 
-    public function setStateKey()
+    public function setStateKey($stateKey)
     {
         $orderBuilder = new OrderUpdateBuilder($this, $this->orderManager);
         $orderBuilder->addAction(
-            OrderTransitionStateAction::ofState(StateReference::ofTypeAndKey('state', 'canceled'))->setForce(true)
+            OrderTransitionStateAction::ofState(StateReference::ofTypeAndKey('state', $stateKey))->setForce(true)
         );
 
         $orderBuilder->flush();

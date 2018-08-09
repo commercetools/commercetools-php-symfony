@@ -106,7 +106,7 @@ class OrderController extends Controller
         ) {
             $workflow->apply($orderWrapper, 'createdToCanceled');
 
-            return $this->redirect($this->generateUrl('_ctp_example_order', $orderId));
+            return $this->redirect($this->generateUrl('_ctp_example_order', ['orderId' => $orderId]));
         }
 
         $this->addFlash('error', 'cannot perform this action');
