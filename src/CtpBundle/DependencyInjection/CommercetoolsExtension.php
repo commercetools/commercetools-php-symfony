@@ -57,14 +57,9 @@ class CommercetoolsExtension extends Extension
             $container->setParameter('commercetools.cache.' . $key, $value);
         }
 
-        // TODO maybe the associative array is not necessary
-//        foreach ($config['currencies'] as $key => $value) {
-//            $container->setParameter('commercetools.currency.' . strtolower($key), $value);
-//        }
         $container->setParameter('commercetools.project_settings.currencies', $config['project_settings']['currencies']);
         $container->setParameter('commercetools.project_settings.countries', $config['project_settings']['countries']);
         $container->setParameter('commercetools.project_settings.languages', $config['project_settings']['languages']);
-
 
         $facetConfigs = [];
         if (isset($config['facets'])) {
@@ -85,10 +80,6 @@ class CommercetoolsExtension extends Extension
 
         if (isset($config['project_settings']['shipping_rate_input_type'])) {
             $container->setParameter('commercetools.project_settings.shipping_rate_input_type', $config['project_settings']['shipping_rate_input_type']);
-        }
-
-        if (isset($config['channels'])) {
-            $container->setParameter('commercetools.channels', $config['channels']);
         }
     }
 
