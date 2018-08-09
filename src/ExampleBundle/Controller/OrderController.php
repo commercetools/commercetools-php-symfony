@@ -5,9 +5,6 @@
 namespace Commercetools\Symfony\ExampleBundle\Controller;
 
 use Commercetools\Core\Model\Order\OrderCollection;
-use Commercetools\Core\Model\State\StateReference;
-use Commercetools\Core\Request\Orders\Command\OrderTransitionStateAction;
-use Commercetools\Symfony\CartBundle\Model\OrderUpdateBuilder;
 use Commercetools\Symfony\CartBundle\Model\OrderWrapper;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Commercetools\Core\Client;
@@ -100,22 +97,16 @@ class OrderController extends Controller
         $order = $orders->current();
 
         $orderWrapper = OrderWrapper::fromArray($order->toArray());
+        $orderWrapper->setOrderManager($this->manager);
 
         $workflow = $this->workflows->get($orderWrapper);
 
         if ($workflow->can($orderWrapper, 'createdToCanceled') ||
             $workflow->can($orderWrapper, 'readyToShipToCanceled')
         ) {
-            $orderBuilder = new OrderUpdateBuilder($order, $this->manager);
-            $orderBuilder->addAction(
-                OrderTransitionStateAction::ofState(StateReference::ofTypeAndKey('state', 'canceled'))->setForce(true)
-            );
+            $workflow->apply($orderWrapper, 'createdToCanceled');
 
-            $orderBuilder->flush();
-
-            return $this->render('ExampleBundle:user:order.html.twig', [
-                'order' => $order
-            ]);
+            return $this->redirect($this->generateUrl('_ctp_example_order', $orderId));
         }
 
         $this->addFlash('error', 'cannot perform this action');
