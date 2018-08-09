@@ -214,11 +214,11 @@ class CartController extends Controller
         return $this->container->get('form.factory')->createNamedBuilder($name, FormType::class, $data, $options);
     }
 
+    // TODO duplicate code / move these to better place
     private function getCountryFromConfig()
     {
         $countries = $this->getParameter('commercetools.project_settings.countries');
         return current($countries);
-
     }
 
     private function getCurrencyFromConfig()

@@ -63,9 +63,9 @@ class ShoppingListManager
         return $this->repository->createByAnonymous($locale, $anonymousId, $name);
     }
 
-    public function deleteShoppingListByCustomer($locale, $customerId, $shoppingListId)
+    public function deleteShoppingListByCustomer($locale, CustomerReference $customer, $shoppingListId)
     {
-        return $this->repository->deleteByCustomer($locale, $customerId, $shoppingListId);
+        return $this->repository->deleteByCustomer($locale, $customer, $shoppingListId);
     }
 
     public function deleteShoppingListByAnonymous($locale, $anonymousId, $shoppingListId)

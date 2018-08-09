@@ -184,11 +184,11 @@ class CatalogController extends Controller
         ]);
     }
 
+    // TODO duplicate code / move these to better place
     private function getCountryFromConfig()
     {
         $countries = $this->getParameter('commercetools.project_settings.countries');
         return current($countries);
-
     }
 
     private function getCurrencyFromConfig()
