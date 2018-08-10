@@ -16,7 +16,10 @@ class ProcessStates
         $workflow = [];
 
         foreach ($states as $state) {
-            $workflow[$state->getType()]['places'][] = $state->getKey();
+            $workflow[$state->getType()]['places'][] = [
+                'placeName' => $state->getKey(),
+                'initial' => $state->getInitial()
+            ];
             $workflow[$state->getType()]['transitions'] = array_filter(array_merge(
                 $workflow[$state->getType()]['transitions'] ?? [], $this->getTransitionsForState($state, $states)
             ));
@@ -74,13 +77,24 @@ OUTPUT;
                     - {{ user-defined-argument }}
             supports:
                 - {{ user-defined-class }}
-            initial_place: {{ user-defined-initial-place }}
+            initial_place: 
+OUTPUT;
+
+            foreach ($state['places'] as $place) {
+                if ($place['initial']) {
+                    $output .= $place['placeName'];
+                    break;
+                }
+            }
+
+            $output .= <<<OUTPUT
+
             places:
 
 OUTPUT;
             foreach ($state['places'] as $place) {
                 $output .= <<<OUTPUT
-                - {$place}
+                - {$place['placeName']}
 
 OUTPUT;
             }
