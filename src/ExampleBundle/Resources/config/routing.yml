@@ -14,12 +14,30 @@ _ctp_example_product_by_id:
     path:    /product/id/{id}
     defaults: { _controller: Commercetools\Symfony\ExampleBundle\Controller\CatalogController::detailByIdAction }
 
+_ctp_example_products_of_category:
+    path:    /product/category/{categoryId}
+    defaults: { _controller: Commercetools\Symfony\ExampleBundle\Controller\CatalogController::indexAction }
+
+_ctp_example_product_categories:
+    path:    /product/categories/
+    defaults: { _controller: Commercetools\Symfony\ExampleBundle\Controller\CatalogController::getCategoriesAction }
+
+_ctp_example_productTypes:
+    path:    /product/productTypes/
+    defaults: { _controller: Commercetools\Symfony\ExampleBundle\Controller\CatalogController::getProductTypesAction }
+
+_ctp_example_products_of_productType:
+    path:    /product/type/{productTypeId}
+    defaults: { _controller: Commercetools\Symfony\ExampleBundle\Controller\CatalogController::indexAction }
+
 login:
     path: /login
     defaults: { _controller: Commercetools\Symfony\ExampleBundle\Controller\UserController::loginAction }
+
 login_check:
     path: /login_check
     defaults: { _controller: Commercetools\Symfony\ExampleBundle\Controller\UserController::loginAction }
+
 logout:
     path: /logout
 
@@ -59,7 +77,7 @@ _ctp_example_add_lineItem:
     path: /cart/add
     defaults: { _controller: Commercetools\Symfony\ExampleBundle\Controller\CartController::addLineItemAction }
 
-_ctp_example_add_shoppingList:
+_ctp_example_add_shoppingList_to_cart:
     path: /cart/add_shoppinglist
     defaults: { _controller: Commercetools\Symfony\ExampleBundle\Controller\CartController::addShoppingListToCartAction }
 
@@ -92,7 +110,7 @@ _ctp_example_order_cancel:
     defaults: { _controller: Commercetools\Symfony\ExampleBundle\Controller\OrderController::CancelOrderAction }
 
 _ctp_example_suggest:
-    path: /suggest/{searchTermAction }
+    path: /suggest/{searchTerm}
     defaults: { _controller: Commercetools\Symfony\ExampleBundle\Controller\CatalogController::suggestAction }
 
 _ctp_example_shoppingList:
@@ -117,6 +135,10 @@ _ctp_example_shoppingList_change_lineItem_quantity:
     defaults: { _controller: Commercetools\Symfony\ExampleBundle\Controller\ShoppingListController::changeLineItemQuantityAction }
     methods: [POST]
 
+_ctp_example_shoppingList_delete:
+    path: /shoppinglist/delete/{shoppingListId}
+    defaults: { _controller: Commercetools\Symfony\ExampleBundle\Controller\ShoppingListController::deleteByIdAction }
+
 _ctp_example_review_show:
     path: /product/id/{productId}/reviews
     defaults: { _controller: Commercetools\Symfony\ExampleBundle\Controller\ReviewController::showReviewsForProductAction }
@@ -125,4 +147,3 @@ _ctp_example_review_create:
     path: /product/id/{productId}/reviews/create
     defaults: { _controller: Commercetools\Symfony\ExampleBundle\Controller\ReviewController::createReviewForProductAction }
     methods: [POST]
-
