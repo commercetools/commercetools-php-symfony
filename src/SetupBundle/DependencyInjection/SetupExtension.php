@@ -1,8 +1,9 @@
 <?php
 /**
+ *
  */
 
-namespace Commercetools\Symfony\CustomerBundle\DependencyInjection;
+namespace Commercetools\Symfony\SetupBundle\DependencyInjection;
 
 use Commercetools\Symfony\CtpBundle\DependencyInjection\Configuration;
 use Symfony\Component\Config\FileLocator;
@@ -10,7 +11,7 @@ use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Extension\Extension;
 use Symfony\Component\DependencyInjection\Loader\XmlFileLoader;
 
-class CustomerExtension extends Extension
+class SetupExtension extends Extension
 {
     public function load(array $configs, ContainerBuilder $container)
     {

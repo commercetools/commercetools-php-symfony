@@ -48,7 +48,6 @@ class AddToShoppingListType extends AbstractType
                     'label' => "Select the shopping list to add to",
                     'attr' => [
                         'class' => 'form form-control form-group',
-                        'name' => '_shoppingListId'
                     ],
                 ]
             )

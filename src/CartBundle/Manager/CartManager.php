@@ -58,7 +58,7 @@ class CartManager
         return $cart;
     }
 
-    public function createCart($locale, $currency, Location $location, LineItemDraftCollection $lineItemDraftCollection, $customerId = null, $anonymousId = null)
+    public function createCart($locale, $currency, Location $location, LineItemDraftCollection $lineItemDraftCollection = null, $customerId = null, $anonymousId = null)
     {
         $event = new CartCreateEvent();
         $this->dispatcher->dispatch(CartCreateEvent::class, $event);

@@ -2,6 +2,23 @@
 
 {% block container %}
 
+    {% for message in app.flashes('error') %}
+        <div class="flash-notice">
+            {{ message }}
+        </div>
+    {% endfor %}
+
+    <div class="row">
+        <form action="{{ path('_ctp_example_shoppingList_create') }}" method="post">
+            <div class="form-group">
+                <label for="username">List name</label>
+                <input class="form-control" type="text" name="_shoppingListName" value="" placeholder="List name" />
+                <button class="btn btn-default" type="submit">Create</button>
+            </div>
+        </form>
+
+    </div>
+
     {% for list in lists %}
         <div class="row" id="index-results">
 
@@ -47,7 +64,7 @@
                 {% endfor %}
             </table>
 
-            <form action="{{ path('_ctp_example_add_shoppingList') }}" method="post">
+            <form action="{{ path('_ctp_example_add_shoppingList_to_cart') }}" method="post">
                 <div class="form-group">
                     <input type="hidden" name="_shoppingListId" value="{{ list.getId }}">
                     <button class="btn btn-default" type="submit">Add ShoppingList to Cart</button>

@@ -133,6 +133,8 @@ class Repository
      * @param Client $client
      * @param $cacheKey
      * @param AbstractApiRequest $request
+     * @param $locale
+     * @param bool $force
      * @param int $ttl
      * @return \Commercetools\Core\Model\Common\JsonDeserializeInterface|null
      */

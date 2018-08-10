@@ -5,20 +5,19 @@
 namespace Commercetools\Symfony\CtpBundle\Tests\DependencyInjection;
 
 use Commercetools\Symfony\CtpBundle\DependencyInjection\CommercetoolsExtension;
-use Commercetools\Symfony\CtpBundle\Tests\ContainerTrait;
-use PHPUnit\Framework\TestCase;
+use Matthias\SymfonyDependencyInjectionTest\PhpUnit\AbstractExtensionTestCase;
 
-class CommercetoolsExtensionTest extends TestCase
+class CommercetoolsExtensionTest extends AbstractExtensionTestCase
 {
-    use ContainerTrait;
+    protected function getContainerExtensions()
+    {
+        return [
+            new CommercetoolsExtension()
+        ];
+    }
 
     public function testLoadFirstClient()
     {
-        $container = $this->getContainer();
-        $extension = new CommercetoolsExtension();
-
-        $container->registerExtension($extension);
-
         $config = [
             'api' => [
                 'clients' => [
@@ -33,29 +32,23 @@ class CommercetoolsExtensionTest extends TestCase
                         'project' => 'bar'
                     ]
                 ]
+            ],
+            'project_settings' => [
+                'currencies' => ['EUR']
             ]
         ];
 
-        $extension->load([
-            [],
-            $config,
-            []
-        ], $container);
+        $this->load($config, $this->getContainerExtensions());
 
-        $clients = $container->getParameter('commercetools.clients');
+        $clients = $this->container->getParameter('commercetools.clients');
 
         $this->assertSame('commercetools.client.first', $clients['first']['service']);
-        $this->assertSame('first', $container->getParameter('commercetools.api.default_client'));
-        $this->assertSame('commercetools.client.first', (string)$container->getAlias('commercetools.client'));
+        $this->assertSame('first', $this->container->getParameter('commercetools.api.default_client'));
+        $this->assertSame('commercetools.client.first', (string)$this->container->getAlias('commercetools.client'));
     }
 
     public function testLoadDefaultClient()
     {
-        $container = $this->getContainer();
-        $extension = new CommercetoolsExtension();
-
-        $container->registerExtension($extension);
-
         $config = [
             'api' => [
                 'clients' => [
@@ -70,26 +63,20 @@ class CommercetoolsExtensionTest extends TestCase
                         'project' => 'bar'
                     ]
                 ]
+            ],
+            'project_settings' => [
+                'currencies' => ['eur']
             ]
         ];
 
-        $extension->load([
-            [],
-            $config,
-            []
-        ], $container);
+        $this->load($config, $this->getContainerExtensions());
 
-        $this->assertSame('default', $container->getParameter('commercetools.api.default_client'));
-        $this->assertSame('commercetools.client.default', (string)$container->getAlias('commercetools.client'));
+        $this->assertSame('default', $this->container->getParameter('commercetools.api.default_client'));
+        $this->assertSame('commercetools.client.default', (string)$this->container->getAlias('commercetools.client'));
     }
 
     public function testLoadDefaultSecondClient()
     {
-        $container = $this->getContainer();
-        $extension = new CommercetoolsExtension();
-
-        $container->registerExtension($extension);
-
         $config = [
             'api' => [
                 'default_client' => 'second',
@@ -105,17 +92,17 @@ class CommercetoolsExtensionTest extends TestCase
                         'project' => 'bar'
                     ]
                 ]
+            ],
+            'project_settings' => [
+                'currencies' => ['usd']
             ]
         ];
 
-        $extension->load([
-            [],
-            $config,
-            []
-        ], $container);
+        $this->load($config, $this->getContainerExtensions());
 
-        $this->assertSame('second', $container->getParameter('commercetools.api.default_client'));
-        $this->assertSame('commercetools.client.second', (string)$container->getAlias('commercetools.client'));
+        $this->assertSame('second', $this->container->getParameter('commercetools.api.default_client'));
+        $this->assertSame('commercetools.client.second', (string)$this->container->getAlias('commercetools.client'));
+        $this->assertContainerBuilderHasParameter('commercetools.project_settings.currencies', ['USD']);
     }
 
     /**
@@ -123,47 +110,87 @@ class CommercetoolsExtensionTest extends TestCase
      */
     public function testLoadWithWrongData()
     {
-        $container = $this->getContainer();
-        $extension = new CommercetoolsExtension();
-
-        $container->registerExtension($extension);
-
-        $extension->load([
-            [],
-            ['config' => []],
-            []
-        ], $container);
-
+        $this->load(['config' => []], $this->getContainerExtensions());
     }
 
     public function testLoadWithData()
     {
-        $container = $this->getContainer();
-        $extension = new CommercetoolsExtension();
-
-        $container->registerExtension($extension);
-
         $config = [
-            'defaults' => ['country' => 'bar'],
             'cache' => ['foo' => true],
-            'currency' => ['EU' => 'foo'],
             'api' => [ 'clients' => [
                 'first' => [
                     'client_id' => 'foo',
                     'client_secret' => 'bar',
                     'project' => 'other'
                 ]
-            ] ]
+            ] ],
+            'project_settings' => [
+                'currencies' => ['foo']
+            ]
         ];
 
-        $extension->load([
-            [],
-            $config,
-            []
-        ], $container);
+        $this->load($config, $this->getContainerExtensions());
 
-        $this->assertEquals('bar', $container->getParameter('commercetools.defaults.country'));
-        $this->assertTrue($container->getParameter('commercetools.cache.foo'));
-        $this->assertEquals('foo', $container->getParameter('commercetools.currency.eu'));
+        $this->assertContainerBuilderHasParameter('commercetools.cache.foo', true);
+        $this->assertContainerBuilderHasParameter('commercetools.project_settings.currencies', ['FOO']);
+    }
+
+    public function testLoadWithProjectSettings()
+    {
+        $config = [
+            'api' => [ 'clients' => [
+                'first' => [
+                    'client_id' => 'foo',
+                    'client_secret' => 'bar',
+                    'project' => 'other'
+                ]
+            ] ],
+            'project_settings' => [
+                'currencies' => ['foo'],
+                'countries' => ['DE'],
+                'languages' => ['en'],
+                'name' => 'project',
+                'messages' => true,
+                'shipping_rate_input_type' => ['type' => 'CartValue']
+            ]
+        ];
+
+        $this->load($config, $this->getContainerExtensions());
+
+        $this->assertContainerBuilderHasParameter('commercetools.project_settings.currencies', ['FOO']);
+        $this->assertContainerBuilderHasParameter('commercetools.project_settings.countries', ['DE']);
+        $this->assertContainerBuilderHasParameter('commercetools.project_settings.languages', ['en']);
+        $this->assertContainerBuilderHasParameter('commercetools.project_settings.name', 'project');
+        $this->assertContainerBuilderHasParameter('commercetools.project_settings.messages', ['enabled' => true]);
+
+        $expectedShippingRateInputType = [
+            'type' => 'CartValue',
+            'values' => []
+        ];
+        $this->assertContainerBuilderHasParameter('commercetools.project_settings.shipping_rate_input_type', $expectedShippingRateInputType);
+    }
+
+    public function testLoadServices()
+    {
+        $config = [
+            'api' => [ 'clients' => [
+                'first' => [
+                    'client_id' => 'foo',
+                    'client_secret' => 'bar',
+                    'project' => 'other'
+                ]
+            ] ],
+            'project_settings' => [
+                'currencies' => ['foo']
+            ]
+        ];
+
+        $this->load($config, $this->getContainerExtensions());
+
+        $this->assertContainerBuilderHasSyntheticService('commercetools');
+        $this->assertContainerBuilderHasService('Commercetools\Core\Client');
+        $this->assertContainerBuilderHasService('commercetools.api.client', 'Commercetools\Core\Client');
+        $this->assertContainerBuilderHasService('commercetools.client.config', 'Commercetools\Core\Config');
+        $this->assertContainerBuilderHasService('commercetools.client.factory', 'Commercetools\Symfony\CtpBundle\Service\ClientFactory');
     }
 }

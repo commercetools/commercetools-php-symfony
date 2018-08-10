@@ -11,13 +11,29 @@
     </php>
 
     <testsuites>
-        <testsuite name="CtpBundle Test Suite">
+        <testsuite name="CtpBundle">
             <directory>./src/CtpBundle/Tests/</directory>
-            <directory>./src/ShoppingListBundle/Tests/</directory>
+        </testsuite>
+        <testsuite name="SetupBundle">
+            <directory>./src/SetupBundle/Tests/</directory>
+        </testsuite>
+        <testsuite name="CustomerBundle">
             <directory>./src/CustomerBundle/Tests/</directory>
-            <directory>./src/CartBundle/Tests/</directory>
+        </testsuite>
+        <testsuite name="ShoppingListBundle">
+            <directory>./src/ShoppingListBundle/Tests/</directory>
+        </testsuite>
+        <testsuite name="ReviewBundle">
             <directory>./src/ReviewBundle/Tests/</directory>
+        </testsuite>
+        <testsuite name="ExampleBundle">
+            <directory>./src/ExampleBundle/Tests/</directory>
+        </testsuite>
+        <testsuite name="CatalogBundle">
             <directory>./src/CatalogBundle/Tests/</directory>
+        </testsuite>
+        <testsuite name="CartBundle">
+            <directory>./src/CartBundle/Tests/</directory>
         </testsuite>
     </testsuites>
 
@@ -29,6 +45,8 @@
             <directory>./src/CartBundle/</directory>
             <directory>./src/ReviewBundle/</directory>
             <directory>./src/CatalogBundle/</directory>
+            <directory>./src/SetupBundle/</directory>
+            <directory>./src/ExampleBundle/</directory>
             <exclude>
                 <directory>./src/CtpBundle/Resources</directory>
                 <directory>./src/CtpBundle/Tests</directory>
@@ -42,6 +60,10 @@
                 <directory>./src/ReviewBundle/Tests</directory>
                 <directory>./src/CatalogBundle/Resources</directory>
                 <directory>./src/CatalogBundle/Tests</directory>
+                <directory>./src/SetupBundle/Resources</directory>
+                <directory>./src/SetupBundle/Tests</directory>
+                <directory>./src/ExampleBundle/Resources</directory>
+                <directory>./src/ExampleBundle/Tests</directory>
                 <directory>./vendor</directory>
             </exclude>
         </whitelist>

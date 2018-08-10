@@ -34,6 +34,19 @@ class ShoppingListRepository extends Repository
         return $this->executeRequest($request, $locale, $params);
     }
 
+    public function getShoppingListForUser($locale, $shoppingListId, CustomerReference $customer = null, $anonymousId = null, QueryParams $params = null)
+    {
+        $request = RequestBuilder::of()->shoppingLists()->query();
+
+        if (!is_null($customer)) {
+            $request->where('id = "' . $shoppingListId . '" and customer(id = "' . $customer->getId() . '")');
+        } else if (!is_null($anonymousId)) {
+            $request->where('id = "' . $shoppingListId . '" and anonymousId = "' . $anonymousId . '"');
+        } // TODO else throw/raise error
+
+        return $this->executeRequest($request, $locale, $params);
+    }
+
     public function getAllShoppingListsByCustomer($locale, CustomerReference $customer, QueryParams $params = null)
     {
         $request = RequestBuilder::of()->shoppingLists()->query()->where('customer(id = "' . $customer->getId() . '")')->sort('createdAt desc');
@@ -90,5 +103,21 @@ class ShoppingListRepository extends Repository
         $list = $request->mapFromResponse($response);
 
         return $list;
+    }
+
+    public function deleteByCustomer($locale, CustomerReference $customer, $shoppingListId)
+    {
+        $shoppingList = $this->getShoppingListForUser($locale, $shoppingListId, $customer);
+        $request = RequestBuilder::of()->shoppingLists()->delete($shoppingList->current());
+
+        return $this->executeRequest($request, $locale);
+    }
+
+    public function deleteByAnonymous($locale, $anonymousId, $shoppingListId)
+    {
+        $shoppingList = $this->getShoppingListForUser($locale, $shoppingListId, null, $anonymousId);
+        $request = RequestBuilder::of()->shoppingLists()->delete($shoppingList);
+
+        return $this->executeRequest($request, $locale);
     }
 }

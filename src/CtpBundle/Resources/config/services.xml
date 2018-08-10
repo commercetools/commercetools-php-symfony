@@ -44,5 +44,11 @@
             <tag name="data_collector" id="commercetools" template="@Ctp/Collector/commercetools"/>
             <argument type="service" id="commercetools.profile" />
         </service>
+        <service id="Commercetools\Symfony\CtpBundle\Model\Repository" public="true">
+            <argument key="$enableCache">false</argument>
+            <argument key="$cache" type="service" id="commercetools.cache" />
+            <argument key="$client" type="service" id="Commercetools\Core\Client"/>
+            <argument key="$mapperFactory" type="service" id="commmercetools.mapper.factory" />
+        </service>
     </services>
 </container>

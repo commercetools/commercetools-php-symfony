@@ -1,124 +1,145 @@
 _ctp_example_index:
     path:     /
-    defaults: { _controller: ExampleBundle:Home:index }
+    defaults: { _controller: Commercetools\Symfony\ExampleBundle\Controller\HomeController::indexAction }
 
 _ctp_example:
     path:     /product
-    defaults: { _controller: ExampleBundle:Catalog:index }
+    defaults: { _controller: Commercetools\Symfony\ExampleBundle\Controller\CatalogController::indexAction }
 
 _ctp_example_product:
     path:    /product/slug/{slug}
-    defaults: { _controller: ExampleBundle:Catalog:detailBySlug }
+    defaults: { _controller: Commercetools\Symfony\ExampleBundle\Controller\CatalogController::detailBySlugAction }
 
 _ctp_example_product_by_id:
     path:    /product/id/{id}
-    defaults: { _controller: ExampleBundle:Catalog:detailById }
+    defaults: { _controller: Commercetools\Symfony\ExampleBundle\Controller\CatalogController::detailByIdAction }
+
+_ctp_example_products_of_category:
+    path:    /product/category/{categoryId}
+    defaults: { _controller: Commercetools\Symfony\ExampleBundle\Controller\CatalogController::indexAction }
+
+_ctp_example_product_categories:
+    path:    /product/categories/
+    defaults: { _controller: Commercetools\Symfony\ExampleBundle\Controller\CatalogController::getCategoriesAction }
+
+_ctp_example_productTypes:
+    path:    /product/productTypes/
+    defaults: { _controller: Commercetools\Symfony\ExampleBundle\Controller\CatalogController::getProductTypesAction }
+
+_ctp_example_products_of_productType:
+    path:    /product/type/{productTypeId}
+    defaults: { _controller: Commercetools\Symfony\ExampleBundle\Controller\CatalogController::indexAction }
 
 login:
     path: /login
-    defaults: { _controller: ExampleBundle:User:login }
+    defaults: { _controller: Commercetools\Symfony\ExampleBundle\Controller\UserController::loginAction }
+
 login_check:
     path: /login_check
-    defaults: { _controller: ExampleBundle:User:login }
+    defaults: { _controller: Commercetools\Symfony\ExampleBundle\Controller\UserController::loginAction }
+
 logout:
     path: /logout
 
 _ctp_example_user_details:
     path:    /user/details
-    defaults: { _controller: ExampleBundle:User:details }
+    defaults: { _controller: Commercetools\Symfony\ExampleBundle\Controller\UserController::detailsAction }
 
 _ctp_example_user_address_book:
     path:    /user/address
-    defaults: { _controller: ExampleBundle:User:addressBook }
+    defaults: { _controller: Commercetools\Symfony\ExampleBundle\Controller\UserController::addressBookAction }
 
 _ctp_example_user_address_edit:
     path:    /user/address/edit/{addressId}
-    defaults: { _controller: ExampleBundle:User:editAddress }
+    defaults: { _controller: Commercetools\Symfony\ExampleBundle\Controller\UserController::editAddressAction }
 
 _ctp_example_cart:
     path: /cart
-    defaults: { _controller: ExampleBundle:Cart:index}
+    defaults: { _controller: Commercetools\Symfony\ExampleBundle\Controller\CartController::indexAction }
 
 _ctp_example_checkout_signin:
     path: /checkout/signin
-    defaults: { _controller: ExampleBundle:Checkout:signin}
+    defaults: { _controller: Commercetools\Symfony\ExampleBundle\Controller\CheckoutController::signinAction }
 
 _ctp_example_checkout_shipping:
     path: /checkout/shipping
-    defaults: { _controller: ExampleBundle:Checkout:shippingMethod}
+    defaults: { _controller: Commercetools\Symfony\ExampleBundle\Controller\CheckoutController::shippingMethodAction }
 
 _ctp_example_checkout_address:
     path: /checkout/address
-    defaults: { _controller: ExampleBundle:Checkout:setAddress}
+    defaults: { _controller: Commercetools\Symfony\ExampleBundle\Controller\CheckoutController::setAddressAction }
 
 _ctp_example_checkout_confirm:
     path: /checkout/address/confirm
-    defaults: { _controller: ExampleBundle:Checkout:confirmation}
+    defaults: { _controller: Commercetools\Symfony\ExampleBundle\Controller\CheckoutController::confirmationAction }
 
 _ctp_example_add_lineItem:
     path: /cart/add
-    defaults: { _controller: ExampleBundle:Cart:addLineItem}
+    defaults: { _controller: Commercetools\Symfony\ExampleBundle\Controller\CartController::addLineItemAction }
 
-_ctp_example_add_shoppingList:
+_ctp_example_add_shoppingList_to_cart:
     path: /cart/add_shoppinglist
-    defaults: { _controller: ExampleBundle:Cart:addShoppingList}
+    defaults: { _controller: Commercetools\Symfony\ExampleBundle\Controller\CartController::addShoppingListToCartAction }
 
 _ctp_example_change_lineItem:
     path: /cart/change
-    defaults: { _controller: ExampleBundle:Cart:changeLineItem}
+    defaults: { _controller: Commercetools\Symfony\ExampleBundle\Controller\CartController::changeLineItemAction }
 
 _ctp_example_delete_lineItem:
     path: /cart/delete
-    defaults: { _controller: ExampleBundle:Cart:deleteLineItem}
+    defaults: { _controller: Commercetools\Symfony\ExampleBundle\Controller\CartController::deleteLineItemAction }
 
 _ctp_example_checkout_guest:
     path: /checkout/quest
-    defaults: { _controller: ExampleBundle:Checkout:setAddress}
+    defaults: { _controller: Commercetools\Symfony\ExampleBundle\Controller\CheckoutController::setAddressAction }
 
 _ctp_example_checkout_success:
     path: /checkout/succes
-    defaults: { _controller: ExampleBundle:Checkout:success}
+    defaults: { _controller: Commercetools\Symfony\ExampleBundle\Controller\CheckoutController::successAction }
 
 _ctp_example_orders_all:
     path: /orders/
-    defaults: { _controller: ExampleBundle:Order:index}
+    defaults: { _controller: Commercetools\Symfony\ExampleBundle\Controller\OrderController::indexAction }
 
 _ctp_example_order:
     path: /orders/{orderId}
-    defaults: { _controller: ExampleBundle:Order:showOrder}
+    defaults: { _controller: Commercetools\Symfony\ExampleBundle\Controller\OrderController::showOrderAction }
 
 _ctp_example_suggest:
     path: /suggest/{searchTerm}
-    defaults: { _controller: ExampleBundle:Catalog:suggest}
+    defaults: { _controller: Commercetools\Symfony\ExampleBundle\Controller\CatalogController::suggestAction }
 
 _ctp_example_shoppingList:
     path: /shoppinglist
-    defaults: { _controller: ExampleBundle:ShoppingList:index }
+    defaults: { _controller: Commercetools\Symfony\ExampleBundle\Controller\ShoppingListController::indexAction }
 
 _ctp_example_shoppingList_create:
     path: /shoppinglist/create
-    defaults: { _controller: ExampleBundle:ShoppingList:create }
+    defaults: { _controller: Commercetools\Symfony\ExampleBundle\Controller\ShoppingListController::createAction }
 
 _ctp_example_shoppingList_add_lineItem:
     path: /shoppinglist/add_lineitem
-    defaults: { _controller: ExampleBundle:ShoppingList:addLineItem }
+    defaults: { _controller: Commercetools\Symfony\ExampleBundle\Controller\ShoppingListController::addLineItemAction }
 
 _ctp_example_shoppingList_remove_lineItem:
     path: /shoppinglist/remove_lineitem
-    defaults: { _controller: ExampleBundle:ShoppingList:removeLineItem }
+    defaults: { _controller: Commercetools\Symfony\ExampleBundle\Controller\ShoppingListController::removeLineItemAction }
     methods: [POST]
 
 _ctp_example_shoppingList_change_lineItem_quantity:
     path: /shoppinglist/change_lineitem_quantity
-    defaults: { _controller: ExampleBundle:ShoppingList:changeLineItemQuantity }
+    defaults: { _controller: Commercetools\Symfony\ExampleBundle\Controller\ShoppingListController::changeLineItemQuantityAction }
     methods: [POST]
+
+_ctp_example_shoppingList_delete:
+    path: /shoppinglist/delete/{shoppingListId}
+    defaults: { _controller: Commercetools\Symfony\ExampleBundle\Controller\ShoppingListController::deleteByIdAction }
 
 _ctp_example_review_show:
     path: /product/id/{productId}/reviews
-    defaults: { _controller: ExampleBundle:Review:showReviewsForProduct }
+    defaults: { _controller: Commercetools\Symfony\ExampleBundle\Controller\ReviewController::showReviewsForProductAction }
 
 _ctp_example_review_create:
     path: /product/id/{productId}/reviews/create
-    defaults: { _controller: ExampleBundle:Review:createReviewForProduct }
+    defaults: { _controller: Commercetools\Symfony\ExampleBundle\Controller\ReviewController::createReviewForProductAction }
     methods: [POST]
-

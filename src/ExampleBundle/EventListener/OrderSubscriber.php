@@ -3,7 +3,7 @@
  *
  */
 
-namespace Commercetools\Symfony\ExampleBundle\EventSubscriber;
+namespace Commercetools\Symfony\ExampleBundle\EventListener;
 
 
 use Commercetools\Symfony\CartBundle\Event\OrderCreateEvent;

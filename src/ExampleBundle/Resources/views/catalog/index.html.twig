@@ -1,6 +1,17 @@
 {% extends "ExampleBundle::layout.html.twig" %}
 
 {% block container %}
+
+    <!-- product types -->
+    {{ render(controller(
+        'ExampleBundle:Catalog:getProductTypes'
+    )) }}
+
+    <!-- categories -->
+    {{ render(controller(
+        'ExampleBundle:Catalog:getCategories'
+    )) }}
+
         {{ form_start(form) }}
         {{ form_widget(form, { 'attr': {'class': 'search'} }) }}
         {{ form_end(form) }}
@@ -11,7 +22,6 @@
                 <div class="loader"></div>
             </div>
     </div>
-
 
     <div class="row" id="index-results">
         {% for product in products %}

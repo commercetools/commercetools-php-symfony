@@ -3,9 +3,9 @@ declare(strict_types=1);
 
 namespace Commercetools\Symfony\ExampleBundle\Controller;
 
-use Commercetools\Core\Builder\Request\RequestBuilder;
 use Commercetools\Core\Client;
 use Commercetools\Core\Model\Customer\CustomerReference;
+use Commercetools\Core\Model\ShoppingList\ShoppingList;
 use Commercetools\Core\Request\ShoppingLists\Command\ShoppingListAddLineItemAction;
 use Commercetools\Core\Request\ShoppingLists\Command\ShoppingListChangeLineItemQuantityAction;
 use Commercetools\Core\Request\ShoppingLists\Command\ShoppingListRemoveLineItemAction;
@@ -13,6 +13,7 @@ use Commercetools\Symfony\CtpBundle\Model\QueryParams;
 use Commercetools\Symfony\ExampleBundle\Model\Form\Type\AddToShoppingListType;
 use Commercetools\Symfony\ShoppingListBundle\Manager\ShoppingListManager;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Security\Core\User\UserInterface;
 
@@ -56,12 +57,23 @@ class ShoppingListController extends Controller
     public function createAction(Request $request, UserInterface $user = null)
     {
         if(is_null($user)){
-            $this->manager->createShoppingListByAnonymous($request->getLocale(), $this->get('session')->getId(), $request->get('_name'));
+            $this->manager->createShoppingListByAnonymous($request->getLocale(), $this->get('session')->getId(), $request->get('_shoppingListName'));
         } else {
-            $this->manager->createShoppingListByCustomer($request->getLocale(), CustomerReference::ofId($user->getId()), $request->get('_name'));
+            $this->manager->createShoppingListByCustomer($request->getLocale(), CustomerReference::ofId($user->getId()), $request->get('_shoppingListName'));
         }
 
-        return $this->redirectToRoute('_ctp_example_shopping_list');
+        return $this->redirectToRoute('_ctp_example_shoppingList');
+    }
+
+    public function deleteByIdAction(Request $request, UserInterface $user = null, $shoppingListId)
+    {
+        if(is_null($user)){
+            $this->manager->deleteShoppingListByAnonymous($request->getLocale(), $this->get('session')->getId(), $shoppingListId);
+        } else {
+            $this->manager->deleteShoppingListByCustomer($request->getLocale(), CustomerReference::ofId($user->getId()), $shoppingListId);
+        }
+
+        return new RedirectResponse($this->generateUrl('_ctp_example_cart'));
     }
 
     public function addLineItemAction(Request $request, UserInterface $user = null)
@@ -87,17 +99,25 @@ class ShoppingListController extends Controller
         $form = $this->createForm(AddToShoppingListType::class, $data);
         $form->handleRequest($request);
 
-        if ($form->isValid() && $form->isSubmitted()) {
-            $shoppingList = $this->manager->getById($request->getLocale(), $form->get('_shoppingListId')->getData());
-            $updateBuilder = $this->manager->update($shoppingList);
-            $updateBuilder->addLineItem(function (ShoppingListAddLineItemAction $action) use($form): ShoppingListAddLineItemAction {
-                $action->setProductId($form->get('_productId')->getData());
-                $action->setVariantId((int)$form->get('_variantId')->getData());
-                $action->setQuantity(1);
-                return $action;
-            });
+        if ($form->isSubmitted() && $form->isValid()) {
 
-            $updateBuilder->flush();
+            $shoppingListId = $form->get('_shoppingListId')->getData();
+
+            if(!is_null($shoppingListId)){
+                $shoppingList = $this->manager->getById($request->getLocale(), $shoppingListId);
+                $updateBuilder = $this->manager->update($shoppingList);
+                $updateBuilder->addLineItem(function (ShoppingListAddLineItemAction $action) use($form): ShoppingListAddLineItemAction {
+                    $action->setProductId($form->get('_productId')->getData());
+                    $action->setVariantId((int)$form->get('_variantId')->getData());
+                    $action->setQuantity(1);
+                    return $action;
+                });
+
+                $updateBuilder->flush();
+
+            } else {
+                $this->addFlash('error', 'Not valid shopping list provided');
+            }
         }
 
         return $this->redirectToRoute('_ctp_example_shoppingList');
