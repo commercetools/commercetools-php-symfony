@@ -33,9 +33,10 @@ class CommercetoolsStateCommand extends ContainerAwareCommand
         $helper = ProcessStates::of();
         $stateTypes = $helper->parse($states);
 //        dump($stateTypes);
+        dump(Yaml::dump($stateTypes, 100, 4));
 
-        $yamlFile = $helper->formatYamlFile($stateTypes);
-        file_put_contents('/tmp/workflow.yaml', $yamlFile);
-        dump($yamlFile);
+//        $yamlFile = $helper->formatYamlFile($stateTypes);
+        file_put_contents('/tmp/workflow.yaml', Yaml::dump($stateTypes, 100, 4));
+//        dump($yamlFile);
     }
 }

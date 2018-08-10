@@ -14,18 +14,39 @@ class ProcessStates
     public function parse(StateCollection $states)
     {
         $workflow = [];
+        $initArray = [
+            'type' => 'workflow',
+            'audit_trail' => true,
+            'marking_store' => [
+                'type' => 'single_state',
+                'arguments' => ['{{ user-defined-argument }}'],
+            ],
+            'supports' => ['{{ user-defined-classes }}'],
+            'initial_place' => '',
+            'places' => [],
+            'transitions' => []
+        ];
 
         foreach ($states as $state) {
-            $workflow[$state->getType()]['places'][] = [
-                'placeName' => $state->getKey(),
-                'initial' => $state->getInitial()
-            ];
+            $workflow[$state->getType()] = $workflow[$state->getType()] ?? $initArray;
+
+            $workflow[$state->getType()]['initial_place'] = $state->getInitial() ? $state->getKey() :
+                $workflow[$state->getType()]['initial_place'];
+
+            $workflow[$state->getType()]['places'][] = $state->getKey();
+
             $workflow[$state->getType()]['transitions'] = array_filter(array_merge(
-                $workflow[$state->getType()]['transitions'] ?? [], $this->getTransitionsForState($state, $states)
+                $workflow[$state->getType()]['transitions'], $this->getTransitionsForState($state, $states)
             ));
         }
 
-        return $workflow;
+        $framework = [
+            'framework' => [
+                'workflows' => $workflow
+            ]
+        ];
+
+        return $framework;
     }
 
     private  function getTransitionsForState(State $state, StateCollection $states)
@@ -77,24 +98,13 @@ OUTPUT;
                     - {{ user-defined-argument }}
             supports:
                 - {{ user-defined-class }}
-            initial_place: 
-OUTPUT;
-
-            foreach ($state['places'] as $place) {
-                if ($place['initial']) {
-                    $output .= $place['placeName'];
-                    break;
-                }
-            }
-
-            $output .= <<<OUTPUT
-
+            initial_place: {$state['initial_place']}
             places:
 
 OUTPUT;
             foreach ($state['places'] as $place) {
                 $output .= <<<OUTPUT
-                - {$place['placeName']}
+                - {$place}
 
 OUTPUT;
             }
