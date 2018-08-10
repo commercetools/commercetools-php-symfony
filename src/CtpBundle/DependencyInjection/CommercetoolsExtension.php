@@ -1,6 +1,5 @@
 <?php
 /**
- * @author: Ylambers <yaron.lambers@commercetools.de>
  */
 
 namespace Commercetools\Symfony\CtpBundle\DependencyInjection;
@@ -44,7 +43,7 @@ class CommercetoolsExtension extends Extension
         $container->setParameter('commercetools.api.default_client', $apiConfig['default_client']);
         $container->setAlias('commercetools.client', sprintf('commercetools.client.%s', $apiConfig['default_client']));
 
-        $container->setParameter('commercetools.fallback_languages', isset($config['fallback_languages']) ? $config['fallback_languages']: []);
+        $container->setParameter('commercetools.fallback_languages', isset($config['fallback_languages']) ? $config['fallback_languages'] : []);
 
         foreach ($config['defaults'] as $key => $value) {
             $container->setParameter('commercetools.defaults.' . $key, $value);
@@ -57,12 +56,9 @@ class CommercetoolsExtension extends Extension
             $container->setParameter('commercetools.cache.' . $key, $value);
         }
 
-        // TODO maybe the associative array is not necessary
-//        foreach ($config['currencies'] as $key => $value) {
-//            $container->setParameter('commercetools.currency.' . strtolower($key), $value);
-//        }
-        $container->setParameter('commercetools.currencies', $config['project_settings']['currencies']);
-
+        $container->setParameter('commercetools.project_settings.currencies', $config['project_settings']['currencies']);
+        $container->setParameter('commercetools.project_settings.countries', $config['project_settings']['countries']);
+        $container->setParameter('commercetools.project_settings.languages', $config['project_settings']['languages']);
 
         $facetConfigs = [];
         if (isset($config['facets'])) {
@@ -72,13 +68,6 @@ class CommercetoolsExtension extends Extension
         }
         $container->setParameter('commercetools.facets', $facetConfigs);
 
-        if (isset($config['project_settings']['countries'])) {
-            $container->setParameter('commercetools.project_settings.countries', $config['project_settings']['countries']);
-        }
-
-        if (isset($config['project_settings']['languages'])) {
-            $container->setParameter('commercetools.project_settings.languages', $config['project_settings']['languages']);
-        }
 
         if (isset($config['project_settings']['name'])) {
             $container->setParameter('commercetools.project_settings.name', $config['project_settings']['name']);
@@ -90,10 +79,6 @@ class CommercetoolsExtension extends Extension
 
         if (isset($config['project_settings']['shipping_rate_input_type'])) {
             $container->setParameter('commercetools.project_settings.shipping_rate_input_type', $config['project_settings']['shipping_rate_input_type']);
-        }
-
-        if (isset($config['channels'])) {
-            $container->setParameter('commercetools.channels', $config['channels']);
         }
     }
 

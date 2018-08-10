@@ -102,7 +102,7 @@ class CommercetoolsExtensionTest extends AbstractExtensionTestCase
 
         $this->assertSame('second', $this->container->getParameter('commercetools.api.default_client'));
         $this->assertSame('commercetools.client.second', (string)$this->container->getAlias('commercetools.client'));
-        $this->assertContainerBuilderHasParameter('commercetools.currencies', ['USD']);
+        $this->assertContainerBuilderHasParameter('commercetools.project_settings.currencies', ['USD']);
     }
 
     /**
@@ -132,7 +132,7 @@ class CommercetoolsExtensionTest extends AbstractExtensionTestCase
         $this->load($config, $this->getContainerExtensions());
 
         $this->assertContainerBuilderHasParameter('commercetools.cache.foo', true);
-        $this->assertContainerBuilderHasParameter('commercetools.currencies', ['FOO']);
+        $this->assertContainerBuilderHasParameter('commercetools.project_settings.currencies', ['FOO']);
     }
 
     public function testLoadWithProjectSettings()
@@ -157,7 +157,7 @@ class CommercetoolsExtensionTest extends AbstractExtensionTestCase
 
         $this->load($config, $this->getContainerExtensions());
 
-        $this->assertContainerBuilderHasParameter('commercetools.currencies', ['FOO']);
+        $this->assertContainerBuilderHasParameter('commercetools.project_settings.currencies', ['FOO']);
         $this->assertContainerBuilderHasParameter('commercetools.project_settings.countries', ['DE']);
         $this->assertContainerBuilderHasParameter('commercetools.project_settings.languages', ['en']);
         $this->assertContainerBuilderHasParameter('commercetools.project_settings.name', 'project');

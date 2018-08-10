@@ -324,3 +324,14 @@ label[for=form_name_\*]{
     color: #999;
     font-style: italic;
 }
+
+/* categories */
+.categories-menu{
+    margin-bottom:30px;
+}
+
+.categories-menu li a{
+    padding:10px;
+    border: 1px solid #ccc;
+    border-radius: 3px;
+}

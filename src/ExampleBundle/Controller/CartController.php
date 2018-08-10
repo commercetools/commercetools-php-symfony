@@ -12,6 +12,7 @@ use Commercetools\Core\Request\Carts\Command\CartAddLineItemAction;
 use Commercetools\Core\Request\Carts\Command\CartAddShoppingListAction;
 use Commercetools\Core\Request\Carts\Command\CartChangeLineItemQuantityAction;
 use Commercetools\Core\Request\Carts\Command\CartRemoveLineItemAction;
+use Commercetools\Symfony\CustomerBundle\Security\User\User;
 use Commercetools\Symfony\ExampleBundle\Model\Form\Type\AddToCartType;
 use Commercetools\Symfony\CartBundle\Model\Repository\CartRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
@@ -67,11 +68,6 @@ class CartController extends Controller
         $cartId = $session->get(CartRepository::CART_ID);
         $cart = $this->manager->getCart($request->getLocale(), $cartId, $this->getCustomerId());
 
-        $form = $this->createNamedFormBuilder('')
-            ->add('lineItemId', TextType::class)
-            ->add('quantity', TextType::class)
-            ->getForm();
-
         return $this->render('ExampleBundle:cart:index.html.twig', ['cart' => $cart]);
     }
 
@@ -82,7 +78,7 @@ class CartController extends Controller
         $form = $this->createForm(AddToCartType::class, ['variantIdText' => true]);
         $form->handleRequest($request);
 
-        if ($form->isValid() && $form->isSubmitted()) {
+        if ($form->isSubmitted() && $form->isValid()) {
 
             $productId = $form->get('_productId')->getData();
             $variantId = (int)$form->get('variantId')->getData();
@@ -100,11 +96,15 @@ class CartController extends Controller
             } else {
                 $lineItem = LineItemDraft::ofProductId($productId)->setVariantId($variantId)->setQuantity($quantity);
                 $lineItemDraftCollection = LineItemDraftCollection::of()->add($lineItem);
-                $country = Location::of()->setCountry('DE');
+
+                $countryCode = $this->getCountryFromConfig();
+                $currency = $this->getCurrencyFromConfig();
+
+                $country = Location::of()->setCountry($countryCode);
                 if(is_null($user)){
-                    $this->manager->createCart($request->getLocale(), 'EUR', $country, $lineItemDraftCollection, null, $session->getId());
+                    $this->manager->createCart($request->getLocale(), $currency, $country, $lineItemDraftCollection, null, $session->getId());
                 } else {
-                    $this->manager->createCart($request->getLocale(), 'EUR', $country, $lineItemDraftCollection, $user->getID());
+                    $this->manager->createCart($request->getLocale(), $currency, $country, $lineItemDraftCollection, $user->getID());
                 }
             }
             $redirectUrl = $this->generateUrl('_ctp_example_product', ['slug' => $slug]);
@@ -158,19 +158,35 @@ class CartController extends Controller
         return new RedirectResponse($this->generateUrl('_ctp_example_cart'));
     }
 
-    public function addShoppingListToCartAction(Request $request)
+    public function addShoppingListToCartAction(Request $request, UserInterface $user = null)
     {
         $session = $this->get('session');
         $cartId = $session->get(CartRepository::CART_ID);
-        $cart = $this->manager->getCart($request->getLocale(), $cartId, $this->getCustomerId());
 
         $shoppingListId = $request->get('_shoppingListId');
         $shoppingList = ShoppingListReference::ofId($shoppingListId);
 
+        if(!is_null($cartId)){
+            $cart = $this->manager->getCart($request->getLocale(), $cartId, $this->getCustomerId());
+
+
+        } else {
+            $countryCode = $this->getCountryFromConfig();
+            $currency = $this->getCurrencyFromConfig();
+            $country = Location::of()->setCountry(strtoupper($countryCode));
+
+            if(is_null($user)){
+                $cart = $this->manager->createCart($request->getLocale(), $currency, $country, null, null, $session->getId());
+            } else {
+                $cart = $this->manager->createCart($request->getLocale(), $currency, $country, null, $user->getID());
+            }
+        }
+
         $cartBuilder = $this->manager->update($cart);
         $cartBuilder->addShoppingList(CartAddShoppingListAction::ofShoppingList($shoppingList));
         $cartBuilder->flush();
-        return new RedirectResponse($this->generateUrl('_ctp_example_cart'));
+
+        return new RedirectResponse($this->generateUrl('_ctp_example_shoppingList_delete', ['shoppingListId' => $shoppingListId]));
     }
 
     protected function getItemCount(Cart $cart)
@@ -196,5 +212,18 @@ class CartController extends Controller
     protected function createNamedFormBuilder($name, $data = null, array $options = array())
     {
         return $this->container->get('form.factory')->createNamedBuilder($name, FormType::class, $data, $options);
+    }
+
+    // TODO duplicate code / move these to better place
+    private function getCountryFromConfig()
+    {
+        $countries = $this->getParameter('commercetools.project_settings.countries');
+        return current($countries);
+    }
+
+    private function getCurrencyFromConfig()
+    {
+        $currencies = $this->getParameter('commercetools.project_settings.currencies');
+        return current($currencies);
     }
 }

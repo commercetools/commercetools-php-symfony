@@ -4,6 +4,7 @@ namespace  Commercetools\Symfony\ExampleBundle\Controller;
 
 use Commercetools\Core\Client;
 use Commercetools\Core\Model\Product\ProductProjection;
+use Commercetools\Core\Model\Product\Search\Filter;
 use Commercetools\Symfony\CatalogBundle\Manager\CatalogManager;
 use Commercetools\Symfony\ExampleBundle\Model\Form\Type\AddToCartType;
 use Commercetools\Symfony\ExampleBundle\Model\Form\Type\AddToShoppingListType;
@@ -33,7 +34,7 @@ class CatalogController extends Controller
         $this->catalogManager = $catalogManager;
         $this->shoppingListManager = $shoppingListManager;
     }
-    public function indexAction(Request $request)
+    public function indexAction(Request $request, $categoryId = null, $productTypeId = null)
     {
         $form = $this->createFormBuilder()
             ->add('search', TextType::class,
@@ -54,12 +55,26 @@ class CatalogController extends Controller
         }
 
         $uri = new Uri($request->getRequestUri());
+
+        $filter = null;
+        if(!is_null($categoryId)){
+            $filter['filter'][] = Filter::ofName('categories.id')->setValue($categoryId);
+        }
+
+        if(!is_null($productTypeId)){
+            $filter['filter'][] = Filter::ofName('productType.id')->setValue($productTypeId);
+        }
+
+        $country = $this->getCountryFromConfig();
+        $currency = $this->getCurrencyFromConfig();
+
         list($products, $offset) = $this->catalogManager->getProducts(
-            $request->getLocale(), 12, 1, 'price asc', 'EUR', 'DE', $uri, $search
+            $request->getLocale(), 12, 1, 'price asc', $currency, $country, $uri, $search, $filter
         );
 
         return $this->render('ExampleBundle:catalog:index.html.twig', [
                 'products' => $products,
+                'offset' => $offset,
                 'form' => $form->createView(),
         ]);
 
@@ -67,7 +82,10 @@ class CatalogController extends Controller
 
     public function detailBySlugAction(Request $request, $slug, UserInterface $user = null)
     {
-        $product = $this->catalogManager->getProductBySlug($slug, $request->getLocale(), 'EUR', 'DE');
+        $country = $this->getCountryFromConfig();
+        $currency = $this->getCurrencyFromConfig();
+
+        $product = $this->catalogManager->getProductBySlug($slug, $request->getLocale(), $currency, $country);
 
         return $this->productDetails($request, $product, $user);
     }
@@ -122,7 +140,10 @@ class CatalogController extends Controller
 
     public function suggestAction(Request $request, $searchTerm)
     {
-        $products = $this->catalogManager->suggestProducts($request->getLocale(), $searchTerm, 5, 'EUR', 'DE');
+        $country = $this->getCountry();
+        $currency = $this->getCurrency();
+
+        $products = $this->catalogManager->suggestProducts($request->getLocale(), $searchTerm, 5, $currency, $country);
 
         $items = [];
 
@@ -143,5 +164,36 @@ class CatalogController extends Controller
         $res->setData($items);
 
         return $res;
+    }
+
+    public function getCategoriesAction(Request $request, $sort = 'id asc')
+    {
+        $categories = $this->catalogManager->getCategories($request->getLocale(), $sort);
+
+        return $this->render( 'ExampleBundle:catalog:categoriesList.html.twig', [
+            'categories' => $categories
+        ]);
+    }
+
+    public function getProductTypesAction(Request $request, $sort = 'id asc')
+    {
+        $productTypes = $this->catalogManager->getProductTypes($request->getLocale(), $sort);
+
+        return $this->render( 'ExampleBundle:catalog:productTypesList.html.twig', [
+            'productTypes' => $productTypes
+        ]);
+    }
+
+    // TODO duplicate code / move these to better place
+    private function getCountryFromConfig()
+    {
+        $countries = $this->getParameter('commercetools.project_settings.countries');
+        return current($countries);
+    }
+
+    private function getCurrencyFromConfig()
+    {
+        $currencies = $this->getParameter('commercetools.project_settings.currencies');
+        return current($currencies);
     }
 }
