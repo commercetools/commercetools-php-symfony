@@ -45,7 +45,7 @@ class Configuration implements ConfigurationInterface
                         ->arrayNode('context')
                             ->addDefaultsIfNotSet()
                             ->children()
-                                ->scalarNode('locale')->defaultValue('EN')->end()
+                                ->scalarNode('locale')->defaultValue('en')->end()
 //                                ->scalarNode('currency')->defaultValue('EUR')->end()
                                 ->booleanNode('graceful')->defaultValue(true)->end()
                             ->end()
