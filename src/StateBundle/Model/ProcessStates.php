@@ -11,11 +11,11 @@ use Commercetools\Core\Model\State\StateCollection;
 
 class ProcessStates
 {
-    public function parse(StateCollection $states)
+    public function parse(StateCollection $states, $type = 'workflow')
     {
         $workflow = [];
         $initArray = [
-            'type' => 'workflow',
+            'type' => $type,
             'audit_trail' => true,
             'marking_store' => [
                 'type' => 'single_state',
@@ -35,9 +35,9 @@ class ProcessStates
 
             $workflow[$state->getType()]['places'][] = $state->getKey();
 
-            $workflow[$state->getType()]['transitions'] = array_filter(array_merge(
-                $workflow[$state->getType()]['transitions'], $this->getTransitionsForState($state, $states)
-            ));
+            $workflow[$state->getType()]['transitions'] = $this->filterTransitions(
+                $type, $state, $states, $workflow[$state->getType()]['transitions']
+            );
         }
 
         $framework = [
@@ -49,7 +49,14 @@ class ProcessStates
         return $framework;
     }
 
-    private  function getTransitionsForState(State $state, StateCollection $states)
+    private function filterTransitions($type, $state, $states, $allTransitions)
+    {
+        return array_filter(array_merge(
+            $allTransitions, $this->getTransitions($type, $state, $states, $allTransitions)
+        ));
+    }
+
+    private function getTransitions($type, State $state, StateCollection $states, $allTransitions)
     {
         $transitions = $state->getTransitions();
 
@@ -59,22 +66,41 @@ class ProcessStates
 
         $result = [];
         foreach ($transitions->toArray() as $transition) {
-            $next = $this->findNextState($transition['id'], $states->toArray());
-            $name = $state->getKey() . 'To' . ucfirst($next['key']);
+            $nextState = $this->findNextState($transition['id'], $states->toArray());
+            if ($type === 'workflow') {
+                $name = $state->getKey() . 'To' . ucfirst($nextState);
+                $from = $state->getKey();
+            } else {
+                $name = 'to' . ucfirst($nextState);
+                $from = $this->getFromForStateMachine($name, $state->getKey(), $allTransitions);
+            }
+
             $result[$name] = [
-                'from' => $state->getKey(),
-                'to' => $next['key']
+                'from' => $from,
+                'to' => $nextState
             ];
         }
 
         return $result;
     }
 
+    private function getFromForStateMachine($name, $currentState, $allTransitions)
+    {
+        if (isset($allTransitions[$name])) {
+            if (!is_array($allTransitions[$name]['from'])) {
+                $allTransitions[$name]['from'] = [$allTransitions[$name]['from']];
+            }
+            return array_merge($allTransitions[$name]['from'], [$currentState]);
+        } else {
+            return $currentState;
+        }
+    }
+
     private function findNextState($stateId, array $states)
     {
         foreach ($states as $state) {
             if ($state['id'] === $stateId) {
-                return $state;
+                return $state['key'];
             }
         }
     }

@@ -9,7 +9,7 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Yaml\Yaml;
 
-class CommercetoolsStateCommand extends ContainerAwareCommand
+class CommercetoolsWorkflowCommand extends ContainerAwareCommand
 {
     private $repository;
 
@@ -22,8 +22,8 @@ class CommercetoolsStateCommand extends ContainerAwareCommand
     protected function configure()
     {
         $this
-            ->setName('commercetools:get-state-machine-config')
-            ->setDescription('Get CTP states and create a YAML file with Symfony "state_machine" config')
+            ->setName('commercetools:get-workflow-config')
+            ->setDescription('Get CTP states and create a YAML file with Symfony "workflow" config')
         ;
     }
 
@@ -31,9 +31,9 @@ class CommercetoolsStateCommand extends ContainerAwareCommand
     {
         $states = $this->repository->getStates();
         $helper = ProcessStates::of();
-        $stateTypes = $helper->parse($states, 'state_machine');
+        $stateTypes = $helper->parse($states);
         dump(Yaml::dump($stateTypes, 100, 4));
 
-        file_put_contents('/tmp/states.yaml', Yaml::dump($stateTypes, 100, 4));
+        file_put_contents('/tmp/workflow.yaml', Yaml::dump($stateTypes, 100, 4));
     }
 }
