@@ -32,8 +32,7 @@ class CommercetoolsStateCommand extends ContainerAwareCommand
         $states = $this->repository->getStates();
         $helper = ProcessStates::of();
         $stateTypes = $helper->parse($states, 'state_machine');
-        dump(Yaml::dump($stateTypes, 100, 4));
 
-        file_put_contents('/tmp/states.yaml', Yaml::dump($stateTypes, 100, 4));
+        $output->write(Yaml::dump($stateTypes, 100, 4));
     }
 }

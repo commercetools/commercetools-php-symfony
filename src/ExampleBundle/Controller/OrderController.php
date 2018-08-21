@@ -101,6 +101,7 @@ class OrderController extends Controller
 
         $workflow = $this->workflows->get($orderWrapper);
 
+        // for 'workflow' config
         if ($workflow->can($orderWrapper, 'createdToCanceled') ||
             $workflow->can($orderWrapper, 'readyToShipToCanceled')
         ) {
@@ -108,6 +109,13 @@ class OrderController extends Controller
 
             return $this->redirect($this->generateUrl('_ctp_example_order', ['orderId' => $orderId]));
         }
+
+        // for 'state_machine' config
+//        if ($workflow->can($orderWrapper, 'toCanceled')) {
+//            $workflow->apply($orderWrapper, 'toCanceled');
+//            return $this->redirect($this->generateUrl('_ctp_example_order', ['orderId' => $orderId]));
+//        }
+
 
         $this->addFlash('error', 'cannot perform this action');
         return $this->render('@Example/index.html.twig');

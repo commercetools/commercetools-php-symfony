@@ -19,7 +19,7 @@ class ProcessStates
             'audit_trail' => true,
             'marking_store' => [
                 'type' => 'single_state',
-                'arguments' => ['{{ user-defined-argument }}'],
+                'arguments' => ['{{ user-defined-arguments }}'],
             ],
             'supports' => ['{{ user-defined-classes }}'],
             'initial_place' => '',
@@ -121,7 +121,7 @@ OUTPUT;
             marking_store:
                 type: 'single_state'
                 arguments:
-                    - {{ user-defined-argument }}
+                    - {{ user-defined-arguments }}
             supports:
                 - {{ user-defined-class }}
             initial_place: {$state['initial_place']}
