@@ -12,6 +12,7 @@ use Commercetools\Symfony\CartBundle\Manager\OrderManager;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
+use Symfony\Component\Workflow\Exception\InvalidArgumentException;
 use Symfony\Component\Workflow\Registry;
 
 
@@ -99,7 +100,12 @@ class OrderController extends Controller
         $orderWrapper = OrderWrapper::fromArray($order->toArray());
         $orderWrapper->setOrderManager($this->manager);
 
-        $workflow = $this->workflows->get($orderWrapper);
+        try {
+            $workflow = $this->workflows->get($orderWrapper);
+        } catch (InvalidArgumentException $e) {
+            $this->addFlash('error', 'Cannot find proper workflow configuration. Action aborted');
+            return $this->render('@Example/index.html.twig');
+        }
 
         // for 'workflow' config
         if ($workflow->can($orderWrapper, 'createdToCanceled') ||
@@ -116,11 +122,8 @@ class OrderController extends Controller
 //            return $this->redirect($this->generateUrl('_ctp_example_order', ['orderId' => $orderId]));
 //        }
 
-
-        $this->addFlash('error', 'cannot perform this action');
+        $this->addFlash('error', 'Cannot perform this action');
         return $this->render('@Example/index.html.twig');
 
     }
-
-
 }
