@@ -6,27 +6,124 @@
 namespace Commercetools\Symfony\StateBundle\Tests\Model;
 
 
+use Commercetools\Core\Model\State\State;
 use Commercetools\Core\Model\State\StateCollection;
+use Commercetools\Core\Model\State\StateReference;
+use Commercetools\Core\Model\State\StateReferenceCollection;
 use Commercetools\Symfony\StateBundle\Model\ProcessStates;
 use PHPUnit\Framework\TestCase;
+use Symfony\Component\Yaml\Yaml;
 
 class ProcessStatesTest extends TestCase
 {
-    private $states;
+    private $stateCollection;
 
     public function setUp()
     {
-        $base64 = '';
-        $this->states = unserialize(base64_decode($base64));
+        $this->stateCollection = StateCollection::of()
+            ->add(State::of()
+                ->setType('OrderState')
+                ->setKey('created')
+                ->setInitial(true)
+                ->setId('foo')
+                ->setTransitions(
+                    StateReferenceCollection::of()
+                        ->add(StateReference::ofId('123'))
+                        ->add(StateReference::ofId('456'))
+                )
+            )
+            ->add(State::of()
+                ->setType('OrderState')
+                ->setKey('canceled')
+                ->setId('123')
+            )
+            ->add(State::of()
+                ->setType('OrderState')
+                ->setKey('shipped')
+                ->setId('456')
+            )->add(State::of()
+                ->setType('OrderState')
+                ->setKey('completed')
+                ->setTransitions(
+                    StateReferenceCollection::of()
+                        ->add(StateReference::ofId('123'))
+                )
+            );
+
     }
 
-    public function testParse()
+    public function testParseAsStateMachine()
     {
-        $this->assertInstanceOf(StateCollection::class, $this->states);
+        $expected = 'framework:
+    workflows:
+        OrderState:
+            type: state_machine
+            audit_trail: true
+            marking_store:
+                type: single_state
+                arguments:
+                    - \'{{ user-defined-arguments }}\'
+            supports:
+                - \'{{ user-defined-classes }}\'
+            initial_place: created
+            places:
+                - created
+                - canceled
+                - shipped
+                - completed
+            transitions:
+                toCanceled:
+                    from:
+                        - created
+                        - completed
+                    to: canceled
+                toShipped:
+                    from: created
+                    to: shipped
+';
 
         $helper = ProcessStates::of();
-        $res = $helper->parse($this->states);
+        $parsed = $helper->parse($this->stateCollection, 'state_machine');
 
-        dump($res);
+        $yaml = Yaml::dump($parsed, 100, 4);
+        $this->assertSame($expected, $yaml);
+    }
+
+    public function testParseAsWorkflow()
+    {
+        $expected = 'framework:
+    workflows:
+        OrderState:
+            type: workflow
+            audit_trail: true
+            marking_store:
+                type: single_state
+                arguments:
+                    - \'{{ user-defined-arguments }}\'
+            supports:
+                - \'{{ user-defined-classes }}\'
+            initial_place: created
+            places:
+                - created
+                - canceled
+                - shipped
+                - completed
+            transitions:
+                createdToCanceled:
+                    from: created
+                    to: canceled
+                createdToShipped:
+                    from: created
+                    to: shipped
+                completedToCanceled:
+                    from: completed
+                    to: canceled
+';
+
+        $helper = ProcessStates::of();
+        $parsed = $helper->parse($this->stateCollection, 'workflow');
+
+        $yaml = Yaml::dump($parsed, 100, 4);
+        $this->assertSame($expected, $yaml);
     }
 }
