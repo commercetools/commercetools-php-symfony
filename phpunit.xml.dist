@@ -35,6 +35,9 @@
         <testsuite name="CartBundle">
             <directory>./src/CartBundle/Tests/</directory>
         </testsuite>
+        <testsuite name="StateBundle">
+            <directory>./src/StateBundle/Tests/</directory>
+        </testsuite>
     </testsuites>
 
     <filter>
@@ -47,6 +50,7 @@
             <directory>./src/CatalogBundle/</directory>
             <directory>./src/SetupBundle/</directory>
             <directory>./src/ExampleBundle/</directory>
+            <directory>./src/StateBundle/</directory>
             <exclude>
                 <directory>./src/CtpBundle/Resources</directory>
                 <directory>./src/CtpBundle/Tests</directory>
@@ -64,6 +68,8 @@
                 <directory>./src/SetupBundle/Tests</directory>
                 <directory>./src/ExampleBundle/Resources</directory>
                 <directory>./src/ExampleBundle/Tests</directory>
+                <directory>./src/StateBundle/Resources</directory>
+                <directory>./src/StateBundle/Tests</directory>
                 <directory>./vendor</directory>
             </exclude>
         </whitelist>
