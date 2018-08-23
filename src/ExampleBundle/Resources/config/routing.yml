@@ -118,7 +118,7 @@ _ctp_example_order_toPaid:
     defaults: { _controller: Commercetools\Symfony\ExampleBundle\Controller\OrderController::PaidOrderAction }
 
 _ctp_example_order_lineItem_update:
-    path: orders/{orderId}/update/{lineItemId}
+    path: orders/{orderId}/update
     defaults: { _controller: Commercetools\Symfony\ExampleBundle\Controller\OrderController::updateLineItemAction }
 
 _ctp_example_suggest:

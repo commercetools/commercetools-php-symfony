@@ -18,8 +18,10 @@
     <service id="ctp.marking_store" class="Commercetools\Symfony\StateBundle\Model\CtpMarkingStore">
         <argument key="$stateRepository" type="service" id="Commercetools\Symfony\StateBundle\Model\Repository\StateRepository"/>
         <argument key="$cache" type="service" id="cache.app" />
-        <argument key="$initialState"></argument>
     </service>
+
+    <prototype namespace="Commercetools\Symfony\StateBundle\Model\" resource="../../Model/*State.php" />
+
 </services>
 </container>
 

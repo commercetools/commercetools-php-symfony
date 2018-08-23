@@ -18,10 +18,9 @@ class ProcessStates
             'type' => $type,
             'audit_trail' => true,
             'marking_store' => [
-                'type' => 'single_state',
-                'arguments' => ['{{ user-defined-arguments }}'],
+                'service' => null
             ],
-            'supports' => ['{{ user-defined-classes }}'],
+            'supports' => [],
             'initial_place' => '',
             'places' => [],
             'transitions' => []
@@ -29,6 +28,9 @@ class ProcessStates
 
         foreach ($states as $state) {
             $workflow[$state->getType()] = $workflow[$state->getType()] ?? $initArray;
+
+            $workflow[$state->getType()]['marking_store']['service'] = CtpMarkingStore::class . $state->getType();
+            $workflow[$state->getType()]['supports'] = StateType::TYPES[$state->getType()];
 
             $workflow[$state->getType()]['initial_place'] = $state->getInitial() ? $state->getKey() :
                 $workflow[$state->getType()]['initial_place'];
@@ -119,9 +121,7 @@ OUTPUT;
             type: 'workflow'
             audit_trail: true
             marking_store:
-                type: 'single_state'
-                arguments:
-                    - {{ user-defined-arguments }}
+                service: 'Commercetools\Symfony\StateBundle\Model\CtpMarkingStore{$key}'
             supports:
                 - {{ user-defined-class }}
             initial_place: {$state['initial_place']}

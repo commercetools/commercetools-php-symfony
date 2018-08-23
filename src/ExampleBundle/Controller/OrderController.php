@@ -82,6 +82,40 @@ class OrderController extends Controller
         ]);
     }
 
+    public function updateLineItemAction(Request $request, SessionInterface $session, UserInterface $user = null, $orderId)
+    {
+        if(is_null($user)){
+            $orders = $this->manager->getOrderForAnonymous($request->getLocale(), $session->getId(), $orderId);
+        } else {
+            $orders = $this->manager->getOrderForCustomer($request->getLocale(), $user->getId(), $orderId);
+        }
+
+        if (get_class($orders) !== OrderCollection::class) {
+            $this->addFlash('error', $orders->getMessage());
+            return $this->render('@Example/index.html.twig');
+        }
+
+        $order = $orders->current();
+        $lineItem = $order->getLineItems()->getById($request->get('lineItemId'));
+
+        $lineItemState = $lineItem->getState()->current();
+
+        try {
+            $workflow = $this->workflows->get($lineItemState);
+        } catch (InvalidArgumentException $e) {
+            $this->addFlash('error', 'Cannot find proper workflow configuration. Action aborted');
+            return $this->render('@Example/index.html.twig');
+        }
+
+        if ($workflow->can($lineItemState, $request->get('toState'))) {
+            $workflow->apply($lineItemState, $request->get('toState'));
+//            return $this->redirect($this->generateUrl('_ctp_example_order', ['orderId' => $orderId]));
+        }
+
+        $this->addFlash('error', 'Cannot perform this action');
+        return $this->render('@Example/index.html.twig');
+    }
+
     public function cancelOrderAction(Request $request, SessionInterface $session, UserInterface $user = null, $orderId)
     {
         if(is_null($user)){

@@ -26,9 +26,6 @@ class CtpMarkingStoreOrderState extends CtpMarkingStore
 
     public function setMarking($subject, Marking $marking)
     {
-        dump($subject);
-        dump($marking);
-
         $stateKey = array_keys($marking->getPlaces(), 1);
 
         $orderBuilder = new OrderUpdateBuilder($subject, $this->orderManager);
