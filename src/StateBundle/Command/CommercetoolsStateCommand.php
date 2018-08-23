@@ -30,6 +30,7 @@ class CommercetoolsStateCommand extends ContainerAwareCommand
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $states = $this->repository->getStates();
+        dump($states);
         $helper = ProcessStates::of();
         $stateTypes = $helper->parse($states, 'state_machine');
 

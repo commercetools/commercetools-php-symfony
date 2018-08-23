@@ -80,6 +80,6 @@ class CtpMarkingStore implements MarkingStoreInterface
 
     public function setMarking($subject, Marking $marking)
     {
-        // TODO: Implement setMarking() method.
     }
+
 }

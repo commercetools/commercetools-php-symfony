@@ -97,30 +97,64 @@ class OrderController extends Controller
 
         $order = $orders->current();
 
-        $orderWrapper = OrderWrapper::fromArray($order->toArray());
-        $orderWrapper->setOrderManager($this->manager);
+//        $orderWrapper = OrderWrapper::fromArray($order->toArray());
+//        $orderWrapper->setOrderManager($this->manager);
 
         try {
-            $workflow = $this->workflows->get($orderWrapper);
+            $workflow = $this->workflows->get($order);
         } catch (InvalidArgumentException $e) {
             $this->addFlash('error', 'Cannot find proper workflow configuration. Action aborted');
             return $this->render('@Example/index.html.twig');
         }
 
-        // for 'workflow' config
-        if ($workflow->can($orderWrapper, 'createdToCanceled') ||
-            $workflow->can($orderWrapper, 'readyToShipToCanceled')
-        ) {
-            $workflow->apply($orderWrapper, 'createdToCanceled');
+//        // for 'workflow' config
+//        if ($workflow->can($orderWrapper, 'createdToCanceled') ||
+//            $workflow->can($orderWrapper, 'readyToShipToCanceled')
+//        ) {
+//            $workflow->apply($orderWrapper, 'createdToCanceled');
+//
+//            return $this->redirect($this->generateUrl('_ctp_example_order', ['orderId' => $orderId]));
+//        }
 
+        // for 'state_machine' config
+        if ($workflow->can($order, 'toCanceled')) {
+            $workflow->apply($order, 'toCanceled');
             return $this->redirect($this->generateUrl('_ctp_example_order', ['orderId' => $orderId]));
         }
 
+        $this->addFlash('error', 'Cannot perform this action');
+        return $this->render('@Example/index.html.twig');
+
+    }
+
+
+    public function createOrderAction(Request $request, SessionInterface $session, UserInterface $user = null, $orderId)
+    {
+        if(is_null($user)){
+            $orders = $this->manager->getOrderForAnonymous($request->getLocale(), $session->getId(), $orderId);
+        } else {
+            $orders = $this->manager->getOrderForCustomer($request->getLocale(), $user->getId(), $orderId);
+        }
+
+        if (get_class($orders) !== OrderCollection::class) {
+            $this->addFlash('error', $orders->getMessage());
+            return $this->render('@Example/index.html.twig');
+        }
+
+        $order = $orders->current();
+
+        try {
+            $workflow = $this->workflows->get($order);
+        } catch (InvalidArgumentException $e) {
+            $this->addFlash('error', 'Cannot find proper workflow configuration. Action aborted');
+            return $this->render('@Example/index.html.twig');
+        }
+
         // for 'state_machine' config
-//        if ($workflow->can($orderWrapper, 'toCanceled')) {
-//            $workflow->apply($orderWrapper, 'toCanceled');
-//            return $this->redirect($this->generateUrl('_ctp_example_order', ['orderId' => $orderId]));
-//        }
+        if ($workflow->can($order, 'toCreated')) {
+            $workflow->apply($order, 'toCreated', $this->manager);
+            return $this->redirect($this->generateUrl('_ctp_example_order', ['orderId' => $orderId]));
+        }
 
         $this->addFlash('error', 'Cannot perform this action');
         return $this->render('@Example/index.html.twig');
