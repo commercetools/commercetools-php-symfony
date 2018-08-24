@@ -20,7 +20,7 @@
         <argument key="$cache" type="service" id="cache.app" />
     </service>
 
-    <prototype namespace="Commercetools\Symfony\StateBundle\Model\" resource="../../Model/*State.php" />
+    <prototype namespace="Commercetools\Symfony\StateBundle\Model\" resource="../../Model/CtpMarkingStore*State.php" />
 
 </services>
 </container>

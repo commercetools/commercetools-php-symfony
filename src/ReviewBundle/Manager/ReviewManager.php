@@ -49,6 +49,11 @@ class ReviewManager
         return $this->repository->getReviewsByProductId($locale, $productId, $params);
     }
 
+    public function getReviewForUser($locale, $userId, $reviewId, QueryParams $params = null)
+    {
+        return $this->repository->getReviewForUser($locale, $userId, $reviewId, $params);
+    }
+
     public function createForProduct($locale, ProductReference $productReference, CustomerReference $customer = null, $text = null, $rating = null)
     {
         return $this->repository->createReviewForProduct($locale, $productReference, $customer, $text, $rating);

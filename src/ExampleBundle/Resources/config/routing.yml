@@ -152,10 +152,14 @@ _ctp_example_shoppingList_delete:
     defaults: { _controller: Commercetools\Symfony\ExampleBundle\Controller\ShoppingListController::deleteByIdAction }
 
 _ctp_example_review_show:
-    path: /product/id/{productId}/reviews
+    path: /product/{productId}/reviews
     defaults: { _controller: Commercetools\Symfony\ExampleBundle\Controller\ReviewController::showReviewsForProductAction }
 
+_ctp_example_review_update:
+    path: /review/{reviewId}/update
+    defaults: { _controller: Commercetools\Symfony\ExampleBundle\Controller\ReviewController::UpdateReviewAction }
+
 _ctp_example_review_create:
-    path: /product/id/{productId}/reviews/create
+    path: /product/{productId}/reviews/create
     defaults: { _controller: Commercetools\Symfony\ExampleBundle\Controller\ReviewController::createReviewForProductAction }
     methods: [POST]

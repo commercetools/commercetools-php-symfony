@@ -8,6 +8,7 @@ namespace Commercetools\Symfony\StateBundle\Model;
 
 use Commercetools\Core\Model\Cart\Cart;
 use Commercetools\Core\Model\Order\Order;
+use Commercetools\Core\Model\State\StateReference;
 use Commercetools\Core\Request\Orders\Command\OrderTransitionLineItemStateAction;
 use Commercetools\Symfony\CartBundle\Manager\CartManager;
 use Commercetools\Symfony\CartBundle\Model\OrderUpdateBuilder;
@@ -29,26 +30,27 @@ class CtpMarkingStoreLineItemState extends CtpMarkingStore
     }
     public function setMarking($subject, Marking $marking)
     {
-        dump($subject);
         $rootOfSubject = $subject->rootGet()->current();
 
         if ($rootOfSubject instanceof Order) {
             dump('use OrderManager');
-            $this->updateOrderItemState($subject, $marking);
+            $this->updateOrderItemState($subject, $marking, $rootOfSubject);
 
         } elseif ($rootOfSubject instanceof Cart) {
             dump('use CartManager');
         }
     }
 
-    private function updateOrderItemState($subject, $marking)
+    private function updateOrderItemState($subject, $marking, $order)
     {
-        $stateKey = array_keys($marking->getPlaces(), 1);
+        $toState = current(array_keys($marking->getPlaces(), 1));
+        // TODO requires to get Parent Object!
+        $lineItem = $subject->parentGet();
 
-        $orderBuilder = new OrderUpdateBuilder($subject, $this->orderManager);
+        $orderBuilder = new OrderUpdateBuilder($order, $this->orderManager);
         $orderBuilder->addAction(
             OrderTransitionLineItemStateAction::ofLineItemIdQuantityAndFromToState(
-
+                $lineItem->getId(), $subject->quantity(), $subject->getState(), StateReference::ofTypeAndKey('state', $toState)
             )
         );
 

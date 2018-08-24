@@ -5,7 +5,6 @@
 namespace Commercetools\Symfony\ExampleBundle\Controller;
 
 use Commercetools\Core\Model\Order\OrderCollection;
-use Commercetools\Symfony\CartBundle\Model\OrderWrapper;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Commercetools\Core\Client;
 use Commercetools\Symfony\CartBundle\Manager\OrderManager;
@@ -98,7 +97,9 @@ class OrderController extends Controller
         $order = $orders->current();
         $lineItem = $order->getLineItems()->getById($request->get('lineItemId'));
 
+        // TODO check if good idea to use parent/root objects
         $lineItemState = $lineItem->getState()->current();
+        $lineItemState->parentSet($lineItem);
 
         try {
             $workflow = $this->workflows->get($lineItemState);
@@ -109,7 +110,7 @@ class OrderController extends Controller
 
         if ($workflow->can($lineItemState, $request->get('toState'))) {
             $workflow->apply($lineItemState, $request->get('toState'));
-//            return $this->redirect($this->generateUrl('_ctp_example_order', ['orderId' => $orderId]));
+            return $this->redirect($this->generateUrl('_ctp_example_order', ['orderId' => $orderId]));
         }
 
         $this->addFlash('error', 'Cannot perform this action');
@@ -131,9 +132,6 @@ class OrderController extends Controller
 
         $order = $orders->current();
 
-//        $orderWrapper = OrderWrapper::fromArray($order->toArray());
-//        $orderWrapper->setOrderManager($this->manager);
-
         try {
             $workflow = $this->workflows->get($order);
         } catch (InvalidArgumentException $e) {
@@ -142,10 +140,10 @@ class OrderController extends Controller
         }
 
 //        // for 'workflow' config
-//        if ($workflow->can($orderWrapper, 'createdToCanceled') ||
-//            $workflow->can($orderWrapper, 'readyToShipToCanceled')
+//        if ($workflow->can($order, 'createdToCanceled') ||
+//            $workflow->can($order, 'readyToShipToCanceled')
 //        ) {
-//            $workflow->apply($orderWrapper, 'createdToCanceled');
+//            $workflow->apply($order, 'createdToCanceled');
 //
 //            return $this->redirect($this->generateUrl('_ctp_example_order', ['orderId' => $orderId]));
 //        }
