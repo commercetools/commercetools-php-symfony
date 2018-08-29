@@ -60,11 +60,9 @@ class ProcessStatesTest extends TestCase
             type: state_machine
             audit_trail: true
             marking_store:
-                type: single_state
-                arguments:
-                    - \'{{ user-defined-arguments }}\'
+                service: Commercetools\Symfony\StateBundle\Model\CtpMarkingStoreOrderState
             supports:
-                - \'{{ user-defined-classes }}\'
+                - Commercetools\Core\Model\Order\Order
             initial_place: created
             places:
                 - created
@@ -97,11 +95,9 @@ class ProcessStatesTest extends TestCase
             type: workflow
             audit_trail: true
             marking_store:
-                type: single_state
-                arguments:
-                    - \'{{ user-defined-arguments }}\'
+                service: Commercetools\Symfony\StateBundle\Model\CtpMarkingStoreOrderState
             supports:
-                - \'{{ user-defined-classes }}\'
+                - Commercetools\Core\Model\Order\Order
             initial_place: created
             places:
                 - created

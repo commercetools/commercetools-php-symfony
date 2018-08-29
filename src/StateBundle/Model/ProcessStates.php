@@ -107,52 +107,6 @@ class ProcessStates
         }
     }
 
-    public function formatYamlFile(array $states)
-    {
-        $output = <<<OUTPUT
-# config/packages/workflow.yaml
-framework:
-    workflows:
-
-OUTPUT;
-        foreach ($states as $key => $state) {
-            $output .= <<<OUTPUT
-        {$key}:
-            type: 'workflow'
-            audit_trail: true
-            marking_store:
-                service: 'Commercetools\Symfony\StateBundle\Model\CtpMarkingStore{$key}'
-            supports:
-                - {{ user-defined-class }}
-            initial_place: {$state['initial_place']}
-            places:
-
-OUTPUT;
-            foreach ($state['places'] as $place) {
-                $output .= <<<OUTPUT
-                - {$place}
-
-OUTPUT;
-            }
-
-            $output .= <<<OUTPUT
-            transitions:
-
-OUTPUT;
-
-            foreach ($state['transitions'] as $transitionName => $fromTo) {
-                $output .= <<<OUTPUT
-                {$transitionName}:
-                    from: {$fromTo['from']}
-                    to: {$fromTo['to']}
-
-OUTPUT;
-            }
-        }
-
-        return $output;
-    }
-
     public static function of()
     {
         return new static();
