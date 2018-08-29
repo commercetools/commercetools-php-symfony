@@ -10,17 +10,16 @@ use Commercetools\Core\Model\State\StateReference;
 use Commercetools\Core\Request\Orders\Command\OrderTransitionStateAction;
 use Commercetools\Symfony\CartBundle\Manager\OrderManager;
 use Commercetools\Symfony\CartBundle\Model\OrderUpdateBuilder;
-use Commercetools\Symfony\StateBundle\Model\Repository\StateRepository;
-use Psr\Cache\CacheItemPoolInterface;
+use Commercetools\Symfony\StateBundle\Cache\StateCacheHelper;
 use Symfony\Component\Workflow\Marking;
 
 class CtpMarkingStoreOrderState extends CtpMarkingStore
 {
     private $orderManager;
 
-    public function __construct(StateRepository $stateRepository, CacheItemPoolInterface $cache, $initialState, OrderManager $manager)
+    public function __construct(StateCacheHelper $cacheHelper, $initialState, OrderManager $manager)
     {
-        parent::__construct($stateRepository, $cache, $initialState);
+        parent::__construct($cacheHelper, $initialState);
         $this->orderManager = $manager;
     }
 
@@ -31,7 +30,7 @@ class CtpMarkingStoreOrderState extends CtpMarkingStore
         $orderBuilder = new OrderUpdateBuilder($subject, $this->orderManager);
         $orderBuilder->addAction(
             OrderTransitionStateAction::ofState(
-                StateReference::ofTypeAndKey('state', $toState)
+                StateReference::ofKey($toState)
             )->setForce(true)
         );
 

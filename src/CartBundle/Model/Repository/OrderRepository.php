@@ -25,8 +25,7 @@ class OrderRepository extends Repository
     {
         $request = RequestBuilder::of()->orders()->query()
             ->where('customerId = "' . $customerId . '"')
-            ->sort('createdAt desc')
-            ->expand('state');
+            ->sort('createdAt desc');
 
         return $this->executeRequest($request, $locale);
     }
@@ -45,8 +44,6 @@ class OrderRepository extends Repository
         } else if (!is_null($anonymousId)) {
             $request->where('id = "' . $orderId . '" and anonymousId = "' . $anonymousId . '"');
         } // TODO else throw/raise error ?
-
-        $request->expand('state');
 
         return $this->executeRequest($request, $locale);
     }

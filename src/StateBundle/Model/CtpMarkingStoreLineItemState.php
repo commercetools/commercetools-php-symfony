@@ -7,18 +7,17 @@ namespace Commercetools\Symfony\StateBundle\Model;
 
 
 use Commercetools\Symfony\CartBundle\Model\OrderUpdateBuilder;
+use Commercetools\Symfony\StateBundle\Cache\StateCacheHelper;
 use Symfony\Component\Workflow\Marking;
 use Commercetools\Symfony\CartBundle\Manager\OrderManager;
-use Commercetools\Symfony\StateBundle\Model\Repository\StateRepository;
-use Psr\Cache\CacheItemPoolInterface;
 
 class CtpMarkingStoreLineItemState extends CtpMarkingStore
 {
     private $orderManager;
 
-    public function __construct(StateRepository $stateRepository, CacheItemPoolInterface $cache, $initialState, OrderManager $manager)
+    public function __construct(StateCacheHelper $cacheHelper, $initialState, OrderManager $manager)
     {
-        parent::__construct($stateRepository, $cache, $initialState);
+        parent::__construct($cacheHelper, $initialState);
         $this->orderManager = $manager;
     }
 

@@ -16,11 +16,11 @@
         <argument key="$logger" type="service" id="commercetools.logger" />
     </service>
     <service id="ctp.marking_store" class="Commercetools\Symfony\StateBundle\Model\CtpMarkingStore">
-        <argument key="$stateRepository" type="service" id="Commercetools\Symfony\StateBundle\Model\Repository\StateRepository"/>
-        <argument key="$cache" type="service" id="cache.app" />
+        <argument key="$initialState">null</argument>
     </service>
 
     <prototype namespace="Commercetools\Symfony\StateBundle\Model\" resource="../../Model/CtpMarkingStore*State.php" />
+    <prototype namespace="Commercetools\Symfony\StateBundle\Cache\" resource="../../Cache/*.php" />
 
     <service id="Commercetools\Symfony\StateBundle\Extension\ItemStateExtension">
         <tag name="twig.extension" />

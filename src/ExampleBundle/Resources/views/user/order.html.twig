@@ -8,7 +8,7 @@
             Order number: {{ order.getOrderNumber }}<br />
             Order date: {{ order.getCreatedAt.getDateTime|date("m/d/Y H:i") }} <br />
             {% if order.getState is not null %}
-                Order state: {{ order.getState.getObj.getKey }}<br />
+                Order state: {{ order.getState.getId | resolveStateId }}<br />
             {% else %}
                 Order state: not-set<br />
             {% endif %}

@@ -7,23 +7,19 @@ namespace Commercetools\Symfony\StateBundle\Model;
 
 
 use Commercetools\Core\Model\State\StateReference;
-use Commercetools\Core\Request\Orders\Command\OrderTransitionStateAction;
 use Commercetools\Core\Request\Reviews\Command\ReviewTransitionStateAction;
-use Commercetools\Symfony\CartBundle\Manager\OrderManager;
-use Commercetools\Symfony\CartBundle\Model\OrderUpdateBuilder;
 use Commercetools\Symfony\ReviewBundle\Manager\ReviewManager;
 use Commercetools\Symfony\ReviewBundle\Model\ReviewUpdateBuilder;
-use Commercetools\Symfony\StateBundle\Model\Repository\StateRepository;
-use Psr\Cache\CacheItemPoolInterface;
+use Commercetools\Symfony\StateBundle\Cache\StateCacheHelper;
 use Symfony\Component\Workflow\Marking;
 
 class CtpMarkingStoreReviewState extends CtpMarkingStore
 {
     private $reviewManager;
 
-    public function __construct(StateRepository $stateRepository, CacheItemPoolInterface $cache, $initialState, ReviewManager $manager)
+    public function __construct(StateCacheHelper $cacheHelper, $initialState, ReviewManager $manager)
     {
-        parent::__construct($stateRepository, $cache, $initialState);
+        parent::__construct($cacheHelper, $initialState);
         $this->reviewManager = $manager;
     }
 
@@ -34,7 +30,7 @@ class CtpMarkingStoreReviewState extends CtpMarkingStore
         $orderBuilder = new ReviewUpdateBuilder($subject, $this->reviewManager);
         $orderBuilder->addAction(
             ReviewTransitionStateAction::ofState(
-                StateReference::ofTypeAndKey('state', $toState)
+                StateReference::ofKey($toState)
             )->setForce(true)
         );
 
