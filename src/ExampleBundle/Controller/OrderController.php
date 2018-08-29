@@ -5,6 +5,8 @@
 namespace Commercetools\Symfony\ExampleBundle\Controller;
 
 use Commercetools\Core\Model\Order\OrderCollection;
+use Commercetools\Core\Model\State\StateReference;
+use Commercetools\Symfony\StateBundle\Model\ItemStateWrapper;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Commercetools\Core\Client;
 use Commercetools\Symfony\CartBundle\Manager\OrderManager;
@@ -95,21 +97,30 @@ class OrderController extends Controller
         }
 
         $order = $orders->current();
-        $lineItem = $order->getLineItems()->getById($request->get('lineItemId'));
+        $currentStateReference = StateReference::ofId($request->get('fromState'));
 
-        // TODO check if good idea to use parent/root objects
-        $lineItemState = $lineItem->getState()->current();
-        $lineItemState->parentSet($lineItem);
+        if ($request->get('lineItemId')){
+            $lineItem = $order->getLineItems()->getById($request->get('lineItemId'));
+        } elseif ($request->get('customLineItemId')) {
+            $lineItem = $order->getCustomLineItems()->getById($request->get('customLineItemId'));
+        } else {
+            $this->addFlash('error', 'Either a LineItemId or a CustomLineItemId must have been set');
+            return $this->render('@Example/index.html.twig');
+        }
+
+        $quantity = $request->get('quantity') ?? 1;
+
+        $subject = ItemStateWrapper::create($order, $currentStateReference, $lineItem, $quantity);
 
         try {
-            $workflow = $this->workflows->get($lineItemState);
+            $workflow = $this->workflows->get($subject);
         } catch (InvalidArgumentException $e) {
             $this->addFlash('error', 'Cannot find proper workflow configuration. Action aborted');
             return $this->render('@Example/index.html.twig');
         }
 
-        if ($workflow->can($lineItemState, $request->get('toState'))) {
-            $workflow->apply($lineItemState, $request->get('toState'));
+        if ($workflow->can($subject, $request->get('toState'))) {
+            $workflow->apply($subject, $request->get('toState'));
             return $this->redirect($this->generateUrl('_ctp_example_order', ['orderId' => $orderId]));
         }
 

@@ -6,8 +6,6 @@
 namespace Commercetools\Symfony\StateBundle\Model;
 
 
-use Commercetools\Core\Model\Common\Resource;
-use Commercetools\Core\Model\Order\ItemState;
 use Commercetools\Core\Model\Order\Order;
 use Commercetools\Core\Model\State\StateReference;
 use Commercetools\Symfony\StateBundle\Model\Repository\StateRepository;
@@ -19,7 +17,7 @@ class CtpMarkingStore implements MarkingStoreInterface
 {
     private $stateRepository;
     private $cache;
-    private $initialState;
+    protected $initialState;
 
     /**
      * CtpMarkingStore constructor.
@@ -31,7 +29,7 @@ class CtpMarkingStore implements MarkingStoreInterface
         $this->stateRepository = $stateRepository;
     }
 
-    private function resolveFromId($id)
+    protected function resolveFromId($id)
     {
         $item = $this->cache->getItem($id);
         if ($item->isHit()) {
@@ -67,15 +65,22 @@ class CtpMarkingStore implements MarkingStoreInterface
     {
         $markingName = $this->initialState;
 
-        if ($subject instanceof Resource || $subject instanceof ItemState) {
-            $state = $subject->getState();
+        $state = $this->getStateReference($subject);
 
-            if ($state instanceof StateReference) {
-                $markingName = $this->resolveFromId($state->getId());
-            }
-
-            return new Marking([$markingName => 1]);
+        if ($state instanceof StateReference) {
+            $markingName = $this->resolveFromId($state->getId());
         }
+
+        return new Marking([$markingName => 1]);
+    }
+
+    protected function getStateReference($subject)
+    {
+        if ($subject instanceof ItemStateWrapper) {
+            return $subject->getStateReference();
+        }
+
+        return $subject->getState();
     }
 
     public function setMarking($subject, Marking $marking)
