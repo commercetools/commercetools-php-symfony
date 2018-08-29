@@ -26,6 +26,10 @@
         <tag name="twig.extension" />
     </service>
 
+    <service id="Commercetools\Symfony\StateBundle\Cache\StateWarmer">
+        <tag name="kernel.cache_warmer" />
+    </service>
+
 </services>
 </container>
 
