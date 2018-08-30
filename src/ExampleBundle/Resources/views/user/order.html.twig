@@ -2,10 +2,10 @@
 
 {% block container %}
     <div class="row">
-        <h1>My Order: {{ order.getOrderNumber }}</h1>
+        <h1>My Order: {{ order.id }}</h1>
         <hr />
         <div class="col-md-12">
-            Order number: {{ order.getOrderNumber }}<br />
+            Order number: {{ order.id }}<br />
             Order date: {{ order.getCreatedAt.getDateTime|date("m/d/Y H:i") }} <br />
             {% if order.getState is not null %}
                 Order state: {{ order.getState.getId | resolveStateId }}<br />

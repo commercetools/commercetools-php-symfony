@@ -105,7 +105,7 @@ class ReviewController extends Controller
 
         $review = $review->current();
 
-        if (get_class($review) !== Review::class) {
+        if (!$review instanceof Review) {
             $this->addFlash('error', 'Cannot find review or not required permissions');
             return $this->render('@Example/index.html.twig');
         }

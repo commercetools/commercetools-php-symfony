@@ -91,7 +91,7 @@ class OrderController extends Controller
             $orders = $this->manager->getOrderForCustomer($request->getLocale(), $user->getId(), $orderId);
         }
 
-        if (get_class($orders) !== OrderCollection::class) {
+        if (!$orders instanceof OrderCollection) {
             $this->addFlash('error', $orders->getMessage());
             return $this->render('@Example/index.html.twig');
         }
@@ -110,7 +110,7 @@ class OrderController extends Controller
 
         $quantity = $request->get('quantity') ?? 1;
 
-        $subject = ItemStateWrapper::create($order, $currentStateReference, $lineItem, $quantity);
+        $subject = ItemStateWrapper::create($order, $currentStateReference, $lineItem, (int)$quantity);
 
         try {
             $workflow = $this->workflows->get($subject);
@@ -136,7 +136,7 @@ class OrderController extends Controller
             $orders = $this->manager->getOrderForCustomer($request->getLocale(), $user->getId(), $orderId);
         }
 
-        if (get_class($orders) !== OrderCollection::class) {
+        if (!$orders instanceof OrderCollection) {
             $this->addFlash('error', $orders->getMessage());
             return $this->render('@Example/index.html.twig');
         }
@@ -179,7 +179,7 @@ class OrderController extends Controller
             $orders = $this->manager->getOrderForCustomer($request->getLocale(), $user->getId(), $orderId);
         }
 
-        if (get_class($orders) !== OrderCollection::class) {
+        if (!$orders instanceof OrderCollection) {
             $this->addFlash('error', $orders->getMessage());
             return $this->render('@Example/index.html.twig');
         }
