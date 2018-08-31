@@ -22,8 +22,8 @@ class CommercetoolsStateCommand extends ContainerAwareCommand
     protected function configure()
     {
         $this
-            ->setName('commercetools:get-state-machine-config')
-            ->setDescription('Get CTP states and create a YAML file with Symfony "state_machine" config')
+            ->setName('commercetools:set-state-machine-config')
+            ->setDescription('Get CTP states and create a YAML file with Symfony "state_machine" configuration. File is saved in appropriate directory')
         ;
     }
 
@@ -33,6 +33,11 @@ class CommercetoolsStateCommand extends ContainerAwareCommand
         $helper = ProcessStates::of();
         $stateTypes = $helper->parse($states, 'state_machine');
 
-        $output->write(Yaml::dump($stateTypes, 100, 4));
+        $yaml = Yaml::dump($stateTypes, 100, 4);
+        $filename = $this->getContainer()->get('kernel')->getRootDir() . '/../config/packages/workflow.yaml';
+
+        file_put_contents($filename, $yaml);
+
+        $output->writeln('Configuration file saved successfully at ' . $filename);
     }
 }

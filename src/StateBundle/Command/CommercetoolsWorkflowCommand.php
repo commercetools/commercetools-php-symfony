@@ -22,8 +22,8 @@ class CommercetoolsWorkflowCommand extends ContainerAwareCommand
     protected function configure()
     {
         $this
-            ->setName('commercetools:get-workflow-config')
-            ->setDescription('Get CTP states and create a YAML file with Symfony "workflow" config')
+            ->setName('commercetools:set-workflow-config')
+            ->setDescription('Get CTP states and create a YAML file with Symfony "workflow" configuration. File is saved in appropriate directory')
         ;
     }
 
@@ -33,6 +33,11 @@ class CommercetoolsWorkflowCommand extends ContainerAwareCommand
         $helper = ProcessStates::of();
         $stateTypes = $helper->parse($states);
 
-        $output->write(Yaml::dump($stateTypes, 100, 4));
+        $yaml = Yaml::dump($stateTypes, 100, 4);
+        $filename = $this->getContainer()->get('kernel')->getRootDir() . '/../config/packages/workflow.yaml';
+
+        file_put_contents($filename, $yaml);
+
+        $output->writeln('Configuration file saved successfully at ' . $filename);
     }
 }
