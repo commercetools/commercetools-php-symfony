@@ -42,6 +42,17 @@ class ProcessStates
             );
         }
 
+        foreach ($workflow as $stateKey => $state) {
+            if (empty($state['transitions'])) {
+                unset($workflow[$stateKey]);
+                continue;
+            }
+
+            if ($state['initial_place'] === '') {
+                unset($workflow[$stateKey]);
+            }
+        }
+
         $framework = [
             'framework' => [
                 'workflows' => $workflow
