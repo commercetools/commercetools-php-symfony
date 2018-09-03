@@ -8,7 +8,7 @@ namespace Commercetools\Symfony\StateBundle\Extension;
 
 use Commercetools\Core\Model\Order\Order;
 use Commercetools\Core\Model\State\StateReference;
-use Commercetools\Symfony\StateBundle\Cache\StateCacheHelper;
+use Commercetools\Symfony\StateBundle\Cache\StateKeyResolver;
 use Commercetools\Symfony\StateBundle\Model\ItemStateWrapper;
 use Twig\Extension\AbstractExtension;
 use Twig\TwigFilter;
@@ -18,7 +18,7 @@ class ItemStateExtension extends AbstractExtension
 {
     private $cacheHelper;
 
-    public function __construct(StateCacheHelper $cacheHelper)
+    public function __construct(StateKeyResolver $cacheHelper)
     {
         $this->cacheHelper = $cacheHelper;
     }
@@ -46,7 +46,7 @@ class ItemStateExtension extends AbstractExtension
 
     public function resolveStateId($id)
     {
-        return $this->cacheHelper->resolveFromId($id);
+        return $this->cacheHelper->resolve($id);
     }
 
 }

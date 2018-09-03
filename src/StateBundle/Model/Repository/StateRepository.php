@@ -29,4 +29,11 @@ class StateRepository extends Repository
 
         return $this->executeRequest($request);
     }
+
+    public function getById($id)
+    {
+        $request = RequestBuilder::of()->states()->getById($id);
+
+        return $this->executeRequest($request);
+    }
 }

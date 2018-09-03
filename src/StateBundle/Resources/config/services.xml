@@ -15,11 +15,11 @@
         <argument key="$enableCache">%commercetools.cache.states%</argument>
         <argument key="$logger" type="service" id="commercetools.logger" />
     </service>
-    <service id="ctp.marking_store" class="Commercetools\Symfony\StateBundle\Model\CtpMarkingStore">
+    <service id="Commercetools\Symfony\StateBundle\Model\CtpMarkingStore" class="Commercetools\Symfony\StateBundle\Model\CtpMarkingStore">
         <argument key="$initialState">null</argument>
     </service>
 
-    <prototype namespace="Commercetools\Symfony\StateBundle\Model\" resource="../../Model/CtpMarkingStore*State.php" />
+    <prototype namespace="Commercetools\Symfony\StateBundle\Model\" resource="../../Model/*TransitionHandler.php" />
     <prototype namespace="Commercetools\Symfony\StateBundle\Cache\" resource="../../Cache/*.php" />
 
     <service id="Commercetools\Symfony\StateBundle\Extension\ItemStateExtension">
@@ -29,7 +29,6 @@
     <service id="Commercetools\Symfony\StateBundle\Cache\StateWarmer">
         <tag name="kernel.cache_warmer" />
     </service>
-
 </services>
 </container>
 

@@ -8,7 +8,7 @@
             Order number: {{ order.id }}<br />
             Order date: {{ order.getCreatedAt.getDateTime|date("m/d/Y H:i") }} <br />
             {% if order.getState is not null %}
-                Order state: {{ order.getState.getId | resolveStateId }}<br />
+                Order state: {{ workflow_marked_places(order) | first }}<br />
             {% else %}
                 Order state: not-set<br />
             {% endif %}

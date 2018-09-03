@@ -12,13 +12,11 @@ use Symfony\Component\HttpKernel\CacheWarmer\CacheWarmerInterface;
 
 class StateWarmer implements CacheWarmerInterface
 {
-    private $stateRepository;
-    private $cache;
+    private $stateKeyResolver;
 
-    public function __construct(StateRepository $stateRepository,  CacheItemPoolInterface $cache)
+    public function __construct(StateKeyResolver $stateKeyResolver)
     {
-        $this->stateRepository = $stateRepository;
-        $this->cache = $cache;
+        $this->stateKeyResolver = $stateKeyResolver;
     }
 
     public function isOptional()
@@ -28,12 +26,6 @@ class StateWarmer implements CacheWarmerInterface
 
     public function warmUp($cacheDir)
     {
-        $states = $this->stateRepository->getStates();
-
-        foreach ($states as $state) {
-            $item = $this->cache->getItem($state->getId());
-            $item->set($state->getKey());
-            $this->cache->save($item);
-        }
+        $this->stateKeyResolver->fillCache();
     }
 }

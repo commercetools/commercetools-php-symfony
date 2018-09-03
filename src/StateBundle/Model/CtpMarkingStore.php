@@ -8,21 +8,21 @@ namespace Commercetools\Symfony\StateBundle\Model;
 
 use Commercetools\Core\Model\Order\Order;
 use Commercetools\Core\Model\State\StateReference;
-use Commercetools\Symfony\StateBundle\Cache\StateCacheHelper;
+use Commercetools\Symfony\StateBundle\Cache\StateKeyResolver;
 use Symfony\Component\Workflow\Marking;
 use Symfony\Component\Workflow\MarkingStore\MarkingStoreInterface;
 
 class CtpMarkingStore implements MarkingStoreInterface
 {
-    protected $cacheHelper;
+    protected $stateKeyResolver;
     protected $initialState;
 
     /**
      * CtpMarkingStore constructor.
      */
-    public function __construct(StateCacheHelper $cacheHelper, $initialState)
+    public function __construct(StateKeyResolver $stateKeyResolver, $initialState)
     {
-        $this->cacheHelper = $cacheHelper;
+        $this->stateKeyResolver = $stateKeyResolver;
         $this->initialState = $initialState;
     }
 
@@ -35,7 +35,7 @@ class CtpMarkingStore implements MarkingStoreInterface
         $state = $this->getStateReference($subject);
 
         if ($state instanceof StateReference) {
-            $markingName = $this->cacheHelper->resolveFromId($state->getId());
+            $markingName = $this->stateKeyResolver->resolve($state);
         }
 
         $markingName = $markingName ?? $this->initialState;

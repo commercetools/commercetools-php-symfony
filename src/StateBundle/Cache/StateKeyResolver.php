@@ -6,10 +6,13 @@
 namespace Commercetools\Symfony\StateBundle\Cache;
 
 
+use Commercetools\Core\Model\State\State;
+use Commercetools\Core\Model\State\StateReference;
 use Commercetools\Symfony\StateBundle\Model\Repository\StateRepository;
+use Psr\Cache\CacheItemInterface;
 use Psr\Cache\CacheItemPoolInterface;
 
-class StateCacheHelper
+class StateKeyResolver
 {
     private $stateRepository;
     private $cache;
@@ -20,16 +23,20 @@ class StateCacheHelper
         $this->cache = $cache;
     }
 
-    public function resolveFromId($id)
+    public function resolve(StateReference $state)
     {
-        $item = $this->cache->getItem($id);
+        if ($state->getObj() instanceof State) {
+            return $state->getObj()->getKey();
+        }
+
+        $item = $this->cache->getItem($state->getId());
         if ($item->isHit()) {
             return $item->get();
         }
 
-        $this->fillCache();
+        $this->store($item, $this->stateRepository->getById($state->getId()));
 
-        $item = $this->cache->getItem($id);
+        $item = $this->cache->getItem($state->getId());
         if ($item->isHit()) {
             return $item->get();
         }
@@ -37,15 +44,20 @@ class StateCacheHelper
         return null;
     }
 
-    private function fillCache()
+    private function store(CacheItemInterface $item, State $state)
+    {
+        $item->set($state->getKey());
+        $item->expiresAfter(new \DateInterval('PT1H'));
+        $this->cache->save($item);
+    }
+
+    public function fillCache()
     {
         $states = $this->stateRepository->getStates();
 
         foreach ($states as $state) {
             $item = $this->cache->getItem($state->getId());
-            $item->set($state->getKey());
-            $this->cache->save($item);
+            $this->store($item, $state);
         }
     }
-
 }
