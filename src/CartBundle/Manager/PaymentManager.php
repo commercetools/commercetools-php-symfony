@@ -4,10 +4,15 @@
 
 namespace Commercetools\Symfony\CartBundle\Manager;
 
+use Commercetools\Core\Model\Common\Money;
+use Commercetools\Core\Model\Customer\CustomerReference;
 use Commercetools\Core\Model\Payment\Payment;
+use Commercetools\Core\Model\Payment\PaymentStatus;
 use Commercetools\Core\Request\AbstractAction;
-use Commercetools\Symfony\CartBundle\Event\PaymentUpdateEvent;
+use Commercetools\Symfony\CartBundle\Event\PaymentCreateEvent;
+use Commercetools\Symfony\CartBundle\Event\PaymentPostCreateEvent;
 use Commercetools\Symfony\CartBundle\Event\PaymentPostUpdateEvent;
+use Commercetools\Symfony\CartBundle\Event\PaymentUpdateEvent;
 use Commercetools\Symfony\CartBundle\Model\PaymentUpdateBuilder;
 use Commercetools\Symfony\CartBundle\Model\Repository\PaymentRepository;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
@@ -36,6 +41,89 @@ class PaymentManager
     }
 
     /**
+     * @param $locale
+     * @param $paymentId
+     * @return Payment
+     */
+    public function getPaymentById($locale, $paymentId)
+    {
+        return $this->repository->getPaymentById($locale, $paymentId);
+    }
+
+    /**
+     * @param $locale
+     * @param $paymentId
+     * @param CustomerReference $customer
+     * @return \Commercetools\Core\Model\Payment\PaymentCollection
+     */
+    public function getPaymentForCustomer($locale, $paymentId, CustomerReference $customer)
+    {
+        return $this->repository->getPaymentForUser($locale, $paymentId, $customer);
+    }
+
+    /**
+     * @param $locale
+     * @param $paymentId
+     * @param $anonymousId
+     * @return \Commercetools\Core\Model\Payment\PaymentCollection
+     */
+    public function getPaymentForAnonymous($locale, $paymentId, $anonymousId)
+    {
+        return $this->repository->getPaymentForUser($locale, $paymentId, null, $anonymousId);
+    }
+
+    /**
+     * @param $locale
+     * @param Money $amountPlanned
+     * @param CustomerReference|null $customerReference
+     * @param null $anonymousId
+     * @param PaymentStatus|null $paymentStatus
+     * @return Payment
+     */
+    public function createPayment(
+        $locale,
+        Money $amountPlanned,
+        CustomerReference $customerReference = null,
+        $anonymousId = null,
+        PaymentStatus $paymentStatus = null
+    ) {
+        $event = new PaymentCreateEvent();
+        $this->dispatcher->dispatch(PaymentCreateEvent::class, $event);
+
+        $payment = $this->repository->createPayment($locale, $amountPlanned, $customerReference, $anonymousId, $paymentStatus);
+
+        $eventPost = new PaymentPostCreateEvent($payment);
+        $this->dispatcher->dispatch(PaymentPostCreateEvent::class, $eventPost);
+
+        return $payment;
+    }
+
+    /**
+     * @param $locale
+     * @param Money $amountPlanned
+     * @param CustomerReference $customerReference
+     * @param PaymentStatus|null $paymentStatus
+     * @return Payment
+     */
+    public function createPaymentForCustomer($locale, Money $amountPlanned, CustomerReference $customerReference, PaymentStatus $paymentStatus = null)
+    {
+        return $this->createPayment($locale, $amountPlanned, $customerReference, null, $paymentStatus);
+    }
+
+    /**
+     * @param $locale
+     * @param Money $amountPlanned
+     * @param $anonymousId
+     * @param PaymentStatus|null $paymentStatus
+     * @return Payment
+     */
+    public function createPaymentForAnonymous($locale, Money $amountPlanned, $anonymousId, PaymentStatus $paymentStatus = null)
+    {
+        return $this->createPayment($locale, $amountPlanned, null, $anonymousId, $paymentStatus);
+    }
+
+
+    /**
      * @param Payment $payment
      * @return PaymentUpdateBuilder
      */
@@ -44,6 +132,12 @@ class PaymentManager
         return new PaymentUpdateBuilder($payment, $this);
     }
 
+    /**
+     * @param Payment $payment
+     * @param AbstractAction $action
+     * @param null $eventName
+     * @return AbstractAction[]
+     */
     public function dispatch(Payment $payment, AbstractAction $action, $eventName = null)
     {
         $eventName = is_null($eventName) ? get_class($action) : $eventName;
@@ -68,6 +162,11 @@ class PaymentManager
         return $payment;
     }
 
+    /**
+     * @param Payment $payment
+     * @param array $actions
+     * @return AbstractAction[]
+     */
     public function dispatchPostUpdate(Payment $payment, array $actions)
     {
         $event = new PaymentPostUpdateEvent($payment, $actions);

@@ -6,6 +6,7 @@ namespace Commercetools\Symfony\ExampleBundle\Controller;
 
 use Commercetools\Core\Model\Order\OrderCollection;
 use Commercetools\Core\Model\State\StateReference;
+use Commercetools\Symfony\CartBundle\Manager\PaymentManager;
 use Commercetools\Symfony\StateBundle\Model\ItemStateWrapper;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Commercetools\Core\Client;
@@ -36,17 +37,20 @@ class OrderController extends Controller
      */
     private $workflows;
 
+    private $paymentManager;
+
     /**
      * OrderController constructor.
      * @param Client $client
      * @param OrderManager $manager
      * @param Registry $workflows
      */
-    public function __construct(Client $client, OrderManager $manager, Registry $workflows)
+    public function __construct(Client $client, OrderManager $manager, Registry $workflows, PaymentManager $paymentManager)
     {
         $this->client = $client;
         $this->manager = $manager;
         $this->workflows = $workflows;
+        $this->paymentManager = $paymentManager;
     }
 
 
@@ -61,9 +65,13 @@ class OrderController extends Controller
         return $customerId;
     }
 
-    public function indexAction(Request $request, UserInterface $user)
+    public function indexAction(Request $request, SessionInterface $session, UserInterface $user = null)
     {
-        $orders = $this->manager->getOrders($request->getLocale(), $user->getId());
+        if (is_null($user)) {
+            $orders = $this->manager->getOrdersForAnonymous($request->getLocale(), $session->getId());
+        } else {
+            $orders = $this->manager->getOrdersForCustomer($request->getLocale(), $user->getId());
+        }
 
         return $this->render('ExampleBundle:user:orders.html.twig', [
             'orders' => $orders
@@ -128,7 +136,7 @@ class OrderController extends Controller
         return $this->render('@Example/index.html.twig');
     }
 
-    public function cancelOrderAction(Request $request, SessionInterface $session, UserInterface $user = null, $orderId)
+    public function updateOrderAction(Request $request, SessionInterface $session, UserInterface $user = null, $orderId, $toState)
     {
         if(is_null($user)){
             $orders = $this->manager->getOrderForAnonymous($request->getLocale(), $session->getId(), $orderId);
@@ -150,52 +158,8 @@ class OrderController extends Controller
             return $this->render('@Example/index.html.twig');
         }
 
-//        // for 'workflow' config
-//        if ($workflow->can($order, 'createdToCanceled') ||
-//            $workflow->can($order, 'readyToShipToCanceled')
-//        ) {
-//            $workflow->apply($order, 'createdToCanceled');
-//
-//            return $this->redirect($this->generateUrl('_ctp_example_order', ['orderId' => $orderId]));
-//        }
-
-        // for 'state_machine' config
-        if ($workflow->can($order, 'toCanceled')) {
-            $workflow->apply($order, 'toCanceled');
-            return $this->redirect($this->generateUrl('_ctp_example_order', ['orderId' => $orderId]));
-        }
-
-        $this->addFlash('error', 'Cannot perform this action');
-        return $this->render('@Example/index.html.twig');
-
-    }
-
-
-    public function createOrderAction(Request $request, SessionInterface $session, UserInterface $user = null, $orderId)
-    {
-        if(is_null($user)){
-            $orders = $this->manager->getOrderForAnonymous($request->getLocale(), $session->getId(), $orderId);
-        } else {
-            $orders = $this->manager->getOrderForCustomer($request->getLocale(), $user->getId(), $orderId);
-        }
-
-        if (!$orders instanceof OrderCollection) {
-            $this->addFlash('error', $orders->getMessage());
-            return $this->render('@Example/index.html.twig');
-        }
-
-        $order = $orders->current();
-
-        try {
-            $workflow = $this->workflows->get($order);
-        } catch (InvalidArgumentException $e) {
-            $this->addFlash('error', 'Cannot find proper workflow configuration. Action aborted');
-            return $this->render('@Example/index.html.twig');
-        }
-
-        // for 'state_machine' config
-        if ($workflow->can($order, 'toCreated')) {
-            $workflow->apply($order, 'toCreated', $this->manager);
+        if ($workflow->can($order, $toState)) {
+            $workflow->apply($order, $toState, $this->manager);
             return $this->redirect($this->generateUrl('_ctp_example_order', ['orderId' => $orderId]));
         }
 

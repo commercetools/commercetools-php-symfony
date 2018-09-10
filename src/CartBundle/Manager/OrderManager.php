@@ -4,7 +4,10 @@
 
 namespace Commercetools\Symfony\CartBundle\Manager;
 
+use Commercetools\Core\Model\Cart\Cart;
 use Commercetools\Core\Model\Order\Order;
+use Commercetools\Core\Model\Order\OrderCollection;
+use Commercetools\Core\Model\State\StateReference;
 use Commercetools\Core\Request\AbstractAction;
 use Commercetools\Symfony\CartBundle\Event\OrderCreateEvent;
 use Commercetools\Symfony\CartBundle\Event\OrderPostCreateEvent;
@@ -37,27 +40,70 @@ class OrderManager
         $this->dispatcher = $dispatcher;
     }
 
-    public function getOrders($locale, $customerId)
+    /**
+     * @param $locale
+     * @param $customerId
+     * @return OrderCollection
+     */
+    public function getOrdersForCustomer($locale, $customerId)
     {
         return $this->repository->getOrders($locale, $customerId);
     }
 
+    /**
+     * @param $locale
+     * @param $anonymousId
+     * @return OrderCollection
+     */
+    public function getOrdersForAnonymous($locale, $anonymousId)
+    {
+        return $this->repository->getOrders($locale, null, $anonymousId);
+    }
+
+    /**
+     * @param $locale
+     * @param $customerId
+     * @param $orderId
+     * @return OrderCollection
+     */
     public function getOrderForCustomer($locale, $customerId, $orderId)
     {
         return $this->repository->getOrder($locale, $orderId, $customerId);
     }
 
+    /**
+     * @param $locale
+     * @param $anonymousId
+     * @param $orderId
+     * @return OrderCollection
+     */
     public function getOrderForAnonymous($locale, $anonymousId, $orderId)
     {
         return $this->repository->getOrder($locale, $orderId, null, $anonymousId);
     }
 
-    public function createOrderFromCart($locale, $cart)
+    /**
+     * @param $locale
+     * @param $orderId
+     * @return OrderCollection
+     */
+    public function getOrderById($locale, $orderId)
+    {
+        return $this->repository->getOrder($locale, $orderId);
+    }
+
+    /**
+     * @param $locale
+     * @param Cart $cart
+     * @param StateReference $stateReference
+     * @return Order
+     */
+    public function createOrderFromCart($locale, Cart $cart, StateReference $stateReference)
     {
         $event = new OrderCreateEvent();
         $this->dispatcher->dispatch(OrderCreateEvent::class, $event);
 
-        $order = $this->repository->createOrderFromCart($locale, $cart);
+        $order = $this->repository->createOrderFromCart($locale, $cart, $stateReference);
 
         $eventPost = new OrderPostCreateEvent();
         $this->dispatcher->dispatch(OrderPostCreateEvent::class, $eventPost);
@@ -74,6 +120,12 @@ class OrderManager
         return new OrderUpdateBuilder($order, $this);
     }
 
+    /**
+     * @param Order $order
+     * @param AbstractAction $action
+     * @param null $eventName
+     * @return AbstractAction[]
+     */
     public function dispatch(Order $order, AbstractAction $action, $eventName = null)
     {
         $eventName = is_null($eventName) ? get_class($action) : $eventName;
@@ -98,6 +150,11 @@ class OrderManager
         return $order;
     }
 
+    /**
+     * @param Order $order
+     * @param array $actions
+     * @return AbstractAction[]
+     */
     public function dispatchPostUpdate(Order $order, array $actions)
     {
         $event = new OrderPostUpdateEvent($order, $actions);

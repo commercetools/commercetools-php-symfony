@@ -41,6 +41,13 @@ class CartManager
         $this->dispatcher = $dispatcher;
     }
 
+    /**
+     * @param $locale
+     * @param null $cartId
+     * @param null $customerId
+     * @param null $anonymousId
+     * @return Cart|null
+     */
     public function getCart($locale, $cartId = null, $customerId = null, $anonymousId = null)
     {
         $cart = $this->repository->getCart($locale, $cartId, $customerId, $anonymousId);
@@ -58,6 +65,15 @@ class CartManager
         return $cart;
     }
 
+    /**
+     * @param $locale
+     * @param $currency
+     * @param Location $location
+     * @param LineItemDraftCollection|null $lineItemDraftCollection
+     * @param null $customerId
+     * @param null $anonymousId
+     * @return Cart|null
+     */
     public function createCart($locale, $currency, Location $location, LineItemDraftCollection $lineItemDraftCollection = null, $customerId = null, $anonymousId = null)
     {
         $event = new CartCreateEvent();
@@ -80,6 +96,12 @@ class CartManager
         return new CartUpdateBuilder($cart, $this);
     }
 
+    /**
+     * @param Cart $cart
+     * @param AbstractAction $action
+     * @param null $eventName
+     * @return AbstractAction[]
+     */
     public function dispatch(Cart $cart, AbstractAction $action, $eventName = null)
     {
         $eventName = is_null($eventName) ? get_class($action) : $eventName;
@@ -104,6 +126,11 @@ class CartManager
         return $cart;
     }
 
+    /**
+     * @param Cart $cart
+     * @param array $actions
+     * @return AbstractAction[]
+     */
     public function dispatchPostUpdate(Cart $cart, array $actions)
     {
         $event = new CartPostUpdateEvent($cart, $actions);

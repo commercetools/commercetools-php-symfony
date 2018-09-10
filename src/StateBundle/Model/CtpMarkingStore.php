@@ -27,7 +27,7 @@ class CtpMarkingStore implements MarkingStoreInterface
     }
 
     /**
-     * @param Order $subject
+     * @param Resource $subject
      * @return mixed|null|Marking
      */
     public function getMarking($subject)
@@ -45,7 +45,7 @@ class CtpMarkingStore implements MarkingStoreInterface
 
     protected function getStateReference($subject)
     {
-        if ($subject instanceof ItemStateWrapper) {
+        if ($subject instanceof StateWrapper) {
             return $subject->getStateReference();
         }
 

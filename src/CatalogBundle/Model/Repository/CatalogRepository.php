@@ -8,9 +8,11 @@ use Commercetools\Core\Builder\Request\RequestBuilder;
 use Commercetools\Core\Client;
 use Commercetools\Core\Error\InvalidArgumentException;
 use Commercetools\Core\Model\Common\LocalizedString;
+use Commercetools\Core\Model\Product\Product;
 use Commercetools\Core\Model\Product\ProductProjection;
 use Commercetools\Core\Model\Product\SuggestionCollection;
 use Commercetools\Core\Request\Products\ProductsSuggestRequest;
+use Commercetools\Symfony\CtpBundle\Model\QueryParams;
 use Commercetools\Symfony\CtpBundle\Model\Repository;
 use Commercetools\Symfony\CatalogBundle\Model\Search;
 use Commercetools\Symfony\CtpBundle\Service\MapperFactory;
@@ -204,5 +206,18 @@ class CatalogRepository extends Repository
         $categoriesRequest = RequestBuilder::of()->categories()->query()->sort($sort);
 
         return $this->executeRequest($categoriesRequest, $locale);
+    }
+
+    public function update(Product $product, array $actions, QueryParams $params = null)
+    {
+        $request = RequestBuilder::of()->products()->update($product)->setActions($actions);
+
+        if(!is_null($params)){
+            foreach ($params->getParams() as $param) {
+                $request->addParamObject($param);
+            }
+        }
+
+        return $this->executeRequest($request);
     }
 }

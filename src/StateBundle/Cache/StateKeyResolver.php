@@ -17,12 +17,21 @@ class StateKeyResolver
     private $stateRepository;
     private $cache;
 
+    /**
+     * StateKeyResolver constructor.
+     * @param StateRepository $stateRepository
+     * @param CacheItemPoolInterface $cache
+     */
     public function __construct(StateRepository $stateRepository, CacheItemPoolInterface $cache)
     {
         $this->stateRepository = $stateRepository;
         $this->cache = $cache;
     }
 
+    /**
+     * @param StateReference $state
+     * @return mixed|null|string
+     */
     public function resolve(StateReference $state)
     {
         if ($state->getObj() instanceof State) {
@@ -30,13 +39,16 @@ class StateKeyResolver
         }
 
         $item = $this->cache->getItem($state->getId());
+
         if ($item->isHit()) {
             return $item->get();
         }
 
-        $this->store($item, $this->stateRepository->getById($state->getId()));
+        $state = $this->stateRepository->getById($state->getId());
+        $this->storeValue($item, $state->getKey());
 
         $item = $this->cache->getItem($state->getId());
+
         if ($item->isHit()) {
             return $item->get();
         }
@@ -44,9 +56,29 @@ class StateKeyResolver
         return null;
     }
 
-    private function store(CacheItemInterface $item, State $state)
+    public function resolveKey($key)
     {
-        $item->set($state->getKey());
+        $item = $this->cache->getItem($key);
+
+        if ($item->isHit()) {
+            return $item->get();
+        }
+
+        $state = $this->stateRepository->getByKey($key);
+        $this->storeValue($item, $state->current()->getId());
+
+        $item = $this->cache->getItem($key);
+
+        if ($item->isHit()) {
+            return $item->get();
+        }
+
+        return null;
+    }
+
+    private function storeValue(CacheItemInterface $item, $value)
+    {
+        $item->set($value);
         $item->expiresAfter(new \DateInterval('PT1H'));
         $this->cache->save($item);
     }
@@ -57,7 +89,9 @@ class StateKeyResolver
 
         foreach ($states as $state) {
             $item = $this->cache->getItem($state->getId());
-            $this->store($item, $state);
+            $this->storeValue($item, $state->getKey());
+            $item = $this->cache->getItem($state->getKey());
+            $this->storeValue($item, $state->getId());
         }
     }
 }

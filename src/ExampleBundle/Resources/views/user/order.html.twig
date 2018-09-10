@@ -4,6 +4,7 @@
     <div class="row">
         <h1>My Order: {{ order.id }}</h1>
         <hr />
+        {#{{ dump(order) }}#}
         <div class="col-md-12">
             Order number: {{ order.id }}<br />
             Order date: {{ order.getCreatedAt.getDateTime|date("m/d/Y H:i") }} <br />
@@ -64,6 +65,24 @@
                 {{ taxPortion.getName }}: {{ taxPortion.getAmount }}<br/>
             {% endfor %}
             Total Price: {{ order.getTotalPrice }}<br />
+        </div>
+
+        <div class="col-md-12 order-box">
+            <h5>Payments</h5>
+
+                {% if order.paymentInfo is not null %}
+                    <table>
+                        {% for payment in order.paymentInfo.payments %}
+                            {{ render(controller(
+                                'ExampleBundle:Payment:getPayment', {'paymentId': payment.id, 'orderId': order.id}
+                            )) }}
+                        {% endfor %}
+                    </table>
+
+                {% else %}
+                    no payments associated
+                {% endif %}
+
         </div>
 
         <div class="col-md-12">

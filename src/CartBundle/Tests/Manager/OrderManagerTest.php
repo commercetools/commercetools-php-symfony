@@ -9,6 +9,7 @@ namespace Commercetools\Symfony\CartBundle\Tests\Manager;
 use Commercetools\Core\Model\Cart\Cart;
 use Commercetools\Core\Model\Order\Order;
 use Commercetools\Core\Model\Order\OrderCollection;
+use Commercetools\Core\Model\State\StateReference;
 use Commercetools\Core\Request\AbstractAction;
 use Commercetools\Symfony\CartBundle\Event\OrderPostUpdateEvent;
 use Commercetools\Symfony\CartBundle\Event\OrderUpdateEvent;
@@ -64,12 +65,13 @@ class OrderManagerTest extends TestCase
         $repository = $this->prophesize(OrderRepository::class);
         $dispatcher = $this->prophesize(EventDispatcherInterface::class);
         $cart = $this->prophesize(Cart::class);
+        $stateReference = $this->prophesize(StateReference::class);
 
-        $repository->createOrderFromCart('en', $cart->reveal())
+        $repository->createOrderFromCart('en', $cart->reveal(), $stateReference->reveal())
             ->willReturn(Order::of())->shouldBeCalled();
 
         $manager = new OrderManager($repository->reveal(), $dispatcher->reveal());
-        $order = $manager->createOrderFromCart('en', $cart->reveal());
+        $order = $manager->createOrderFromCart('en', $cart->reveal(), $stateReference->reveal());
 
         $this->assertInstanceOf(Order::class, $order);
     }
@@ -122,7 +124,7 @@ class OrderManagerTest extends TestCase
             ->willReturn(OrderCollection::of())->shouldBeCalled();
 
         $manager = new OrderManager($repository->reveal(), $dispatcher->reveal());
-        $orders = $manager->getOrders('en', '123');
+        $orders = $manager->getOrdersForCustomer('en', '123');
 
         $this->assertInstanceOf(OrderCollection::class, $orders);
     }

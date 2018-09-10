@@ -9,23 +9,27 @@ use Commercetools\Core\Builder\Request\RequestBuilder;
 use Commercetools\Core\Model\Cart\Cart;
 use Commercetools\Core\Model\Order\Order;
 use Commercetools\Core\Model\Order\OrderCollection;
+use Commercetools\Core\Model\State\StateReference;
 use Commercetools\Symfony\CtpBundle\Model\QueryParams;
 use Commercetools\Symfony\CtpBundle\Model\Repository;
 
 class OrderRepository extends Repository
 {
-    const NAME = 'orders';
-
     /**
      * @param $locale
      * @param $customerId
      * @return OrderCollection
      */
-    public function getOrders($locale, $customerId)
+    public function getOrders($locale, $customerId, $anonymousId = null)
     {
-        $request = RequestBuilder::of()->orders()->query()
-            ->where('customerId = "' . $customerId . '"')
-            ->sort('createdAt desc');
+        $request = RequestBuilder::of()->orders()->query();
+
+        if (!is_null($customerId)) {
+            $request->where('customerId = "' . $customerId . '"');
+        } elseif (!is_null($anonymousId)) {
+            $request->where('anonymousId = "' . $anonymousId . '"');
+        }
+        $request->sort('createdAt desc');
 
         return $this->executeRequest($request, $locale);
     }
@@ -43,28 +47,47 @@ class OrderRepository extends Repository
             $request->where('id = "' . $orderId . '" and customerId = "' . $customerId . '"');
         } else if (!is_null($anonymousId)) {
             $request->where('id = "' . $orderId . '" and anonymousId = "' . $anonymousId . '"');
-        } // TODO else throw/raise error ?
+        } else {
+            $request->where('id = "' . $orderId . '"');
+        }
 
         return $this->executeRequest($request, $locale);
     }
 
-    public function createOrderFromCart($locale, Cart $cart)
+    /**
+     * @param $locale
+     * @param Cart $cart
+     * @param StateReference $stateReference
+     * @return Order
+     */
+    public function createOrderFromCart($locale, Cart $cart, StateReference $stateReference)
     {
-        $request = RequestBuilder::of()->orders()->createFromCart($cart);
+        $request = RequestBuilder::of()->orders()
+            ->createFromCart($cart)
+            ->setOrderNumber($this->createOrderNumber())
+            ->setState($stateReference);
 
         $order = $this->executeRequest($request, $locale);
 
         return $order;
     }
 
+    /**
+     * @return string
+     */
     protected function createOrderNumber()
     {
         return (string)time();
     }
 
+    /**
+     * @param Order $order
+     * @param array $actions
+     * @param QueryParams|null $params
+     * @return Order
+     */
     public function update(Order $order, array $actions, QueryParams $params = null)
     {
-        $client = $this->getClient();
         $request = RequestBuilder::of()->orders()->update($order)->setActions($actions);
 
         if(!is_null($params)){
@@ -73,9 +96,6 @@ class OrderRepository extends Repository
             }
         }
 
-        $response = $request->executeWithClient($client);
-        $order = $request->mapFromResponse($response);
-
-        return $order;
+        return $this->executeRequest($request);
     }
 }

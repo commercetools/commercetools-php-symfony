@@ -23,7 +23,6 @@ class CartRepository extends Repository
 {
     protected $shippingMethodRepository;
 
-    const NAME = 'cart';
     const CART_ID = 'cart.id';
     const CART_ITEM_COUNT = 'cart.itemCount';
 
@@ -97,6 +96,10 @@ class CartRepository extends Repository
     {
         $shippingMethods = $this->shippingMethodRepository->getShippingMethodsByLocation($locale, $location, $currency);
 
+        if (is_null($shippingMethods->current())) {
+            // throw error
+        }
+
         $cartDraft = CartDraft::ofCurrency($currency)->setCountry($location->getCountry())
             ->setShippingAddress(Address::of()->setCountry($location->getCountry()));
 
@@ -118,6 +121,12 @@ class CartRepository extends Repository
         return $cart;
     }
 
+    /**
+     * @param Cart $cart
+     * @param array $actions
+     * @param QueryParams|null $params
+     * @return Cart
+     */
     public function update(Cart $cart, array $actions, QueryParams $params = null)
     {
         $client = $this->getClient();

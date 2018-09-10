@@ -23,11 +23,12 @@ class PaymentStateTransitionHandler implements SubjectHandler
 
     public function handle(Event $event)
     {
-        $orderBuilder = new PaymentUpdateBuilder($event->getSubject(), $this->manager);
+        $subject = $event->getSubject();
+        $orderBuilder = new PaymentUpdateBuilder($subject, $this->manager);
         $orderBuilder->addAction(
             PaymentTransitionStateAction::ofState(
                 StateReference::ofKey(current($event->getTransition()->getTos()))
-            )
+            )->setForce(true) // TODO remove force
         );
 
         $orderBuilder->flush();

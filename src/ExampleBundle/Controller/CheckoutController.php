@@ -6,7 +6,9 @@ namespace Commercetools\Symfony\ExampleBundle\Controller;
 
 use Commercetools\Core\Client;
 use Commercetools\Core\Model\Common\Address;
+use Commercetools\Core\Model\Order\Order;
 use Commercetools\Core\Model\ShippingMethod\ShippingMethod;
+use Commercetools\Core\Model\State\StateReference;
 use Commercetools\Core\Request\Carts\Command\CartSetBillingAddressAction;
 use Commercetools\Core\Request\Carts\Command\CartSetShippingAddressAction;
 use Commercetools\Core\Request\Carts\Command\CartSetShippingMethodAction;
@@ -17,11 +19,14 @@ use Commercetools\Symfony\CartBundle\Entity\CartEntity;
 use Commercetools\Symfony\CustomerBundle\Security\User\User;
 use Commercetools\Symfony\ExampleBundle\Model\Form\Type\AddressType;
 use Commercetools\Symfony\CartBundle\Model\Repository\CartRepository;
+use Commercetools\Symfony\StateBundle\Cache\StateKeyResolver;
+use Commercetools\Symfony\StateBundle\Model\CtpMarkingStoreOrderState;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
 
 class CheckoutController extends Controller
@@ -135,6 +140,8 @@ class CheckoutController extends Controller
         ]);
     }
 
+
+
     public function confirmationAction(Request $request, UserInterface $user = null)
     {
         $session = $this->get('session');
@@ -156,20 +163,32 @@ class CheckoutController extends Controller
         );
     }
 
-    public function successAction(Request $request, UserInterface $user = null)
-    {
-        $session = $this->get('session');
+    public function successAction(
+        Request $request,
+        UserInterface $user = null,
+        StateKeyResolver $stateKeyResolver,
+        CtpMarkingStoreOrderState $markingStoreOrderState,
+        SessionInterface $session
+    ) {
         $cartId = $session->get(CartRepository::CART_ID);
         $customerId = is_null($user) ? null : $user->getId();
 
         $cart = $this->cartManager->getCart($request->getLocale(), $cartId, $customerId);
+
         if (is_null($cart->getId())) {
             return $this->redirect($this->generateUrl('_ctp_example_cart'));
         }
 
-        $this->orderManager->createOrderFromCart($request->getLocale(), $cart);
+        $initialState = $markingStoreOrderState->getMarking(Order::of());
+        $initialStateKey = current(array_keys($initialState->getPlaces()));
 
-        return $this->render('ExampleBundle:cart:cartSuccess.html.twig');
+        $stateId = $stateKeyResolver->resolveKey($initialStateKey);
+
+        $order = $this->orderManager->createOrderFromCart($request->getLocale(), $cart, StateReference::ofId($stateId));
+
+        return $this->render('ExampleBundle:cart:cartSuccess.html.twig', [
+            'orderId' => $order->getId()
+        ]);
     }
 
 
