@@ -25,7 +25,8 @@ class OrderSubscriber implements EventSubscriberInterface
     {
         return [
             OrderCreateEvent::class => 'onOrderCreate',
-            OrderPostCreateEvent::class => 'onOrderPostCreate'
+            OrderPostCreateEvent::class => 'onOrderPostCreate',
+            OrderPaymentEvent::class => 'addPayment'
         ];
     }
 
@@ -39,4 +40,6 @@ class OrderSubscriber implements EventSubscriberInterface
         $this->session->remove(CartRepository::CART_ID);
         $this->session->remove(CartRepository::CART_ITEM_COUNT);
     }
+
+
 }

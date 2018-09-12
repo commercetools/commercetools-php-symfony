@@ -53,6 +53,10 @@ class CheckoutController extends Controller
 
     /**
      * CheckoutController constructor.
+     * @param Client $client
+     * @param CartManager $cartManager
+     * @param ShippingMethodManager $shippingMethodManager
+     * @param OrderManager $orderManager
      */
     public function __construct(
         Client $client,
@@ -87,15 +91,12 @@ class CheckoutController extends Controller
         );
     }
 
-    public function shippingMethodAction(Request $request, UserInterface $user = null)
+    public function shippingMethodAction(Request $request, SessionInterface $session, UserInterface $user = null)
     {
-        $session = $this->get('session');
         $cartId = $session->get(CartRepository::CART_ID);
         $shippingMethods = $this->shippingMethodManager->getShippingMethodByCart($request->getLocale(), $cartId);
 
-        $customerId = is_null($user) ? null : $user->getId();
-
-        $cart = $this->cartManager->getCart($request->getLocale(), $cartId, $customerId);
+        $cart = $this->cartManager->getCart($request->getLocale(), $cartId, $user, $session->getId());
 
         if (is_null($cart->getId())) {
             return $this->redirect($this->generateUrl('_ctp_example_cart'));
@@ -140,16 +141,10 @@ class CheckoutController extends Controller
         ]);
     }
 
-
-
-    public function confirmationAction(Request $request, UserInterface $user = null)
+    public function reviewOrderDetailsAction(Request $request, SessionInterface $session, UserInterface $user = null)
     {
-        $session = $this->get('session');
-
         $cartId = $session->get(CartRepository::CART_ID);
-        $customerId = is_null($user) ? null : $user->getId();
-
-        $cart = $this->cartManager->getCart($request->getLocale(), $cartId, $customerId);
+        $cart = $this->cartManager->getCart($request->getLocale(), $cartId, $user, $session->getId());
 
         if (is_null($cart->getId())) {
             return $this->redirect($this->generateUrl('_ctp_example_cart'));
@@ -171,9 +166,7 @@ class CheckoutController extends Controller
         SessionInterface $session
     ) {
         $cartId = $session->get(CartRepository::CART_ID);
-        $customerId = is_null($user) ? null : $user->getId();
-
-        $cart = $this->cartManager->getCart($request->getLocale(), $cartId, $customerId);
+        $cart = $this->cartManager->getCart($request->getLocale(), $cartId, $user, $session->getId());
 
         if (is_null($cart->getId())) {
             return $this->redirect($this->generateUrl('_ctp_example_cart'));
@@ -192,28 +185,20 @@ class CheckoutController extends Controller
     }
 
 
-    public function setAddressAction(Request $request, UserInterface $user = null)
+
+
+    public function setAddressAction(Request $request, SessionInterface $session, UserInterface $user = null)
     {
-        $customerId = null;
-        $customer = null;
-
-        if (!is_null($user)){
-            $customerId = $user->getId();
-            $customer = $user;
-        }
-
-        $session = $this->get('session');
         $cartId = $session->get(CartRepository::CART_ID);
-        $cart = $this->cartManager->getCart($request->getLocale(), $cartId, $customerId);
-
+        $cart = $this->cartManager->getCart($request->getLocale(), $cartId, $user, $session->getId());
 
         if (is_null($cart->getId())) {
             return $this->redirect($this->generateUrl('_ctp_example_cart'));
         }
 
         $entity = CartEntity::ofCart($cart);
-        if (!is_null($customer) && count(array_diff_key($cart->getShippingAddress()->toArray(), ['country' => true])) == 0 ) {
-            $address = $customer->getDefaultShippingAddress();
+        if (!is_null($user) && count(array_diff_key($cart->getShippingAddress()->toArray(), ['country' => true])) == 0 ) {
+            $address = $user->getDefaultShippingAddress();
             $entity->shippingAddress = $address->toArray();
         }
 
@@ -247,14 +232,12 @@ class CheckoutController extends Controller
                 ->setBillingAddress(CartSetBillingAddressAction::of()->setAddress($billingAddress));
             $cartBuilder->flush();
 
-
             if (!is_null($cart)) {
                 return $this->redirect($this->generateUrl('_ctp_example_checkout_shipping'));
             }
         }
 
-        return $this->render('ExampleBundle:checkout:checkout.html.twig',
-        [
+        return $this->render('ExampleBundle:checkout:checkout.html.twig', [
             'form' => $form->createView(),
         ]);
     }

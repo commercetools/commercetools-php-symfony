@@ -15,6 +15,7 @@ use Commercetools\Symfony\CartBundle\Event\CartUpdateEvent;
 use Commercetools\Symfony\CartBundle\Manager\CartManager;
 use Commercetools\Symfony\CartBundle\Model\CartUpdateBuilder;
 use Commercetools\Symfony\CartBundle\Model\Repository\CartRepository;
+use Commercetools\Symfony\CustomerBundle\Security\User\User;
 use PHPUnit\Framework\TestCase;
 use Prophecy\Argument;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
@@ -90,12 +91,15 @@ class CartManagerTest extends TestCase
     {
         $repository = $this->prophesize(CartRepository::class);
         $dispatcher = $this->prophesize(EventDispatcherInterface::class);
+        $user = $this->prophesize(User::class);
 
-        $repository->getCart('en', '123', null, null)
+        $repository->getCart('en', '123', 'user-id-1', null)
             ->willReturn(Cart::of())->shouldBeCalled();
 
+        $user->getId()->willReturn('user-id-1')->shouldBeCalled();
+
         $manager = new CartManager($repository->reveal(), $dispatcher->reveal());
-        $cart = $manager->getCart('en', '123', null);
+        $cart = $manager->getCart('en', '123', $user->reveal());
 
         $this->assertInstanceOf(Cart::class, $cart);
     }
@@ -105,12 +109,12 @@ class CartManagerTest extends TestCase
         $repository = $this->prophesize(CartRepository::class);
         $dispatcher = $this->prophesize(EventDispatcherInterface::class);
 
-        $repository->getCart('en', '123', null, null)
+        $repository->getCart('en', '123', null, 'anon-1')
             ->willReturn(null)->shouldBeCalled();
 
         $manager = new CartManager($repository->reveal(), $dispatcher->reveal());
-        $cart = $manager->getCart('en', '123', null);
+        $cart = $manager->getCart('en', '123', null, 'anon-1');
 
-        $this->assertInstanceOf(Cart::class, $cart);
+        $this->assertNull($cart);
     }
 }

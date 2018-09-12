@@ -4,15 +4,16 @@
 
 namespace Commercetools\Symfony\ExampleBundle\Controller;
 
+use Commercetools\Core\Model\Cart\Cart;
 use Commercetools\Core\Model\Customer\CustomerReference;
 use Commercetools\Core\Model\Order\Order;
 use Commercetools\Core\Model\Order\OrderCollection;
 use Commercetools\Core\Model\Payment\Payment;
-use Commercetools\Core\Model\Payment\PaymentReference;
 use Commercetools\Core\Model\Payment\PaymentStatus;
 use Commercetools\Core\Model\State\StateReference;
-use Commercetools\Core\Request\Orders\Command\OrderAddPaymentAction;
+use Commercetools\Symfony\CartBundle\Manager\CartManager;
 use Commercetools\Symfony\CartBundle\Manager\PaymentManager;
+use Commercetools\Symfony\CartBundle\Model\Repository\CartRepository;
 use Commercetools\Symfony\StateBundle\Cache\StateKeyResolver;
 use Commercetools\Symfony\StateBundle\Model\CtpMarkingStorePaymentState;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
@@ -68,8 +69,7 @@ class PaymentController extends Controller
         $payment = $payments->current();
 
         if (!$payment instanceof Payment) {
-//            $this->addFlash('error', 'Cannot find payment');
-//            return $this->render('@Example/index.html.twig');
+            $this->addFlash('error', sprintf('Cannot find payment: %s', $paymentId));
             return new Response();
         }
 
@@ -89,11 +89,11 @@ class PaymentController extends Controller
      * @param StateKeyResolver $stateKeyResolver
      * @return \Symfony\Component\HttpFoundation\RedirectResponse|\Symfony\Component\HttpFoundation\Response
      */
-    public function createPaymentAction(
+    public function createPaymentForOrderAction(
         Request $request,
         SessionInterface $session,
         UserInterface $user = null,
-        $orderId,
+        $orderId = null,
         OrderManager $orderManager,
         CtpMarkingStorePaymentState $markingStore,
         StateKeyResolver $stateKeyResolver
@@ -126,10 +126,10 @@ class PaymentController extends Controller
             ->setState(StateReference::ofId($stateId));
 
         if(is_null($user)){
-            $payment = $this->manager->createPaymentForAnonymous($request->getLocale(), $order->getTotalPrice(), $session->getId(), $paymentStatus);
+            $payment = $this->manager->createPaymentForAnonymous($request->getLocale(), $order->getTotalPrice(), $session->getId(), $paymentStatus, $order);
         } else {
             $customerReference = CustomerReference::ofId($user->getId());
-            $payment = $this->manager->createPaymentForCustomer($request->getLocale(), $order->getTotalPrice(), $customerReference, $paymentStatus);
+            $payment = $this->manager->createPaymentForCustomer($request->getLocale(), $order->getTotalPrice(), $customerReference, $paymentStatus, $order);
         }
 
         if (!$payment instanceof Payment) {
@@ -137,14 +137,49 @@ class PaymentController extends Controller
             return $this->render('@Example/index.html.twig');
         }
 
-        $orderBuilder = $orderManager->update($order);
-        $orderBuilder->addAction(
-            OrderAddPaymentAction::of()->setPayment(PaymentReference::ofId($payment->getId()))
-        );
-
-        $orderBuilder->flush();
-
         return $this->redirect($this->generateUrl('_ctp_example_order', ['orderId' => $orderId]));
+    }
+
+    public function createPaymentForCartAction(
+        Request $request,
+        SessionInterface $session,
+        UserInterface $user = null,
+        CartManager $cartManager,
+        CtpMarkingStorePaymentState $markingStore,
+        StateKeyResolver $stateKeyResolver
+    )
+    {
+        $cartId = $session->get(CartRepository::CART_ID);
+
+        $cart = $cartManager->getCart($request->getLocale(), $cartId, $user, $session->getId());
+
+        if (!$cart instanceof Cart) {
+            $this->addFlash('error', 'Error finding cart');
+            return $this->render('@Example/index.html.twig');
+        }
+
+        $initialState = $markingStore->getMarking(Payment::of());
+        $initialStateKey = current(array_keys($initialState->getPlaces()));
+
+        $stateId = $stateKeyResolver->resolveKey($initialStateKey);
+
+        $paymentStatus = PaymentStatus::of()
+            ->setInterfaceText('Paypal')
+            ->setState(StateReference::ofId($stateId));
+
+        if(is_null($user)){
+            $payment = $this->manager->createPaymentForAnonymous($request->getLocale(), $cart->getTotalPrice(), $session->getId(), $paymentStatus);
+        } else {
+            $customerReference = CustomerReference::ofId($user->getId());
+            $payment = $this->manager->createPaymentForCustomer($request->getLocale(), $cart->getTotalPrice(), $customerReference, $paymentStatus);
+        }
+
+        if (!$payment instanceof Payment) {
+            $this->addFlash('error', $payment->getMessage());
+            return $this->render('@Example/index.html.twig');
+        }
+
+        return $this->redirect($this->generateUrl('_ctp_example_checkout_confirm'));
     }
 
     public function updatePaymentAction(Request $request, SessionInterface $session, UserInterface $user = null, $toState, $paymentId)
@@ -175,7 +210,7 @@ class PaymentController extends Controller
             return $this->render('@Example/index.html.twig');
         }
 
-        $workflow->apply($payment, $toState, $this->manager);
+        $workflow->apply($payment, $toState);
 
         return $this->redirect($this->generateUrl('_ctp_example_order', ['orderId' => $request->get('orderId')]));
 

@@ -51,6 +51,7 @@ class OrderRepository extends Repository
             $request->where('id = "' . $orderId . '"');
         }
 
+        // TODO refactor to return ->current() ?
         return $this->executeRequest($request, $locale);
     }
 
@@ -67,9 +68,7 @@ class OrderRepository extends Repository
             ->setOrderNumber($this->createOrderNumber())
             ->setState($stateReference);
 
-        $order = $this->executeRequest($request, $locale);
-
-        return $order;
+        return $this->executeRequest($request, $locale);
     }
 
     /**

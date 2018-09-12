@@ -5,8 +5,10 @@
 namespace Commercetools\Symfony\CartBundle\Manager;
 
 use Commercetools\Core\Model\Common\Money;
+use Commercetools\Core\Model\Common\Resource;
 use Commercetools\Core\Model\Customer\CustomerReference;
 use Commercetools\Core\Model\Payment\Payment;
+use Commercetools\Core\Model\Payment\PaymentCollection;
 use Commercetools\Core\Model\Payment\PaymentStatus;
 use Commercetools\Core\Request\AbstractAction;
 use Commercetools\Symfony\CartBundle\Event\PaymentCreateEvent;
@@ -54,7 +56,7 @@ class PaymentManager
      * @param $locale
      * @param $paymentId
      * @param CustomerReference $customer
-     * @return \Commercetools\Core\Model\Payment\PaymentCollection
+     * @return PaymentCollection
      */
     public function getPaymentForCustomer($locale, $paymentId, CustomerReference $customer)
     {
@@ -65,7 +67,7 @@ class PaymentManager
      * @param $locale
      * @param $paymentId
      * @param $anonymousId
-     * @return \Commercetools\Core\Model\Payment\PaymentCollection
+     * @return PaymentCollection
      */
     public function getPaymentForAnonymous($locale, $paymentId, $anonymousId)
     {
@@ -78,6 +80,7 @@ class PaymentManager
      * @param CustomerReference|null $customerReference
      * @param null $anonymousId
      * @param PaymentStatus|null $paymentStatus
+     * @param Resource $belongsTo
      * @return Payment
      */
     public function createPayment(
@@ -85,14 +88,15 @@ class PaymentManager
         Money $amountPlanned,
         CustomerReference $customerReference = null,
         $anonymousId = null,
-        PaymentStatus $paymentStatus = null
+        PaymentStatus $paymentStatus = null,
+        Resource $belongsTo
     ) {
         $event = new PaymentCreateEvent();
         $this->dispatcher->dispatch(PaymentCreateEvent::class, $event);
 
         $payment = $this->repository->createPayment($locale, $amountPlanned, $customerReference, $anonymousId, $paymentStatus);
 
-        $eventPost = new PaymentPostCreateEvent($payment);
+        $eventPost = new PaymentPostCreateEvent($payment, $belongsTo);
         $this->dispatcher->dispatch(PaymentPostCreateEvent::class, $eventPost);
 
         return $payment;
@@ -103,11 +107,12 @@ class PaymentManager
      * @param Money $amountPlanned
      * @param CustomerReference $customerReference
      * @param PaymentStatus|null $paymentStatus
+     * @param Resource $belongsTo
      * @return Payment
      */
-    public function createPaymentForCustomer($locale, Money $amountPlanned, CustomerReference $customerReference, PaymentStatus $paymentStatus = null)
+    public function createPaymentForCustomer($locale, Money $amountPlanned, CustomerReference $customerReference, PaymentStatus $paymentStatus = null, Resource $belongsTo)
     {
-        return $this->createPayment($locale, $amountPlanned, $customerReference, null, $paymentStatus);
+        return $this->createPayment($locale, $amountPlanned, $customerReference, null, $paymentStatus, $belongsTo);
     }
 
     /**
@@ -115,11 +120,12 @@ class PaymentManager
      * @param Money $amountPlanned
      * @param $anonymousId
      * @param PaymentStatus|null $paymentStatus
+     * @param Resource $belongsTo
      * @return Payment
      */
-    public function createPaymentForAnonymous($locale, Money $amountPlanned, $anonymousId, PaymentStatus $paymentStatus = null)
+    public function createPaymentForAnonymous($locale, Money $amountPlanned, $anonymousId, PaymentStatus $paymentStatus = null, Resource $belongsTo)
     {
-        return $this->createPayment($locale, $amountPlanned, null, $anonymousId, $paymentStatus);
+        return $this->createPayment($locale, $amountPlanned, null, $anonymousId, $paymentStatus, $belongsTo);
     }
 
 

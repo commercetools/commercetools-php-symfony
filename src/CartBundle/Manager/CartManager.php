@@ -17,6 +17,7 @@ use Commercetools\Symfony\CartBundle\Event\CartUpdateEvent;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Commercetools\Symfony\CartBundle\Model\Repository\CartRepository;
 use Commercetools\Symfony\CartBundle\Model\CartUpdateBuilder;
+use Symfony\Component\Security\Core\User\UserInterface;
 
 class CartManager
 {
@@ -44,23 +45,16 @@ class CartManager
     /**
      * @param $locale
      * @param null $cartId
-     * @param null $customerId
+     * @param UserInterface|null $user
      * @param null $anonymousId
      * @return Cart|null
      */
-    public function getCart($locale, $cartId = null, $customerId = null, $anonymousId = null)
+    public function getCart($locale, $cartId = null, UserInterface $user = null, $anonymousId = null)
     {
+        $customerId = is_null($user) ? null : $user->getId();
         $cart = $this->repository->getCart($locale, $cartId, $customerId, $anonymousId);
 
-        if (!is_null($cart)){
-            $event = new CartGetEvent($cart);
-            $this->dispatcher->dispatch(CartGetEvent::class, $event);
-
-        } else {
-            $cart = Cart::of(); // this temporary helps on the template
-            $event = new CartNotFoundEvent();
-            $this->dispatcher->dispatch(CartNotFoundEvent::class, $event);
-        }
+        $this->dispatchPostGet($cart);
 
         return $cart;
     }
@@ -137,5 +131,19 @@ class CartManager
         $event = $this->dispatcher->dispatch(CartPostUpdateEvent::class, $event);
 
         return $event->getActions();
+    }
+
+    /**
+     * @param Cart|null $cart
+     */
+    public function dispatchPostGet(Cart $cart = null)
+    {
+        if (is_null($cart)){
+            $event = new CartNotFoundEvent();
+            $this->dispatcher->dispatch(CartNotFoundEvent::class, $event);
+        } else {
+            $event = new CartGetEvent($cart);
+            $this->dispatcher->dispatch(CartGetEvent::class, $event);
+        }
     }
 }

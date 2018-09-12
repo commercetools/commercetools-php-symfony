@@ -71,7 +71,7 @@ _ctp_example_checkout_address:
 
 _ctp_example_checkout_confirm:
     path: /checkout/address/confirm
-    defaults: { _controller: Commercetools\Symfony\ExampleBundle\Controller\CheckoutController::confirmationAction }
+    defaults: { _controller: Commercetools\Symfony\ExampleBundle\Controller\CheckoutController::reviewOrderDetailsAction }
 
 _ctp_example_add_lineItem:
     path: /cart/add
@@ -94,8 +94,12 @@ _ctp_example_checkout_guest:
     defaults: { _controller: Commercetools\Symfony\ExampleBundle\Controller\CheckoutController::setAddressAction }
 
 _ctp_example_checkout_success:
-    path: /checkout/succes
+    path: /checkout/success
     defaults: { _controller: Commercetools\Symfony\ExampleBundle\Controller\CheckoutController::successAction }
+
+_ctp_example_checkout_payment:
+    path: /checkout/success
+    defaults: { _controller: Commercetools\Symfony\ExampleBundle\Controller\PaymentController::createPaymentForCartAction }
 
 _ctp_example_orders_all:
     path: /orders/
@@ -119,7 +123,7 @@ _ctp_example_order_toCreated:
 
 _ctp_example_order_toPaid:
     path: /orders/{orderId}/payment
-    defaults: { _controller: Commercetools\Symfony\ExampleBundle\Controller\PaymentController::createPaymentAction }
+    defaults: { _controller: Commercetools\Symfony\ExampleBundle\Controller\PaymentController::createPaymentForOrderAction }
 
 
 _ctp_example_order_toReadyToShip:

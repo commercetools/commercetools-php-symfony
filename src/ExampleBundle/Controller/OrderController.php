@@ -37,6 +37,9 @@ class OrderController extends Controller
      */
     private $workflows;
 
+    /**
+     * @var PaymentManager
+     */
     private $paymentManager;
 
     /**
@@ -44,6 +47,7 @@ class OrderController extends Controller
      * @param Client $client
      * @param OrderManager $manager
      * @param Registry $workflows
+     * @param PaymentManager $paymentManager
      */
     public function __construct(Client $client, OrderManager $manager, Registry $workflows, PaymentManager $paymentManager)
     {
@@ -51,18 +55,6 @@ class OrderController extends Controller
         $this->manager = $manager;
         $this->workflows = $workflows;
         $this->paymentManager = $paymentManager;
-    }
-
-
-    protected function getCustomerId()
-    {
-        $user = $this->getUser();
-        if (is_null($user)) {
-            return null;
-        }
-        $customerId = $user->getId();
-
-        return $customerId;
     }
 
     public function indexAction(Request $request, SessionInterface $session, UserInterface $user = null)
@@ -159,7 +151,7 @@ class OrderController extends Controller
         }
 
         if ($workflow->can($order, $toState)) {
-            $workflow->apply($order, $toState, $this->manager);
+            $workflow->apply($order, $toState);
             return $this->redirect($this->generateUrl('_ctp_example_order', ['orderId' => $orderId]));
         }
 

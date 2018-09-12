@@ -6,6 +6,7 @@ namespace Commercetools\Symfony\CartBundle\Model\Repository;
 
 
 use Commercetools\Core\Builder\Request\RequestBuilder;
+use Commercetools\Core\Error\InvalidArgumentException;
 use Commercetools\Core\Model\Common\Money;
 use Commercetools\Core\Model\Customer\CustomerReference;
 use Commercetools\Core\Model\Payment\Payment;
@@ -44,6 +45,8 @@ class PaymentRepository extends Repository
             $request->where('id = "' . $paymentId . '" and customer(id = "' . $customer->getId() . '")');
         } elseif (!is_null($anonymousId)) {
             $request->where('id = "' . $paymentId . '" and anonymousId = "' . $anonymousId . '"');
+        } else {
+            throw new InvalidArgumentException('At least one of CustomerId or AnonymousId should be present');
         }
 
         return $this->executeRequest($request, $locale);
