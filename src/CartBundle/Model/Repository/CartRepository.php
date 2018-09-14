@@ -15,6 +15,7 @@ use Commercetools\Core\Model\Cart\Cart;
 use Commercetools\Core\Model\Cart\CartDraft;
 use Commercetools\Core\Model\Cart\LineItemDraftCollection;
 use Commercetools\Core\Model\Common\Address;
+use Symfony\Component\Security\Core\User\UserInterface;
 
 
 class CartRepository extends Repository
@@ -25,11 +26,11 @@ class CartRepository extends Repository
     /**
      * @param $locale
      * @param null $cartId
-     * @param null $customerId
+     * @param UserInterface|null $user
      * @param null $anonymousId
      * @return mixed
      */
-    public function getCart($locale, $cartId = null, $customerId = null, $anonymousId = null)
+    public function getCart($locale, $cartId = null, UserInterface $user = null, $anonymousId = null)
     {
         $cartRequest = RequestBuilder::of()->carts()->query();
 
@@ -39,8 +40,8 @@ class CartRepository extends Repository
             $predicate .= ' and id = "' . $cartId . '"';
         }
 
-        if (!is_null($customerId)) {
-            $predicate .= ' and customerId = "' . $customerId . '"';
+        if (!is_null($user)) {
+            $predicate .= ' and customerId = "' . $user->getId() . '"';
         } elseif (!is_null($anonymousId)) {
             $predicate .= ' and anonymousId = "' . $anonymousId . '"';
         }
@@ -48,9 +49,8 @@ class CartRepository extends Repository
         $cartRequest->where($predicate)->limit(1);
 
         $carts = $this->executeRequest($cartRequest, $locale);
-        $cart = $carts->current();
 
-        return $cart;
+        return $carts->current();
     }
 
     /**

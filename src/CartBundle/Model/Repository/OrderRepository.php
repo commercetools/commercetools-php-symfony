@@ -6,28 +6,33 @@ namespace Commercetools\Symfony\CartBundle\Model\Repository;
 
 
 use Commercetools\Core\Builder\Request\RequestBuilder;
+use Commercetools\Core\Error\InvalidArgumentException;
 use Commercetools\Core\Model\Cart\Cart;
 use Commercetools\Core\Model\Order\Order;
 use Commercetools\Core\Model\Order\OrderCollection;
 use Commercetools\Core\Model\State\StateReference;
 use Commercetools\Symfony\CtpBundle\Model\QueryParams;
 use Commercetools\Symfony\CtpBundle\Model\Repository;
+use Symfony\Component\Security\Core\User\UserInterface;
 
 class OrderRepository extends Repository
 {
     /**
      * @param $locale
-     * @param $customerId
+     * @param UserInterface|null $user
+     * @param null $anonymousId
      * @return OrderCollection
      */
-    public function getOrders($locale, $customerId, $anonymousId = null)
+    public function getOrders($locale, UserInterface $user = null, $anonymousId = null)
     {
         $request = RequestBuilder::of()->orders()->query();
 
-        if (!is_null($customerId)) {
-            $request->where('customerId = "' . $customerId . '"');
+        if (!is_null($user)) {
+            $request->where('customerId = "' . $user->getId() . '"');
         } elseif (!is_null($anonymousId)) {
             $request->where('anonymousId = "' . $anonymousId . '"');
+        } else {
+            throw new InvalidArgumentException('At least one of CustomerId or AnonymousId should be present');
         }
         $request->sort('createdAt desc');
 
@@ -37,22 +42,52 @@ class OrderRepository extends Repository
     /**
      * @param $locale
      * @param $orderId
-     * @return OrderCollection
+     * @param UserInterface|null $user
+     * @param null $anonymousId
+     * @return Order
      */
-    public function getOrder($locale, $orderId, $customerId = null, $anonymousId = null)
+    public function getOrder($locale, $orderId, UserInterface $user = null, $anonymousId = null)
     {
         $request = RequestBuilder::of()->orders()->query();
 
-        if (!is_null($customerId)) {
-            $request->where('id = "' . $orderId . '" and customerId = "' . $customerId . '"');
+        if (!is_null($user)) {
+            $request->where('id = "' . $orderId . '" and customerId = "' . $user->getId() . '"');
         } else if (!is_null($anonymousId)) {
             $request->where('id = "' . $orderId . '" and anonymousId = "' . $anonymousId . '"');
         } else {
-            $request->where('id = "' . $orderId . '"');
+            throw new InvalidArgumentException('At least one of CustomerId or AnonymousId should be present');
         }
 
-        // TODO refactor to return ->current() ?
-        return $this->executeRequest($request, $locale);
+        $orders = $this->executeRequest($request, $locale);
+
+        return $orders->current();
+    }
+
+    /**
+     * @param $locale
+     * @param $paymentId
+     * @param UserInterface|null $user
+     * @param null $anonymousId
+     * @return mixed
+     */
+    public function getOrderFromPayment($locale, $paymentId, UserInterface $user = null, $anonymousId = null)
+    {
+        $request = RequestBuilder::of()->orders()->query();
+
+        $predicate = 'paymentInfo(payments(id = "' . $paymentId . '"))';
+
+        if (!is_null($user)) {
+            $predicate .= ' and customerId = "' . $user->getId() . '"';
+        } elseif (!is_null($anonymousId)) {
+            $predicate .= ' and anonymousId = "' . $user->getId() . '"';
+        } else {
+            throw new InvalidArgumentException('At least one of CustomerId or AnonymousId should be preset');
+        }
+
+        $request->where($predicate);
+        $orders = $this->executeRequest($request, $locale);
+
+        return $orders->current();
     }
 
     /**

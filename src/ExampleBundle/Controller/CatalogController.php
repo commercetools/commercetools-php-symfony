@@ -15,6 +15,7 @@ use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Commercetools\Symfony\ShoppingListBundle\Manager\ShoppingListManager;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Commercetools\Core\Model\Customer\CustomerReference;
 use Commercetools\Core\Model\ShoppingList\ShoppingList;
@@ -85,7 +86,12 @@ class CatalogController extends Controller
         $country = $this->getCountryFromConfig();
         $currency = $this->getCurrencyFromConfig();
 
-        $product = $this->catalogManager->getProductBySlug($slug, $request->getLocale(), $currency, $country);
+        try {
+            $product = $this->catalogManager->getProductBySlug($slug, $request->getLocale(), $currency, $country);
+        } catch (NotFoundHttpException $e) {
+            $this->addFlash('error', sprintf('Cannot find product: %s', $slug));
+            return $this->render('@Example/index.html.twig');
+        }
 
         return $this->productDetails($request, $product, $user);
     }

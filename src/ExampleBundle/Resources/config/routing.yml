@@ -93,12 +93,12 @@ _ctp_example_checkout_guest:
     path: /checkout/quest
     defaults: { _controller: Commercetools\Symfony\ExampleBundle\Controller\CheckoutController::setAddressAction }
 
-_ctp_example_checkout_success:
-    path: /checkout/success
-    defaults: { _controller: Commercetools\Symfony\ExampleBundle\Controller\CheckoutController::successAction }
+_ctp_example_checkout_place-order:
+    path: /checkout/place-order
+    defaults: { _controller: Commercetools\Symfony\ExampleBundle\Controller\CheckoutController::placeCartToOrderAction }
 
 _ctp_example_checkout_payment:
-    path: /checkout/success
+    path: /checkout/payment
     defaults: { _controller: Commercetools\Symfony\ExampleBundle\Controller\PaymentController::createPaymentForCartAction }
 
 _ctp_example_orders_all:

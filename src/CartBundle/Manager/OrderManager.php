@@ -7,6 +7,7 @@ namespace Commercetools\Symfony\CartBundle\Manager;
 use Commercetools\Core\Model\Cart\Cart;
 use Commercetools\Core\Model\Order\Order;
 use Commercetools\Core\Model\Order\OrderCollection;
+use Commercetools\Core\Model\Payment\Payment;
 use Commercetools\Core\Model\State\StateReference;
 use Commercetools\Core\Request\AbstractAction;
 use Commercetools\Symfony\CartBundle\Event\OrderCreateEvent;
@@ -16,6 +17,7 @@ use Commercetools\Symfony\CartBundle\Event\OrderUpdateEvent;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Commercetools\Symfony\CartBundle\Model\Repository\OrderRepository;
 use Commercetools\Symfony\CartBundle\Model\OrderUpdateBuilder;
+use Symfony\Component\Security\Core\User\UserInterface;
 
 class OrderManager
 {
@@ -42,54 +44,37 @@ class OrderManager
 
     /**
      * @param $locale
-     * @param $customerId
+     * @param UserInterface|null $user
+     * @param null $anonymousId
      * @return OrderCollection
      */
-    public function getOrdersForCustomer($locale, $customerId)
+    public function getOrdersForUser($locale, UserInterface $user = null, $anonymousId = null)
     {
-        return $this->repository->getOrders($locale, $customerId);
-    }
-
-    /**
-     * @param $locale
-     * @param $anonymousId
-     * @return OrderCollection
-     */
-    public function getOrdersForAnonymous($locale, $anonymousId)
-    {
-        return $this->repository->getOrders($locale, null, $anonymousId);
-    }
-
-    /**
-     * @param $locale
-     * @param $customerId
-     * @param $orderId
-     * @return OrderCollection
-     */
-    public function getOrderForCustomer($locale, $customerId, $orderId)
-    {
-        return $this->repository->getOrder($locale, $orderId, $customerId);
-    }
-
-    /**
-     * @param $locale
-     * @param $anonymousId
-     * @param $orderId
-     * @return OrderCollection
-     */
-    public function getOrderForAnonymous($locale, $anonymousId, $orderId)
-    {
-        return $this->repository->getOrder($locale, $orderId, null, $anonymousId);
+        return $this->repository->getOrders($locale, $user, $anonymousId);
     }
 
     /**
      * @param $locale
      * @param $orderId
-     * @return OrderCollection
+     * @param UserInterface|null $user
+     * @param null $anonymousId
+     * @return Order
      */
-    public function getOrderById($locale, $orderId)
+    public function getOrderForUser($locale, $orderId, UserInterface $user = null, $anonymousId = null)
     {
-        return $this->repository->getOrder($locale, $orderId);
+        return $this->repository->getOrder($locale, $orderId, $user, $anonymousId);
+    }
+
+    /**
+     * @param $locale
+     * @param $paymentId
+     * @param UserInterface|null $user
+     * @param null $anonymousId
+     * @return mixed
+     */
+    public function getOrderFromPayment($locale, $paymentId, UserInterface $user = null, $anonymousId = null)
+    {
+        return $this->repository->getOrderFromPayment($locale, $paymentId, $user, $anonymousId);
     }
 
     /**

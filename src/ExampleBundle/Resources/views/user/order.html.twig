@@ -77,12 +77,10 @@
         <div class="col-md-12 order-box">
             <h5>Payments</h5>
 
-                {% if order.paymentInfo is not null %}
+                {% if payments is not empty %}
                     <table>
-                        {% for payment in order.paymentInfo.payments %}
-                            {{ render(controller(
-                                'ExampleBundle:Payment:getPayment', {'paymentId': payment.id, 'orderId': order.id}
-                            )) }}
+                        {% for payment in payments %}
+                            {% include 'ExampleBundle:partials:paymentInfo.html.twig' with {payment: payment, orderId: order.id} %}
                         {% endfor %}
                     </table>
 

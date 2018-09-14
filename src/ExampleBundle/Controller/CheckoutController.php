@@ -8,6 +8,7 @@ use Commercetools\Core\Client;
 use Commercetools\Core\Model\Common\Address;
 use Commercetools\Core\Model\Order\Order;
 use Commercetools\Core\Model\ShippingMethod\ShippingMethod;
+use Commercetools\Core\Model\ShippingMethod\ShippingMethodReference;
 use Commercetools\Core\Model\State\StateReference;
 use Commercetools\Core\Request\Carts\Command\CartSetBillingAddressAction;
 use Commercetools\Core\Request\Carts\Command\CartSetShippingAddressAction;
@@ -16,7 +17,6 @@ use Commercetools\Symfony\CartBundle\Manager\CartManager;
 use Commercetools\Symfony\CartBundle\Manager\OrderManager;
 use Commercetools\Symfony\CartBundle\Manager\ShippingMethodManager;
 use Commercetools\Symfony\CartBundle\Entity\CartEntity;
-use Commercetools\Symfony\CustomerBundle\Security\User\User;
 use Commercetools\Symfony\ExampleBundle\Model\Form\Type\AddressType;
 use Commercetools\Symfony\CartBundle\Model\Repository\CartRepository;
 use Commercetools\Symfony\StateBundle\Cache\StateKeyResolver;
@@ -124,10 +124,11 @@ class CheckoutController extends Controller
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $shippingMethod = $this->shippingMethodManager->getShippingMethodById($request->getLocale(), $form->get('name')->getData());
             $cartBuilder = $this->cartManager->update($cart);
             $cartBuilder->setActions([
-                CartSetShippingMethodAction::of()->setShippingMethod($shippingMethod->getReference())
+                CartSetShippingMethodAction::of()->setShippingMethod(
+                    ShippingMethodReference::ofId($form->get('name')->getData())
+                )
             ]);
 
             $cartBuilder->flush();
@@ -146,22 +147,19 @@ class CheckoutController extends Controller
         $cartId = $session->get(CartRepository::CART_ID);
         $cart = $this->cartManager->getCart($request->getLocale(), $cartId, $user, $session->getId());
 
-        if (is_null($cart->getId())) {
+        if (is_null($cart) || is_null($cart->getId())) {
             return $this->redirect($this->generateUrl('_ctp_example_cart'));
         }
 
-        return $this->render('ExampleBundle:cart:cartConfirm.html.twig',
-            [
-                'cart' => $cart,
-                'customer' => $user,
-            ]
-        );
+        return $this->render('ExampleBundle:cart:cartConfirm.html.twig', [
+            'cart' => $cart,
+            'customer' => $user,
+        ]);
     }
 
-    public function successAction(
+    public function placeCartToOrderAction(
         Request $request,
         UserInterface $user = null,
-        StateKeyResolver $stateKeyResolver,
         CtpMarkingStoreOrderState $markingStoreOrderState,
         SessionInterface $session
     ) {
@@ -172,20 +170,14 @@ class CheckoutController extends Controller
             return $this->redirect($this->generateUrl('_ctp_example_cart'));
         }
 
-        $initialState = $markingStoreOrderState->getMarking(Order::of());
-        $initialStateKey = current(array_keys($initialState->getPlaces()));
-
-        $stateId = $stateKeyResolver->resolveKey($initialStateKey);
-
-        $order = $this->orderManager->createOrderFromCart($request->getLocale(), $cart, StateReference::ofId($stateId));
+        $order = $this->orderManager->createOrderFromCart(
+            $request->getLocale(), $cart, $markingStoreOrderState->getStateReferenceOfInitialState()
+        );
 
         return $this->render('ExampleBundle:cart:cartSuccess.html.twig', [
             'orderId' => $order->getId()
         ]);
     }
-
-
-
 
     public function setAddressAction(Request $request, SessionInterface $session, UserInterface $user = null)
     {
@@ -230,7 +222,7 @@ class CheckoutController extends Controller
             $cartBuilder
                 ->setShippingAddress(CartSetShippingAddressAction::of()->setAddress($shippingAddress))
                 ->setBillingAddress(CartSetBillingAddressAction::of()->setAddress($billingAddress));
-            $cartBuilder->flush();
+            $cart = $cartBuilder->flush();
 
             if (!is_null($cart)) {
                 return $this->redirect($this->generateUrl('_ctp_example_checkout_shipping'));

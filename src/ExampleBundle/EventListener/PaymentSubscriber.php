@@ -44,42 +44,42 @@ class PaymentSubscriber implements EventSubscriberInterface
     public function onPaymentPostCreate(PaymentPostCreateEvent $event)
     {
         dump(['onPaymentPostCreate', $event]);
-
-        if ($event->getBelongsTo() instanceof Cart) {
-            $cartBuilder = $this->cartManager->update($event->getBelongsTo());
-            $cartBuilder->addAction(
-                CartAddPaymentAction::of()->setPayment(PaymentReference::ofId($event->getPayment()->getId()))
-            );
-
-            $cartBuilder->flush();
-        } elseif ($event->getBelongsTo() instanceof Order) {
-            $orderBuilder = $this->orderManager->update($event->getBelongsTo());
-            $orderBuilder->addAction(
-                OrderAddPaymentAction::of()->setPayment(PaymentReference::ofId($event->getPayment()->getId()))
-            );
-
-            $orderBuilder->flush();
-        }
+//
+//        if ($event->getBelongsTo() instanceof Cart) {
+//            $cartBuilder = $this->cartManager->update($event->getBelongsTo());
+//            $cartBuilder->addAction(
+//                CartAddPaymentAction::of()->setPayment(PaymentReference::ofId($event->getPayment()->getId()))
+//            );
+//
+//            $cartBuilder->flush();
+//        } elseif ($event->getBelongsTo() instanceof Order) {
+//            $orderBuilder = $this->orderManager->update($event->getBelongsTo());
+//            $orderBuilder->addAction(
+//                OrderAddPaymentAction::of()->setPayment(PaymentReference::ofId($event->getPayment()->getId()))
+//            );
+//
+//            $orderBuilder->flush();
+//        }
 
     }
 
     public function onPaymentCompleted(Event $event)
     {
         dump(['onPaymentCompleted', $event]);
-        return;
-        // TODO
-
-        $order = $event->getOrder();
-        $actions = $event->getActions();
-
-        try {
-            $workflow = $this->workflows->get($order);
-        } catch (InvalidArgumentException $e) {
-            return 1;
-        }
-
-        if ($workflow->can($order, 'toPaid')) {
-            $workflow->apply($order, 'toPaid');
-        }
+//
+//        $payment = $event->getSubject();
+//        dump($payment);
+//        $actions = $event->getActions();
+////        return;
+//
+//        try {
+//            $workflow = $this->workflows->get($payment);
+//        } catch (InvalidArgumentException $e) {
+//            return 1;
+//        }
+//
+//        if ($workflow->can($payment, 'toPaid')) {
+//            $workflow->apply($payment, 'toPaid');
+//        }
     }
 }

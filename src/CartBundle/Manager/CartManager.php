@@ -51,8 +51,7 @@ class CartManager
      */
     public function getCart($locale, $cartId = null, UserInterface $user = null, $anonymousId = null)
     {
-        $customerId = is_null($user) ? null : $user->getId();
-        $cart = $this->repository->getCart($locale, $cartId, $customerId, $anonymousId);
+        $cart = $this->repository->getCart($locale, $cartId, $user, $anonymousId);
 
         $this->dispatchPostGet($cart);
 

@@ -93,10 +93,8 @@ class CartManagerTest extends TestCase
         $dispatcher = $this->prophesize(EventDispatcherInterface::class);
         $user = $this->prophesize(User::class);
 
-        $repository->getCart('en', '123', 'user-id-1', null)
+        $repository->getCart('en', '123', $user->reveal(), null)
             ->willReturn(Cart::of())->shouldBeCalled();
-
-        $user->getId()->willReturn('user-id-1')->shouldBeCalled();
 
         $manager = new CartManager($repository->reveal(), $dispatcher->reveal());
         $cart = $manager->getCart('en', '123', $user->reveal());

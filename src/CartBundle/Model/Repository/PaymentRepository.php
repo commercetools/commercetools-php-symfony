@@ -9,6 +9,7 @@ use Commercetools\Core\Builder\Request\RequestBuilder;
 use Commercetools\Core\Error\InvalidArgumentException;
 use Commercetools\Core\Model\Common\Money;
 use Commercetools\Core\Model\Customer\CustomerReference;
+use Commercetools\Core\Model\Order\Order;
 use Commercetools\Core\Model\Payment\Payment;
 use Commercetools\Core\Model\Payment\PaymentCollection;
 use Commercetools\Core\Model\Payment\PaymentDraft;
@@ -49,7 +50,25 @@ class PaymentRepository extends Repository
             throw new InvalidArgumentException('At least one of CustomerId or AnonymousId should be present');
         }
 
-        return $this->executeRequest($request, $locale);
+        $payments = $this->executeRequest($request, $locale);
+
+        return $payments->current();
+    }
+
+    /**
+     * @param $locale
+     * @param array $payments
+     * @return array|mixed
+     */
+    public function getPaymentsForOrder($locale, array $payments)
+    {
+        $request = RequestBuilder::of()->payments()->query();
+
+        $request->where('id in ("'.implode('", "', $payments).'")');
+
+        $payments = $this->executeRequest($request, $locale);
+
+        return $payments;
     }
 
     /**

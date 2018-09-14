@@ -4,7 +4,6 @@
 
 namespace Commercetools\Symfony\CartBundle\Event;
 
-use Commercetools\Core\Model\Common\Resource;
 use Commercetools\Core\Model\Payment\Payment;
 use Symfony\Component\EventDispatcher\Event;
 
@@ -18,20 +17,14 @@ class PaymentPostCreateEvent extends Event
      * @var Payment
      */
     private $payment;
-    /**
-     * @var Resource
-     */
-    private $belongsTo;
 
     /**
      * PaymentPostCreateEvent constructor.
      * @param Payment $payment
-     * @param Resource $belongsTo
      */
-    public function __construct(Payment $payment, Resource $belongsTo = null)
+    public function __construct(Payment $payment)
     {
         $this->payment = $payment;
-        $this->belongsTo = $belongsTo;
     }
 
     /**
@@ -41,14 +34,4 @@ class PaymentPostCreateEvent extends Event
     {
         return $this->payment;
     }
-
-    /**
-     * @return mixed
-     */
-    public function getBelongsTo()
-    {
-        return $this->belongsTo;
-    }
-
-
 }
