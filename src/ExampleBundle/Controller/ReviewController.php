@@ -11,14 +11,12 @@ use Commercetools\Core\Error\InvalidArgumentException;
 use Commercetools\Core\Model\Customer\CustomerReference;
 use Commercetools\Core\Model\Product\ProductReference;
 use Commercetools\Core\Model\Review\Review;
-use Commercetools\Core\Model\Review\ReviewCollection;
 use Commercetools\Symfony\CtpBundle\Model\QueryParams;
 use Commercetools\Symfony\ExampleBundle\Model\Form\Type\AddReviewType;
 use Commercetools\Symfony\ReviewBundle\Manager\ReviewManager;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Workflow\Registry;
 
@@ -52,6 +50,11 @@ class ReviewController extends Controller
         $this->workflows = $workflows;
     }
 
+    /**
+     * @param Request $request
+     * @param $productId
+     * @return \Symfony\Component\HttpFoundation\Response
+     */
     public function showReviewsForProductAction(Request $request, $productId)
     {
         $params = new QueryParams();
@@ -67,6 +70,12 @@ class ReviewController extends Controller
         ]);
     }
 
+    /**
+     * @param Request $request
+     * @param $productId
+     * @param UserInterface|null $user
+     * @return JsonResponse
+     */
     public function createReviewForProductAction(Request $request, $productId, UserInterface $user = null)
     {
         $form = $this->createForm(AddReviewType::class);
@@ -93,7 +102,12 @@ class ReviewController extends Controller
         return new JsonResponse(array('success' => false));
     }
 
-
+    /**
+     * @param Request $request
+     * @param $reviewId
+     * @param UserInterface|null $user
+     * @return \Symfony\Component\HttpFoundation\RedirectResponse|\Symfony\Component\HttpFoundation\Response
+     */
     public function UpdateReviewAction(Request $request, $reviewId, UserInterface $user = null)
     {
         if(is_null($user)){
@@ -117,13 +131,13 @@ class ReviewController extends Controller
             return $this->render('@Example/index.html.twig');
         }
 
-        if ($workflow->can($review, $request->get('toState'))) {
-            $workflow->apply($review, $request->get('toState'));
-            return $this->redirect($this->generateUrl('_ctp_example_product_by_id', ['id' => $review->getTarget()->getid()]));
+        if (!$workflow->can($review, $request->get('toState'))) {
+            $this->addFlash('error', 'Cannot perform this action');
+            return $this->render('@Example/index.html.twig');
         }
 
-        $this->addFlash('error', 'Cannot perform this action');
-        return $this->render('@Example/index.html.twig');
+        $workflow->apply($review, $request->get('toState'));
+        return $this->redirect($this->generateUrl('_ctp_example_product_by_id', ['id' => $review->getTarget()->getid()]));
     }
 
 }

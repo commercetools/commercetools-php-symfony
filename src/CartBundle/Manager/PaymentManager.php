@@ -17,6 +17,7 @@ use Commercetools\Symfony\CartBundle\Event\PaymentUpdateEvent;
 use Commercetools\Symfony\CartBundle\Model\PaymentUpdateBuilder;
 use Commercetools\Symfony\CartBundle\Model\Repository\PaymentRepository;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
+use Symfony\Component\Security\Core\User\UserInterface;
 
 class PaymentManager
 {
@@ -54,15 +55,20 @@ class PaymentManager
     /**
      * @param $locale
      * @param $paymentId
-     * @param CustomerReference $customer
+     * @param UserInterface $user
      * @param string|null $anonymousId
      * @return PaymentCollection
      */
-    public function getPaymentForUser($locale, $paymentId, CustomerReference $customer = null, $anonymousId = null)
+    public function getPaymentForUser($locale, $paymentId, UserInterface $user = null, $anonymousId = null)
     {
-        return $this->repository->getPaymentForUser($locale, $paymentId, $customer, $anonymousId);
+        return $this->repository->getPaymentForUser($locale, $paymentId, $user, $anonymousId);
     }
 
+    /**
+     * @param $locale
+     * @param array $payments
+     * @return array|mixed
+     */
     public function getPaymentsForOrder($locale, array $payments)
     {
         return $this->repository->getPaymentsForOrder($locale, $payments);

@@ -25,8 +25,7 @@ class OrderSubscriber implements EventSubscriberInterface
     {
         return [
             OrderCreateEvent::class => 'onOrderCreate',
-            OrderPostCreateEvent::class => 'onOrderPostCreate',
-            OrderPaymentEvent::class => 'addPayment'
+            OrderPostCreateEvent::class => 'onOrderPostCreate'
         ];
     }
 

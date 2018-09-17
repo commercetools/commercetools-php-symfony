@@ -5,6 +5,7 @@
 namespace Commercetools\Symfony\ShoppingListBundle\Model\Repository;
 
 use Commercetools\Core\Builder\Request\RequestBuilder;
+use Commercetools\Core\Error\InvalidArgumentException;
 use Commercetools\Core\Model\Common\LocalizedString;
 use Commercetools\Core\Model\Customer\CustomerReference;
 use Commercetools\Core\Model\ShoppingList\ShoppingList;
@@ -14,7 +15,6 @@ use Commercetools\Symfony\CtpBundle\Model\Repository;
 use Commercetools\Symfony\CtpBundle\Service\MapperFactory;
 use Commercetools\Core\Client;
 use Psr\Cache\CacheItemPoolInterface;
-use Commercetools\Core\Request\ClientRequestInterface;
 
 class ShoppingListRepository extends Repository
 {
@@ -42,7 +42,9 @@ class ShoppingListRepository extends Repository
             $request->where('id = "' . $shoppingListId . '" and customer(id = "' . $customer->getId() . '")');
         } else if (!is_null($anonymousId)) {
             $request->where('id = "' . $shoppingListId . '" and anonymousId = "' . $anonymousId . '"');
-        } // TODO else throw/raise error
+        } else {
+            throw new InvalidArgumentException('At least one of CustomerReference or AnonymousId should be present');
+        }
 
         return $this->executeRequest($request, $locale, $params);
     }

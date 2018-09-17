@@ -14,13 +14,23 @@ use Symfony\Component\Workflow\Event\Event;
 
 class PaymentStateTransitionHandler implements SubjectHandler
 {
+    /**
+     * @var PaymentManager
+     */
     private $manager;
 
+    /**
+     * PaymentStateTransitionHandler constructor.
+     * @param PaymentManager $manager
+     */
     public function __construct(PaymentManager $manager)
     {
         $this->manager = $manager;
     }
 
+    /**
+     * @param Event $event
+     */
     public function handle(Event $event)
     {
         $subject = $event->getSubject();
@@ -28,7 +38,7 @@ class PaymentStateTransitionHandler implements SubjectHandler
         $orderBuilder->addAction(
             PaymentTransitionStateAction::ofState(
                 StateReference::ofKey(current($event->getTransition()->getTos()))
-            )->setForce(true) // TODO remove force
+            )
         );
 
         $orderBuilder->flush();

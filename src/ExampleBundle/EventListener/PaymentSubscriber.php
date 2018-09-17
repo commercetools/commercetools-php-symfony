@@ -6,14 +6,7 @@
 namespace Commercetools\Symfony\ExampleBundle\EventListener;
 
 
-use Commercetools\Core\Error\InvalidArgumentException;
-use Commercetools\Core\Model\Cart\Cart;
-use Commercetools\Core\Model\Order\Order;
-use Commercetools\Core\Model\Payment\PaymentReference;
-use Commercetools\Core\Request\Carts\Command\CartAddPaymentAction;
-use Commercetools\Core\Request\Orders\Command\OrderAddPaymentAction;
 use Commercetools\Symfony\CartBundle\Event\PaymentPostCreateEvent;
-use Commercetools\Symfony\CartBundle\Event\PaymentPostUpdateEvent;
 use Commercetools\Symfony\CartBundle\Manager\CartManager;
 use Commercetools\Symfony\CartBundle\Manager\OrderManager;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
@@ -22,8 +15,19 @@ use Symfony\Component\Workflow\Registry;
 
 class PaymentSubscriber implements EventSubscriberInterface
 {
+    /**
+     * @var OrderManager
+     */
     private $orderManager;
+
+    /**
+     * @var CartManager
+     */
     private $cartManager;
+
+    /**
+     * @var Registry
+     */
     private $workflows;
 
     public function __construct(OrderManager $orderManager, CartManager $cartManager, Registry $workflows)
@@ -43,43 +47,13 @@ class PaymentSubscriber implements EventSubscriberInterface
 
     public function onPaymentPostCreate(PaymentPostCreateEvent $event)
     {
-        dump(['onPaymentPostCreate', $event]);
-//
-//        if ($event->getBelongsTo() instanceof Cart) {
-//            $cartBuilder = $this->cartManager->update($event->getBelongsTo());
-//            $cartBuilder->addAction(
-//                CartAddPaymentAction::of()->setPayment(PaymentReference::ofId($event->getPayment()->getId()))
-//            );
-//
-//            $cartBuilder->flush();
-//        } elseif ($event->getBelongsTo() instanceof Order) {
-//            $orderBuilder = $this->orderManager->update($event->getBelongsTo());
-//            $orderBuilder->addAction(
-//                OrderAddPaymentAction::of()->setPayment(PaymentReference::ofId($event->getPayment()->getId()))
-//            );
-//
-//            $orderBuilder->flush();
-//        }
-
+//        dump(['onPaymentPostCreate', $event]);
+        return true;
     }
 
     public function onPaymentCompleted(Event $event)
     {
-        dump(['onPaymentCompleted', $event]);
-//
-//        $payment = $event->getSubject();
-//        dump($payment);
-//        $actions = $event->getActions();
-////        return;
-//
-//        try {
-//            $workflow = $this->workflows->get($payment);
-//        } catch (InvalidArgumentException $e) {
-//            return 1;
-//        }
-//
-//        if ($workflow->can($payment, 'toPaid')) {
-//            $workflow->apply($payment, 'toPaid');
-//        }
+//        dump(['onPaymentCompleted', $event]);
+        return true;
     }
 }

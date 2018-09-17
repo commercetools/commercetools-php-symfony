@@ -57,6 +57,12 @@ class OrderController extends Controller
         $this->paymentManager = $paymentManager;
     }
 
+    /**
+     * @param Request $request
+     * @param SessionInterface $session
+     * @param UserInterface|null $user
+     * @return \Symfony\Component\HttpFoundation\Response
+     */
     public function indexAction(Request $request, SessionInterface $session, UserInterface $user = null)
     {
         $orders = $this->manager->getOrdersForUser($request->getLocale(), $user, $session->getId());
@@ -66,6 +72,13 @@ class OrderController extends Controller
         ]);
     }
 
+    /**
+     * @param Request $request
+     * @param SessionInterface $session
+     * @param UserInterface|null $user
+     * @param $orderId
+     * @return \Symfony\Component\HttpFoundation\Response
+     */
     public function showOrderAction(Request $request, SessionInterface $session, UserInterface $user = null, $orderId)
     {
         $order = $this->manager->getOrderForUser($request->getLocale(), $orderId, $user, $session->getId());
@@ -86,11 +99,16 @@ class OrderController extends Controller
         ]);
     }
 
-    public function updateLineItemAction(Request $request, SessionInterface $session, UserInterface $user = null, $orderId)
+    /**
+     * @param Request $request
+     * @param SessionInterface $session
+     * @param $orderId
+     * @param UserInterface|null $user
+     * @return \Symfony\Component\HttpFoundation\RedirectResponse|\Symfony\Component\HttpFoundation\Response
+     */
+    public function updateLineItemAction(Request $request, SessionInterface $session, $orderId, UserInterface $user = null)
     {
         $order = $this->manager->getOrderForUser($request->getLocale(), $orderId, $user, $session->getId());
-
-        $currentStateReference = StateReference::ofId($request->get('fromState'));
 
         if ($request->get('lineItemId')){
             $lineItem = $order->getLineItems()->getById($request->get('lineItemId'));
@@ -101,6 +119,7 @@ class OrderController extends Controller
             return $this->render('@Example/index.html.twig');
         }
 
+        $currentStateReference = StateReference::ofId($request->get('fromState'));
         $quantity = $request->get('quantity') ?? 1;
 
         $subject = ItemStateWrapper::create($order, $currentStateReference, $lineItem, (int)$quantity);
@@ -112,15 +131,23 @@ class OrderController extends Controller
             return $this->render('@Example/index.html.twig');
         }
 
-        if ($workflow->can($subject, $request->get('toState'))) {
-            $workflow->apply($subject, $request->get('toState'));
-            return $this->redirect($this->generateUrl('_ctp_example_order', ['orderId' => $orderId]));
+        if (!$workflow->can($subject, $request->get('toState'))) {
+            $this->addFlash('error', 'Cannot perform this action');
+            return $this->render('@Example/index.html.twig');
         }
 
-        $this->addFlash('error', 'Cannot perform this action');
-        return $this->render('@Example/index.html.twig');
+        $workflow->apply($subject, $request->get('toState'));
+        return $this->redirect($this->generateUrl('_ctp_example_order', ['orderId' => $orderId]));
     }
 
+    /**
+     * @param Request $request
+     * @param SessionInterface $session
+     * @param UserInterface|null $user
+     * @param $orderId
+     * @param $toState
+     * @return \Symfony\Component\HttpFoundation\RedirectResponse|\Symfony\Component\HttpFoundation\Response
+     */
     public function updateOrderAction(Request $request, SessionInterface $session, UserInterface $user = null, $orderId, $toState)
     {
         $order = $this->manager->getOrderForUser($request->getLocale(), $orderId, $user, $session->getId());

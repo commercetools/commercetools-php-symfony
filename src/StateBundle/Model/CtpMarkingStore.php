@@ -55,7 +55,7 @@ class CtpMarkingStore implements MarkingStoreInterface
     {
     }
 
-    public function getStateReferenceOfInitialState()
+    public function getStateReferenceOfInitial()
     {
         return StateReference::ofId($this->stateKeyResolver->resolveKey($this->initialState));
     }

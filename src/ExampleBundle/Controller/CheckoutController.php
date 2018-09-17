@@ -6,20 +6,17 @@ namespace Commercetools\Symfony\ExampleBundle\Controller;
 
 use Commercetools\Core\Client;
 use Commercetools\Core\Model\Common\Address;
-use Commercetools\Core\Model\Order\Order;
 use Commercetools\Core\Model\ShippingMethod\ShippingMethod;
 use Commercetools\Core\Model\ShippingMethod\ShippingMethodReference;
-use Commercetools\Core\Model\State\StateReference;
 use Commercetools\Core\Request\Carts\Command\CartSetBillingAddressAction;
 use Commercetools\Core\Request\Carts\Command\CartSetShippingAddressAction;
 use Commercetools\Core\Request\Carts\Command\CartSetShippingMethodAction;
 use Commercetools\Symfony\CartBundle\Manager\CartManager;
 use Commercetools\Symfony\CartBundle\Manager\OrderManager;
 use Commercetools\Symfony\CartBundle\Manager\ShippingMethodManager;
-use Commercetools\Symfony\CartBundle\Entity\CartEntity;
+use Commercetools\Symfony\ExampleBundle\Entity\CartEntity;
 use Commercetools\Symfony\ExampleBundle\Model\Form\Type\AddressType;
 use Commercetools\Symfony\CartBundle\Model\Repository\CartRepository;
-use Commercetools\Symfony\StateBundle\Cache\StateKeyResolver;
 use Commercetools\Symfony\StateBundle\Model\CtpMarkingStoreOrderState;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
@@ -71,7 +68,10 @@ class CheckoutController extends Controller
         $this->orderManager = $orderManager;
     }
 
-    public function signinAction(Request $request)
+    /**
+     * @return \Symfony\Component\HttpFoundation\RedirectResponse|\Symfony\Component\HttpFoundation\Response
+     */
+    public function signinAction()
     {
         if ($this->get('security.authorization_checker')->isGranted('IS_AUTHENTICATED_FULLY')) {
             return $this->redirect($this->generateUrl('_ctp_example_checkout_address'));
@@ -83,14 +83,18 @@ class CheckoutController extends Controller
 
         $lastUsername = $authenticationUtils->getLastUsername();
 
-        return $this->render('ExampleBundle:checkout:secureCheckout.html.twig',
-            [
-                'last_username' => $lastUsername,
-                'error' => $error
-            ]
-        );
+        return $this->render('ExampleBundle:checkout:secureCheckout.html.twig', [
+            'last_username' => $lastUsername,
+            'error' => $error
+        ]);
     }
 
+    /**
+     * @param Request $request
+     * @param SessionInterface $session
+     * @param UserInterface|null $user
+     * @return \Symfony\Component\HttpFoundation\RedirectResponse|\Symfony\Component\HttpFoundation\Response
+     */
     public function shippingMethodAction(Request $request, SessionInterface $session, UserInterface $user = null)
     {
         $cartId = $session->get(CartRepository::CART_ID);
@@ -142,6 +146,12 @@ class CheckoutController extends Controller
         ]);
     }
 
+    /**
+     * @param Request $request
+     * @param SessionInterface $session
+     * @param UserInterface|null $user
+     * @return \Symfony\Component\HttpFoundation\RedirectResponse|\Symfony\Component\HttpFoundation\Response
+     */
     public function reviewOrderDetailsAction(Request $request, SessionInterface $session, UserInterface $user = null)
     {
         $cartId = $session->get(CartRepository::CART_ID);
@@ -157,11 +167,18 @@ class CheckoutController extends Controller
         ]);
     }
 
+    /**
+     * @param Request $request
+     * @param SessionInterface $session
+     * @param CtpMarkingStoreOrderState $markingStoreOrderState
+     * @param UserInterface|null $user
+     * @return \Symfony\Component\HttpFoundation\RedirectResponse|\Symfony\Component\HttpFoundation\Response
+     */
     public function placeCartToOrderAction(
         Request $request,
-        UserInterface $user = null,
+        SessionInterface $session,
         CtpMarkingStoreOrderState $markingStoreOrderState,
-        SessionInterface $session
+        UserInterface $user = null
     ) {
         $cartId = $session->get(CartRepository::CART_ID);
         $cart = $this->cartManager->getCart($request->getLocale(), $cartId, $user, $session->getId());
@@ -171,7 +188,7 @@ class CheckoutController extends Controller
         }
 
         $order = $this->orderManager->createOrderFromCart(
-            $request->getLocale(), $cart, $markingStoreOrderState->getStateReferenceOfInitialState()
+            $request->getLocale(), $cart, $markingStoreOrderState->getStateReferenceOfInitial()
         );
 
         return $this->render('ExampleBundle:cart:cartSuccess.html.twig', [
@@ -179,6 +196,12 @@ class CheckoutController extends Controller
         ]);
     }
 
+    /**
+     * @param Request $request
+     * @param SessionInterface $session
+     * @param UserInterface|null $user
+     * @return \Symfony\Component\HttpFoundation\RedirectResponse|\Symfony\Component\HttpFoundation\Response
+     */
     public function setAddressAction(Request $request, SessionInterface $session, UserInterface $user = null)
     {
         $cartId = $session->get(CartRepository::CART_ID);
@@ -205,6 +228,7 @@ class CheckoutController extends Controller
             ->add('billingAddress', AddressType::class)
             ->add('Submit', SubmitType::class)
             ->getForm();
+
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {

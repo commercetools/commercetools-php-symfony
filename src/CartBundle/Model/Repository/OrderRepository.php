@@ -79,9 +79,9 @@ class OrderRepository extends Repository
         if (!is_null($user)) {
             $predicate .= ' and customerId = "' . $user->getId() . '"';
         } elseif (!is_null($anonymousId)) {
-            $predicate .= ' and anonymousId = "' . $user->getId() . '"';
+            $predicate .= ' and anonymousId = "' . $anonymousId . '"';
         } else {
-            throw new InvalidArgumentException('At least one of CustomerId or AnonymousId should be preset');
+            throw new InvalidArgumentException('At least one of CustomerId or AnonymousId should be present');
         }
 
         $request->where($predicate);

@@ -2,13 +2,14 @@
 /**
  */
 
-namespace Commercetools\Symfony\CartBundle\Entity;
+namespace Commercetools\Symfony\ExampleBundle\Entity;
 
 
 use Commercetools\Core\Model\Cart\Cart;
 
 class CartEntity
 {
+    /**
     public $billingAddress;
 
     public $shippingAddress;

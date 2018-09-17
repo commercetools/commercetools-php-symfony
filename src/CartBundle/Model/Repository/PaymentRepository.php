@@ -9,7 +9,6 @@ use Commercetools\Core\Builder\Request\RequestBuilder;
 use Commercetools\Core\Error\InvalidArgumentException;
 use Commercetools\Core\Model\Common\Money;
 use Commercetools\Core\Model\Customer\CustomerReference;
-use Commercetools\Core\Model\Order\Order;
 use Commercetools\Core\Model\Payment\Payment;
 use Commercetools\Core\Model\Payment\PaymentCollection;
 use Commercetools\Core\Model\Payment\PaymentDraft;
@@ -47,7 +46,7 @@ class PaymentRepository extends Repository
         } elseif (!is_null($anonymousId)) {
             $request->where('id = "' . $paymentId . '" and anonymousId = "' . $anonymousId . '"');
         } else {
-            throw new InvalidArgumentException('At least one of CustomerId or AnonymousId should be present');
+            throw new InvalidArgumentException('At least one of CustomerReference or AnonymousId should be present');
         }
 
         $payments = $this->executeRequest($request, $locale);
@@ -115,7 +114,9 @@ class PaymentRepository extends Repository
             $paymentDraft->setCustomer($customerReference);
         } else if (!is_null($anonymousId)) {
             $paymentDraft->setAnonymousId($anonymousId);
-        } // else throw error?
+        } else {
+            throw new InvalidArgumentException('At least one of CustomerReference or AnonymousId should be present');
+        }
 
         $request = RequestBuilder::of()->payments()->create($paymentDraft);
 

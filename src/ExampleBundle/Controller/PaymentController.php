@@ -11,7 +11,6 @@ use Commercetools\Core\Model\Order\Order;
 use Commercetools\Core\Model\Payment\Payment;
 use Commercetools\Core\Model\Payment\PaymentReference;
 use Commercetools\Core\Model\Payment\PaymentStatus;
-use Commercetools\Core\Model\State\StateReference;
 use Commercetools\Core\Request\Carts\Command\CartAddPaymentAction;
 use Commercetools\Core\Request\Orders\Command\OrderAddPaymentAction;
 use Commercetools\Symfony\CartBundle\Manager\CartManager;
@@ -68,11 +67,14 @@ class PaymentController extends Controller
      * @param $orderId
      * @return Response
      */
-    public function getPaymentAction(Request $request, SessionInterface $session, UserInterface $user = null, $paymentId, $orderId)
-    {
-        $customerReference = is_null($user) ? null : CustomerReference::ofId($user->getId());
-
-        $payment = $this->manager->getPaymentForUser($request->getLocale(), $paymentId, $customerReference, $session->getId());
+    public function getPaymentAction(
+        Request $request,
+        SessionInterface $session,
+        $paymentId,
+        $orderId,
+        UserInterface $user = null
+    ) {
+        $payment = $this->manager->getPaymentForUser($request->getLocale(), $paymentId, $user, $session->getId());
 
         if (!$payment instanceof Payment) {
             $this->addFlash('error', sprintf('Cannot find payment: %s', $paymentId));
@@ -97,10 +99,10 @@ class PaymentController extends Controller
     public function createPaymentForOrderAction(
         Request $request,
         SessionInterface $session,
-        UserInterface $user = null,
-        $orderId = null,
         OrderManager $orderManager,
-        CtpMarkingStorePaymentState $markingStorePaymentState
+        CtpMarkingStorePaymentState $markingStorePaymentState,
+        $orderId,
+        UserInterface $user = null
     ) {
         $order = $orderManager->getOrderForUser($request->getLocale(), $orderId, $user, $session->getId());
 
@@ -109,7 +111,7 @@ class PaymentController extends Controller
             return $this->render('@Example/index.html.twig');
         }
 
-        $payment = $this->createPayment($request->getLocale(), $order->getTotalPrice(), $session, $user, $markingStorePaymentState);
+        $payment = $this->createPayment($request->getLocale(), $order->getTotalPrice(), $session, $markingStorePaymentState, $user);
 
         if (!$payment instanceof Payment) {
             $this->addFlash('error', $payment->getMessage());
@@ -126,14 +128,21 @@ class PaymentController extends Controller
         return $this->redirect($this->generateUrl('_ctp_example_order', ['orderId' => $orderId]));
     }
 
+    /**
+     * @param Request $request
+     * @param SessionInterface $session
+     * @param CartManager $cartManager
+     * @param CtpMarkingStorePaymentState $markingStorePaymentState
+     * @param UserInterface|null $user
+     * @return \Symfony\Component\HttpFoundation\RedirectResponse|Response
+     */
     public function createPaymentForCartAction(
         Request $request,
         SessionInterface $session,
-        UserInterface $user = null,
         CartManager $cartManager,
-        CtpMarkingStorePaymentState $markingStorePaymentState
-    )
-    {
+        CtpMarkingStorePaymentState $markingStorePaymentState,
+        UserInterface $user = null
+    ) {
         $cartId = $session->get(CartRepository::CART_ID);
         $cart = $cartManager->getCart($request->getLocale(), $cartId, $user, $session->getId());
 
@@ -142,11 +151,11 @@ class PaymentController extends Controller
             return $this->render('@Example/index.html.twig');
         }
 
-        $payment = $this->createPayment($request->getLocale(), $cart->getTotalPrice(), $session, $user, $markingStorePaymentState);
+        $payment = $this->createPayment($request->getLocale(), $cart->getTotalPrice(), $session, $markingStorePaymentState, $user);
 
         if (!$payment instanceof Payment) {
             $this->addFlash('error', $payment->getMessage());
-            return $this->render('@Example/index.html.twig');
+            return $this->render('@Example/cart/cartConfirm.html.twig');
         }
 
         // attach payment to cart
@@ -159,16 +168,24 @@ class PaymentController extends Controller
         return $this->redirect($this->generateUrl('_ctp_example_checkout_confirm'));
     }
 
+    /**
+     * @param $locale
+     * @param Money $totalPrice
+     * @param SessionInterface $session
+     * @param CtpMarkingStorePaymentState $markingStorePaymentState
+     * @param UserInterface|null $user
+     * @return Payment
+     */
     public function createPayment(
         $locale,
         Money $totalPrice,
         SessionInterface $session,
-        UserInterface $user = null,
-        CtpMarkingStorePaymentState $markingStorePaymentState)
-    {
+        CtpMarkingStorePaymentState $markingStorePaymentState,
+        UserInterface $user = null
+    ) {
         $paymentStatus = PaymentStatus::of()
             ->setInterfaceText('Paypal')
-            ->setState($markingStorePaymentState->getStateReferenceOfInitialState());
+            ->setState($markingStorePaymentState->getStateReferenceOfInitial());
 
         $customerReference = is_null($user) ? null : CustomerReference::ofId($user->getId());
         $payment = $this->manager->createPayment(
@@ -178,10 +195,24 @@ class PaymentController extends Controller
         return $payment;
     }
 
-    public function updatePaymentAction(Request $request, SessionInterface $session, OrderManager $orderManager, UserInterface $user = null, $toState, $paymentId)
-    {
+    /**
+     * @param Request $request
+     * @param SessionInterface $session
+     * @param OrderManager $orderManager
+     * @param $toState
+     * @param $paymentId
+     * @param UserInterface|null $user
+     * @return \Symfony\Component\HttpFoundation\RedirectResponse|Response
+     */
+    public function updatePaymentAction(
+        Request $request,
+        SessionInterface $session,
+        OrderManager $orderManager,
+        $toState,
+        $paymentId,
+        UserInterface $user = null
+    ) {
         $customerReference = is_null($user) ? null : CustomerReference::ofId($user->getId());
-
         $payment = $this->manager->getPaymentForUser($request->getLocale(), $paymentId, $customerReference, $session->getId());
 
         if (!$payment instanceof Payment) {
@@ -206,6 +237,7 @@ class PaymentController extends Controller
         $orderId = $request->get('orderId');
 
         if ($toState === 'toCompleted') {
+            // assuming there is only one payment, we update order status after a payment is completed
             $order = $orderManager->getOrderFromPayment($request->getLocale(), $payment->getId(), $user, $session->getId());
 
             if ($order instanceof Order) {
@@ -222,6 +254,10 @@ class PaymentController extends Controller
 
                 $orderId = $order->getId();
             }
+        }
+
+        if (is_null($orderId)) {
+            return $this->redirect($this->generateUrl('_ctp_example_orders_all'));
         }
 
         return $this->redirect($this->generateUrl('_ctp_example_order', ['orderId' => $orderId]));

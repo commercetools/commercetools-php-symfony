@@ -7,7 +7,6 @@ namespace Commercetools\Symfony\CartBundle\Manager;
 use Commercetools\Core\Model\Cart\Cart;
 use Commercetools\Core\Model\Order\Order;
 use Commercetools\Core\Model\Order\OrderCollection;
-use Commercetools\Core\Model\Payment\Payment;
 use Commercetools\Core\Model\State\StateReference;
 use Commercetools\Core\Request\AbstractAction;
 use Commercetools\Symfony\CartBundle\Event\OrderCreateEvent;

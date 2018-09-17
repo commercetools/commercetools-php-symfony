@@ -39,6 +39,12 @@ class ReviewManager
         $this->dispatcher = $dispatcher;
     }
 
+    /**
+     * @param $locale
+     * @param $reviewId
+     * @param QueryParams|null $params
+     * @return mixed
+     */
     public function getById($locale, $reviewId, QueryParams $params = null)
     {
         return $this->repository->getReviewById($locale, $reviewId, $params);
@@ -54,6 +60,14 @@ class ReviewManager
         return $this->repository->getReviewForUser($locale, $userId, $reviewId, $params);
     }
 
+    /**
+     * @param $locale
+     * @param ProductReference $productReference
+     * @param CustomerReference|null $customer
+     * @param null $text
+     * @param null $rating
+     * @return mixed
+     */
     public function createForProduct($locale, ProductReference $productReference, CustomerReference $customer = null, $text = null, $rating = null)
     {
         return $this->repository->createReviewForProduct($locale, $productReference, $customer, $text, $rating);

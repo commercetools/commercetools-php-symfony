@@ -2,7 +2,7 @@
 
 {% block container %}
     <h1>success!</h1>
-    {#<a href="{{ path('_ctp_example_order_toPaid', {'orderId': orderId}) }}"><button>Pay this order!</button></a> <br/><br/>#}
+    <a href="{{ path('_ctp_example_order', {'orderId': orderId}) }}"><button>View Order</button></a> <br/><br/>
 
-    <a href="{{ path('_ctp_example') }}"><button>Place a new order</button></a>
+    <a href="{{ path('_ctp_example') }}"><button>Continue Shopping</button></a>
 {% endblock %}
