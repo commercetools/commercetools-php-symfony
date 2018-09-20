@@ -57,9 +57,9 @@ class PaymentRepository extends Repository
     /**
      * @param $locale
      * @param array $payments
-     * @return array|mixed
+     * @return PaymentCollection
      */
-    public function getPaymentsForOrder($locale, array $payments)
+    public function getMultiplePayments($locale, array $payments)
     {
         $request = RequestBuilder::of()->payments()->query();
 

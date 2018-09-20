@@ -41,12 +41,4 @@ class OrderPostUpdateEvent extends Event
     {
         return $this->order;
     }
-
-    /**
-     * @param Order $order
-     */
-    public function setOrder(Order $order)
-    {
-        $this->order = $order;
-    }
 }

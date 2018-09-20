@@ -113,4 +113,18 @@ class ReviewManagerTest extends TestCase
 
         $this->assertInstanceOf(ReviewCollection::class, $reviews);
     }
+
+    public function testGetReviewForUser()
+    {
+        $repository = $this->prophesize(ReviewRepository::class);
+        $dispatcher = $this->prophesize(EventDispatcherInterface::class);
+
+        $repository->getReviewForUser('en', 'user-1', 'review-1', null)
+            ->willReturn(ReviewCollection::of())->shouldBeCalled();
+
+        $manager = new ReviewManager($repository->reveal(), $dispatcher->reveal());
+        $reviews = $manager->getReviewForUser('en', 'user-1', 'review-1');
+
+        $this->assertInstanceOf(ReviewCollection::class, $reviews);
+    }
 }

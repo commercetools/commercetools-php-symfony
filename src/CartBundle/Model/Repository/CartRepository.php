@@ -102,4 +102,15 @@ class CartRepository extends Repository
 
         return $this->executeRequest($request);
     }
+
+    /**
+     * @param Cart $cart
+     * @return Cart
+     */
+    public function delete(Cart $cart)
+    {
+        $request = RequestBuilder::of()->carts()->delete($cart);
+
+        return $this->executeRequest($request);
+    }
 }

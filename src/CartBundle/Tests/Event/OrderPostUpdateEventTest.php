@@ -15,17 +15,8 @@ class OrderPostUpdateEventTest extends TestCase
 {
     public function testOrderPostUpdateEvent()
     {
-        $order = $this->prophesize(Order::class);
-        $action = $this->prophesize(OrderSetCustomerEmail::class);
-        $secondOrder = $this->prophesize(Order::class);
-
-        $postUpdateEvent = new OrderPostUpdateEvent($order->reveal(), [$action->reveal()]);
-        $postUpdateEvent->setOrder($secondOrder->reveal());
-
-        $this->assertNotSame($order->reveal(),$secondOrder->reveal());
-        $this->assertSame($secondOrder->reveal(), $postUpdateEvent->getOrder());
-        $this->assertNotSame($order->reveal(), $postUpdateEvent->getOrder());
-
-        $this->assertEquals([$action->reveal()], $postUpdateEvent->getActions());
+        $event = new OrderPostUpdateEvent(Order::of(), [OrderSetCustomerEmail::of()]);
+        $this->assertInstanceOf(Order::class, $event->getOrder());
+        $this->assertInstanceOf(OrderSetCustomerEmail::class, current($event->getActions()));
     }
 }

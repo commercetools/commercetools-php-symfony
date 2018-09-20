@@ -16,21 +16,16 @@ class OrderUpdateEventTest extends TestCase
 {
     public function testOrderUpdateEvent()
     {
-        $order = $this->prophesize(Order::class);
-        $action = $this->prophesize(OrderSetCustomerEmail::class);
-        $secondAction = $this->prophesize(OrderSetBillingAddress::class);
+        $event = new OrderUpdateEvent(Order::of(), OrderSetCustomerEmail::of());
+        $this->assertInstanceOf(Order::class, $event->getOrder());
+        $this->assertSame(1, count($event->getActions()));
+        $this->assertInstanceOf(OrderSetCustomerEmail::class, current($event->getActions()));
 
-        $updateEvent = new OrderUpdateEvent($order->reveal(), $action->reveal());
+        $event->addAction(OrderSetBillingAddress::of());
+        $this->assertSame(2, count($event->getActions()));
 
-        $this->assertInstanceOf(Order::class, $updateEvent->getOrder());
-        $this->assertEquals([$action->reveal()], $updateEvent->getActions());
-
-        $updateEvent->addAction($secondAction->reveal());
-
-        $this->assertEquals([$action->reveal(), $secondAction->reveal()], $updateEvent->getActions());
-
-        $updateEvent->setActions([$secondAction->reveal()]);
-
-        $this->assertEquals([$secondAction->reveal()], $updateEvent->getActions());
+        $event->setActions([OrderSetBillingAddress::of()]);
+        $this->assertSame(1, count($event->getActions()));
+        $this->assertInstanceOf(OrderSetBillingAddress::class, current($event->getActions()));
     }
 }

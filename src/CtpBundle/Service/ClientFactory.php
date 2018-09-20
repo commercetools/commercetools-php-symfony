@@ -34,7 +34,6 @@ class ClientFactory
         $this->cache = $cache;
         $this->converter = $converter;
         $this->logger = $logger;
-        $this->config = $config;
         $this->profiler = $profiler;
     }
 

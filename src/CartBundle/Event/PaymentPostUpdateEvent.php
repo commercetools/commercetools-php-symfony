@@ -41,12 +41,4 @@ class PaymentPostUpdateEvent extends Event
     {
         return $this->payment;
     }
-
-    /**
-     * @param Payment $payment
-     */
-    public function setPayment(Payment $payment)
-    {
-        $this->payment = $payment;
-    }
 }

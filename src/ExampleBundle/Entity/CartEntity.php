@@ -9,7 +9,6 @@ use Commercetools\Core\Model\Cart\Cart;
 
 class CartEntity
 {
-    /**
     public $billingAddress;
 
     public $shippingAddress;

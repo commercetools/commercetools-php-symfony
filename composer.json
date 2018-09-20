@@ -29,7 +29,8 @@
         "symfony/phpunit-bridge": "^3.4 | ^4.0",
         "commercetools/commercetools-api-reference": "dev-master",
         "matthiasnoback/symfony-dependency-injection-test": "^3.0",
-        "symfony/test-pack": "^1.0"
+        "symfony/test-pack": "^1.0",
+        "cache/filesystem-adapter": "^1.0"
     },
     "extra": {
         "branch-alias": {

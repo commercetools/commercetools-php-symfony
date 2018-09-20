@@ -26,11 +26,9 @@ class CartUpdateEventTest extends TestCase
         $this->assertEquals([$action->reveal()], $updateEvent->getActions());
 
         $updateEvent->addAction($secondAction->reveal());
-
         $this->assertEquals([$action->reveal(), $secondAction->reveal()], $updateEvent->getActions());
 
         $updateEvent->setActions([$secondAction->reveal()]);
-
         $this->assertEquals([$secondAction->reveal()], $updateEvent->getActions());
     }
 }
