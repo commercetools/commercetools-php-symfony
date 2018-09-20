@@ -28,7 +28,7 @@ class CartManagerTest extends TestCase
         $repository = $this->prophesize(CartRepository::class);
         $dispatcher = $this->prophesize(EventDispatcherInterface::class);
 
-        $repository->update($cart, Argument::type('array'))
+        $repository->update($cart->reveal(), Argument::type('array'))
             ->will(function ($args) { return $args[0]; })->shouldBeCalled();
 
         $dispatcher->dispatch(

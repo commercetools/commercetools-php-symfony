@@ -9,8 +9,11 @@ use Commercetools\Core\Client;
 use Commercetools\Core\Error\InvalidArgumentException;
 use Commercetools\Core\Model\Common\LocalizedString;
 use Commercetools\Core\Model\Product\Product;
+use Commercetools\Core\Model\Product\ProductDraft;
 use Commercetools\Core\Model\Product\ProductProjection;
 use Commercetools\Core\Model\Product\SuggestionCollection;
+use Commercetools\Core\Model\ProductType\ProductTypeDraft;
+use Commercetools\Core\Model\ProductType\ProductTypeReference;
 use Commercetools\Core\Request\Products\ProductsSuggestRequest;
 use Commercetools\Symfony\CtpBundle\Model\QueryParams;
 use Commercetools\Symfony\CtpBundle\Model\Repository;
@@ -219,5 +222,27 @@ class CatalogRepository extends Repository
         }
 
         return $this->executeRequest($request);
+    }
+
+    public function createProduct($locale, ProductTypeReference $productType, $name, $slug)
+    {
+        $productDraft = ProductDraft::ofTypeNameAndSlug(
+            $productType,
+            LocalizedString::ofLangAndText($locale, $name),
+            LocalizedString::ofLangAndText($locale, $slug)
+        );
+
+        $request = RequestBuilder::of()->products()->create($productDraft);
+
+        return $this->executeRequest($request, $locale);
+    }
+
+    public function createProductType($locale, $name, $description)
+    {
+        $productTypeDraft = ProductTypeDraft::ofNameAndDescription($name, $description);
+
+        $request = RequestBuilder::of()->productTypes()->create($productTypeDraft);
+
+        return $this->executeRequest($request, $locale);
     }
 }

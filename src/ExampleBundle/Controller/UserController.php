@@ -98,7 +98,6 @@ class UserController extends Controller
                 ->setLastName(CustomerSetLastNameAction::of()->setLastName($lastName))
                 ->changeEmail(CustomerChangeEmailAction::ofEmail($email));
 
-
             try {
                 $customer = $customerBuilder->flush();
             } catch (\Error $e){
@@ -110,11 +109,9 @@ class UserController extends Controller
             }
         }
 
-        return $this->render('ExampleBundle:User:user.html.twig',
-            [
-                'formDetails' => $form->createView()
-            ]
-        );
+        return $this->render('ExampleBundle:User:user.html.twig', [
+            'formDetails' => $form->createView()
+        ]);
     }
 
     public function addressBookAction(Request $request, UserInterface $user)
@@ -174,5 +171,10 @@ class UserController extends Controller
         $customer = $request->mapResponse($response);
 
         return $customer;
+    }
+
+    public function signUpAction()
+    {
+
     }
 }

@@ -8,11 +8,14 @@ namespace Commercetools\Symfony\CustomerBundle\Manager;
 use Commercetools\Core\Request\AbstractAction;
 use Commercetools\Core\Model\Customer\Customer;
 use Commercetools\Symfony\CtpBundle\Model\QueryParams;
+use Commercetools\Symfony\CustomerBundle\Event\CustomerCreateEvent;
+use Commercetools\Symfony\CustomerBundle\Event\CustomerPostCreateEvent;
 use Commercetools\Symfony\CustomerBundle\Event\CustomerUpdateEvent;
 use Commercetools\Symfony\CustomerBundle\Event\CustomerPostUpdateEvent;
 use Commercetools\Symfony\CustomerBundle\Model\Repository\CustomerRepository;
 use Commercetools\Symfony\CustomerBundle\Model\CustomerUpdateBuilder;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
+use Symfony\Component\HttpFoundation\Session\SessionInterface;
 
 class CustomerManager
 {
@@ -84,5 +87,18 @@ class CustomerManager
     public function changePassword(Customer $customer, $currentPassword, $newPassword)
     {
         return $this->repository->changePassword($customer, $currentPassword, $newPassword);
+    }
+
+    public function createCustomer($locale, $email, $password, SessionInterface $session = null)
+    {
+        $event = new CustomerCreateEvent();
+        $this->dispatcher->dispatch(CustomerCreateEvent::class, $event);
+
+        $customer = $this->repository->createCustomer($locale, $email, $password, $session);
+
+        $eventPost = new CustomerPostCreateEvent($customer);
+        $this->dispatcher->dispatch(CustomerPostCreateEvent::class, $eventPost);
+
+        return $customer;
     }
 }

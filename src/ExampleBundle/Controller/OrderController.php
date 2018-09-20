@@ -90,7 +90,7 @@ class OrderController extends Controller
 
         if (!is_null($order->getPaymentInfo())) {
             $paymentsIds = array_map(function($elem){return $elem['id'];}, $order->getPaymentInfo()->getPayments()->toArray());
-            $payments = $this->paymentManager->getPaymentsForOrder($request->getLocale(), $paymentsIds);
+            $payments = $this->paymentManager->getMultiplePayments($request->getLocale(), $paymentsIds);
         }
 
         return $this->render('ExampleBundle:user:order.html.twig', [

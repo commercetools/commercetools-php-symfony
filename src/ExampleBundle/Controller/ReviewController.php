@@ -59,6 +59,7 @@ class ReviewController extends Controller
     {
         $params = new QueryParams();
         $params->add('expand', 'customer');
+        $params->add('sort', 'createdAt desc');
         $reviews = $this->manager->getByProductId($request->getLocale(), $productId, $params);
 
         $reviewForm = $this->createForm(AddReviewType::class);

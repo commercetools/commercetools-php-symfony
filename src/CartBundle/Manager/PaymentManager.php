@@ -69,9 +69,9 @@ class PaymentManager
      * @param array $payments
      * @return array|mixed
      */
-    public function getPaymentsForOrder($locale, array $payments)
+    public function getMultiplePayments($locale, array $payments)
     {
-        return $this->repository->getPaymentsForOrder($locale, $payments);
+        return $this->repository->getMultiplePayments($locale, $payments);
     }
 
     /**

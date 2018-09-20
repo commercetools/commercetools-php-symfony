@@ -96,12 +96,15 @@ class OrderRepository extends Repository
      * @param StateReference $stateReference
      * @return Order
      */
-    public function createOrderFromCart($locale, Cart $cart, StateReference $stateReference)
+    public function createOrderFromCart($locale, Cart $cart, StateReference $stateReference = null)
     {
         $request = RequestBuilder::of()->orders()
             ->createFromCart($cart)
-            ->setOrderNumber($this->createOrderNumber())
-            ->setState($stateReference);
+            ->setOrderNumber($this->createOrderNumber());
+
+        if (!is_null($stateReference)) {
+            $request->setState($stateReference);
+        }
 
         return $this->executeRequest($request, $locale);
     }
@@ -129,6 +132,17 @@ class OrderRepository extends Repository
                 $request->addParamObject($param);
             }
         }
+
+        return $this->executeRequest($request);
+    }
+
+    /**
+     * @param Order $order
+     * @return mixed
+     */
+    public function delete(Order $order)
+    {
+        $request = RequestBuilder::of()->orders()->delete($order);
 
         return $this->executeRequest($request);
     }
