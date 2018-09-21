@@ -5,6 +5,7 @@
 namespace Commercetools\Symfony\ShoppingListBundle\Manager;
 
 
+use Commercetools\Core\Error\InvalidArgumentException;
 use Commercetools\Core\Model\ShoppingList\ShoppingList;
 use Commercetools\Core\Request\AbstractAction;
 use Commercetools\Symfony\CtpBundle\Model\QueryParams;
@@ -38,39 +39,86 @@ class ShoppingListManager
         $this->dispatcher = $dispatcher;
     }
 
+    /**
+     * @param $locale
+     * @param $shoppingListId
+     * @param QueryParams|null $params
+     * @return mixed
+     */
     public function getById($locale, $shoppingListId, QueryParams $params = null)
     {
         return $this->repository->getShoppingListById($locale, $shoppingListId, $params);
     }
 
+    /**
+     * @param $locale
+     * @param CustomerReference $customer
+     * @param QueryParams|null $params
+     * @return mixed
+     */
     public function getAllOfCustomer($locale, CustomerReference $customer, QueryParams $params = null)
     {
         return $this->repository->getAllShoppingListsByCustomer($locale, $customer, $params);
     }
 
+    /**
+     * @param $locale
+     * @param $anonymousId
+     * @param QueryParams|null $params
+     * @return mixed
+     */
     public function getAllOfAnonymous($locale, $anonymousId, QueryParams $params = null)
     {
         return $this->repository->getAllShoppingListsByAnonymousId($locale, $anonymousId, $params);
     }
 
+    /**
+     * @param $locale
+     * @param $shoppingListId
+     * @param CustomerReference|null $customer
+     * @param null $anonymousId
+     * @param QueryParams|null $params
+     * @return mixed
+     */
+    public function getShoppingListForUser($locale, $shoppingListId, CustomerReference $customer = null, $anonymousId = null, QueryParams $params = null)
+    {
+        if (is_null($customer) && is_null($anonymousId)) {
+            throw new InvalidArgumentException('At least one of CustomerReference or AnonymousId should be present');
+        }
+
+        return $this->repository->getShoppingList($locale, $shoppingListId, $customer, $anonymousId, $params);
+    }
+
+    /**
+     * @param $locale
+     * @param CustomerReference $customer
+     * @param $name
+     * @return mixed
+     */
     public function createShoppingListByCustomer($locale, CustomerReference $customer, $name)
     {
-        return $this->repository->createByCustomer($locale, $customer, $name);
+        return $this->repository->create($locale, $name, $customer);
     }
 
+    /**
+     * @param $locale
+     * @param $anonymousId
+     * @param $name
+     * @return mixed
+     */
     public function createShoppingListByAnonymous($locale, $anonymousId, $name)
     {
-        return $this->repository->createByAnonymous($locale, $anonymousId, $name);
+        return $this->repository->create($locale, $name, null, $anonymousId);
     }
 
-    public function deleteShoppingListByCustomer($locale, CustomerReference $customer, $shoppingListId)
+    /**
+     * @param $locale
+     * @param ShoppingList $shoppingList
+     * @return mixed
+     */
+    public function deleteShoppingList($locale, ShoppingList $shoppingList)
     {
-        return $this->repository->deleteByCustomer($locale, $customer, $shoppingListId);
-    }
-
-    public function deleteShoppingListByAnonymous($locale, $anonymousId, $shoppingListId)
-    {
-        return $this->repository->deleteByAnonymous($locale, $anonymousId, $shoppingListId);
+        return $this->repository->delete($locale, $shoppingList);
     }
 
     /**
@@ -82,6 +130,12 @@ class ShoppingListManager
         return new ShoppingListUpdateBuilder($list, $this);
     }
 
+    /**
+     * @param ShoppingList $shoppingList
+     * @param AbstractAction $action
+     * @param null $eventName
+     * @return AbstractAction[]
+     */
     public function dispatch(ShoppingList $shoppingList, AbstractAction $action, $eventName = null)
     {
         $eventName = is_null($eventName) ? get_class($action) : $eventName;
@@ -104,6 +158,11 @@ class ShoppingListManager
         return $this->dispatchPostUpdate($shoppingList, $actions);
     }
 
+    /**
+     * @param ShoppingList $shoppingList
+     * @param array $actions
+     * @return ShoppingList
+     */
     public function dispatchPostUpdate(ShoppingList $shoppingList, array $actions)
     {
         $event = new ShoppingListPostUpdateEvent($shoppingList, $actions);
