@@ -41,12 +41,4 @@ class ShoppingListPostUpdateEvent extends Event
     {
         return $this->shoppingList;
     }
-
-    /**
-     * @param ShoppingList $shoppingList
-     */
-    public function setShoppingList(ShoppingList $shoppingList)
-    {
-        $this->shoppingList = $shoppingList;
-    }
 }

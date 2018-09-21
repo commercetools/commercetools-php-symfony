@@ -4,6 +4,7 @@
 
 namespace Commercetools\Symfony\ShoppingListBundle\Tests\Manager;
 
+use Commercetools\Core\Error\InvalidArgumentException;
 use Commercetools\Core\Model\Customer\CustomerReference;
 use Commercetools\Core\Model\ShoppingList\ShoppingList;
 use Commercetools\Core\Model\ShoppingList\ShoppingListCollection;
@@ -46,14 +47,113 @@ class ShoppingListManagerTest extends TestCase
         $repository = $this->prophesize(ShoppingListRepository::class);
         $dispatcher = $this->prophesize(EventDispatcherInterface::class);
 
-        $repository->getAllShoppingListsByCustomer('en', $customer, null)
+        $repository->getAllShoppingListsByCustomer('en', $customer->reveal(), null)
             ->willReturn(ShoppingListCollection::of())->shouldBeCalled();
 
         $manager = new ShoppingListManager($repository->reveal(), $dispatcher->reveal());
         $lists = $manager->getAllOfCustomer('en', $customer->reveal());
 
         $this->assertInstanceOf(ShoppingListCollection::class, $lists);
+    }
 
+    public function testGetAllOfAnonymous()
+    {
+        $repository = $this->prophesize(ShoppingListRepository::class);
+        $dispatcher = $this->prophesize(EventDispatcherInterface::class);
+
+        $repository->getAllShoppingListsByAnonymousId('en', 'anon-1', null)
+            ->willReturn(ShoppingListCollection::of())->shouldBeCalled();
+
+        $manager = new ShoppingListManager($repository->reveal(), $dispatcher->reveal());
+        $lists = $manager->getAllOfAnonymous('en', 'anon-1');
+
+        $this->assertInstanceOf(ShoppingListCollection::class, $lists);
+    }
+
+    public function testGetShoppingListForCustomer()
+    {
+        $repository = $this->prophesize(ShoppingListRepository::class);
+        $dispatcher = $this->prophesize(EventDispatcherInterface::class);
+        $customer = CustomerReference::ofId('user-1');
+
+        $repository->getShoppingList('en', 'list-1', $customer, null, null)
+            ->willReturn(ShoppingList::of())->shouldBeCalled();
+
+        $manager = new ShoppingListManager($repository->reveal(), $dispatcher->reveal());
+        $list = $manager->getShoppingListForUser('en', 'list-1', $customer);
+
+        $this->assertInstanceOf(ShoppingList::class, $list);
+    }
+
+    public function testGetShoppingListForAnonymous()
+    {
+        $repository = $this->prophesize(ShoppingListRepository::class);
+        $dispatcher = $this->prophesize(EventDispatcherInterface::class);
+
+        $repository->getShoppingList('en', 'list-1', null, 'anon-1', null)
+            ->willReturn(ShoppingList::of())->shouldBeCalled();
+
+        $manager = new ShoppingListManager($repository->reveal(), $dispatcher->reveal());
+        $list = $manager->getShoppingListForUser('en', 'list-1', null, 'anon-1');
+
+        $this->assertInstanceOf(ShoppingList::class, $list);
+    }
+
+    /**
+     * @expectedException InvalidArgumentException
+     */
+    public function testGetShoppingListWithMissingData()
+    {
+        $repository = $this->prophesize(ShoppingListRepository::class);
+        $dispatcher = $this->prophesize(EventDispatcherInterface::class);
+
+        $manager = new ShoppingListManager($repository->reveal(), $dispatcher->reveal());
+        $manager->getShoppingListForUser('en', 'list-1');
+
+    }
+
+    public function testCreateShoppingListByCustomer()
+    {
+        $customer = $this->prophesize(CustomerReference::class);
+        $repository = $this->prophesize(ShoppingListRepository::class);
+        $dispatcher = $this->prophesize(EventDispatcherInterface::class);
+
+        $repository->create('en', 'list-1', $customer->reveal())
+            ->willReturn(ShoppingList::of())->shouldBeCalled();
+
+        $manager = new ShoppingListManager($repository->reveal(), $dispatcher->reveal());
+        $lists = $manager->createShoppingListByCustomer('en', $customer->reveal(), 'list-1');
+
+        $this->assertInstanceOf(ShoppingList::class, $lists);
+    }
+
+    public function testCreateShoppingListByAnonymous()
+    {
+        $repository = $this->prophesize(ShoppingListRepository::class);
+        $dispatcher = $this->prophesize(EventDispatcherInterface::class);
+
+        $repository->create('en', 'list-1', null, 'anon-1')
+            ->willReturn(ShoppingList::of())->shouldBeCalled();
+
+        $manager = new ShoppingListManager($repository->reveal(), $dispatcher->reveal());
+        $lists = $manager->createShoppingListByAnonymous('en', 'anon-1', 'list-1');
+
+        $this->assertInstanceOf(ShoppingList::class, $lists);
+    }
+
+    public function testDeleteShoppingList()
+    {
+        $repository = $this->prophesize(ShoppingListRepository::class);
+        $dispatcher = $this->prophesize(EventDispatcherInterface::class);
+        $shoppingList = ShoppingList::of();
+
+        $repository->delete('en', $shoppingList)
+            ->willReturn(ShoppingList::of())->shouldBeCalled();
+
+        $manager = new ShoppingListManager($repository->reveal(), $dispatcher->reveal());
+        $lists = $manager->deleteShoppingList('en', $shoppingList);
+
+        $this->assertInstanceOf(ShoppingList::class, $lists);
     }
 
     public function testDispatch()
@@ -72,11 +172,6 @@ class ShoppingListManagerTest extends TestCase
         $actions = $manager->dispatch($shoppingList->reveal(), $action->reveal());
         $this->assertInstanceOf(AbstractAction::class, current($actions));
         $this->assertCount(1, $actions);
-    }
-
-    public function testCreateShoppingList()
-    {
-
     }
 
     public function testUpdate()

@@ -5,28 +5,21 @@
 namespace Commercetools\Symfony\ShoppingListBundle\Model\Repository;
 
 use Commercetools\Core\Builder\Request\RequestBuilder;
-use Commercetools\Core\Error\InvalidArgumentException;
 use Commercetools\Core\Model\Common\LocalizedString;
 use Commercetools\Core\Model\Customer\CustomerReference;
 use Commercetools\Core\Model\ShoppingList\ShoppingList;
 use Commercetools\Core\Model\ShoppingList\ShoppingListDraft;
 use Commercetools\Symfony\CtpBundle\Model\QueryParams;
 use Commercetools\Symfony\CtpBundle\Model\Repository;
-use Commercetools\Symfony\CtpBundle\Service\MapperFactory;
-use Commercetools\Core\Client;
-use Psr\Cache\CacheItemPoolInterface;
 
 class ShoppingListRepository extends Repository
 {
-    public function __construct(
-        $enableCache,
-        CacheItemPoolInterface $cache,
-        Client $client,
-        MapperFactory $mapperFactory
-    ) {
-        parent::__construct($enableCache, $cache, $client, $mapperFactory);
-    }
-
+    /**
+     * @param $locale
+     * @param $shoppingListId
+     * @param QueryParams|null $params
+     * @return mixed
+     */
     public function getShoppingListById($locale, $shoppingListId, QueryParams $params = null)
     {
         $request = RequestBuilder::of()->shoppingLists()->getById($shoppingListId);
@@ -34,62 +27,85 @@ class ShoppingListRepository extends Repository
         return $this->executeRequest($request, $locale, $params);
     }
 
-    public function getShoppingListForUser($locale, $shoppingListId, CustomerReference $customer = null, $anonymousId = null, QueryParams $params = null)
+    /**
+     * @param $locale
+     * @param $shoppingListId
+     * @param CustomerReference|null $customer
+     * @param null $anonymousId
+     * @param QueryParams|null $params
+     * @return mixed
+     */
+    public function getShoppingList($locale, $shoppingListId, CustomerReference $customer = null, $anonymousId = null, QueryParams $params = null)
     {
         $request = RequestBuilder::of()->shoppingLists()->query();
 
+        $predicate = 'id = "' . $shoppingListId . '"';
+
         if (!is_null($customer)) {
-            $request->where('id = "' . $shoppingListId . '" and customer(id = "' . $customer->getId() . '")');
+            $predicate .= ' and customer(id = "' . $customer->getId() . '")';
         } else if (!is_null($anonymousId)) {
-            $request->where('id = "' . $shoppingListId . '" and anonymousId = "' . $anonymousId . '"');
-        } else {
-            throw new InvalidArgumentException('At least one of CustomerReference or AnonymousId should be present');
+            $predicate .= ' and anonymousId = "' . $anonymousId . '"';
         }
 
-        return $this->executeRequest($request, $locale, $params);
+        $request->where($predicate);
+
+        $shoppingLists = $this->executeRequest($request, $locale, $params);
+
+        return $shoppingLists->current();
     }
 
+    /**
+     * @param $locale
+     * @param CustomerReference $customer
+     * @param QueryParams|null $params
+     * @return mixed
+     */
     public function getAllShoppingListsByCustomer($locale, CustomerReference $customer, QueryParams $params = null)
     {
-        $request = RequestBuilder::of()->shoppingLists()->query()->where('customer(id = "' . $customer->getId() . '")')->sort('createdAt desc');
+        $request = RequestBuilder::of()->shoppingLists()->query()->where('customer(id = "' . $customer->getId() . '")');
 
         return $this->executeRequest($request, $locale, $params);
     }
 
     public function getAllShoppingListsByAnonymousId($locale, $anonymousId, QueryParams $params = null)
     {
-        $request = RequestBuilder::of()->shoppingLists()->query()->where('anonymousId = "' . $anonymousId . '"')->sort('createdAt desc');
+        $request = RequestBuilder::of()->shoppingLists()->query()->where('anonymousId = "' . $anonymousId . '"');
 
         return $this->executeRequest($request, $locale, $params);
     }
 
-    public function createByCustomer($locale, CustomerReference $customer, $shoppingListName, QueryParams $params = null)
+    /**
+     * @param $locale
+     * @param $shoppingListName
+     * @param CustomerReference|null $customer
+     * @param null $anonymousId
+     * @param QueryParams|null $params
+     * @return mixed
+     */
+    public function create($locale, $shoppingListName, CustomerReference $customer = null, $anonymousId = null, QueryParams $params = null)
     {
-        $key = $this->createUniqueKey($customer->getId());
         $localizedListName = LocalizedString::ofLangAndText($locale, $shoppingListName);
-        $shoppingListDraft = ShoppingListDraft::ofNameAndKey($localizedListName, $key)
-            ->setCustomer($customer);
+        $shoppingListDraft = ShoppingListDraft::ofName($localizedListName);
+
+        if (!is_null($customer)) {
+            $shoppingListDraft->setCustomer($customer);
+            $shoppingListDraft->setKey($this->createUniqueKey($customer->getId()));
+        } elseif (!is_null($anonymousId)) {
+            $shoppingListDraft->setAnonymousId($anonymousId);
+            $shoppingListDraft->setKey($this->createUniqueKey($anonymousId));
+        }
+
         $request = RequestBuilder::of()->shoppingLists()->create($shoppingListDraft);
 
         return $this->executeRequest($request, $locale, $params);
     }
 
-    public function createByAnonymous($locale, $anonymousId, $shoppingListName, QueryParams $params = null)
-    {
-        $key = $this->createUniqueKey($anonymousId);
-        $localizedListName = LocalizedString::ofLangAndText($locale, $shoppingListName);
-        $shoppingListDraft = ShoppingListDraft::ofNameAndKey($localizedListName, $key)
-            ->setAnonymousId($anonymousId);
-        $request = RequestBuilder::of()->shoppingLists()->create($shoppingListDraft);
-
-        return $this->executeRequest($request, $locale, $params);
-    }
-
-    private function createUniqueKey($customerId)
-    {
-        return $customerId . '-' . uniqid();
-    }
-
+    /**
+     * @param ShoppingList $shoppingList
+     * @param array $actions
+     * @param QueryParams|null $params
+     * @return ShoppingList
+     */
     public function update(ShoppingList $shoppingList, array $actions, QueryParams $params = null)
     {
         $client = $this->getClient();
@@ -107,19 +123,20 @@ class ShoppingListRepository extends Repository
         return $list;
     }
 
-    public function deleteByCustomer($locale, CustomerReference $customer, $shoppingListId)
+    /**
+     * @param $locale
+     * @param ShoppingList $shoppingList
+     * @return mixed
+     */
+    public function delete($locale, ShoppingList $shoppingList)
     {
-        $shoppingList = $this->getShoppingListForUser($locale, $shoppingListId, $customer);
-        $request = RequestBuilder::of()->shoppingLists()->delete($shoppingList->current());
+        $request = RequestBuilder::of()->shoppingLists()->delete($shoppingList);
 
         return $this->executeRequest($request, $locale);
     }
 
-    public function deleteByAnonymous($locale, $anonymousId, $shoppingListId)
+    private function createUniqueKey($customerId)
     {
-        $shoppingList = $this->getShoppingListForUser($locale, $shoppingListId, null, $anonymousId);
-        $request = RequestBuilder::of()->shoppingLists()->delete($shoppingList);
-
-        return $this->executeRequest($request, $locale);
+        return $customerId . '-' . uniqid();
     }
 }
