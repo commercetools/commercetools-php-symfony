@@ -50,9 +50,6 @@ class CommercetoolsExtension extends Extension
         }
 
         foreach ($config['cache'] as $key => $value) {
-            if (is_string($value)) {
-                $value = ($value == "true");
-            }
             $container->setParameter('commercetools.cache.' . $key, $value);
         }
 

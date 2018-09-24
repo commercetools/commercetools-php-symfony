@@ -2,11 +2,11 @@
 /**
  */
 
-namespace Commercetools\Symfony\CustomerBundle\Tests\Entity;
+namespace Commercetools\Symfony\ExampleBundle\Tests\Entity;
 
 
 use Commercetools\Core\Model\Common\Address;
-use Commercetools\Symfony\CustomerBundle\Entity\UserAddress;
+use Commercetools\Symfony\ExampleBundle\Entity\UserAddress;
 use PHPUnit\Framework\TestCase;
 
 class UserAddressTest extends TestCase

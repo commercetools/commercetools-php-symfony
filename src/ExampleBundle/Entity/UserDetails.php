@@ -1,6 +1,6 @@
 <?php
 
-namespace Commercetools\Symfony\CustomerBundle\Entity;
+namespace Commercetools\Symfony\ExampleBundle\Entity;
 
 use Commercetools\Core\Model\Customer\Customer;
 

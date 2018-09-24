@@ -2,11 +2,11 @@
 /**
  */
 
-namespace Commercetools\Symfony\CustomerBundle\Tests\Entity;
+namespace Commercetools\Symfony\ExampleBundle\Tests\Entity;
 
 
 use Commercetools\Core\Model\Customer\Customer;
-use Commercetools\Symfony\CustomerBundle\Entity\UserDetails;
+use Commercetools\Symfony\ExampleBundle\Entity\UserDetails;
 use PHPUnit\Framework\TestCase;
 
 class UserDetailsTest extends TestCase
