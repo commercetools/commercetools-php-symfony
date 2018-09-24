@@ -21,15 +21,12 @@ class CustomerRepository extends Repository
 {
     const CUSTOMER_ID = 'customer.id';
 
-    public function __construct(
-        $enableCache,
-        CacheItemPoolInterface $cache,
-        Client $client,
-        MapperFactory $mapperFactory
-    ) {
-        parent::__construct($enableCache, $cache, $client, $mapperFactory);
-    }
-
+    /**
+     * @param $locale
+     * @param $customerId
+     * @param QueryParams|null $params
+     * @return Customer
+     */
     public function getCustomerById($locale, $customerId, QueryParams $params = null)
     {
         $request = RequestBuilder::of()->customers()->getById($customerId);
@@ -37,6 +34,12 @@ class CustomerRepository extends Repository
         return $this->executeRequest($request, $locale, $params);
     }
 
+    /**
+     * @param Customer $customer
+     * @param array $actions
+     * @param QueryParams|null $params
+     * @return mixed
+     */
     public function update(Customer $customer, array $actions, QueryParams $params = null)
     {
         $request = RequestBuilder::of()->customers()->update($customer)->setActions($actions);
@@ -50,6 +53,12 @@ class CustomerRepository extends Repository
         return $this->executeRequest($request);
     }
 
+    /**
+     * @param Customer $customer
+     * @param $currentPassword
+     * @param $newPassword
+     * @return mixed
+     */
     public function changePassword(Customer $customer, $currentPassword, $newPassword)
     {
         $request = RequestBuilder::of()->customers()->changePassword($customer, $currentPassword, $newPassword);
@@ -80,7 +89,11 @@ class CustomerRepository extends Repository
         return $this->executeRequest($request, $locale);
     }
 
-    public function deleteCustomer(Customer $customer)
+    /**
+     * @param Customer $customer
+     * @return mixed
+     */
+    public function delete(Customer $customer)
     {
         $request = RequestBuilder::of()->customers()->delete($customer);
 

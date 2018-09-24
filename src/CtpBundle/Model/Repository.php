@@ -184,7 +184,7 @@ class Repository
      * @param QueryParams|null $params
      * @return mixed
      */
-    public function executeRequest(ClientRequestInterface $request, $locale = 'en', QueryParams $params = null)
+    protected function executeRequest(ClientRequestInterface $request, $locale = 'en', QueryParams $params = null)
     {
         $client = $this->getClient();
 
