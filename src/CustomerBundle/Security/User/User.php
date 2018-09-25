@@ -38,10 +38,7 @@ class User implements CtpUser
         return $this->password;
     }
 
-    public function getSalt()
-    {
-        // not needed;
-    }
+    public function getSalt(){}
 
     public function getUsername()
     {
@@ -96,9 +93,7 @@ class User implements CtpUser
         $this->cartItemCount = $cartItemCount;
     }
 
-    public function eraseCredentials()
-    {
-    }
+    public function eraseCredentials(){}
 
     public function isEqualTo(UserInterface $user)
     {

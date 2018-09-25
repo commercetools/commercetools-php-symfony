@@ -7,6 +7,11 @@
         <defaults autowire="true" autoconfigure="true" public="true" />
         <prototype namespace="Commercetools\Symfony\ExampleBundle\Controller\" resource="../../Controller/*" />
 
+        <service id="commercetools.auth.listener" class="Commercetools\Symfony\ExampleBundle\EventListener\AuthenticationSubscriber">
+            <tag name="kernel.event_subscriber"/>
+            <argument type="service" id="session"/>
+        </service>
+
         <service id="Commercetools\Symfony\ExampleBundle\EventListener\CartSubscriber">
             <tag name="kernel.event_subscriber"/>
             <argument type="service" id="session"/>

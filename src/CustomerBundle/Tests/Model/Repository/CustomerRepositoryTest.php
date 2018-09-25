@@ -6,30 +6,21 @@
 namespace Commercetools\Symfony\CustomerBundle\Tests\Model\Repository;
 
 
-use Commercetools\Core\Builder\Request\CustomerRequestBuilder;
 use Commercetools\Core\Client;
-use Commercetools\Core\Model\Common\JsonDeserializeInterface;
 use Commercetools\Core\Model\Customer\Customer;
 use Commercetools\Core\Model\Customer\CustomerDraft;
-use Commercetools\Core\Model\MapperInterface;
-use Commercetools\Core\Model\Type\StringType;
-use Commercetools\Core\Request\AbstractApiRequest;
-use Commercetools\Core\Request\ClientRequestInterface;
 use Commercetools\Core\Request\Customers\Command\CustomerSetKeyAction;
 use Commercetools\Core\Request\Customers\CustomerByIdGetRequest;
 use Commercetools\Core\Request\Customers\CustomerCreateRequest;
 use Commercetools\Core\Request\Customers\CustomerDeleteRequest;
 use Commercetools\Core\Request\Customers\CustomerPasswordChangeRequest;
 use Commercetools\Core\Request\Customers\CustomerUpdateRequest;
-use Commercetools\Core\Response\ApiResponseInterface;
 use Commercetools\Core\Response\ResourceResponse;
 use Commercetools\Symfony\CtpBundle\Model\QueryParams;
 use Commercetools\Symfony\CtpBundle\Service\MapperFactory;
 use Commercetools\Symfony\CustomerBundle\Model\Repository\CustomerRepository;
 use PHPUnit\Framework\TestCase;
 use Prophecy\Argument;
-use Prophecy\Prophecy\ObjectProphecy;
-use Psr\Cache\CacheItemPoolInterface;
 use Symfony\Component\Cache\Tests\Fixtures\ExternalAdapter;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
 

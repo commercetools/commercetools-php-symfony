@@ -7,15 +7,9 @@ namespace Commercetools\Symfony\CustomerBundle\Model\Repository;
 use Commercetools\Core\Builder\Request\RequestBuilder;
 use Commercetools\Core\Model\Customer\Customer;
 use Commercetools\Core\Model\Customer\CustomerDraft;
-use Commercetools\Core\Request\Customers\CustomerPasswordChangeRequest;
 use Commercetools\Symfony\CtpBundle\Model\QueryParams;
-use Commercetools\Symfony\CtpBundle\Service\MapperFactory;
 use Commercetools\Symfony\CtpBundle\Model\Repository;
-use Commercetools\Core\Client;
-use Psr\Cache\CacheItemPoolInterface;
-use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
-use Symfony\Component\Security\Core\User\UserInterface;
 
 class CustomerRepository extends Repository
 {

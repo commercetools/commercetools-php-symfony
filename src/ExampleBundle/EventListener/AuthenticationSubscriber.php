@@ -1,9 +1,8 @@
 <?php
 /**
- * @author @jayS-de <jens.schulze@commercetools.de>
  */
 
-namespace Commercetools\Symfony\CustomerBundle\EventListener;
+namespace Commercetools\Symfony\ExampleBundle\EventListener;
 
 use Commercetools\Symfony\CartBundle\Model\Repository\CartRepository;
 use Commercetools\Symfony\CustomerBundle\Model\Repository\CustomerRepository;
@@ -14,7 +13,7 @@ use Symfony\Component\Security\Core\AuthenticationEvents;
 use Symfony\Component\Security\Core\Event\AuthenticationEvent;
 use Symfony\Component\Security\Core\Event\AuthenticationFailureEvent;
 
-class AuthenticationListener implements EventSubscriberInterface
+class AuthenticationSubscriber implements EventSubscriberInterface
 {
     private $session;
 
@@ -62,8 +61,5 @@ class AuthenticationListener implements EventSubscriberInterface
         }
     }
 
-    public function onAuthenticationFailure(AuthenticationFailureEvent $event)
-    {
-
-    }
+    public function onAuthenticationFailure(AuthenticationFailureEvent $event){}
 }
