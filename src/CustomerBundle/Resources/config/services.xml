@@ -15,10 +15,7 @@
             <argument id="Commercetools\Symfony\CustomerBundle\Model\Repository\CustomerRepository" type="service"/>
             <argument id="event_dispatcher" type="service"/>
         </service>
-        <service id="commercetools.auth.listener" class="Commercetools\Symfony\CustomerBundle\EventListener\AuthenticationListener">
-            <tag name="kernel.event_subscriber"/>
-            <argument type="service" id="session"/>
-        </service>
+
         <service id="Commercetools\Symfony\CustomerBundle\Security\User\UserProvider">
             <argument type="service" id="session" />
         </service>

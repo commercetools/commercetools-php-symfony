@@ -4,6 +4,7 @@
 
 namespace Commercetools\Symfony\CustomerBundle\Security\Authentication\Provider;
 
+use Commercetools\Core\Builder\Request\RequestBuilder;
 use Commercetools\Core\Client;
 use Commercetools\Core\Request\Customers\CustomerLoginRequest;
 use Commercetools\Symfony\CustomerBundle\Security\User\CtpUser;
@@ -70,13 +71,17 @@ class AuthenticationProvider extends UserAuthenticationProvider
             if ($user instanceof CtpUser) {
                 $cartId = $user->getCartId();
             }
-            $request = CustomerLoginRequest::ofEmailAndPassword($token->getUser(), $presentedPassword, $cartId);
+
+            $request = RequestBuilder::of()->customers()->login($token->getUser(), $presentedPassword, $cartId);
             $response = $request->executeWithClient($client);
+
             if ($response->isError()) {
                 throw new BadCredentialsException('The presented password is invalid.');
             }
             $result = $request->mapResponse($response);
+
             $customer = $result->getCustomer();
+
             if ($currentUser !== $customer->getEmail()) {
                 throw new BadCredentialsException('The presented password is invalid.');
             }
@@ -118,7 +123,7 @@ class AuthenticationProvider extends UserAuthenticationProvider
         } catch (UsernameNotFoundException $notFound) {
             throw $notFound;
         } catch (\Exception $repositoryProblem) {
-            throw new AuthenticationServiceException($repositoryProblem->getMessage(), $token, 0, $repositoryProblem);
+            throw new AuthenticationServiceException($repositoryProblem->getMessage(), 0, $repositoryProblem);
         }
     }
 }

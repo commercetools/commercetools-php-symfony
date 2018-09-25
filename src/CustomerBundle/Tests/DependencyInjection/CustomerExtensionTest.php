@@ -26,10 +26,6 @@ class CustomerExtensionTest extends AbstractExtensionTestCase
 
         $this->assertContainerBuilderHasService('Commercetools\Symfony\CustomerBundle\Model\Repository\CustomerRepository');
         $this->assertContainerBuilderHasService('Commercetools\Symfony\CustomerBundle\Manager\CustomerManager');
-        $this->assertContainerBuilderHasService(
-            'commercetools.auth.listener',
-            'Commercetools\Symfony\CustomerBundle\EventListener\AuthenticationListener'
-        );
         $this->assertContainerBuilderHasService('Commercetools\Symfony\CustomerBundle\Security\User\UserProvider');
         $this->assertContainerBuilderHasService(
             'security.authentication_provider.commercetools',
