@@ -47,7 +47,6 @@ class CommercetoolsDataCollector extends DataCollector
 
     public function reset()
     {
-        $this->profile = null;
+        $this->data = [];
     }
-
 }
