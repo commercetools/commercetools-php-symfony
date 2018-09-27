@@ -45,4 +45,9 @@ class CommercetoolsDataCollector extends DataCollector
     {
         return 'commercetools';
     }
+
+    public function reset()
+    {
+        $this->data = [];
+    }
 }
