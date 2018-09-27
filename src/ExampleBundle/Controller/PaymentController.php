@@ -16,7 +16,7 @@ use Commercetools\Core\Request\Orders\Command\OrderAddPaymentAction;
 use Commercetools\Symfony\CartBundle\Manager\CartManager;
 use Commercetools\Symfony\CartBundle\Manager\PaymentManager;
 use Commercetools\Symfony\CartBundle\Model\Repository\CartRepository;
-use Commercetools\Symfony\StateBundle\Model\CtpMarkingStorePaymentState;
+use Commercetools\Symfony\StateBundle\Model\CtpMarkingStore\CtpMarkingStorePaymentState;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Commercetools\Core\Client;
 use Commercetools\Symfony\CartBundle\Manager\OrderManager;

@@ -8,6 +8,7 @@ namespace Commercetools\Symfony\StateBundle\Model;
 
 use Commercetools\Core\Model\State\State;
 use Commercetools\Core\Model\State\StateCollection;
+use Commercetools\Symfony\StateBundle\Model\CtpMarkingStore\CtpMarkingStore;
 
 class ProcessStates
 {

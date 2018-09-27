@@ -3,7 +3,7 @@
  *
  */
 
-namespace Commercetools\Symfony\StateBundle\Model;
+namespace Commercetools\Symfony\StateBundle\Model\TransitionHandler;
 
 
 use Commercetools\Symfony\CartBundle\Manager\OrderManager;

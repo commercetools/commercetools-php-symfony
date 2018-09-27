@@ -60,7 +60,7 @@ class ProcessStatesTest extends TestCase
             type: state_machine
             audit_trail: true
             marking_store:
-                service: Commercetools\Symfony\StateBundle\Model\CtpMarkingStoreOrderState
+                service: Commercetools\Symfony\StateBundle\Model\CtpMarkingStore\CtpMarkingStoreOrderState
             supports:
                 - Commercetools\Core\Model\Order\Order
             initial_place: created
@@ -95,7 +95,7 @@ class ProcessStatesTest extends TestCase
             type: workflow
             audit_trail: true
             marking_store:
-                service: Commercetools\Symfony\StateBundle\Model\CtpMarkingStoreOrderState
+                service: Commercetools\Symfony\StateBundle\Model\CtpMarkingStore\CtpMarkingStoreOrderState
             supports:
                 - Commercetools\Core\Model\Order\Order
             initial_place: created
