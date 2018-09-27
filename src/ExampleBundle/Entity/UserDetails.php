@@ -6,29 +6,12 @@ use Commercetools\Core\Model\Customer\Customer;
 
 class UserDetails
 {
-    private $user;
     private $firstName;
     private $lastName;
     private $email;
     private $password;
     private $currentPassword;
     private $newPassword;
-
-    /**
-     * @return mixed
-     */
-    public function getUser()
-    {
-        return $this->user;
-    }
-
-    /**
-     * @param mixed $user
-     */
-    public function setUser($user)
-    {
-        $this->user = $user;
-    }
 
     /**
      * @return mixed

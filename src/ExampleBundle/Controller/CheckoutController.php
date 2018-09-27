@@ -213,8 +213,7 @@ class CheckoutController extends Controller
 
         $entity = CartEntity::ofCart($cart);
         if (!is_null($user) && count(array_diff_key($cart->getShippingAddress()->toArray(), ['country' => true])) == 0 ) {
-            $address = $user->getDefaultShippingAddress();
-            $entity->shippingAddress = $address->toArray();
+            $entity->setShippingAddress($user->getDefaultShippingAddress()->toArray());
         }
 
         $form = $this->createFormBuilder($entity)

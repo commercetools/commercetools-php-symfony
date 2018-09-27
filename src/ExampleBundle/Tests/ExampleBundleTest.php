@@ -3,27 +3,26 @@
  *
  */
 
-namespace Commercetools\Symfony\StateBundle\Tests;
+namespace Commercetools\Symfony\ExampleBundle\Tests;
 
 
 use Commercetools\Symfony\CtpBundle\DependencyInjection\Compiler\ProfilerControllerPass;
-use Commercetools\Symfony\StateBundle\DependencyInjection\StateExtension;
-use Commercetools\Symfony\StateBundle\StateBundle;
+use Commercetools\Symfony\ExampleBundle\DependencyInjection\ExampleExtension;
+use Commercetools\Symfony\ExampleBundle\ExampleBundle;
 use PHPUnit\Framework\TestCase;
 use Prophecy\Argument;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 
-
-class StateBundleTest extends TestCase
+class ExampleBundleTest extends TestCase
 {
     public function testBuild()
     {
         $container = $this->prophesize(ContainerBuilder::class);
         $container->addCompilerPass(Argument::type(ProfilerControllerPass::class))->shouldBeCalledOnce();
 
-        $stateBundle = new StateBundle();
+        $exampleBundle = new ExampleBundle();
 
-        $this->assertInstanceOf(StateExtension::class, $stateBundle->getContainerExtension());
-        $stateBundle->build($container->reveal());
+        $this->assertInstanceOf(ExampleExtension::class, $exampleBundle->getContainerExtension());
+        $exampleBundle->build($container->reveal());
     }
 }
