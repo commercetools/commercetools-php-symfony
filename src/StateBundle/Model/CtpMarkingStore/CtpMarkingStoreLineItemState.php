@@ -3,7 +3,7 @@
  *
  */
 
-namespace Commercetools\Symfony\StateBundle\Model;
+namespace Commercetools\Symfony\StateBundle\Model\CtpMarkingStore;
 
 class CtpMarkingStoreLineItemState extends CtpMarkingStore
 {

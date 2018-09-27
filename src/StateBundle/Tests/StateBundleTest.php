@@ -6,7 +6,7 @@
 namespace Commercetools\Symfony\StateBundle\Tests;
 
 
-use Commercetools\Symfony\CtpBundle\DependencyInjection\Compiler\ProfilerControllerPass;
+use Commercetools\Symfony\StateBundle\DependencyInjection\Compiler\CtpStateMachinePass;
 use Commercetools\Symfony\StateBundle\DependencyInjection\StateExtension;
 use Commercetools\Symfony\StateBundle\StateBundle;
 use PHPUnit\Framework\TestCase;
@@ -19,7 +19,7 @@ class StateBundleTest extends TestCase
     public function testBuild()
     {
         $container = $this->prophesize(ContainerBuilder::class);
-        $container->addCompilerPass(Argument::type(ProfilerControllerPass::class))->shouldBeCalledOnce();
+        $container->addCompilerPass(Argument::type(CtpStateMachinePass::class))->shouldBeCalledOnce();
 
         $stateBundle = new StateBundle();
 

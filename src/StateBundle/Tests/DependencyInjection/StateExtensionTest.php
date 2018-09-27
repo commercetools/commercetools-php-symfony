@@ -26,5 +26,17 @@ class StateExtensionTest extends AbstractExtensionTestCase
         $this->assertContainerBuilderHasService('Commercetools\Symfony\StateBundle\Model\Repository\StateRepository');
         $this->assertContainerBuilderHasService('Commercetools\Symfony\StateBundle\Command\CommercetoolsStateCommand');
         $this->assertContainerBuilderHasService('Commercetools\Symfony\StateBundle\Command\CommercetoolsWorkflowCommand');
+
+        $this->assertContainerBuilderHasService('Commercetools\Symfony\StateBundle\Cache\StateKeyResolver');
+        $this->assertContainerBuilderHasService('Commercetools\Symfony\StateBundle\Cache\StateWarmer');
+        $this->assertContainerBuilderHasService('Commercetools\Symfony\StateBundle\Extension\ItemStateExtension');
+
+        $this->assertContainerBuilderHasService('Commercetools\Symfony\StateBundle\Model\CtpMarkingStore\CtpMarkingStore');
+
+        $this->assertContainerBuilderHasService('Commercetools\Symfony\StateBundle\Model\TransitionHandler\LineItemStateTransitionHandler');
+        $this->assertContainerBuilderHasService('Commercetools\Symfony\StateBundle\Model\TransitionHandler\OrderStateTransitionHandler');
+        $this->assertContainerBuilderHasService('Commercetools\Symfony\StateBundle\Model\TransitionHandler\PaymentStateTransitionHandler');
+        $this->assertContainerBuilderHasService('Commercetools\Symfony\StateBundle\Model\TransitionHandler\ProductStateTransitionHandler');
+        $this->assertContainerBuilderHasService('Commercetools\Symfony\StateBundle\Model\TransitionHandler\ReviewStateTransitionHandler');
     }
 }

@@ -3,11 +3,12 @@
  *
  */
 
-namespace Commercetools\Symfony\StateBundle\Model;
+namespace Commercetools\Symfony\StateBundle\Model\CtpMarkingStore;
 
 
 use Commercetools\Core\Model\State\StateReference;
 use Commercetools\Symfony\StateBundle\Cache\StateKeyResolver;
+use Commercetools\Symfony\StateBundle\Model\StateWrapper;
 use Symfony\Component\Workflow\Marking;
 use Symfony\Component\Workflow\MarkingStore\MarkingStoreInterface;
 
@@ -51,9 +52,7 @@ class CtpMarkingStore implements MarkingStoreInterface
         return $subject->getState();
     }
 
-    public function setMarking($subject, Marking $marking)
-    {
-    }
+    public function setMarking($subject, Marking $marking){}
 
     public function getStateReferenceOfInitial()
     {

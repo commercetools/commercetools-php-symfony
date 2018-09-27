@@ -17,7 +17,7 @@ use Commercetools\Symfony\CartBundle\Manager\ShippingMethodManager;
 use Commercetools\Symfony\ExampleBundle\Entity\CartEntity;
 use Commercetools\Symfony\ExampleBundle\Model\Form\Type\AddressType;
 use Commercetools\Symfony\CartBundle\Model\Repository\CartRepository;
-use Commercetools\Symfony\StateBundle\Model\CtpMarkingStoreOrderState;
+use Commercetools\Symfony\StateBundle\Model\CtpMarkingStore\CtpMarkingStoreOrderState;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;

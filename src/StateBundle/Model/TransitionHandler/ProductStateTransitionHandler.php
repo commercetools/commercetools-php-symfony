@@ -3,12 +3,12 @@
  *
  */
 
-namespace Commercetools\Symfony\StateBundle\Model;
+namespace Commercetools\Symfony\StateBundle\Model\TransitionHandler;
 
 
 use Commercetools\Core\Model\State\StateReference;
 use Commercetools\Core\Request\Products\Command\ProductTransitionStateAction;
-use Commercetools\Symfony\CartBundle\Model\ProductUpdateBuilder;
+use Commercetools\Symfony\CatalogBundle\Model\ProductUpdateBuilder;
 use Commercetools\Symfony\CatalogBundle\Manager\CatalogManager;
 use Symfony\Component\Workflow\Event\Event;
 

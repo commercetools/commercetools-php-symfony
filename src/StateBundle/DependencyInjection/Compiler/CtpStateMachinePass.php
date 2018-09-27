@@ -8,7 +8,7 @@ namespace Commercetools\Symfony\StateBundle\DependencyInjection\Compiler;
 
 use Commercetools\Symfony\StateBundle\Cache\StateKeyResolver;
 use Commercetools\Symfony\StateBundle\EventListener\TransitionSubscriber;
-use Commercetools\Symfony\StateBundle\Model\CtpMarkingStore;
+use Commercetools\Symfony\StateBundle\Model\CtpMarkingStore\CtpMarkingStore;
 use Commercetools\Symfony\StateBundle\Model\StateType;
 use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
@@ -34,7 +34,7 @@ class CtpStateMachinePass implements CompilerPassInterface
             $container->setDefinition($fullClassName, $newMarkingStore);
 
             $container->register('transition_listener.' . $stateMachineName, TransitionSubscriber::class)
-                ->addArgument(new Reference('Commercetools\Symfony\StateBundle\Model\\' . $stateMachineName . 'TransitionHandler'))
+                ->addArgument(new Reference('Commercetools\Symfony\StateBundle\Model\TransitionHandler\\' . $stateMachineName . 'TransitionHandler'))
                 ->addTag('kernel.event_listener', [
                     'event' => 'workflow.' . $stateMachineName . '.transition',
                     'method' => 'transitionSubject'

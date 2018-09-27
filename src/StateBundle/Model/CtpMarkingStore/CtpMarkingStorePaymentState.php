@@ -3,7 +3,7 @@
  *
  */
 
-namespace Commercetools\Symfony\StateBundle\Model;
+namespace Commercetools\Symfony\StateBundle\Model\CtpMarkingStore;
 
 
 use Commercetools\Core\Model\Payment\Payment;
