@@ -6,11 +6,13 @@ namespace Commercetools\Symfony\CatalogBundle\Manager;
 
 
 use Commercetools\Core\Model\Product\Product;
+use Commercetools\Core\Model\Product\ProductProjection;
 use Commercetools\Core\Request\AbstractAction;
-use Commercetools\Symfony\CartBundle\Model\ProductUpdateBuilder;
+use Commercetools\Symfony\CatalogBundle\Model\ProductUpdateBuilder;
 use Commercetools\Symfony\CatalogBundle\Event\ProductPostUpdateEvent;
 use Commercetools\Symfony\CatalogBundle\Event\ProductUpdateEvent;
 use Commercetools\Symfony\CatalogBundle\Model\Repository\CatalogRepository;
+use Commercetools\Symfony\CtpBundle\Model\QueryParams;
 use Psr\Http\Message\UriInterface;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
@@ -37,6 +39,18 @@ class CatalogManager
         $this->dispatcher = $dispatcher;
     }
 
+    /**
+     * @param $locale
+     * @param $itemsPerPage
+     * @param $currentPage
+     * @param $sort
+     * @param $currency
+     * @param $country
+     * @param UriInterface $uri
+     * @param null $search
+     * @param null $filters
+     * @return array
+     */
     public function getProducts(
         $locale,
         $itemsPerPage,
@@ -51,29 +65,59 @@ class CatalogManager
         return $this->repository->getProducts($locale, $itemsPerPage, $currentPage, $sort, $currency, $country, $uri, $search, $filters);
     }
 
-    public function getProductBySlug($slug, $locale, $currency, $country)
+    /**
+     * @param $locale
+     * @param $slug
+     * @param $currency
+     * @param $country
+     * @return \Commercetools\Core\Model\Product\ProductProjection|null
+     */
+    public function getProductBySlug($locale, $slug, $currency, $country)
     {
-        return $this->repository->getProductBySlug($slug, $locale, $currency, $country);
+        return $this->repository->getProductBySlug($locale, $slug, $currency, $country);
     }
 
+    /**
+     * @param $locale
+     * @param $term
+     * @param $limit
+     * @param $currency
+     * @param $country
+     * @return mixed
+     */
     public function suggestProducts($locale, $term, $limit, $currency, $country)
     {
         return $this->repository->suggestProducts($locale, $term, $limit, $currency, $country);
     }
 
-    public function getProductById($id, $locale)
+    /**
+     * @param $locale
+     * @param $id
+     * @return ProductProjection
+     */
+    public function getProductById($locale, $id)
     {
-        return $this->repository->getProductById($id, $locale);
+        return $this->repository->getProductById($locale, $id);
     }
 
-    public function getProductTypes($locale, $sort)
+    /**
+     * @param $locale
+     * @param QueryParams $params
+     * @return mixed
+     */
+    public function getProductTypes($locale, QueryParams $params = null)
     {
-        return $this->repository->getProductTypes($locale, $sort);
+        return $this->repository->getProductTypes($locale, $params);
     }
 
-    public function getCategories($locale, $sort)
+    /**
+     * @param $locale
+     * @param QueryParams $params
+     * @return mixed
+     */
+    public function getCategories($locale, QueryParams $params = null)
     {
-        return $this->repository->getCategories($locale, $sort);
+        return $this->repository->getCategories($locale, $params);
     }
 
     /**
@@ -85,6 +129,12 @@ class CatalogManager
         return new ProductUpdateBuilder($product, $this);
     }
 
+    /**
+     * @param Product $product
+     * @param AbstractAction $action
+     * @param null $eventName
+     * @return AbstractAction[]
+     */
     public function dispatch(Product $product, AbstractAction $action, $eventName = null)
     {
         $eventName = is_null($eventName) ? get_class($action) : $eventName;
@@ -109,6 +159,11 @@ class CatalogManager
         return $product;
     }
 
+    /**
+     * @param Product $product
+     * @param array $actions
+     * @return AbstractAction[]
+     */
     public function dispatchPostUpdate(Product $product, array $actions)
     {
         $event = new ProductPostUpdateEvent($product, $actions);

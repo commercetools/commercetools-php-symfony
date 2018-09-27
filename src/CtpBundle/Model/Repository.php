@@ -106,6 +106,14 @@ class Repository
         return $result;
     }
 
+    /**
+     * @param Client $client
+     * @param QueryAllRequestInterface $request
+     * @param $locale
+     * @return mixed
+     * @throws \Commercetools\Core\Error\ApiException
+     * @throws \Commercetools\Core\Error\InvalidTokenException
+     */
     protected function getAll(Client $client, QueryAllRequestInterface $request, $locale)
     {
         $lastId = null;
