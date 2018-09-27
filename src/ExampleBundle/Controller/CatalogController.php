@@ -6,6 +6,7 @@ use Commercetools\Core\Client;
 use Commercetools\Core\Model\Product\ProductProjection;
 use Commercetools\Core\Model\Product\Search\Filter;
 use Commercetools\Symfony\CatalogBundle\Manager\CatalogManager;
+use Commercetools\Symfony\CtpBundle\Model\QueryParams;
 use Commercetools\Symfony\ExampleBundle\Model\Form\Type\AddToCartType;
 use Commercetools\Symfony\ExampleBundle\Model\Form\Type\AddToShoppingListType;
 use GuzzleHttp\Psr7\Uri;
@@ -35,6 +36,7 @@ class CatalogController extends Controller
         $this->catalogManager = $catalogManager;
         $this->shoppingListManager = $shoppingListManager;
     }
+
     public function indexAction(Request $request, $categoryId = null, $productTypeId = null)
     {
         $form = $this->createFormBuilder()
@@ -87,7 +89,7 @@ class CatalogController extends Controller
         $currency = $this->getCurrencyFromConfig();
 
         try {
-            $product = $this->catalogManager->getProductBySlug($slug, $request->getLocale(), $currency, $country);
+            $product = $this->catalogManager->getProductBySlug($request->getLocale(), $slug, $currency, $country);
         } catch (NotFoundHttpException $e) {
             $this->addFlash('error', sprintf('Cannot find product: %s', $slug));
             return $this->render('@Example/index.html.twig');
@@ -98,7 +100,7 @@ class CatalogController extends Controller
 
     public function detailByIdAction(Request $request, $id, UserInterface $user = null)
     {
-        $product = $this->catalogManager->getProductById($id, $request->getLocale());
+        $product = $this->catalogManager->getProductById($request->getLocale(), $id);
 
         return $this->productDetails($request, $product, $user);
     }
@@ -146,8 +148,8 @@ class CatalogController extends Controller
 
     public function suggestAction(Request $request, $searchTerm)
     {
-        $country = $this->getCountry();
-        $currency = $this->getCurrency();
+        $country = $this->getCountryFromConfig();
+        $currency = $this->getCurrencyFromConfig();
 
         $products = $this->catalogManager->suggestProducts($request->getLocale(), $searchTerm, 5, $currency, $country);
 
@@ -174,7 +176,9 @@ class CatalogController extends Controller
 
     public function getCategoriesAction(Request $request, $sort = 'id asc')
     {
-        $categories = $this->catalogManager->getCategories($request->getLocale(), $sort);
+        $params = QueryParams::of()->add('sort', $sort);
+
+        $categories = $this->catalogManager->getCategories($request->getLocale(), $params);
 
         return $this->render( 'ExampleBundle:catalog:categoriesList.html.twig', [
             'categories' => $categories
@@ -183,7 +187,9 @@ class CatalogController extends Controller
 
     public function getProductTypesAction(Request $request, $sort = 'id asc')
     {
-        $productTypes = $this->catalogManager->getProductTypes($request->getLocale(), $sort);
+        $params = QueryParams::of()->add('sort', $sort);
+
+        $productTypes = $this->catalogManager->getProductTypes($request->getLocale(), $params);
 
         return $this->render( 'ExampleBundle:catalog:productTypesList.html.twig', [
             'productTypes' => $productTypes

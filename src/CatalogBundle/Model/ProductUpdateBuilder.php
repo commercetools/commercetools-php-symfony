@@ -2,7 +2,7 @@
 /**
  */
 
-namespace Commercetools\Symfony\CartBundle\Model;
+namespace Commercetools\Symfony\CatalogBundle\Model;
 
 
 use Commercetools\Core\Builder\Update\ProductsActionBuilder;
