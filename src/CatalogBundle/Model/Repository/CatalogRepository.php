@@ -51,15 +51,14 @@ class CatalogRepository extends Repository
      */
     public function getProductBySlug($locale, $slug, $currency, $country)
     {
-        $client = $this->getClient();
         $cacheKey = static::NAME . '-' . $slug . '-' . $locale;
 
         $productRequest = RequestBuilder::of()->productProjections()
-            ->getBySlug($slug, $client->getConfig()->getContext()->getLanguages())
+            ->getBySlug($slug, $this->client->getConfig()->getContext()->getLanguages())
             ->country($country)
             ->currency($currency);
 
-        $productProjection = $this->retrieve($client, $cacheKey, $productRequest, $locale);
+        $productProjection = $this->retrieve($cacheKey, $productRequest, $locale);
 
         return $productProjection;
     }
@@ -71,12 +70,11 @@ class CatalogRepository extends Repository
      */
     public function getProductById($locale, $id)
     {
-        $client = $this->getClient();
         $cacheKey = static::NAME . '-' . $id . '-' . $locale;
 
         $productRequest = RequestBuilder::of()->productProjections()->getById($id);
 
-        $product = $this->retrieve($client, $cacheKey, $productRequest, $locale);
+        $product = $this->retrieve($cacheKey, $productRequest, $locale);
 
         return $product;
     }
