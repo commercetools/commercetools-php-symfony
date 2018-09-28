@@ -9,7 +9,6 @@ namespace Commercetools\Symfony\StateBundle\DependencyInjection\Compiler;
 use Commercetools\Symfony\StateBundle\Cache\StateKeyResolver;
 use Commercetools\Symfony\StateBundle\EventListener\TransitionSubscriber;
 use Commercetools\Symfony\StateBundle\Model\CtpMarkingStore\CtpMarkingStore;
-use Commercetools\Symfony\StateBundle\Model\StateType;
 use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Definition;
@@ -40,14 +39,5 @@ class CtpStateMachinePass implements CompilerPassInterface
                     'method' => 'transitionSubject'
                 ]);
         }
-    }
-
-    private function getStateMachineType($type)
-    {
-        $types = array_combine(
-            array_map('current', StateType::TYPES),
-            array_keys(StateType::TYPES)
-        );
-        return $types[$type];
     }
 }
