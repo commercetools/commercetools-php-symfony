@@ -24,9 +24,13 @@ class CtpStateMachinePassTest extends TestCase
         $fooDefinition->addTag('workflow.definition');
         $container->addDefinitions(['foo' => $fooDefinition]);
 
+        $wrongDefinition = new Definition('wrong', [2 => 'arg2', 3 => 'ignore']);
+        $container->addDefinitions(['random' => $wrongDefinition]);
+
         $container->addCompilerPass($compilerPass);
         $compilerPass->process($container);
 
         $this->assertTrue($container->hasDefinition('transition_listener.foobar'));
+        $this->assertFalse($container->hasDefinition('transition_listener.ignore'));
     }
 }

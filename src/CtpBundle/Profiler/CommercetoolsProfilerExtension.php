@@ -42,7 +42,7 @@ class CommercetoolsProfilerExtension
         }
 
         if ($this->stopwatch) {
-            $this->events[$profile]->stop();
+            $this->events[$profile]->stop($profile->getName());
             unset($this->events[$profile]);
         }
     }

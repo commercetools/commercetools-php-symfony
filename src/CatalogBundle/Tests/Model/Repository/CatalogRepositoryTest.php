@@ -64,7 +64,7 @@ class CatalogRepositoryTest extends TestCase
     private function getCatalogRepository()
     {
         return new CatalogRepository(
-            false,
+            "false",
             $this->cache,
             $this->client->reveal(),
             $this->mapperFactory->reveal(),
