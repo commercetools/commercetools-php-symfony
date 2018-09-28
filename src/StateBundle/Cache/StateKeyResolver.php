@@ -65,7 +65,7 @@ class StateKeyResolver
         }
 
         $state = $this->stateRepository->getByKey($key);
-        $this->storeValue($item, $state->current()->getId());
+        $this->storeValue($item, $state->getId());
 
         $item = $this->cache->getItem($key);
 

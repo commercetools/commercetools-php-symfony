@@ -11,16 +11,15 @@ use Commercetools\Core\Model\State\StateReference;
 use Commercetools\Symfony\StateBundle\Cache\StateKeyResolver;
 use Commercetools\Symfony\StateBundle\Model\ItemStateWrapper;
 use Twig\Extension\AbstractExtension;
-use Twig\TwigFilter;
 use Twig\TwigFunction;
 
 class ItemStateExtension extends AbstractExtension
 {
-    private $cacheHelper;
+    private $stateKeyResolver;
 
-    public function __construct(StateKeyResolver $cacheHelper)
+    public function __construct(StateKeyResolver $stateKeyResolver)
     {
-        $this->cacheHelper = $cacheHelper;
+        $this->stateKeyResolver = $stateKeyResolver;
     }
 
     public function getFunctions()
@@ -30,23 +29,10 @@ class ItemStateExtension extends AbstractExtension
         );
     }
 
-    public function getFilters()
-    {
-        return array(
-            new TwigFilter('resolveStateId', [$this, 'resolveStateId']),
-        );
-    }
-
     public function wrapItemState(Order $order, StateReference $itemStateReference, $item)
     {
         $wrappedItemState = ItemStateWrapper::create($order, $itemStateReference, $item);
 
         return $wrappedItemState;
     }
-
-    public function resolveStateId($id)
-    {
-        return $this->cacheHelper->resolve($id);
-    }
-
 }

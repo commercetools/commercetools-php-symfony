@@ -34,5 +34,6 @@ class ProfilerControllerPassTest extends TestCase
         $compilerPass->process($container);
 
         $this->assertTrue($container->hasDefinition('commercetools.profiler_controller'));
+        $this->assertTrue($container->hasDefinition('commercetools.profiler.extension'));
     }
 }
