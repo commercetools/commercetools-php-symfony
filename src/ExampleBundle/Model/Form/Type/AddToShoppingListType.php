@@ -1,6 +1,5 @@
 <?php
 /**
- * @author: Ylambers <yaron.lambers@commercetools.de>
  */
 
 namespace Commercetools\Symfony\ExampleBundle\Model\Form\Type;
@@ -16,6 +15,7 @@ class AddToShoppingListType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
+//        dump($options['data']);
         $builder
             ->add('_productId', HiddenType::class);
 
@@ -25,7 +25,7 @@ class AddToShoppingListType extends AbstractType
                 TextType::class
             );
         } else {
-            $variantChoices = (isset($options['data']['variant_choices']) ? $options['data']['variant_choices'] : []);
+            $variantChoices = $options['data']['variant_choices'] ?? [];
             $builder->add(
                 '_variantId',
                 ChoiceType::class,

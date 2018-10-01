@@ -1,6 +1,5 @@
 <?php
 /**
- * @author: Ylambers <yaron.lambers@commercetools.de>
  */
 
 namespace Commercetools\Symfony\ExampleBundle\Model\Form\Type;
@@ -20,11 +19,7 @@ class AddressType extends AbstractType
     {
         $builder->add('title', TextType::class, ['required' => false]);
         $builder->add('salutation', ChoiceType::class, [
-            'choices' =>
-                [
-                    'Mr' => 'Mr',
-                    'Mrs' => 'Mrs'
-                ]
+            'choices' => ['Mr' => 'Mr', 'Mrs' => 'Mrs']
         ]);
         $builder->add('firstName', TextType::class, ['attr' => ['data-required' => 'true']]);
         $builder->add('lastName', TextType::class, ['attr' => ['data-required' => 'true']]);
@@ -38,23 +33,14 @@ class AddressType extends AbstractType
         $builder->add('country', CountryType::class, ['attr' => ['data-required' => 'true']]);
         $builder->add('region', TextType::class, ['required' => false]);
         $builder->add('state', TextType::class, ['required' => false]);
-        $builder->add('pOBox', TextType::class,
-            [
-                'label' => 'Postal Code', 'attr' =>
-                    [
-                        'data-required' => 'true'
-                    ]
-            ]);
-        $builder->add('additionalAddressInfo', TextareaType::class,
-            [
-                'required' => false,
-                'attr'  => ['class' => 'form_text']
-            ]);
-        $builder->add('additionalStreetInfo', TextareaType::class,
-            [
-                'required' => false,
-                'attr'  => ['class' => 'form_text']
-            ]);
+        $builder->add('pOBox', TextType::class, ['attr' => ['data-required' => 'true']]);
+        $builder->add('postalCode', TextType::class, ['attr' => ['data-required' => 'true']]);
+        $builder->add('additionalAddressInfo', TextareaType::class, [
+            'required' => false, 'attr'  => ['class' => 'form_text']
+        ]);
+        $builder->add('additionalStreetInfo', TextareaType::class, [
+            'required' => false, 'attr'  => ['class' => 'form_text']
+        ]);
         $builder->add('phone', TextType::class, ['required' => false] );
         $builder->add('mobile', TextType::class, ['required' => false] );
     }
