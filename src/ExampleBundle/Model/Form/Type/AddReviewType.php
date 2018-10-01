@@ -1,6 +1,5 @@
 <?php
 /**
- *
  */
 
 namespace Commercetools\Symfony\ExampleBundle\Model\Form\Type;

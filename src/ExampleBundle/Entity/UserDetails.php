@@ -127,12 +127,17 @@ class UserDetails
         return $this;
     }
 
+    /**
+     * @param Customer $customer
+     * @return UserDetails
+     */
     public static function ofCustomer(Customer $customer)
     {
         $userDetails = new static();
-        $userDetails->setFirstName($customer->getFirstName());
-        $userDetails->setLastName($customer->getLastName());
-        $userDetails->setEmail($customer->getEmail());
+        $userDetails
+            ->setFirstName($customer->getFirstName())
+            ->setLastName($customer->getLastName())
+            ->setEmail($customer->getEmail());
 
         return $userDetails;
     }

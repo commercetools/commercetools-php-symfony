@@ -506,6 +506,7 @@ class UserAddress
         $userAddress->setPhone($address->getPhone());
         $userAddress->setMobile($address->getMobile());
         $userAddress->setDepartment($address->getDepartment());
+        $userAddress->setPostalCode($address->getPostalCode());
 
         return $userAddress;
     }
@@ -537,6 +538,7 @@ class UserAddress
         $newAddress->setPhone($this->getPhone());
         $newAddress->setMobile($this->getMobile());
         $newAddress->setDepartment($this->getDepartment());
+        $newAddress->setPostalCode($this->getPostalCode());
 
         return $newAddress;
     }

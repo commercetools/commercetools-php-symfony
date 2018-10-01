@@ -90,6 +90,5 @@ class ReviewRepository extends Repository
         $review = $request->mapFromResponse($response);
 
         return $review;
-
     }
 }
