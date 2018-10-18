@@ -7,7 +7,7 @@ use Commercetools\Core\Model\Product\ProductProjection;
 use Commercetools\Core\Model\Product\Search\Filter;
 use Commercetools\Symfony\CatalogBundle\Manager\CatalogManager;
 use Commercetools\Symfony\CtpBundle\Model\QueryParams;
-use Commercetools\Symfony\ExampleBundle\Entity\ProductToCart;
+use Commercetools\Symfony\ExampleBundle\Entity\ProductEntity;
 use Commercetools\Symfony\ExampleBundle\Entity\ProductToShoppingList;
 use Commercetools\Symfony\ExampleBundle\Model\Form\Type\AddToCartType;
 use Commercetools\Symfony\ExampleBundle\Model\Form\Type\AddToShoppingListType;
@@ -127,9 +127,8 @@ class CatalogController extends Controller
             $shoppingListsIds[(string)$shoppingList->getName()] = $shoppingList->getId();
         }
 
-        $productEntity = new ProductToCart();
+        $productEntity = new ProductEntity();
         $productEntity->setProductId($product->getId())
-            ->setVariantId(1)
             ->setSlug((string)$product->getSlug())
             ->setAllVariants($variantIds);
 
@@ -138,7 +137,6 @@ class CatalogController extends Controller
 
         $productToShoppingList = new ProductToShoppingList();
         $productToShoppingList->setProductId($product->getId())
-            ->setVariantId(1)
             ->setSlug((string)$product->getSlug())
             ->setAllVariants($variantIds)
             ->setAvailableShoppingLists($shoppingListsIds);

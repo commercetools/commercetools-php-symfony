@@ -5,7 +5,7 @@
 
 namespace Commercetools\Symfony\ExampleBundle\Entity;
 
-class ProductToShoppingList extends ProductToCart
+class ProductToShoppingList extends ProductEntity
 {
     private $shoppingListId;
     private $availableShoppingLists;
@@ -20,6 +20,7 @@ class ProductToShoppingList extends ProductToCart
 
     /**
      * @param mixed $shoppingListId
+     * @return ProductToShoppingList
      */
     public function setShoppingListId($shoppingListId)
     {
@@ -38,6 +39,7 @@ class ProductToShoppingList extends ProductToCart
 
     /**
      * @param mixed $availableShoppingLists
+     * @return ProductToShoppingList
      */
     public function setAvailableShoppingLists($availableShoppingLists)
     {
@@ -45,6 +47,4 @@ class ProductToShoppingList extends ProductToCart
 
         return $this;
     }
-
-
 }

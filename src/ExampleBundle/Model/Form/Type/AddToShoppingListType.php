@@ -9,7 +9,6 @@ use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\HiddenType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
-use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 
 class AddToShoppingListType extends AbstractType
@@ -20,23 +19,19 @@ class AddToShoppingListType extends AbstractType
         $productEntity = $options['data'];
 
         $builder
-            ->add('productId', HiddenType::class);
+            ->add('productId', HiddenType::class)
+            ->add('variantId', HiddenType::class)
+            ->add('shoppingListId', HiddenType::class);
 
-        if ($productEntity->getVariantIdText() === true) {
-            $builder->add('variantId', TextType::class);
-        } else {
-            $variantChoices = $productEntity->getAllVariants();
-            $builder->add('variantId',
-                ChoiceType::class, [
-                    'choices' => $variantChoices,
-                    'label' => "Select the variant",
-                    'attr' => ['class' => 'form']
-                ]);
+        if (!empty($productEntity->getAllVariants())) {
+            $builder->add('variantId', ChoiceType::class, [
+                'choices' => $productEntity->getAllVariants(),
+                'label' => "Select the variant",
+                'attr' => ['class' => 'form']
+            ]);
         }
 
-        if (empty($productEntity->getAvailableShoppingLists())) {
-            $builder->add('shoppingListId', TextType::class);
-        } else {
+        if (!empty($productEntity->getAvailableShoppingLists())) {
             $variantChoices = $productEntity->getAvailableShoppingLists();
             $builder->add('shoppingListId', ChoiceType::class, [
                 'choices' => $variantChoices,
