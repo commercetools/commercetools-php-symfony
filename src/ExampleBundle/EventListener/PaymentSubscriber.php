@@ -47,13 +47,11 @@ class PaymentSubscriber implements EventSubscriberInterface
 
     public function onPaymentPostCreate(PaymentPostCreateEvent $event)
     {
-//        dump(['onPaymentPostCreate', $event]);
         return true;
     }
 
     public function onPaymentCompleted(Event $event)
     {
-//        dump(['onPaymentCompleted', $event]);
         return true;
     }
 }

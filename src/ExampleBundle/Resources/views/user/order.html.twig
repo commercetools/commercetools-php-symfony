@@ -11,7 +11,6 @@
     <div class="row">
         <h1>My Order: {{ order.id }}</h1>
         <hr />
-        {#{{ dump(order) }}#}
         <div class="col-md-12">
             Order number: {{ order.id }}<br />
             Order date: {{ order.getCreatedAt.getDateTime|date("m/d/Y H:i") }} <br />

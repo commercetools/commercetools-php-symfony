@@ -206,8 +206,6 @@ class Repository
 
         $response = $request->executeWithClient($client);
 
-//        dump($response->getBody());
-
         $mappedResponse = $request->mapFromResponse(
             $response,
             $this->getMapper($locale)

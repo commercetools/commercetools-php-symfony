@@ -17,42 +17,27 @@ class AddToCartType extends AbstractType
     {
         $quantityChoices = array(1,2,3,4,5,6,7,8,9,10);
         $quantityChoices = array_combine($quantityChoices, $quantityChoices);
+        $productEntity = $options['data'];
 
-        $builder
-            ->add('_productId', HiddenType::class);
+        $builder->add('productId', HiddenType::class);
 
-        if (isset($options['data']['variantIdText']) && $options['data']['variantIdText'] === true) {
-            $builder->add(
-                'variantId',
-                TextType::class
-            );
+        if ($productEntity->getVariantIdText() === true) {
+            $builder->add('variantId', TextType::class);
         } else {
-            $variantChoices = (isset($options['data']['variant_choices']) ? $options['data']['variant_choices'] : []);
-            $builder->add(
-                'variantId',
-                ChoiceType::class,
-                [
-                    'choices' => $variantChoices,
-                    'label' => "Select the variant",
-                    'attr' => [
-                        'class' => 'form'
-                    ]
-                ]
-            );
+            $variantChoices = $productEntity->getAllVariants();
+            $builder->add('variantId', ChoiceType::class, [
+                'choices' => $variantChoices,
+                'label' => "Select the variant",
+                'attr' => ['class' => 'form']
+            ]);
         }
 
         $builder
-            ->add(
-                'quantity',
-                ChoiceType::class,
-                [
-                    'choices' => $quantityChoices,
-                    'label' => "Select the amount of items",
-                    'attr' => [
-                        'class' => 'form'
-                    ]
-                ]
-            )
+            ->add('quantity', ChoiceType::class, [
+                'choices' => $quantityChoices,
+                'label' => "Select the amount of items",
+                'attr' => ['class' => 'form']
+            ])
             ->add('slug', HiddenType::class)
             ->add('addToCart', SubmitType::class, ['label' => 'Add to cart'])
         ;
