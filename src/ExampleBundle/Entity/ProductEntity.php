@@ -5,11 +5,10 @@
 
 namespace Commercetools\Symfony\ExampleBundle\Entity;
 
-class ProductToCart
+class ProductEntity
 {
     private $productId;
     private $variantId;
-    private $variantIdText;
     private $slug;
     private $quantity;
     private $allVariants;
@@ -24,6 +23,7 @@ class ProductToCart
 
     /**
      * @param mixed $productId
+     * @return ProductEntity
      */
     public function setProductId($productId)
     {
@@ -37,34 +37,17 @@ class ProductToCart
      */
     public function getVariantId()
     {
-        return $this->variantId ?? 1;
+        return $this->variantId;
     }
 
     /**
      * @param mixed $variantId
+     * @return ProductEntity
      */
     public function setVariantId($variantId)
     {
         $this->variantId = $variantId;
     
-        return $this;
-    }
-
-    /**
-     * @return mixed
-     */
-    public function getVariantIdText()
-    {
-        return $this->variantIdText;
-    }
-
-    /**
-     * @param mixed $variantIdText
-     */
-    public function setVariantIdText($variantIdText)
-    {
-        $this->variantIdText = $variantIdText;
-
         return $this;
     }
 
@@ -78,6 +61,7 @@ class ProductToCart
 
     /**
      * @param mixed $slug
+     * @return ProductEntity
      */
     public function setSlug($slug)
     {
@@ -96,6 +80,7 @@ class ProductToCart
 
     /**
      * @param mixed $quantity
+     * @return ProductEntity
      */
     public function setQuantity($quantity)
     {
@@ -114,16 +99,12 @@ class ProductToCart
 
     /**
      * @param mixed $allVariants
+     * @return ProductEntity
      */
     public function setAllVariants($allVariants)
     {
         $this->allVariants = $allVariants;
 
         return $this;
-    }
-
-    public function toArray()
-    {
-        return get_object_vars($this);
     }
 }

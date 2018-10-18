@@ -94,7 +94,6 @@ class ShoppingListController extends Controller
         }
 
         $productEntity = new ProductToShoppingList();
-        $productEntity->setVariantIdText(true);
         $productEntity->setAvailableShoppingLists($shoppingListsIds);
 
         $form = $this->createForm(AddToShoppingListType::class, $productEntity);

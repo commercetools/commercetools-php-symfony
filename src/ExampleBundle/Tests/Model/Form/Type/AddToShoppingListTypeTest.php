@@ -21,7 +21,6 @@ class AddToShoppingListTypeTest extends TypeTestCase
         ];
 
         $productEntity = new ProductToShoppingList();
-        $productEntity->setVariantIdText(true);
 
         $form = $this->factory->create(AddToShoppingListType::class, $productEntity);
 
@@ -29,7 +28,6 @@ class AddToShoppingListTypeTest extends TypeTestCase
         $expectedProductEntity
             ->setProductId('foo')
             ->setVariantId('bar-1')
-            ->setVariantIdText(true)
             ->setShoppingListId('list-1');
 
         $form->submit($formData);

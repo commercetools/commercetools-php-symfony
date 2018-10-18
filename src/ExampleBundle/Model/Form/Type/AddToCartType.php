@@ -4,11 +4,11 @@
 
 namespace Commercetools\Symfony\ExampleBundle\Model\Form\Type;
 
+use Commercetools\Symfony\ExampleBundle\Entity\ProductEntity;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\HiddenType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
-use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 
 class AddToCartType extends AbstractType
@@ -17,16 +17,17 @@ class AddToCartType extends AbstractType
     {
         $quantityChoices = array(1,2,3,4,5,6,7,8,9,10);
         $quantityChoices = array_combine($quantityChoices, $quantityChoices);
+
+        /** @var ProductEntity $productEntity */
         $productEntity = $options['data'];
 
-        $builder->add('productId', HiddenType::class);
+        $builder
+            ->add('productId', HiddenType::class)
+            ->add('variantId', HiddenType::class);
 
-        if ($productEntity->getVariantIdText() === true) {
-            $builder->add('variantId', TextType::class);
-        } else {
-            $variantChoices = $productEntity->getAllVariants();
+        if (!empty($productEntity->getAllVariants())) {
             $builder->add('variantId', ChoiceType::class, [
-                'choices' => $variantChoices,
+                'choices' => $productEntity->getAllVariants(),
                 'label' => "Select the variant",
                 'attr' => ['class' => 'form']
             ]);

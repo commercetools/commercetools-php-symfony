@@ -6,7 +6,7 @@
 namespace Commercetools\Symfony\ExampleBundle\Tests\Model\Form\Type;
 
 
-use Commercetools\Symfony\ExampleBundle\Entity\ProductToCart;
+use Commercetools\Symfony\ExampleBundle\Entity\ProductEntity;
 use Commercetools\Symfony\ExampleBundle\Model\Form\Type\AddToCartType;
 use Symfony\Component\Form\Test\TypeTestCase;
 
@@ -21,16 +21,14 @@ class AddToCartTypeTest extends TypeTestCase
             'slug' => '/foo/bar',
         ];
 
-        $productEntity = new ProductToCart();
-        $productEntity->setVariantIdText(true);
+        $productEntity = new ProductEntity();
 
         $form = $this->factory->create(AddToCartType::class, $productEntity);
 
-        $expectedProductEntity = new ProductToCart();
+        $expectedProductEntity = new ProductEntity();
         $expectedProductEntity
             ->setProductId('foo')
             ->setVariantId('bar-1')
-            ->setVariantIdText(true)
             ->setQuantity(2)
             ->setSlug('/foo/bar');
 
@@ -56,7 +54,7 @@ class AddToCartTypeTest extends TypeTestCase
             'slug' => '/foo/bar'
         ];
 
-        $productEntity = new ProductToCart();
+        $productEntity = new ProductEntity();
         $productEntity->setAllVariants([
             '1' => 'one',
             '2' => 'two'
@@ -64,7 +62,7 @@ class AddToCartTypeTest extends TypeTestCase
 
         $form = $this->factory->create(AddToCartType::class, $productEntity);
 
-        $expectedProductEntity = new ProductToCart();
+        $expectedProductEntity = new ProductEntity();
         $expectedProductEntity
             ->setProductId('foo')
             ->setQuantity(2)

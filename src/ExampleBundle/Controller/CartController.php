@@ -12,7 +12,7 @@ use Commercetools\Core\Request\Carts\Command\CartAddLineItemAction;
 use Commercetools\Core\Request\Carts\Command\CartAddShoppingListAction;
 use Commercetools\Core\Request\Carts\Command\CartChangeLineItemQuantityAction;
 use Commercetools\Core\Request\Carts\Command\CartRemoveLineItemAction;
-use Commercetools\Symfony\ExampleBundle\Entity\ProductToCart;
+use Commercetools\Symfony\ExampleBundle\Entity\ProductEntity;
 use Commercetools\Symfony\ExampleBundle\Model\Form\Type\AddToCartType;
 use Commercetools\Symfony\CartBundle\Model\Repository\CartRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
@@ -67,8 +67,7 @@ class CartController extends Controller
 
     public function addLineItemAction(Request $request, SessionInterface $session, UserInterface $user = null)
     {
-        $productEntity = new ProductToCart();
-        $productEntity->setVariantIdText(true);
+        $productEntity = new ProductEntity();
 
         $form = $this->createForm(AddToCartType::class, $productEntity);
         $form->handleRequest($request);
