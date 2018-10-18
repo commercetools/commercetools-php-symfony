@@ -72,7 +72,7 @@ class AuthenticationProvider extends UserAuthenticationProvider
                 $cartId = $user->getCartId();
             }
 
-            $request = RequestBuilder::of()->customers()->login($token->getUser(), $presentedPassword, $cartId);
+            $request = RequestBuilder::of()->customers()->login($token->getUser(), $presentedPassword, true, $cartId);
             $response = $request->executeWithClient($client);
 
             if ($response->isError()) {

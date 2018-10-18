@@ -4,6 +4,7 @@
 
 namespace Commercetools\Symfony\ExampleBundle\Model\Form\Type;
 
+use Commercetools\Symfony\ExampleBundle\Entity\ProductToShoppingList;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\HiddenType;
@@ -15,52 +16,38 @@ class AddToShoppingListType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
-//        dump($options['data']);
-        $builder
-            ->add('_productId', HiddenType::class);
+        /** @var ProductToShoppingList $productEntity */
+        $productEntity = $options['data'];
 
-        if (isset($options['data']['variantIdText']) && $options['data']['variantIdText'] === true) {
-            $builder->add(
-                '_variantId',
-                TextType::class
-            );
+        $builder
+            ->add('productId', HiddenType::class);
+
+        if ($productEntity->getVariantIdText() === true) {
+            $builder->add('variantId', TextType::class);
         } else {
-            $variantChoices = $options['data']['variant_choices'] ?? [];
-            $builder->add(
-                '_variantId',
-                ChoiceType::class,
-                [
+            $variantChoices = $productEntity->getAllVariants();
+            $builder->add('variantId',
+                ChoiceType::class, [
                     'choices' => $variantChoices,
                     'label' => "Select the variant",
-                    'attr' => [
-                        'class' => 'form form-control form-group'
-                    ]
-                ]
-            );
+                    'attr' => ['class' => 'form']
+                ]);
         }
 
-        $builder
-            ->add(
-                '_shoppingListId',
-                ChoiceType::class,
-                [
-                    'choices' => $options['data']['shopping_lists'],
-                    'label' => "Select the shopping list to add to",
-                    'attr' => [
-                        'class' => 'form form-control form-group',
-                    ],
-                ]
-            )
-            ->add(
-                '_addToShoppingList',
-                SubmitType::class,
-                [
-                    'label' => 'Add to Shopping List',
-                    'attr' => [
-                        'class' => 'btn-default btn',
-                    ],
-                ]
-            )
-        ;
+        if (empty($productEntity->getAvailableShoppingLists())) {
+            $builder->add('shoppingListId', TextType::class);
+        } else {
+            $variantChoices = $productEntity->getAvailableShoppingLists();
+            $builder->add('shoppingListId', ChoiceType::class, [
+                'choices' => $variantChoices,
+                'label' => 'Add to Shopping List',
+                'attr' => ['class' => 'form']
+            ]);
+        }
+
+        $builder->add('addToShoppingList', SubmitType::class, [
+            'label' => 'Add to Shopping List',
+            'attr' => ['class' => 'btn-default btn'],
+        ]);
     }
 }

@@ -44,9 +44,6 @@ class ClientFactoryTest extends TestCase
 
         $client = $factory->build();
 
-//        dump($client);
         $this->assertInstanceOf(Client::class, $client);
-//        dump($client->getHttpClient());
-
     }
 }

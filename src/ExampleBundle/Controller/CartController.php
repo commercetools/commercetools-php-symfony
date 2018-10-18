@@ -12,6 +12,7 @@ use Commercetools\Core\Request\Carts\Command\CartAddLineItemAction;
 use Commercetools\Core\Request\Carts\Command\CartAddShoppingListAction;
 use Commercetools\Core\Request\Carts\Command\CartChangeLineItemQuantityAction;
 use Commercetools\Core\Request\Carts\Command\CartRemoveLineItemAction;
+use Commercetools\Symfony\ExampleBundle\Entity\ProductToCart;
 use Commercetools\Symfony\ExampleBundle\Model\Form\Type\AddToCartType;
 use Commercetools\Symfony\CartBundle\Model\Repository\CartRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
@@ -66,12 +67,15 @@ class CartController extends Controller
 
     public function addLineItemAction(Request $request, SessionInterface $session, UserInterface $user = null)
     {
-        $form = $this->createForm(AddToCartType::class, ['variantIdText' => true]);
+        $productEntity = new ProductToCart();
+        $productEntity->setVariantIdText(true);
+
+        $form = $this->createForm(AddToCartType::class, $productEntity);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
 
-            $productId = $form->get('_productId')->getData();
+            $productId = $form->get('productId')->getData();
             $variantId = (int)$form->get('variantId')->getData();
             $quantity = (int)$form->get('quantity')->getData();
             $slug = $form->get('slug')->getData();
@@ -102,7 +106,6 @@ class CartController extends Controller
                 }
             }
             $redirectUrl = $this->generateUrl('_ctp_example_product', ['slug' => $slug]);
-
 
         } else {
             $redirectUrl = $this->generateUrl('_ctp_example');
@@ -157,7 +160,7 @@ class CartController extends Controller
     {
         $cartId = $session->get(CartRepository::CART_ID);
 
-        $shoppingListId = $request->get('_shoppingListId');
+        $shoppingListId = $request->get('shoppingListId');
         $shoppingList = ShoppingListReference::ofId($shoppingListId);
 
         if(!is_null($cartId)){

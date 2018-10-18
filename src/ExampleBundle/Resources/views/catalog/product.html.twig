@@ -10,17 +10,17 @@
     <div class="row">
 
         <div class="col-md-6">
-            {{ form_start(form) }}
-            {% form_theme form 'bootstrap_3_layout.html.twig' %}
-            {{ form_widget(form) }}
-            {{ form_end(form) }}
+            {{ form_start(addToCartForm) }}
+            {% form_theme addToCartForm 'bootstrap_3_layout.html.twig' %}
+            {{ form_widget(addToCartForm) }}
+            {{ form_end(addToCartForm) }}
         </div>
 
         <div class="col-md-6">
-            {{ form_start(shoppingListForm) }}
-            {% form_theme form 'bootstrap_3_layout.html.twig' %}
-            {{ form_widget(shoppingListForm) }}
-            {{ form_end(shoppingListForm) }}
+            {{ form_start(addToShoppingListForm) }}
+            {% form_theme addToShoppingListForm 'bootstrap_3_layout.html.twig' %}
+            {{ form_widget(addToShoppingListForm) }}
+            {{ form_end(addToShoppingListForm) }}
         </div>
 
     </div>
