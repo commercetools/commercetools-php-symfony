@@ -34,9 +34,13 @@ class CommercetoolsWorkflowCommand extends ContainerAwareCommand
         $stateTypes = $helper->parse($states);
 
         $yaml = Yaml::dump($stateTypes, 100, 4);
-        $filename = $this->getContainer()->get('kernel')->getRootDir() . '/../config/packages/workflow.yaml';
+        $kernel = $this->getContainer()->get('kernel');
 
-        file_put_contents($filename, $yaml);
+        $filename = $kernel->getProjectDir() . '/config/packages/' . $kernel->getEnvironment() . '/workflow.yaml';
+
+        if ($kernel->getEnvironment() !== 'test') {
+            file_put_contents($filename, $yaml);
+        }
 
         $output->writeln('Configuration file saved successfully at ' . $filename);
     }
