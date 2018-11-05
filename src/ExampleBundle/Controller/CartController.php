@@ -113,16 +113,16 @@ class CartController extends Controller
         return new RedirectResponse($redirectUrl);
     }
 
-    public function miniCartAction(Request $request)
-    {
-        $response = new Response();
-        $response->headers->addCacheControlDirective('no-cache');
-        $response->headers->addCacheControlDirective('no-store');
-
-        $response = $this->render('ExampleBundle:cart:index.html.twig', $response);
-
-        return $response;
-    }
+//    public function miniCartAction(Request $request)
+//    {
+//        $response = new Response();
+//        $response->headers->addCacheControlDirective('no-cache');
+//        $response->headers->addCacheControlDirective('no-store');
+//
+//        $response = $this->render('ExampleBundle:cart:index.html.twig', $response);
+//
+//        return $response;
+//    }
 
     public function changeLineItemAction(Request $request, SessionInterface $session, UserInterface $user = null)
     {
@@ -164,8 +164,6 @@ class CartController extends Controller
 
         if(!is_null($cartId)){
             $cart = $this->manager->getCart($request->getLocale(), $cartId, $user, $session->getId());
-
-
         } else {
             $countryCode = $this->getCountryFromConfig();
             $currency = $this->getCurrencyFromConfig();
@@ -182,19 +180,23 @@ class CartController extends Controller
         $cartBuilder->addShoppingList(CartAddShoppingListAction::ofShoppingList($shoppingList));
         $cartBuilder->flush();
 
+        /**
+         * TODO delete shopping list using a listener
+         */
+
         return new RedirectResponse($this->generateUrl('_ctp_example_shoppingList_delete', ['shoppingListId' => $shoppingListId]));
     }
 
-    protected function getItemCount(Cart $cart)
-    {
-        $count = 0;
-        if ($cart->getLineItems()) {
-            foreach ($cart->getLineItems() as $lineItem) {
-                $count+= $lineItem->getQuantity();
-            }
-        }
-        return $count;
-    }
+//    protected function getItemCount(Cart $cart)
+//    {
+//        $count = 0;
+//        if ($cart->getLineItems()) {
+//            foreach ($cart->getLineItems() as $lineItem) {
+//                $count+= $lineItem->getQuantity();
+//            }
+//        }
+//        return $count;
+//    }
 
     /**
      * Creates and returns a form builder instance.
@@ -205,10 +207,10 @@ class CartController extends Controller
      *
      * @return FormBuilder
      */
-    protected function createNamedFormBuilder($name, $data = null, array $options = array())
-    {
-        return $this->container->get('form.factory')->createNamedBuilder($name, FormType::class, $data, $options);
-    }
+//    protected function createNamedFormBuilder($name, $data = null, array $options = array())
+//    {
+//        return $this->container->get('form.factory')->createNamedBuilder($name, FormType::class, $data, $options);
+//    }
 
     // TODO duplicate code / move these to better place
     private function getCountryFromConfig()

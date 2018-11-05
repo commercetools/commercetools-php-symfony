@@ -108,7 +108,7 @@ class CatalogController extends Controller
         return $this->productDetails($request, $product, $session, $user);
     }
 
-    private function productDetails(Request $request, $product, SessionInterface $session, UserInterface $user = null)
+    private function productDetails(Request $request, ProductProjection $product, SessionInterface $session, UserInterface $user = null)
     {
         $variantIds = [];
         foreach ($product->getAllVariants() as $variant) {

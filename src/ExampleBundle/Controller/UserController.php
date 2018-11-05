@@ -44,19 +44,19 @@ class UserController extends Controller
         $this->manager = $manager;
     }
 
-    public function indexAction()
-    {
-        /**
-         * @var User $user
-         */
-        $user = $this->getUser();
-
-        return $this->render('ExampleBundle:catalog:index.html.twig',
-            [
-                'user' => $user
-            ]
-        );
-    }
+//    public function indexAction()
+//    {
+//        /**
+//         * @var User $user
+//         */
+//        $user = $this->getUser();
+//
+//        return $this->render('ExampleBundle:catalog:index.html.twig',
+//            [
+//                'user' => $user
+//            ]
+//        );
+//    }
 
     public function loginAction(Request $request)
     {
@@ -66,12 +66,10 @@ class UserController extends Controller
 
         $lastUsername = $authenticationUtils->getLastUsername();
 
-        return $this->render('ExampleBundle:user:login.html.twig',
-            [
-                'last_username' => $lastUsername,
-                'error' => $error
-            ]
-        );
+        return $this->render('ExampleBundle:user:login.html.twig', [
+            'last_username' => $lastUsername,
+            'error' => $error
+        ]);
     }
 
     public function detailsAction(Request $request, UserInterface $user)
@@ -100,7 +98,7 @@ class UserController extends Controller
 
             try {
                 $customer = $customerBuilder->flush();
-            } catch (\Error $e){
+            } catch (\Exception $e){
                 $this->addFlash('error', $e->getMessage());
             }
 
@@ -118,11 +116,9 @@ class UserController extends Controller
     {
         $customer = $this->manager->getById($request->getLocale(), $user->getId());
 
-        return $this->render('ExampleBundle:User:addressBook.html.twig',
-            [
-                'customer' => $customer
-            ]
-        );
+        return $this->render('ExampleBundle:User:addressBook.html.twig', [
+            'customer' => $customer
+        ]);
     }
 
     public function editAddressAction(Request $request, UserInterface $user, $addressId)
@@ -146,35 +142,29 @@ class UserController extends Controller
             $customerBuilder->flush();
         }
 
-        return $this->render(
-            'ExampleBundle:User:editAddress.html.twig',
-            [
-                'form_address' => $form->createView()
-            ]
-        );
+        return $this->render('ExampleBundle:User:editAddress.html.twig', [
+            'form_address' => $form->createView()
+        ]);
     }
 
-    protected function getCustomer(User $user)
-    {
-        if (!$user instanceof User){
-            throw new \InvalidArgumentException;
-        }
+//    protected function getCustomer(User $user)
+//    {
+//        if (!$user instanceof User){
+//            throw new \InvalidArgumentException;
+//        }
+//
+//        /**
+//         * @var Client $client
+//         */
+//        $client = $this->get('commercetools.client');
+//
+//        $request = CustomerByIdGetRequest::ofId($user->getId());
+//        $response = $request->executeWithClient($client);
+//
+//        $customer = $request->mapResponse($response);
+//
+//        return $customer;
+//    }
 
-        /**
-         * @var Client $client
-         */
-        $client = $this->get('commercetools.client');
-
-        $request = CustomerByIdGetRequest::ofId($user->getId());
-        $response = $request->executeWithClient($client);
-
-        $customer = $request->mapResponse($response);
-
-        return $customer;
-    }
-
-    public function signUpAction()
-    {
-
-    }
+    public function signUpAction(){}
 }
