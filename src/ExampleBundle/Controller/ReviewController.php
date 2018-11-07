@@ -7,7 +7,6 @@ namespace Commercetools\Symfony\ExampleBundle\Controller;
 
 
 use Commercetools\Core\Client;
-use Commercetools\Core\Error\InvalidArgumentException;
 use Commercetools\Core\Model\Customer\CustomerReference;
 use Commercetools\Core\Model\Product\ProductReference;
 use Commercetools\Core\Model\Review\Review;
@@ -18,6 +17,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Security\Core\User\UserInterface;
+use Symfony\Component\Workflow\Exception\InvalidArgumentException;
 use Symfony\Component\Workflow\Registry;
 
 class ReviewController extends Controller
@@ -109,7 +109,7 @@ class ReviewController extends Controller
      * @param UserInterface|null $user
      * @return \Symfony\Component\HttpFoundation\RedirectResponse|\Symfony\Component\HttpFoundation\Response
      */
-    public function UpdateReviewAction(Request $request, $reviewId, UserInterface $user = null)
+    public function updateReviewAction(Request $request, $reviewId, UserInterface $user = null)
     {
         if(is_null($user)){
             $this->addFlash('error', 'Do not allow anonymous reviews for now');

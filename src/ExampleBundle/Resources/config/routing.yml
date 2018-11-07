@@ -176,7 +176,7 @@ _ctp_example_review_show:
 
 _ctp_example_review_update:
     path: /review/{reviewId}/update
-    defaults: { _controller: Commercetools\Symfony\ExampleBundle\Controller\ReviewController::UpdateReviewAction }
+    defaults: { _controller: Commercetools\Symfony\ExampleBundle\Controller\ReviewController::updateReviewAction }
 
 _ctp_example_review_create:
     path: /product/{productId}/reviews/create
