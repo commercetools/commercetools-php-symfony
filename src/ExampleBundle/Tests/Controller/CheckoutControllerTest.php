@@ -9,15 +9,22 @@ namespace Commercetools\Symfony\ExampleBundle\Tests\Controller;
 use Commercetools\Core\Client;
 use Commercetools\Core\Model\Cart\Cart;
 use Commercetools\Core\Model\Cart\ShippingInfo;
+use Commercetools\Core\Model\Common\Address;
+use Commercetools\Core\Model\Order\Order;
 use Commercetools\Core\Model\ShippingMethod\ShippingMethod;
 use Commercetools\Core\Model\ShippingMethod\ShippingMethodCollection;
-use Commercetools\Core\Request\Carts\Command\CartSetShippingMethodAction;
+use Commercetools\Core\Model\State\StateReference;
+use Commercetools\Core\Request\Carts\Command\CartSetBillingAddressAction;
+use Commercetools\Core\Request\Carts\Command\CartSetShippingAddressAction;
 use Commercetools\Symfony\CartBundle\Manager\CartManager;
 use Commercetools\Symfony\CartBundle\Manager\OrderManager;
 use Commercetools\Symfony\CartBundle\Manager\ShippingMethodManager;
 use Commercetools\Symfony\CartBundle\Model\CartUpdateBuilder;
 use Commercetools\Symfony\CustomerBundle\Security\User\CtpUser;
+use Commercetools\Symfony\CustomerBundle\Security\User\User;
 use Commercetools\Symfony\ExampleBundle\Controller\CheckoutController;
+use Commercetools\Symfony\ExampleBundle\Entity\CartEntity;
+use Commercetools\Symfony\StateBundle\Model\CtpMarkingStore\CtpMarkingStoreOrderState;
 use Prophecy\Argument;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Symfony\Component\DependencyInjection\ContainerInterface;
@@ -28,7 +35,6 @@ use Symfony\Component\Form\FormFactory;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\Routing\Router;
-use Symfony\Component\Security\Core\Authorization\AuthorizationChecker;
 use Symfony\Component\Security\Http\Authentication\AuthenticationUtils;
 
 class CheckoutControllerTest extends WebTestCase
@@ -266,6 +272,183 @@ class CheckoutControllerTest extends WebTestCase
         $controller = new CheckoutController($this->client->reveal(), $this->cartManager->reveal(), $this->shippingMethodManager->reveal(), $this->orderManager->reveal());
         $controller->setContainer($this->myContainer->reveal());
         $response = $controller->reviewOrderDetailsAction($this->request->reveal(), $session->reveal(), $user->reveal());
+
+        $this->assertTrue($response->isOk());
+    }
+
+    public function testPlaceCartToOrderActionWithCartNotFound()
+    {
+        $session = $this->prophesize(Session::class);
+        $session->get('cart.id')->willReturn('cart-1')->shouldBeCalledOnce();
+        $session->getId()->willReturn('baz')->shouldBeCalledOnce();
+
+        $markingStoreOrderState = $this->prophesize(CtpMarkingStoreOrderState::class);
+
+        $router = $this->prophesize(Router::class);
+        $router->generate('_ctp_example_cart', [], 1)->willReturn('bar')->shouldBeCalledOnce();
+
+        $cart = Cart::of();
+
+        $this->myContainer->get('router')->willReturn($router)->shouldBeCalledOnce();
+        $this->cartManager->getCart('en', 'cart-1', null, 'baz')->willReturn($cart)->shouldBeCalledOnce();
+
+        $controller = new CheckoutController($this->client->reveal(), $this->cartManager->reveal(), $this->shippingMethodManager->reveal(), $this->orderManager->reveal());
+        $controller->setContainer($this->myContainer->reveal());
+        $response = $controller->placeCartToOrderAction($this->request->reveal(), $session->reveal(), $markingStoreOrderState->reveal());
+
+        $this->assertTrue($response->isRedirect());
+    }
+
+    public function testPlaceCartToOrderAction()
+    {
+        $session = $this->prophesize(Session::class);
+        $session->getId()->willReturn('baz')->shouldBeCalledOnce();
+        $session->get('cart.id')->willReturn('cart-1')->shouldBeCalledOnce();
+
+        $stateReference = StateReference::ofId('state-1');
+
+        $markingStoreOrderState = $this->prophesize(CtpMarkingStoreOrderState::class);
+        $markingStoreOrderState->getStateReferenceOfInitial()->willReturn($stateReference)->shouldBeCalledOnce();
+
+        $user = $this->prophesize(CtpUser::class);
+        $cart = Cart::of()->setId('cart-1');
+        $order = Order::of()->setId('order-2');
+
+        $this->myContainer->has('templating')->willReturn(false)->shouldBeCalledOnce();
+        $this->myContainer->has('twig')->willReturn(true)->shouldBeCalledOnce();
+        $this->myContainer->get('twig')->willReturn($this->twig)->shouldBeCalledOnce();
+
+        $this->request->getLocale()->willReturn('en')->shouldBeCalledTimes(2);
+
+        $this->cartManager->getCart('en', 'cart-1', Argument::type(CtpUser::class), 'baz')->willReturn($cart)->shouldBeCalledOnce();
+        $this->orderManager->createOrderFromCart('en', Argument::type(Cart::class), Argument::type(StateReference::class))->willReturn($order)->shouldBeCalledOnce();
+
+        $controller = new CheckoutController($this->client->reveal(), $this->cartManager->reveal(), $this->shippingMethodManager->reveal(), $this->orderManager->reveal());
+        $controller->setContainer($this->myContainer->reveal());
+        $response = $controller->placeCartToOrderAction($this->request->reveal(), $session->reveal(), $markingStoreOrderState->reveal(), $user->reveal());
+
+        $this->assertTrue($response->isOk());
+    }
+
+    public function testSetAddressActionWithNullCart()
+    {
+        $session = $this->prophesize(Session::class);
+        $session->getId()->willReturn('baz')->shouldBeCalledOnce();
+        $session->get('cart.id')->willReturn('cart-1')->shouldBeCalledOnce();
+
+        $this->cartManager->getCart('en', 'cart-1', null, 'baz')->willReturn(Cart::of())->shouldBeCalledOnce();
+
+        $router = $this->prophesize(Router::class);
+        $router->generate('_ctp_example_cart', [], 1)->willReturn('bar')->shouldBeCalledOnce();
+
+        $this->myContainer->get('router')->willReturn($router)->shouldBeCalledOnce();
+
+        $controller = new CheckoutController($this->client->reveal(), $this->cartManager->reveal(), $this->shippingMethodManager->reveal(), $this->orderManager->reveal());
+        $controller->setContainer($this->myContainer->reveal());
+        $response = $controller->setAddressAction($this->request->reveal(), $session->reveal());
+
+        $this->assertTrue($response->isRedirect());
+    }
+
+    public function testSetAddressActionSubmitted()
+    {
+        $session = $this->prophesize(Session::class);
+        $session->getId()->willReturn('baz')->shouldBeCalledOnce();
+        $session->get('cart.id')->willReturn('cart-1')->shouldBeCalledOnce();
+
+        $user = $this->prophesize(User::class);
+        $user->getDefaultShippingAddress()->willReturn(Address::of()->setCountry('FR'))->shouldBeCalled();
+
+        $cart = Cart::of()
+            ->setId('cart-1')
+            ->setShippingAddress(Address::of()->setCountry('DE'));
+
+
+        $form = $this->prophesize(Form::class);
+        $form->handleRequest(Argument::type(Request::class))
+            ->will(function(){return $this;})->shouldBeCalled();
+        $form->isSubmitted()->willReturn(true)->shouldBeCalledOnce();
+        $form->isValid()->willReturn(true)->shouldBeCalledOnce();
+        $form->get(Argument::type('string'))->will(function(){return $this;})->shouldBeCalledTimes(3);
+        $form->get('shippingAddress')->will(function(){
+            $this->getData()->willReturn(['country' => 'DE']);
+            return $this;
+        })->shouldBeCalledOnce();
+        $form->getData()->willReturn('foobar')->shouldBeCalledTimes(3);
+
+        $formBuilder = $this->prophesize(FormBuilder::class);
+        $formBuilder->add(Argument::type('string'), Argument::type('string'), Argument::type('array'))
+            ->will(function(){return $this;})->shouldBeCalledTimes(1);
+        $formBuilder->add(Argument::type('string'), Argument::type('string'))
+            ->will(function(){return $this;})->shouldBeCalledTimes(3);
+        $formBuilder->getForm()->willReturn($form)->shouldBeCalled();
+
+        $formFactory = $this->prophesize(FormFactory::class);
+        $formFactory->createBuilder(Argument::is(FormType::class), Argument::type(CartEntity::class), [])
+            ->willReturn($formBuilder->reveal())->shouldBeCalled();
+
+        $this->myContainer->get('form.factory')->willReturn($formFactory->reveal())->shouldBeCalled();
+
+        $cartUpdateBuilder = $this->prophesize(CartUpdateBuilder::class);
+        $cartUpdateBuilder->setShippingAddress(Argument::type(CartSetShippingAddressAction::class))->will(function(){return $this;})->shouldBeCalled();
+        $cartUpdateBuilder->setBillingAddress(Argument::type(CartSetBillingAddressAction::class))->will(function(){return $this;})->shouldBeCalled();
+        $cartUpdateBuilder->flush()->willReturn($cart)->shouldBeCalled();
+
+        $this->cartManager->getCart('en', 'cart-1', Argument::type(CtpUser::class), 'baz')->willReturn($cart)->shouldBeCalledOnce();
+        $this->cartManager->update(Argument::type(Cart::class))->willReturn($cartUpdateBuilder->reveal())->shouldBeCalledOnce();
+
+        $router = $this->prophesize(Router::class);
+        $router->generate('_ctp_example_checkout_shipping', [], 1)->willReturn('bar')->shouldBeCalledOnce();
+
+        $this->myContainer->get('router')->willReturn($router)->shouldBeCalledOnce();
+
+        $controller = new CheckoutController($this->client->reveal(), $this->cartManager->reveal(), $this->shippingMethodManager->reveal(), $this->orderManager->reveal());
+        $controller->setContainer($this->myContainer->reveal());
+        $response = $controller->setAddressAction($this->request->reveal(), $session->reveal(), $user->reveal());
+
+        $this->assertTrue($response->isRedirect());
+    }
+
+    public function testSetAddressActionNotSubmitted()
+    {
+        $session = $this->prophesize(Session::class);
+        $session->getId()->willReturn('baz')->shouldBeCalledOnce();
+        $session->get('cart.id')->willReturn('cart-1')->shouldBeCalledOnce();
+
+        $user = $this->prophesize(User::class);
+        $user->getDefaultShippingAddress()->willReturn(Address::of()->setCountry('FR'))->shouldBeCalled();
+
+        $cart = Cart::of()
+            ->setId('cart-1')
+            ->setShippingAddress(Address::of()->setCountry('DE'));
+
+        $this->cartManager->getCart('en', 'cart-1', Argument::type(CtpUser::class), 'baz')->willReturn($cart)->shouldBeCalledOnce();
+
+        $form = $this->prophesize(Form::class);
+        $form->handleRequest(Argument::type(Request::class))
+            ->will(function(){return $this;})->shouldBeCalled();
+        $form->isSubmitted()->willReturn(false)->shouldBeCalledOnce();
+        $form->createView()->shouldBeCalledOnce();
+
+        $formBuilder = $this->prophesize(FormBuilder::class);
+        $formBuilder->add(Argument::type('string'), Argument::type('string'), Argument::type('array'))
+            ->will(function(){return $this;})->shouldBeCalledTimes(1);
+        $formBuilder->add(Argument::type('string'), Argument::type('string'))
+            ->will(function(){return $this;})->shouldBeCalledTimes(3);
+        $formBuilder->getForm()->willReturn($form)->shouldBeCalled();
+
+        $formFactory = $this->prophesize(FormFactory::class);
+        $formFactory->createBuilder(Argument::is(FormType::class), Argument::type(CartEntity::class), [])
+            ->willReturn($formBuilder->reveal())->shouldBeCalled();
+
+        $this->myContainer->get('form.factory')->willReturn($formFactory->reveal())->shouldBeCalled();
+        $this->myContainer->has('templating')->willReturn(false)->shouldBeCalledOnce();
+        $this->myContainer->has('twig')->willReturn(true)->shouldBeCalledOnce();
+        $this->myContainer->get('twig')->willReturn($this->twig)->shouldBeCalledOnce();
+
+        $controller = new CheckoutController($this->client->reveal(), $this->cartManager->reveal(), $this->shippingMethodManager->reveal(), $this->orderManager->reveal());
+        $controller->setContainer($this->myContainer->reveal());
+        $response = $controller->setAddressAction($this->request->reveal(), $session->reveal(), $user->reveal());
 
         $this->assertTrue($response->isOk());
     }

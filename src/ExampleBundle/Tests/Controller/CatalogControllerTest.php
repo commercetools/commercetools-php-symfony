@@ -219,7 +219,7 @@ class CatalogControllerTest extends WebTestCase
 
         $this->myContainer->getParameter(Argument::type('string'))->willReturn(['bar'], ['baz'])->shouldBeCalled();
 
-        // TODO
+        // TODO ~context related~
         $context = new Context();
         $context->setLanguages([0 => 'en']);
 
