@@ -61,5 +61,4 @@ class CommercetoolsDataCollector extends DataCollector
     {
         $this->data = [];
     }
-
 }
