@@ -75,4 +75,12 @@ class LoggerTest extends TestCase
         $ctpLogger = new Logger($logger->reveal());
         $ctpLogger->debug('foo', []);
     }
+
+    public function testLog()
+    {
+        $logger = $this->prophesize(LoggerInterface::class);
+        $logger->log(1, 'foo', [])->shouldBeCalledOnce();
+        $ctpLogger = new Logger($logger->reveal());
+        $ctpLogger->log(1, 'foo', []);
+    }
 }

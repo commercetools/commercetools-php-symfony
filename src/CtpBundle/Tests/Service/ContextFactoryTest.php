@@ -16,7 +16,7 @@ class ContextFactoryTest extends TestCase
 {
     public function testBuild()
     {
-        $fallbackLanguages = ['foo'];
+        $fallbackLanguages = ['foo' => ['foo'], 'bar' => ['bar']];
         $converter = $this->prophesize(LocaleConverter::class);
         $converter->convert(Argument::type('string'))->willReturn('foo')->shouldBeCalledOnce();
         $defaults = [
@@ -27,7 +27,7 @@ class ContextFactoryTest extends TestCase
         $context = $contextFactory->build();
 
         $this->assertInstanceOf(Context::class, $context);
-        $this->assertCount(1, $context->getLanguages());
+        $this->assertCount(2, $context->getLanguages());
         $this->assertSame('foo', current($context->getLanguages()));
         $this->assertSame('foo', $context->getLocale());
     }
