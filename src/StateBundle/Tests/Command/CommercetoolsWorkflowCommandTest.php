@@ -10,6 +10,7 @@ use Commercetools\Core\Model\State\State;
 use Commercetools\Core\Model\State\StateCollection;
 use Commercetools\Symfony\CtpBundle\Tests\TestKernel;
 use Commercetools\Symfony\StateBundle\Command\CommercetoolsStateCommand;
+use Commercetools\Symfony\StateBundle\Command\CommercetoolsWorkflowCommand;
 use Commercetools\Symfony\StateBundle\Model\Repository\StateRepository;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Symfony\Component\Console\Tester\CommandTester;
@@ -33,9 +34,9 @@ class CommercetoolsWorkflowCommandTest extends KernelTestCase
         )->shouldBeCalledOnce();
 
         $application = new Application(static::$kernel);
-        $application->add(new CommercetoolsStateCommand($stateRepository->reveal()));
+        $application->add(new CommercetoolsWorkflowCommand($stateRepository->reveal()));
 
-        $command = $application->find('commercetools:set-state-machine-config');
+        $command = $application->find('commercetools:set-workflow-config');
         $command->setApplication($application);
         $commandTester = new CommandTester($command);
 

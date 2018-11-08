@@ -14,7 +14,7 @@ class QueryParamsTest extends TestCase
 {
     public function testQueryParams()
     {
-        $queryParams = new QueryParams();
+        $queryParams = QueryParams::of();
         $param = new Parameter('foo', 'bar');
 
         $queryParams->addParamObject($param);
