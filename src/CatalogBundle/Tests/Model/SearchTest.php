@@ -69,4 +69,66 @@ class SearchTest extends TestCase
         $this->search->addFacets($request->reveal(), $selectedValues);
     }
 
+    public function testAddFacetsWithRangeTypeAndMultiSelect()
+    {
+        $this->search = new Search([
+            'fooSearch' => [
+                'paramName' => null,
+                'field' => null,
+                'facetField' => null,
+                'filterField' => null,
+                'alias' => null,
+                'type' => FacetConfig::TYPE_RANGE,
+                'multiSelect' => true,
+                'hierarchical' => false,
+                'display' => false,
+                'ranges' => false,
+            ]
+        ]);
+
+        $request = $this->prophesize(ProductProjectionSearchRequest::class);
+        $request->addFacet(Argument::type(Facet::class))->shouldBeCalledOnce();
+        $request->addFilterQuery(Argument::type(Filter::class))->shouldNotBeCalled();
+        $request->addFilter(Argument::type(Filter::class))->shouldBeCalledOnce();
+        $request->addFilterFacets(Argument::type(Filter::class))->shouldBeCalledOnce();
+
+        $selectedValues = [
+            'facet-1' => 'foo',
+            'fooSearch' => 'bar'
+        ];
+
+        $this->search->addFacets($request->reveal(), $selectedValues);
+    }
+
+    public function testAddFacetsHierarchicalAndMultiSelect()
+    {
+        $this->search = new Search([
+            'fooSearch' => [
+                'paramName' => null,
+                'field' => null,
+                'facetField' => null,
+                'filterField' => null,
+                'alias' => null,
+                'type' => FacetConfig::TYPE_TEXT,
+                'multiSelect' => true,
+                'hierarchical' => true,
+                'display' => false,
+                'ranges' => false,
+            ]
+        ]);
+
+        $request = $this->prophesize(ProductProjectionSearchRequest::class);
+        $request->addFacet(Argument::type(Facet::class))->shouldBeCalledOnce();
+        $request->addFilterQuery(Argument::type(Filter::class))->shouldNotBeCalled();
+        $request->addFilter(Argument::type(Filter::class))->shouldBeCalledOnce();
+        $request->addFilterFacets(Argument::type(Filter::class))->shouldBeCalledOnce();
+
+        $selectedValues = [
+            'facet-1' => 'foo',
+            'fooSearch' => 'bar'
+        ];
+
+        $this->search->addFacets($request->reveal(), $selectedValues);
+    }
+
 }
