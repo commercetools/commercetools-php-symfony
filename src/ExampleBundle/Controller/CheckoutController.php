@@ -124,6 +124,8 @@ class CheckoutController extends Controller
                 CartSetShippingMethodAction::of()->setShippingMethod($shippingMethod->getReference())
             ]);
 
+            $cartBuilder->flush();
+
             return $this->redirect($this->generateUrl('_ctp_example_checkout_confirm'));
         }
 
@@ -165,7 +167,7 @@ class CheckoutController extends Controller
             return $this->redirect($this->generateUrl('_ctp_example_cart'));
         }
 
-        $placeOrder = $this->orderManager->createOrderFromCart($request->getLocale(), $cart);
+        $this->orderManager->createOrderFromCart($request->getLocale(), $cart);
 
         return $this->render('ExampleBundle:cart:cartSuccess.html.twig');
     }

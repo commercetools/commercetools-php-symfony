@@ -6,6 +6,18 @@
             <div class="row review-item">
                 <div class="review-message col-md-10">{{ review.text }}</div>
                 <div class="review-rating col-md-2">{{ review.rating }} of 5 stars</div>
+                <div class="review-status col-md-6 col-md-offset-6 text-right">
+                    {% for place in workflow_marked_places(review) %}
+                        state: {{ place }} <br/>
+                    {% endfor %}
+                    {% for transition in workflow_transitions(review) %}
+                        <a href="{{ path('_ctp_example_review_update',
+                            {'reviewId': review.getId, 'toState': transition.name}
+                        ) }}">{{ transition.name }}</a>
+                    {% else %}
+                        No actions available.
+                    {% endfor %}
+                </div>
                 <div class="review-author col-md-6 col-md-offset-6 text-right">written by {{ review.customer.obj.firstName | default('anonymous') }}</div>
             </div>
         {% endfor %}

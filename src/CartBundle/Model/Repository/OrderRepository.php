@@ -23,7 +23,9 @@ class OrderRepository extends Repository
      */
     public function getOrders($locale, $customerId)
     {
-        $request = RequestBuilder::of()->orders()->query()->where('customerId = "' . $customerId . '"')->sort('createdAt desc');
+        $request = RequestBuilder::of()->orders()->query()
+            ->where('customerId = "' . $customerId . '"')
+            ->sort('createdAt desc');
 
         return $this->executeRequest($request, $locale);
     }

@@ -2,11 +2,16 @@
 
 {% block container %}
     <div class="row">
-        <h1>My Order: {{ order.getOrderNumber }}</h1>
+        <h1>My Order: {{ order.id }}</h1>
         <hr />
         <div class="col-md-12">
-            Order number: {{ order.getOrderNumber }}<br />
-            Order date: {{ order.getCreatedAt.getDateTime|date("m/d/Y H:i") }}
+            Order number: {{ order.id }}<br />
+            Order date: {{ order.getCreatedAt.getDateTime|date("m/d/Y H:i") }} <br />
+            {% if order.getState is not null %}
+                Order state: {{ workflow_marked_places(order) | first }}<br />
+            {% else %}
+                Order state: not-set<br />
+            {% endif %}
         </div>
 
         {% if order.getBillingAddress is empty %}
@@ -73,13 +78,29 @@
                     </tr>
                 </thread>
                 <tbody>
-                {% for items in order.getLineItems %}
+                {% for item in order.getLineItems %}
                     <tr>
-                        <td>{{ items.getName }} </td>
-                        <td> {{ items.getPrice }} </td>
-                        <td>{{ items.getQuantity }} </td>
-                        <td> {{ items.getTotalPrice }} </td>
-                        <td><img src="{{ items.getVariant.getImages.current.getUrl }}" width="100px" height="100px" /></td>
+                        <td>{{ item.getName }} </td>
+                        <td> {{ item.getPrice }} </td>
+                        <td>{{ item.getQuantity }} </td>
+                        <td> {{ item.getTotalPrice }} </td>
+                        <td><img src="{{ item.getVariant.getImages.current.getUrl }}" width="100px" height="100px" /></td>
+                        <td>
+                            {% for itemState in item.state %}
+                                {% for place in workflow_marked_places(wrapItemState(order, itemState.state, item)) %}
+                                    state: {{ place }} <br/>
+                                    quantity: {{ itemState.quantity }}
+                                {% endfor %}
+                                {% for transition in workflow_transitions(wrapItemState(order, itemState.state, item)) %}
+                                    {# // TODO add quantity #}
+                                    <a href="{{ path('_ctp_example_order_lineItem_update',
+                                            {'orderId': order.getId, 'lineItemId': item.getId, 'fromState': itemState.state.id, 'toState': transition.name}
+                                    ) }}">{{ transition.name }}</a>
+                                {% else %}
+                                    No actions available.
+                                {% endfor %}
+                            {% endfor %}
+                        </td>
                     </tr>
                 {% endfor %}
                 </tbody>

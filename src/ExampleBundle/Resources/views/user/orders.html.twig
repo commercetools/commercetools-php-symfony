@@ -4,23 +4,28 @@
     <h1>Orders</h1>
     <div class="col-md-12">
         <table class="table">
-            <thread>
+            <thead>
                 <tr>
-                    <th>Order Number</th>
+                    <th>Order ID</th>
                     <th>Date</th>
                     <th>Total Price</th>
-                    {#<th>Version</th>#}
-                    <th>View order</th>
+                    <th>Cancel order</th>
                 </tr>
-            </thread>
+            </thead>
             <tbody>
             {% for order in orders %}
                 {% if order is not empty %}
                     <tr>
-                        <td>{{ order.getOrderNumber }} </td>
+                        <td><a href="{{ path('_ctp_example_order', {'orderId': order.getId}) }}">{{ order.id }} </a> </td>
                         <td>{{ order.getCreatedAt.getDateTime|date("m/d/Y H:i") }}</td>
                         <td>{{ order.getTotalPrice }} </td>
-                        <td><a href="{{ path('_ctp_example_order', {'orderId': order.getId}) }}">Check </a> </td>
+                        <td>
+                            {% for transition in workflow_transitions(order) %}
+                                <a href="{{ path('_ctp_example_order_' ~ transition.name, {'orderId': order.getId}) }}">{{ transition.name }}</a>
+                            {% else %}
+                                No actions available.
+                            {% endfor %}
+                        </td>
                     </tr>
                 {% else %}
                     <p>There are no orders yet, go a head and buy something!</p>

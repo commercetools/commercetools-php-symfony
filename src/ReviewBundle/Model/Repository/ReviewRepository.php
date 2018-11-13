@@ -41,6 +41,15 @@ class ReviewRepository extends Repository
         return $this->executeRequest($request, $locale, $params);
     }
 
+    public function getReviewForUser($locale, $userId, $reviewId, QueryParams $params = null)
+    {
+        $predicate = 'id = "' . $reviewId . '" and customer(id = "' . $userId . '") and target(typeId="product")';
+
+        $request = RequestBuilder::of()->reviews()->query()->where($predicate)->sort('createdAt desc');
+
+        return $this->executeRequest($request, $locale, $params);
+    }
+
     public function createReviewForProduct($locale, $productReference, CustomerReference $customerReference = null, $text, $rating)
     {
         $reviewDraft = ReviewDraft::of()

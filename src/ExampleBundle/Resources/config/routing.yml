@@ -105,6 +105,22 @@ _ctp_example_order:
     path: /orders/{orderId}
     defaults: { _controller: Commercetools\Symfony\ExampleBundle\Controller\OrderController::showOrderAction }
 
+_ctp_example_order_toCanceled:
+    path: /orders/{orderId}/cancel
+    defaults: { _controller: Commercetools\Symfony\ExampleBundle\Controller\OrderController::CancelOrderAction }
+
+_ctp_example_order_toCreated:
+    path: /orders/{orderId}/created
+    defaults: { _controller: Commercetools\Symfony\ExampleBundle\Controller\OrderController::CreateOrderAction }
+
+_ctp_example_order_toPaid:
+    path: /orders/{orderId}/pay
+    defaults: { _controller: Commercetools\Symfony\ExampleBundle\Controller\OrderController::PaidOrderAction }
+
+_ctp_example_order_lineItem_update:
+    path: orders/{orderId}/update
+    defaults: { _controller: Commercetools\Symfony\ExampleBundle\Controller\OrderController::updateLineItemAction }
+
 _ctp_example_suggest:
     path: /suggest/{searchTerm}
     defaults: { _controller: Commercetools\Symfony\ExampleBundle\Controller\CatalogController::suggestAction }
@@ -136,10 +152,14 @@ _ctp_example_shoppingList_delete:
     defaults: { _controller: Commercetools\Symfony\ExampleBundle\Controller\ShoppingListController::deleteByIdAction }
 
 _ctp_example_review_show:
-    path: /product/id/{productId}/reviews
+    path: /product/{productId}/reviews
     defaults: { _controller: Commercetools\Symfony\ExampleBundle\Controller\ReviewController::showReviewsForProductAction }
 
+_ctp_example_review_update:
+    path: /review/{reviewId}/update
+    defaults: { _controller: Commercetools\Symfony\ExampleBundle\Controller\ReviewController::UpdateReviewAction }
+
 _ctp_example_review_create:
-    path: /product/id/{productId}/reviews/create
+    path: /product/{productId}/reviews/create
     defaults: { _controller: Commercetools\Symfony\ExampleBundle\Controller\ReviewController::createReviewForProductAction }
     methods: [POST]

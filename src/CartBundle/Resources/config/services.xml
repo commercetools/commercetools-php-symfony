@@ -7,6 +7,7 @@
         <parameter key="commercetools.cache.cart" type="string">false</parameter>
         <parameter key="commercetools.cache.shipping_method" type="string">false</parameter>
         <parameter key="commercetools.cache.order" type="string">false</parameter>
+        <parameter key="commercetools.cache.payment" type="string">false</parameter>
     </parameters>
     <services>
         <service id="Commercetools\Symfony\CartBundle\Model\Repository\CartRepository"
@@ -33,6 +34,14 @@
         </service>
         <service id="Commercetools\Symfony\CartBundle\Manager\ShippingMethodManager" public="true">
             <argument id="Commercetools\Symfony\CartBundle\Model\Repository\ShippingMethodRepository" type="service"/>
+            <argument id="event_dispatcher" type="service"/>
+        </service>
+        <service id="Commercetools\Symfony\CartBundle\Model\Repository\PaymentRepository"
+                 parent="Commercetools\Symfony\CtpBundle\Model\Repository" public="true">
+            <argument key="$enableCache">%commercetools.cache.payment%</argument>
+        </service>
+        <service id="Commercetools\Symfony\CartBundle\Manager\PaymentManager" public="true">
+            <argument id="Commercetools\Symfony\CartBundle\Model\Repository\PaymentRepository" type="service"/>
             <argument id="event_dispatcher" type="service"/>
         </service>
     </services>

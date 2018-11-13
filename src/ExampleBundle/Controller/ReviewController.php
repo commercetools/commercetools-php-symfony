@@ -7,15 +7,20 @@ namespace Commercetools\Symfony\ExampleBundle\Controller;
 
 
 use Commercetools\Core\Client;
+use Commercetools\Core\Error\InvalidArgumentException;
 use Commercetools\Core\Model\Customer\CustomerReference;
 use Commercetools\Core\Model\Product\ProductReference;
+use Commercetools\Core\Model\Review\Review;
+use Commercetools\Core\Model\Review\ReviewCollection;
 use Commercetools\Symfony\CtpBundle\Model\QueryParams;
 use Commercetools\Symfony\ExampleBundle\Model\Form\Type\AddReviewType;
 use Commercetools\Symfony\ReviewBundle\Manager\ReviewManager;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
+use Symfony\Component\Workflow\Registry;
 
 class ReviewController extends Controller
 {
@@ -30,14 +35,21 @@ class ReviewController extends Controller
     private $manager;
 
     /**
+     * @var Registry
+     */
+    private $workflows;
+
+    /**
      * ReviewController constructor.
      * @param Client $client
      * @param ReviewManager $manager
+     * @param Registry $workflows
      */
-    public function __construct(Client $client, ReviewManager $manager)
+    public function __construct(Client $client, ReviewManager $manager, Registry $workflows)
     {
         $this->client = $client;
         $this->manager = $manager;
+        $this->workflows = $workflows;
     }
 
     public function showReviewsForProductAction(Request $request, $productId)
@@ -78,7 +90,40 @@ class ReviewController extends Controller
             ]);
         }
 
-        return new JsonResponse(array('success' => false));;
+        return new JsonResponse(array('success' => false));
+    }
+
+
+    public function UpdateReviewAction(Request $request, $reviewId, UserInterface $user = null)
+    {
+        if(is_null($user)){
+            $this->addFlash('error', 'Do not allow anonymous reviews for now');
+            return $this->render('@Example/index.html.twig');
+        }
+
+        $review = $this->manager->getReviewForUser($request->getLocale(), $user->getId(), $reviewId);
+
+        $review = $review->current();
+
+        if (!$review instanceof Review) {
+            $this->addFlash('error', 'Cannot find review or not required permissions');
+            return $this->render('@Example/index.html.twig');
+        }
+
+        try {
+            $workflow = $this->workflows->get($review);
+        } catch (InvalidArgumentException $e) {
+            $this->addFlash('error', 'Cannot find proper workflow configuration. Action aborted');
+            return $this->render('@Example/index.html.twig');
+        }
+
+        if ($workflow->can($review, $request->get('toState'))) {
+            $workflow->apply($review, $request->get('toState'));
+            return $this->redirect($this->generateUrl('_ctp_example_product_by_id', ['id' => $review->getTarget()->getid()]));
+        }
+
+        $this->addFlash('error', 'Cannot perform this action');
+        return $this->render('@Example/index.html.twig');
     }
 
 }
