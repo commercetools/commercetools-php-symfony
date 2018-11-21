@@ -4,8 +4,9 @@
 
 namespace Commercetools\Symfony\ExampleBundle\Controller;
 
-use Commercetools\Core\Model\Order\OrderCollection;
+use Commercetools\Core\Model\Order\Order;
 use Commercetools\Core\Model\State\StateReference;
+use Commercetools\Symfony\CartBundle\Manager\PaymentManager;
 use Commercetools\Symfony\StateBundle\Model\ItemStateWrapper;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Commercetools\Core\Client;
@@ -37,67 +38,77 @@ class OrderController extends Controller
     private $workflows;
 
     /**
+     * @var PaymentManager
+     */
+    private $paymentManager;
+
+    /**
      * OrderController constructor.
      * @param Client $client
      * @param OrderManager $manager
      * @param Registry $workflows
+     * @param PaymentManager $paymentManager
      */
-    public function __construct(Client $client, OrderManager $manager, Registry $workflows)
+    public function __construct(Client $client, OrderManager $manager, Registry $workflows, PaymentManager $paymentManager)
     {
         $this->client = $client;
         $this->manager = $manager;
         $this->workflows = $workflows;
+        $this->paymentManager = $paymentManager;
     }
 
-
-    protected function getCustomerId()
+    /**
+     * @param Request $request
+     * @param SessionInterface $session
+     * @param UserInterface|null $user
+     * @return \Symfony\Component\HttpFoundation\Response
+     */
+    public function indexAction(Request $request, SessionInterface $session, UserInterface $user = null)
     {
-        $user = $this->getUser();
-        if (is_null($user)) {
-            return null;
-        }
-        $customerId = $user->getId();
-
-        return $customerId;
-    }
-
-    public function indexAction(Request $request, UserInterface $user)
-    {
-        $orders = $this->manager->getOrders($request->getLocale(), $user->getId());
+        $orders = $this->manager->getOrdersForUser($request->getLocale(), $user, $session->getId());
 
         return $this->render('ExampleBundle:user:orders.html.twig', [
             'orders' => $orders
         ]);
     }
 
+    /**
+     * @param Request $request
+     * @param SessionInterface $session
+     * @param UserInterface|null $user
+     * @param $orderId
+     * @return \Symfony\Component\HttpFoundation\Response
+     */
     public function showOrderAction(Request $request, SessionInterface $session, UserInterface $user = null, $orderId)
     {
-        if(is_null($user)){
-            $order = $this->manager->getOrderForAnonymous($request->getLocale(), $session->getId(), $orderId);
-        } else {
-            $order = $this->manager->getOrderForCustomer($request->getLocale(), $user->getId(), $orderId);
-        }
+        $order = $this->manager->getOrderForUser($request->getLocale(), $orderId, $user, $session->getId());
 
-        return $this->render('ExampleBundle:user:order.html.twig', [
-            'order' => $order->current()
-        ]);
-    }
-
-    public function updateLineItemAction(Request $request, SessionInterface $session, UserInterface $user = null, $orderId)
-    {
-        if(is_null($user)){
-            $orders = $this->manager->getOrderForAnonymous($request->getLocale(), $session->getId(), $orderId);
-        } else {
-            $orders = $this->manager->getOrderForCustomer($request->getLocale(), $user->getId(), $orderId);
-        }
-
-        if (!$orders instanceof OrderCollection) {
-            $this->addFlash('error', $orders->getMessage());
+        if (!$order instanceof Order) {
+            $this->addFlash('error', sprintf('Cannot find order: %s', $orderId));
             return $this->render('@Example/index.html.twig');
         }
 
-        $order = $orders->current();
-        $currentStateReference = StateReference::ofId($request->get('fromState'));
+        if (!is_null($order->getPaymentInfo())) {
+            $paymentsIds = array_map(function($elem){return $elem['id'];}, $order->getPaymentInfo()->getPayments()->toArray());
+            $payments = $this->paymentManager->getPaymentsForOrder($request->getLocale(), $paymentsIds);
+        }
+
+        return $this->render('ExampleBundle:user:order.html.twig', [
+            'order' => $order,
+            'payments' => $payments ?? []
+        ]);
+    }
+
+    /**
+     * @param Request $request
+     * @param SessionInterface $session
+     * @param $orderId
+     * @param UserInterface|null $user
+     * @return \Symfony\Component\HttpFoundation\RedirectResponse|\Symfony\Component\HttpFoundation\Response
+     */
+    public function updateLineItemAction(Request $request, SessionInterface $session, $orderId, UserInterface $user = null)
+    {
+        $order = $this->manager->getOrderForUser($request->getLocale(), $orderId, $user, $session->getId());
 
         if ($request->get('lineItemId')){
             $lineItem = $order->getLineItems()->getById($request->get('lineItemId'));
@@ -108,6 +119,7 @@ class OrderController extends Controller
             return $this->render('@Example/index.html.twig');
         }
 
+        $currentStateReference = StateReference::ofId($request->get('fromState'));
         $quantity = $request->get('quantity') ?? 1;
 
         $subject = ItemStateWrapper::create($order, $currentStateReference, $lineItem, (int)$quantity);
@@ -119,29 +131,26 @@ class OrderController extends Controller
             return $this->render('@Example/index.html.twig');
         }
 
-        if ($workflow->can($subject, $request->get('toState'))) {
-            $workflow->apply($subject, $request->get('toState'));
-            return $this->redirect($this->generateUrl('_ctp_example_order', ['orderId' => $orderId]));
-        }
-
-        $this->addFlash('error', 'Cannot perform this action');
-        return $this->render('@Example/index.html.twig');
-    }
-
-    public function cancelOrderAction(Request $request, SessionInterface $session, UserInterface $user = null, $orderId)
-    {
-        if(is_null($user)){
-            $orders = $this->manager->getOrderForAnonymous($request->getLocale(), $session->getId(), $orderId);
-        } else {
-            $orders = $this->manager->getOrderForCustomer($request->getLocale(), $user->getId(), $orderId);
-        }
-
-        if (!$orders instanceof OrderCollection) {
-            $this->addFlash('error', $orders->getMessage());
+        if (!$workflow->can($subject, $request->get('toState'))) {
+            $this->addFlash('error', 'Cannot perform this action');
             return $this->render('@Example/index.html.twig');
         }
 
-        $order = $orders->current();
+        $workflow->apply($subject, $request->get('toState'));
+        return $this->redirect($this->generateUrl('_ctp_example_order', ['orderId' => $orderId]));
+    }
+
+    /**
+     * @param Request $request
+     * @param SessionInterface $session
+     * @param UserInterface|null $user
+     * @param $orderId
+     * @param $toState
+     * @return \Symfony\Component\HttpFoundation\RedirectResponse|\Symfony\Component\HttpFoundation\Response
+     */
+    public function updateOrderAction(Request $request, SessionInterface $session, UserInterface $user = null, $orderId, $toState)
+    {
+        $order = $this->manager->getOrderForUser($request->getLocale(), $orderId, $user, $session->getId());
 
         try {
             $workflow = $this->workflows->get($order);
@@ -150,57 +159,12 @@ class OrderController extends Controller
             return $this->render('@Example/index.html.twig');
         }
 
-//        // for 'workflow' config
-//        if ($workflow->can($order, 'createdToCanceled') ||
-//            $workflow->can($order, 'readyToShipToCanceled')
-//        ) {
-//            $workflow->apply($order, 'createdToCanceled');
-//
-//            return $this->redirect($this->generateUrl('_ctp_example_order', ['orderId' => $orderId]));
-//        }
-
-        // for 'state_machine' config
-        if ($workflow->can($order, 'toCanceled')) {
-            $workflow->apply($order, 'toCanceled');
-            return $this->redirect($this->generateUrl('_ctp_example_order', ['orderId' => $orderId]));
-        }
-
-        $this->addFlash('error', 'Cannot perform this action');
-        return $this->render('@Example/index.html.twig');
-
-    }
-
-
-    public function createOrderAction(Request $request, SessionInterface $session, UserInterface $user = null, $orderId)
-    {
-        if(is_null($user)){
-            $orders = $this->manager->getOrderForAnonymous($request->getLocale(), $session->getId(), $orderId);
-        } else {
-            $orders = $this->manager->getOrderForCustomer($request->getLocale(), $user->getId(), $orderId);
-        }
-
-        if (!$orders instanceof OrderCollection) {
-            $this->addFlash('error', $orders->getMessage());
+        if (!$workflow->can($order, $toState)) {
+            $this->addFlash('error', 'Cannot perform this action');
             return $this->render('@Example/index.html.twig');
         }
 
-        $order = $orders->current();
-
-        try {
-            $workflow = $this->workflows->get($order);
-        } catch (InvalidArgumentException $e) {
-            $this->addFlash('error', 'Cannot find proper workflow configuration. Action aborted');
-            return $this->render('@Example/index.html.twig');
-        }
-
-        // for 'state_machine' config
-        if ($workflow->can($order, 'toCreated')) {
-            $workflow->apply($order, 'toCreated', $this->manager);
-            return $this->redirect($this->generateUrl('_ctp_example_order', ['orderId' => $orderId]));
-        }
-
-        $this->addFlash('error', 'Cannot perform this action');
-        return $this->render('@Example/index.html.twig');
-
+        $workflow->apply($order, $toState);
+        return $this->redirect($this->generateUrl('_ctp_example_order', ['orderId' => $orderId]));
     }
 }

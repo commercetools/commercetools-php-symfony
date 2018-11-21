@@ -12,7 +12,6 @@ use Commercetools\Core\Request\Carts\Command\CartAddLineItemAction;
 use Commercetools\Core\Request\Carts\Command\CartAddShoppingListAction;
 use Commercetools\Core\Request\Carts\Command\CartChangeLineItemQuantityAction;
 use Commercetools\Core\Request\Carts\Command\CartRemoveLineItemAction;
-use Commercetools\Symfony\CustomerBundle\Security\User\User;
 use Commercetools\Symfony\ExampleBundle\Model\Form\Type\AddToCartType;
 use Commercetools\Symfony\CartBundle\Model\Repository\CartRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
@@ -20,10 +19,11 @@ use Commercetools\Core\Model\Cart\Cart;
 use Commercetools\Core\Client;
 use Commercetools\Symfony\CartBundle\Manager\CartManager;
 use Symfony\Component\Form\Extension\Core\Type\FormType;
-use Symfony\Component\Form\Extension\Core\Type\TextType;
+use Symfony\Component\Form\FormBuilder;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
 
 
@@ -50,31 +50,22 @@ class CartController extends Controller
         $this->manager = $manager;
     }
 
-
-    protected function getCustomerId()
+    public function indexAction(Request $request, SessionInterface $session, UserInterface $user = null)
     {
-        $user = $this->getUser();
-        if (is_null($user)) {
-            return null;
-        }
-        $customerId = $user->getId();
-
-        return $customerId;
-    }
-
-    public function indexAction(Request $request)
-    {
-        $session = $this->get('session');
         $cartId = $session->get(CartRepository::CART_ID);
-        $cart = $this->manager->getCart($request->getLocale(), $cartId, $this->getCustomerId());
+        $cart = $this->manager->getCart($request->getLocale(), $cartId, $user, $session->getId());
 
-        return $this->render('ExampleBundle:cart:index.html.twig', ['cart' => $cart]);
+        if (is_null($cart)) {
+            $cart = Cart::of();
+        }
+
+        return $this->render('ExampleBundle:cart:index.html.twig', [
+            'cart' => $cart
+        ]);
     }
 
-    public function addLineItemAction(Request $request, UserInterface $user = null)
+    public function addLineItemAction(Request $request, SessionInterface $session, UserInterface $user = null)
     {
-        $session = $this->get('session');
-
         $form = $this->createForm(AddToCartType::class, ['variantIdText' => true]);
         $form->handleRequest($request);
 
@@ -88,9 +79,12 @@ class CartController extends Controller
             $cartId = $session->get(CartRepository::CART_ID);
 
             if(!is_null($cartId)){
-                $cart = $this->manager->getCart($request->getLocale(), $cartId, $this->getCustomerId());
+                $cart = $this->manager->getCart($request->getLocale(), $cartId, $user, $session->getId());
+
                 $cartBuilder = $this->manager->update($cart);
-                $cartBuilder->addAction(CartAddLineItemAction::ofProductIdVariantIdAndQuantity($productId, $variantId, $quantity));
+                $cartBuilder->addAction(
+                    CartAddLineItemAction::ofProductIdVariantIdAndQuantity($productId, $variantId, $quantity)
+                );
                 $cartBuilder->flush();
 
             } else {
@@ -99,8 +93,8 @@ class CartController extends Controller
 
                 $countryCode = $this->getCountryFromConfig();
                 $currency = $this->getCurrencyFromConfig();
-
                 $country = Location::of()->setCountry($countryCode);
+
                 if(is_null($user)){
                     $this->manager->createCart($request->getLocale(), $currency, $country, $lineItemDraftCollection, null, $session->getId());
                 } else {
@@ -128,27 +122,28 @@ class CartController extends Controller
         return $response;
     }
 
-    public function changeLineItemAction(Request $request)
+    public function changeLineItemAction(Request $request, SessionInterface $session, UserInterface $user = null)
     {
-        $session = $this->get('session');
         $lineItemId = $request->get('lineItemId');
         $quantity = (int)$request->get('quantity');
         $cartId = $session->get(CartRepository::CART_ID);
-        $cart = $this->manager->getCart($request->getLocale(), $cartId, $this->getCustomerId());
+
+        $cart = $this->manager->getCart($request->getLocale(), $cartId, $user, $session->getId());
 
         $cartBuilder = $this->manager->update($cart);
-        $cartBuilder->addAction(CartChangeLineItemQuantityAction::ofLineItemIdAndQuantity($lineItemId, $quantity));
+        $cartBuilder->addAction(
+            CartChangeLineItemQuantityAction::ofLineItemIdAndQuantity($lineItemId, $quantity)
+        );
         $cartBuilder->flush();
 
         return new RedirectResponse($this->generateUrl('_ctp_example_cart'));
     }
 
-    public function deleteLineItemAction(Request $request)
+    public function deleteLineItemAction(Request $request, SessionInterface $session, UserInterface $user = null)
     {
-        $session = $this->get('session');
         $lineItemId = $request->get('lineItemId');
         $cartId = $session->get(CartRepository::CART_ID);
-        $cart = $this->manager->getCart($request->getLocale(), $cartId, $this->getCustomerId());
+        $cart = $this->manager->getCart($request->getLocale(), $cartId, $user, $session->getId());
 
         $cartBuilder = $this->manager->update($cart);
         $cartBuilder->addAction(CartRemoveLineItemAction::ofLineItemId($lineItemId));
@@ -158,16 +153,15 @@ class CartController extends Controller
         return new RedirectResponse($this->generateUrl('_ctp_example_cart'));
     }
 
-    public function addShoppingListToCartAction(Request $request, UserInterface $user = null)
+    public function addShoppingListToCartAction(Request $request, SessionInterface $session, UserInterface $user = null)
     {
-        $session = $this->get('session');
         $cartId = $session->get(CartRepository::CART_ID);
 
         $shoppingListId = $request->get('_shoppingListId');
         $shoppingList = ShoppingListReference::ofId($shoppingListId);
 
         if(!is_null($cartId)){
-            $cart = $this->manager->getCart($request->getLocale(), $cartId, $this->getCustomerId());
+            $cart = $this->manager->getCart($request->getLocale(), $cartId, $user, $session->getId());
 
 
         } else {
@@ -178,7 +172,7 @@ class CartController extends Controller
             if(is_null($user)){
                 $cart = $this->manager->createCart($request->getLocale(), $currency, $country, null, null, $session->getId());
             } else {
-                $cart = $this->manager->createCart($request->getLocale(), $currency, $country, null, $user->getID());
+                $cart = $this->manager->createCart($request->getLocale(), $currency, $country, null, $user->getId());
             }
         }
 

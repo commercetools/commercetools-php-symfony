@@ -6,7 +6,6 @@
 namespace Commercetools\Symfony\StateBundle\Model;
 
 
-use Commercetools\Core\Model\Order\Order;
 use Commercetools\Core\Model\State\StateReference;
 use Commercetools\Symfony\StateBundle\Cache\StateKeyResolver;
 use Symfony\Component\Workflow\Marking;
@@ -27,7 +26,7 @@ class CtpMarkingStore implements MarkingStoreInterface
     }
 
     /**
-     * @param Order $subject
+     * @param Resource $subject
      * @return mixed|null|Marking
      */
     public function getMarking($subject)
@@ -45,7 +44,7 @@ class CtpMarkingStore implements MarkingStoreInterface
 
     protected function getStateReference($subject)
     {
-        if ($subject instanceof ItemStateWrapper) {
+        if ($subject instanceof StateWrapper) {
             return $subject->getStateReference();
         }
 
@@ -54,6 +53,11 @@ class CtpMarkingStore implements MarkingStoreInterface
 
     public function setMarking($subject, Marking $marking)
     {
+    }
+
+    public function getStateReferenceOfInitial()
+    {
+        return StateReference::ofId($this->stateKeyResolver->resolveKey($this->initialState));
     }
 
 }

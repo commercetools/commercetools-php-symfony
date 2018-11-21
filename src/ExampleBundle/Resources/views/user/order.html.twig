@@ -1,9 +1,17 @@
 {% extends "ExampleBundle::layout.html.twig" %}
 
 {% block container %}
+
+    {% for message in app.flashes('error') %}
+        <div class="flash-notice">
+            {{ message }}
+        </div>
+    {% endfor %}
+
     <div class="row">
         <h1>My Order: {{ order.id }}</h1>
         <hr />
+        {#{{ dump(order) }}#}
         <div class="col-md-12">
             Order number: {{ order.id }}<br />
             Order date: {{ order.getCreatedAt.getDateTime|date("m/d/Y H:i") }} <br />
@@ -64,6 +72,22 @@
                 {{ taxPortion.getName }}: {{ taxPortion.getAmount }}<br/>
             {% endfor %}
             Total Price: {{ order.getTotalPrice }}<br />
+        </div>
+
+        <div class="col-md-12 order-box">
+            <h5>Payments</h5>
+
+                {% if payments is not empty %}
+                    <table>
+                        {% for payment in payments %}
+                            {% include 'ExampleBundle:partials:paymentInfo.html.twig' with {payment: payment, orderId: order.id} %}
+                        {% endfor %}
+                    </table>
+
+                {% else %}
+                    no payments associated
+                {% endif %}
+
         </div>
 
         <div class="col-md-12">

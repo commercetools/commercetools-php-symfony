@@ -36,4 +36,18 @@ class StateRepository extends Repository
 
         return $this->executeRequest($request);
     }
+
+    public function getByTypeAndKey($type, $key)
+    {
+        $request = RequestBuilder::of()->states()->query()->where('type = "'.$type.'" and key = "'.$key.'"');
+
+        return $this->executeRequest($request);
+    }
+
+    public function getByKey($key)
+    {
+        $request = RequestBuilder::of()->states()->query()->where('key = "'.$key.'"');
+
+        return $this->executeRequest($request);
+    }
 }

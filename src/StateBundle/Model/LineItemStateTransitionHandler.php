@@ -23,7 +23,6 @@ class LineItemStateTransitionHandler implements SubjectHandler
     public function handle(Event $event)
     {
         $subject = $event->getSubject();
-        // resource is order // TODO handle cart resource
         $orderBuilder = new OrderUpdateBuilder($subject->getResource(), $this->manager);
 
         $orderBuilder->addAction($subject->getUpdateAction(current($event->getTransition()->getTos())));

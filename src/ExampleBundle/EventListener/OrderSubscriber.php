@@ -39,4 +39,6 @@ class OrderSubscriber implements EventSubscriberInterface
         $this->session->remove(CartRepository::CART_ID);
         $this->session->remove(CartRepository::CART_ITEM_COUNT);
     }
+
+
 }

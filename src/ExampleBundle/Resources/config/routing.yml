@@ -71,14 +71,14 @@ _ctp_example_checkout_address:
 
 _ctp_example_checkout_confirm:
     path: /checkout/address/confirm
-    defaults: { _controller: Commercetools\Symfony\ExampleBundle\Controller\CheckoutController::confirmationAction }
+    defaults: { _controller: Commercetools\Symfony\ExampleBundle\Controller\CheckoutController::reviewOrderDetailsAction }
 
 _ctp_example_add_lineItem:
     path: /cart/add
     defaults: { _controller: Commercetools\Symfony\ExampleBundle\Controller\CartController::addLineItemAction }
 
 _ctp_example_add_shoppingList_to_cart:
-    path: /cart/add_shoppinglist
+    path: /cart/add-shoppinglist
     defaults: { _controller: Commercetools\Symfony\ExampleBundle\Controller\CartController::addShoppingListToCartAction }
 
 _ctp_example_change_lineItem:
@@ -93,9 +93,13 @@ _ctp_example_checkout_guest:
     path: /checkout/quest
     defaults: { _controller: Commercetools\Symfony\ExampleBundle\Controller\CheckoutController::setAddressAction }
 
-_ctp_example_checkout_success:
-    path: /checkout/succes
-    defaults: { _controller: Commercetools\Symfony\ExampleBundle\Controller\CheckoutController::successAction }
+_ctp_example_checkout_place_order:
+    path: /checkout/place-order
+    defaults: { _controller: Commercetools\Symfony\ExampleBundle\Controller\CheckoutController::placeCartToOrderAction }
+
+_ctp_example_checkout_payment:
+    path: /checkout/payment
+    defaults: { _controller: Commercetools\Symfony\ExampleBundle\Controller\PaymentController::createPaymentForCartAction }
 
 _ctp_example_orders_all:
     path: /orders/
@@ -107,15 +111,30 @@ _ctp_example_order:
 
 _ctp_example_order_toCanceled:
     path: /orders/{orderId}/cancel
-    defaults: { _controller: Commercetools\Symfony\ExampleBundle\Controller\OrderController::CancelOrderAction }
+    defaults: {
+      _controller: Commercetools\Symfony\ExampleBundle\Controller\OrderController::UpdateOrderAction,
+      toState: 'toCanceled' }
 
 _ctp_example_order_toCreated:
     path: /orders/{orderId}/created
-    defaults: { _controller: Commercetools\Symfony\ExampleBundle\Controller\OrderController::CreateOrderAction }
+    defaults: {
+      _controller: Commercetools\Symfony\ExampleBundle\Controller\OrderController::UpdateOrderAction,
+      toState: 'toCreated' }
 
 _ctp_example_order_toPaid:
-    path: /orders/{orderId}/pay
-    defaults: { _controller: Commercetools\Symfony\ExampleBundle\Controller\OrderController::PaidOrderAction }
+    path: /orders/{orderId}/payment
+    defaults: { _controller: Commercetools\Symfony\ExampleBundle\Controller\PaymentController::createPaymentForOrderAction }
+
+
+_ctp_example_order_toReadyToShip:
+    path: /orders/{orderId}/ready-to-ship
+    defaults: { _controller: Commercetools\Symfony\ExampleBundle\Controller\OrderController::updateOrderAction }
+
+_ctp_example_payment_complete:
+    path: /payment/{paymentId}/complete-payment
+    defaults: {
+      _controller: Commercetools\Symfony\ExampleBundle\Controller\PaymentController::updatePaymentAction,
+      toState: 'toCompleted' }
 
 _ctp_example_order_lineItem_update:
     path: orders/{orderId}/update
@@ -134,16 +153,16 @@ _ctp_example_shoppingList_create:
     defaults: { _controller: Commercetools\Symfony\ExampleBundle\Controller\ShoppingListController::createAction }
 
 _ctp_example_shoppingList_add_lineItem:
-    path: /shoppinglist/add_lineitem
+    path: /shoppinglist/add-lineitem
     defaults: { _controller: Commercetools\Symfony\ExampleBundle\Controller\ShoppingListController::addLineItemAction }
 
 _ctp_example_shoppingList_remove_lineItem:
-    path: /shoppinglist/remove_lineitem
+    path: /shoppinglist/remove-lineitem
     defaults: { _controller: Commercetools\Symfony\ExampleBundle\Controller\ShoppingListController::removeLineItemAction }
     methods: [POST]
 
 _ctp_example_shoppingList_change_lineItem_quantity:
-    path: /shoppinglist/change_lineitem_quantity
+    path: /shoppinglist/change-lineitem-quantity
     defaults: { _controller: Commercetools\Symfony\ExampleBundle\Controller\ShoppingListController::changeLineItemQuantityAction }
     methods: [POST]
 

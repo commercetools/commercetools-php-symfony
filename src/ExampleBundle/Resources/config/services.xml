@@ -15,5 +15,12 @@
             <tag name="kernel.event_subscriber"/>
             <argument type="service" id="session"/>
         </service>
+
+        <service id="Commercetools\Symfony\ExampleBundle\EventListener\PaymentSubscriber">
+            <tag name="kernel.event_subscriber"/>
+            <argument id="Commercetools\Symfony\CartBundle\Manager\OrderManager" type="service" />
+            <argument id="Commercetools\Symfony\CartBundle\Manager\CartManager" type="service" />
+            <argument id="workflow.registry" type="service"/>
+        </service>
     </services>
 </container>

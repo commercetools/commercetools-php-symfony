@@ -9,12 +9,14 @@ namespace Commercetools\Symfony\CartBundle\Tests\Manager;
 use Commercetools\Core\Model\Cart\Cart;
 use Commercetools\Core\Model\Order\Order;
 use Commercetools\Core\Model\Order\OrderCollection;
+use Commercetools\Core\Model\State\StateReference;
 use Commercetools\Core\Request\AbstractAction;
 use Commercetools\Symfony\CartBundle\Event\OrderPostUpdateEvent;
 use Commercetools\Symfony\CartBundle\Event\OrderUpdateEvent;
 use Commercetools\Symfony\CartBundle\Manager\OrderManager;
 use Commercetools\Symfony\CartBundle\Model\OrderUpdateBuilder;
 use Commercetools\Symfony\CartBundle\Model\Repository\OrderRepository;
+use Commercetools\Symfony\CustomerBundle\Security\User\User;
 use PHPUnit\Framework\TestCase;
 use Prophecy\Argument;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
@@ -64,12 +66,13 @@ class OrderManagerTest extends TestCase
         $repository = $this->prophesize(OrderRepository::class);
         $dispatcher = $this->prophesize(EventDispatcherInterface::class);
         $cart = $this->prophesize(Cart::class);
+        $stateReference = $this->prophesize(StateReference::class);
 
-        $repository->createOrderFromCart('en', $cart->reveal())
+        $repository->createOrderFromCart('en', $cart->reveal(), $stateReference->reveal())
             ->willReturn(Order::of())->shouldBeCalled();
 
         $manager = new OrderManager($repository->reveal(), $dispatcher->reveal());
-        $order = $manager->createOrderFromCart('en', $cart->reveal());
+        $order = $manager->createOrderFromCart('en', $cart->reveal(), $stateReference->reveal());
 
         $this->assertInstanceOf(Order::class, $order);
     }
@@ -89,12 +92,13 @@ class OrderManagerTest extends TestCase
     {
         $repository = $this->prophesize(OrderRepository::class);
         $dispatcher = $this->prophesize(EventDispatcherInterface::class);
+        $user = $this->prophesize(User::class);
 
-        $repository->getOrder('en', 'order-id-1', 'customer-id-1')
+        $repository->getOrder('en', 'order-id-1', $user->reveal(), null)
             ->willReturn(Order::of())->shouldBeCalled();
 
         $manager = new OrderManager($repository->reveal(), $dispatcher->reveal());
-        $order = $manager->getOrderForCustomer('en', 'customer-id-1', 'order-id-1');
+        $order = $manager->getOrderForUser('en', 'order-id-1', $user->reveal());
 
         $this->assertInstanceOf(Order::class, $order);
     }
@@ -108,21 +112,22 @@ class OrderManagerTest extends TestCase
             ->willReturn(Order::of())->shouldBeCalled();
 
         $manager = new OrderManager($repository->reveal(), $dispatcher->reveal());
-        $order = $manager->getOrderForAnonymous('en', 'anonymous-id-1', 'order-id-1');
+        $order = $manager->getOrderForUser('en', 'order-id-1', null, 'anonymous-id-1');
 
         $this->assertInstanceOf(Order::class, $order);
     }
 
-    public function testGetOrders()
+    public function testGetOrdersForCustomer()
     {
         $repository = $this->prophesize(OrderRepository::class);
         $dispatcher = $this->prophesize(EventDispatcherInterface::class);
+        $user = $this->prophesize(User::class);
 
-        $repository->getOrders('en', '123')
+        $repository->getOrders('en', $user->reveal(), null)
             ->willReturn(OrderCollection::of())->shouldBeCalled();
 
         $manager = new OrderManager($repository->reveal(), $dispatcher->reveal());
-        $orders = $manager->getOrders('en', '123');
+        $orders = $manager->getOrdersForUser('en', $user->reveal());
 
         $this->assertInstanceOf(OrderCollection::class, $orders);
     }

@@ -16,6 +16,13 @@ use Psr\Cache\CacheItemPoolInterface;
 
 class ReviewRepository extends Repository
 {
+    /**
+     * ReviewRepository constructor.
+     * @param $enableCache
+     * @param CacheItemPoolInterface $cache
+     * @param Client $client
+     * @param MapperFactory $mapperFactory
+     */
     public function __construct(
         $enableCache,
         CacheItemPoolInterface $cache,

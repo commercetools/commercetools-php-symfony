@@ -17,6 +17,7 @@ use Commercetools\Symfony\CartBundle\Event\CartUpdateEvent;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Commercetools\Symfony\CartBundle\Model\Repository\CartRepository;
 use Commercetools\Symfony\CartBundle\Model\CartUpdateBuilder;
+use Symfony\Component\Security\Core\User\UserInterface;
 
 class CartManager
 {
@@ -41,23 +42,31 @@ class CartManager
         $this->dispatcher = $dispatcher;
     }
 
-    public function getCart($locale, $cartId = null, $customerId = null, $anonymousId = null)
+    /**
+     * @param $locale
+     * @param null $cartId
+     * @param UserInterface|null $user
+     * @param null $anonymousId
+     * @return Cart|null
+     */
+    public function getCart($locale, $cartId = null, UserInterface $user = null, $anonymousId = null)
     {
-        $cart = $this->repository->getCart($locale, $cartId, $customerId, $anonymousId);
+        $cart = $this->repository->getCart($locale, $cartId, $user, $anonymousId);
 
-        if (!is_null($cart)){
-            $event = new CartGetEvent($cart);
-            $this->dispatcher->dispatch(CartGetEvent::class, $event);
-
-        } else {
-            $cart = Cart::of(); // this temporary helps on the template
-            $event = new CartNotFoundEvent();
-            $this->dispatcher->dispatch(CartNotFoundEvent::class, $event);
-        }
+        $this->dispatchPostGet($cart);
 
         return $cart;
     }
 
+    /**
+     * @param $locale
+     * @param $currency
+     * @param Location $location
+     * @param LineItemDraftCollection|null $lineItemDraftCollection
+     * @param null $customerId
+     * @param null $anonymousId
+     * @return Cart|null
+     */
     public function createCart($locale, $currency, Location $location, LineItemDraftCollection $lineItemDraftCollection = null, $customerId = null, $anonymousId = null)
     {
         $event = new CartCreateEvent();
@@ -80,6 +89,12 @@ class CartManager
         return new CartUpdateBuilder($cart, $this);
     }
 
+    /**
+     * @param Cart $cart
+     * @param AbstractAction $action
+     * @param null $eventName
+     * @return AbstractAction[]
+     */
     public function dispatch(Cart $cart, AbstractAction $action, $eventName = null)
     {
         $eventName = is_null($eventName) ? get_class($action) : $eventName;
@@ -104,11 +119,30 @@ class CartManager
         return $cart;
     }
 
+    /**
+     * @param Cart $cart
+     * @param array $actions
+     * @return AbstractAction[]
+     */
     public function dispatchPostUpdate(Cart $cart, array $actions)
     {
         $event = new CartPostUpdateEvent($cart, $actions);
         $event = $this->dispatcher->dispatch(CartPostUpdateEvent::class, $event);
 
         return $event->getActions();
+    }
+
+    /**
+     * @param Cart|null $cart
+     */
+    public function dispatchPostGet(Cart $cart = null)
+    {
+        if (is_null($cart)){
+            $event = new CartNotFoundEvent();
+            $this->dispatcher->dispatch(CartNotFoundEvent::class, $event);
+        } else {
+            $event = new CartGetEvent($cart);
+            $this->dispatcher->dispatch(CartGetEvent::class, $event);
+        }
     }
 }

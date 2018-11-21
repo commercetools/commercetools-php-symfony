@@ -9,16 +9,15 @@ namespace Commercetools\Symfony\StateBundle\Model;
 use Commercetools\Core\Model\Cart\CustomLineItem;
 use Commercetools\Core\Model\Cart\LineItem;
 use Commercetools\Core\Model\Common\Resource;
-use Commercetools\Core\Model\Order\Order;
 use Commercetools\Core\Model\State\StateReference;
 use Commercetools\Core\Request\Orders\Command\OrderTransitionCustomLineItemStateAction;
 use Commercetools\Core\Request\Orders\Command\OrderTransitionLineItemStateAction;
 
-class ItemStateWrapper
+class ItemStateWrapper implements StateWrapper
 {
 
     /**
-     * @var Order $resource
+     * @var Resource $resource
      */
     private $resource;
 
@@ -67,7 +66,7 @@ class ItemStateWrapper
     }
 
     /**
-     * @return Order
+     * @return Resource
      */
     public function getResource()
     {

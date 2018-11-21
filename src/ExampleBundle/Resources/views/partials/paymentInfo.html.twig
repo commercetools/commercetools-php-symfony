@@ -1,0 +1,21 @@
+{% block paymentInfo %}
+
+    {#<tr>#}
+        {#<td colspan="3">{{ dump(payment) }}</td>#}
+    {#</tr>#}
+    <tr>
+        <td>{{ payment.id }}</td>
+        {% for place in workflow_marked_places(payment) %}
+            <td>{{ place }}</td>
+        {% endfor %}
+
+        <td>
+            {% for transition in workflow_transitions(payment) %}
+                <a href="{{ path('_ctp_example_payment_complete', {'orderId': orderId, 'paymentId': payment.id}) }}">{{ transition.name }}</a>
+            {% else %}
+                -
+            {% endfor %}
+        </td>
+    </tr>
+
+{% endblock %}

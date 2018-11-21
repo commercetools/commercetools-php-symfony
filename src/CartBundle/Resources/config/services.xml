@@ -10,16 +10,16 @@
         <parameter key="commercetools.cache.payment" type="string">false</parameter>
     </parameters>
     <services>
+
         <service id="Commercetools\Symfony\CartBundle\Model\Repository\CartRepository"
                  parent="Commercetools\Symfony\CtpBundle\Model\Repository" public="true">
             <argument key="$enableCache">%commercetools.cache.cart%</argument>
-            <argument key="$shippingMethodRepository" type="service"
-                      id="Commercetools\Symfony\CartBundle\Model\Repository\ShippingMethodRepository"/>
         </service>
         <service id="Commercetools\Symfony\CartBundle\Manager\CartManager" public="true">
             <argument id="Commercetools\Symfony\CartBundle\Model\Repository\CartRepository" type="service"/>
             <argument id="event_dispatcher" type="service"/>
         </service>
+
         <service id="Commercetools\Symfony\CartBundle\Model\Repository\OrderRepository"
                  parent="Commercetools\Symfony\CtpBundle\Model\Repository" public="true">
             <argument key="$enableCache">%commercetools.cache.order%</argument>
@@ -28,6 +28,7 @@
             <argument id="Commercetools\Symfony\CartBundle\Model\Repository\OrderRepository" type="service"/>
             <argument id="event_dispatcher" type="service"/>
         </service>
+
         <service id="Commercetools\Symfony\CartBundle\Model\Repository\ShippingMethodRepository"
                  parent="Commercetools\Symfony\CtpBundle\Model\Repository" public="true">
             <argument key="$enableCache">%commercetools.cache.shipping_method%</argument>
@@ -36,6 +37,7 @@
             <argument id="Commercetools\Symfony\CartBundle\Model\Repository\ShippingMethodRepository" type="service"/>
             <argument id="event_dispatcher" type="service"/>
         </service>
+
         <service id="Commercetools\Symfony\CartBundle\Model\Repository\PaymentRepository"
                  parent="Commercetools\Symfony\CtpBundle\Model\Repository" public="true">
             <argument key="$enableCache">%commercetools.cache.payment%</argument>
@@ -44,5 +46,6 @@
             <argument id="Commercetools\Symfony\CartBundle\Model\Repository\PaymentRepository" type="service"/>
             <argument id="event_dispatcher" type="service"/>
         </service>
+
     </services>
 </container>
