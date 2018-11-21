@@ -1,0 +1,25 @@
+{
+    "name": "commercetools/symfony-setup-bundle",
+    "description": "Symfony SetupBundle for Commercetools platform",
+    "type": "library",
+    "license": "MIT",
+    "autoload": {
+        "psr-4": {
+            "Commercetools\\Symfony\\SetupBundle\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Commercetools\\Symfony\\SetupBundle\\Tests\\": "Tests/"
+        }
+    },
+    "require": {
+        "symfony/console": "^3.4 | ^4.0",
+        "commercetools/symfony-ctp-bundle": "^0.3"
+    },
+    "extra": {
+        "branch-alias": {
+            "dev-master": "0.3.0-dev"
+        }
+    }
+}

@@ -20,7 +20,7 @@ use Commercetools\Symfony\CartBundle\Manager\CartManager;
 use Commercetools\Symfony\CartBundle\Manager\OrderManager;
 use Commercetools\Symfony\CartBundle\Manager\ShippingMethodManager;
 use Commercetools\Symfony\CartBundle\Model\CartUpdateBuilder;
-use Commercetools\Symfony\CustomerBundle\Security\User\CtpUser;
+use Commercetools\Symfony\CtpBundle\Security\User\CtpUser;
 use Commercetools\Symfony\CustomerBundle\Security\User\User;
 use Commercetools\Symfony\ExampleBundle\Controller\CheckoutController;
 use Commercetools\Symfony\ExampleBundle\Entity\CartEntity;

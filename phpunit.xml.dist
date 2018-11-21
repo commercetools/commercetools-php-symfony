@@ -43,23 +43,23 @@
 
     <filter>
         <whitelist>
-            <directory>./src/CtpBundle/</directory>
-            <directory>./src/ShoppingListBundle/</directory>
-            <directory>./src/CustomerBundle/</directory>
-            <directory>./src/CartBundle/</directory>
-            <directory>./src/ReviewBundle/</directory>
-            <directory>./src/CatalogBundle/</directory>
-            <directory>./src/SetupBundle/</directory>
-            <directory>./src/ExampleBundle/</directory>
-            <directory>./src/StateBundle/</directory>
+            <directory>./src/CtpBundle/src/</directory>
+            <directory>./src/ShoppingListBundle/src/</directory>
+            <directory>./src/CustomerBundle/src/</directory>
+            <directory>./src/CartBundle/src/</directory>
+            <directory>./src/ReviewBundle/src/</directory>
+            <directory>./src/CatalogBundle/src/</directory>
+            <directory>./src/SetupBundle/src/</directory>
+            <directory>./src/ExampleBundle/src/</directory>
+            <directory>./src/StateBundle/src/</directory>
             <exclude>
-                <directory>./src/CtpBundle/Resources</directory>
+                <directory>./src/CtpBundle/src/Resources</directory>
                 <directory>./src/CtpBundle/Tests</directory>
                 <directory>./src/ShoppingListBundle/Resources</directory>
                 <directory>./src/ShoppingListBundle/Tests</directory>
                 <directory>./src/CustomerBundle/Resources</directory>
                 <directory>./src/CustomerBundle/Tests</directory>
-                <directory>./src/CartBundle/Resources</directory>
+                <directory>./src/CartBundle/src/Resources</directory>
                 <directory>./src/CartBundle/Tests</directory>
                 <directory>./src/ReviewBundle/Resources</directory>
                 <directory>./src/ReviewBundle/Tests</directory>

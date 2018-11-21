@@ -1,0 +1,34 @@
+{
+    "name": "commercetools/symfony-example-bundle",
+    "description": "Symfony ExampleBundle for Commercetools platform",
+    "type": "library",
+    "license": "MIT",
+    "autoload": {
+        "psr-4": {
+            "Commercetools\\Symfony\\ExampleBundle\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Commercetools\\Symfony\\ExampleBundle\\Tests\\": "Tests/"
+        }
+    },
+    "require": {
+      "php": "^7.1",
+      "symfony/form": "^3.4 | ^4.0",
+      "symfony/validator": "^3.4 | ^4.0",
+      "symfony/asset": "^3.4 | ^4.0",
+      "commercetools/symfony-ctp-bundle": "^0.3",
+      "commercetools/symfony-catalog-bundle": "^0.3",
+      "commercetools/symfony-cart-bundle": "^0.3",
+      "commercetools/symfony-customer-bundle": "^0.3",
+      "commercetools/symfony-review-bundle": "^0.3",
+      "commercetools/symfony-shopping-list-bundle": "^0.3",
+      "commercetools/symfony-state-bundle": "^0.3"
+    },
+    "extra": {
+      "branch-alias": {
+        "dev-master": "0.3.0-dev"
+      }
+    }
+}

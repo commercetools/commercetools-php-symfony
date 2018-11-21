@@ -1,30 +1,25 @@
 {
     "name": "commercetools/symfony-bundle",
-    "description": "Symfony bundle for Commercetools platform",
     "type": "library",
+    "description": "Symfony bundle for Commercetools platform",
     "license": "MIT",
-    "autoload": {
-        "psr-4": {
-            "Commercetools\\Symfony\\": "src/"
-        }
-    },
     "require": {
-        "php": ">=5.6",
+        "symfony/console": "^3.4 | ^4.0",
+        "php": "^7.1",
         "symfony/framework-bundle": "^3.4 | ^4.0",
-        "symfony/form": "^3.4 | ^4.0",
-        "symfony/templating": "^4.1",
-        "symfony/security-bundle": "^3.4 | ^4.0",
-        "symfony/validator": "^3.4 | ^4.0",
         "symfony/serializer": "^3.4 | ^4.0",
         "symfony/cache": "^3.4 | ^4.0",
         "commercetools/php-sdk": "^2.5",
         "symfony/var-dumper": "^3.4 | ^4.0",
         "symfony/dotenv": "^3.4 | ^4.0",
+        "symfony/twig-bundle": "^3.4 | ^4.0",
+        "symfony/security-bundle": "^3.4 | ^4.0",
         "symfony/stopwatch": "^3.4 | ^4.0",
         "symfony/workflow": "^3.4 | ^4.0",
         "twig/extensions": "^1.5",
-        "symfony/console": "^4.1",
-        "symfony/twig-bundle": "^4.1"
+        "symfony/form": "^3.4 | ^4.0",
+        "symfony/validator": "^3.4 | ^4.0",
+        "symfony/asset": "^3.4 | ^4.0"
     },
     "require-dev": {
         "phpunit/phpunit": "^7.0 | ^6.0 | ^5.0",
@@ -32,11 +27,51 @@
         "commercetools/commercetools-api-reference": "dev-master",
         "matthiasnoback/symfony-dependency-injection-test": "^3.0",
         "symfony/test-pack": "^1.0",
-        "cache/filesystem-adapter": "^1.0"
+        "cache/filesystem-adapter": "^1.0",
+        "symplify/monorepo-builder": "^5.2",
+        "symfony/profiler-pack": "^1.0",
+        "symfony/templating": "^3.4 | ^4.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "Commercetools\\Symfony\\CartBundle\\": "src/CartBundle/src/",
+            "Commercetools\\Symfony\\CatalogBundle\\": "src/CatalogBundle/src/",
+            "Commercetools\\Symfony\\CtpBundle\\": "src/CtpBundle/src/",
+            "Commercetools\\Symfony\\CustomerBundle\\": "src/CustomerBundle/src/",
+            "Commercetools\\Symfony\\ExampleBundle\\": "src/ExampleBundle/src/",
+            "Commercetools\\Symfony\\ReviewBundle\\": "src/ReviewBundle/src/",
+            "Commercetools\\Symfony\\SetupBundle\\": "src/SetupBundle/src/",
+            "Commercetools\\Symfony\\ShoppingListBundle\\": "src/ShoppingListBundle/src/",
+            "Commercetools\\Symfony\\StateBundle\\": "src/StateBundle/src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Commercetools\\Symfony\\CartBundle\\Tests\\": "src/CartBundle/Tests/",
+            "Commercetools\\Symfony\\CatalogBundle\\Tests\\": "src/CatalogBundle/Tests/",
+            "Commercetools\\Symfony\\CtpBundle\\Tests\\": "src/CtpBundle/Tests/",
+            "Commercetools\\Symfony\\CustomerBundle\\Tests\\": "src/CustomerBundle/Tests/",
+            "Commercetools\\Symfony\\ExampleBundle\\Tests\\": "src/ExampleBundle/Tests/",
+            "Commercetools\\Symfony\\ReviewBundle\\Tests\\": "src/ReviewBundle/Tests/",
+            "Commercetools\\Symfony\\SetupBundle\\Tests\\": "src/SetupBundle/Tests/",
+            "Commercetools\\Symfony\\ShoppingListBundle\\Tests\\": "src/ShoppingListBundle/Tests/",
+            "Commercetools\\Symfony\\StateBundle\\Tests\\": "src/StateBundle/Tests/"
+        }
+    },
+    "replace": {
+        "commercetools/symfony-cart-bundle": "self.version",
+        "commercetools/symfony-catalog-bundle": "self.version",
+        "commercetools/symfony-ctp-bundle": "self.version",
+        "commercetools/symfony-customer-bundle": "self.version",
+        "commercetools/symfony-example-bundle": "self.version",
+        "commercetools/symfony-review-bundle": "self.version",
+        "commercetools/symfony-setup-bundle": "self.version",
+        "commercetools/symfony-shopping-list-bundle": "self.version",
+        "commercetools/symfony-state-bundle": "self.version"
     },
     "extra": {
         "branch-alias": {
-            "dev-develop": "0.2-dev"
+            "dev-master": "0.3.x-dev"
         }
     }
 }

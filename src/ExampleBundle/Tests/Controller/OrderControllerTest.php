@@ -15,7 +15,7 @@ use Commercetools\Core\Model\Payment\PaymentReference;
 use Commercetools\Core\Model\Payment\PaymentReferenceCollection;
 use Commercetools\Symfony\CartBundle\Manager\OrderManager;
 use Commercetools\Symfony\CartBundle\Manager\PaymentManager;
-use Commercetools\Symfony\CustomerBundle\Security\User\CtpUser;
+use Commercetools\Symfony\CtpBundle\Security\User\CtpUser;
 use Commercetools\Symfony\ExampleBundle\Controller\OrderController;
 use Commercetools\Symfony\StateBundle\Model\ItemStateWrapper;
 use Prophecy\Argument;

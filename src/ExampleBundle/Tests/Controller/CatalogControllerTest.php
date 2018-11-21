@@ -21,7 +21,7 @@ use Commercetools\Core\Model\Product\ProductVariant;
 use Commercetools\Core\Model\Product\ProductVariantCollection;
 use Commercetools\Symfony\CatalogBundle\Manager\CatalogManager;
 use Commercetools\Symfony\CtpBundle\Model\QueryParams;
-use Commercetools\Symfony\CustomerBundle\Security\User\CtpUser;
+use Commercetools\Symfony\CtpBundle\Security\User\CtpUser;
 use Commercetools\Symfony\ExampleBundle\Controller\CatalogController;
 use Commercetools\Symfony\ExampleBundle\Entity\ProductEntity;
 use Commercetools\Symfony\ShoppingListBundle\Manager\ShoppingListManager;

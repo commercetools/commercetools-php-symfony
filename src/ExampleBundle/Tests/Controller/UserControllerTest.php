@@ -14,7 +14,7 @@ use Commercetools\Core\Request\Customers\Command\CustomerSetFirstNameAction;
 use Commercetools\Core\Request\Customers\Command\CustomerSetLastNameAction;
 use Commercetools\Symfony\CustomerBundle\Manager\CustomerManager;
 use Commercetools\Symfony\CustomerBundle\Model\CustomerUpdateBuilder;
-use Commercetools\Symfony\CustomerBundle\Security\User\CtpUser;
+use Commercetools\Symfony\CtpBundle\Security\User\CtpUser;
 use Commercetools\Symfony\ExampleBundle\Controller\UserController;
 use Commercetools\Symfony\ExampleBundle\Entity\UserDetails;
 use Prophecy\Argument;

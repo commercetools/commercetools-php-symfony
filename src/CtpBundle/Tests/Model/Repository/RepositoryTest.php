@@ -14,7 +14,6 @@ use Commercetools\Core\Model\Product\ProductCollection;
 use Commercetools\Core\Request\AbstractApiRequest;
 use Commercetools\Core\Request\AbstractQueryRequest;
 use Commercetools\Core\Request\QueryAllRequestInterface;
-use Commercetools\Core\Response\PagedQueryResponse;
 use Commercetools\Core\Response\ResourceResponse;
 use Commercetools\Symfony\CtpBundle\Model\Repository;
 use Commercetools\Symfony\CtpBundle\Service\MapperFactory;
@@ -157,7 +156,7 @@ class RepositoryTest extends TestCase
 class TestRepository extends Repository
 {
     public function retrieveAll(
-        $cacheKey, QueryAllRequestInterface $request, $locale, $force = false, $ttl = self::CACHE_TTL
+        $cacheKey, AbstractQueryRequest $request, $locale, $force = false, $ttl = self::CACHE_TTL
     ) {
         return parent::retrieveAll($cacheKey, $request, $locale, $force, $ttl);
     }

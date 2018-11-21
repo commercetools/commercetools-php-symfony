@@ -1,0 +1,24 @@
+{
+    "name": "commercetools/symfony-customer-bundle",
+    "description": "Symfony CustomerBundle for Commercetools platform",
+    "type": "library",
+    "license": "MIT",
+    "autoload": {
+        "psr-4": {
+            "Commercetools\\Symfony\\CustomerBundle\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Commercetools\\Symfony\\CustomerBundle\\Tests\\": "Tests/"
+        }
+    },
+    "require": {
+        "commercetools/symfony-ctp-bundle": "^0.3"
+    },
+    "extra": {
+        "branch-alias": {
+            "dev-master": "0.3.0-dev"
+        }
+    }
+}

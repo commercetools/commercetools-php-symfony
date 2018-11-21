@@ -1,0 +1,19 @@
+parameters:
+    package_directories:
+        - 'src'
+    # for "merge" command
+    data_to_append:
+        require-dev:
+            symplify/monorepo-builder: '^5.2'
+
+    # for "split" command
+    directories_to_repositories:
+        src/CartBundle: 'git@github.com:nikossvnk/commercetools-symfony-CartBundle.git'
+        src/CtpBundle: 'git@github.com:nikossvnk/commercetools-symfony-CtpBundle.git'
+        src/CatalogBundle: 'git@github.com:nikossvnk/commercetools-symfony-CatalogBundle.git'
+        src/CustomerBundle: 'git@github.com:nikossvnk/commercetools-symfony-CustomerBundle.git'
+        src/ExampleBundle: 'git@github.com:nikossvnk/commercetools-symfony-ExampleBundle.git'
+        src/ReviewBundle: 'git@github.com:nikossvnk/commercetools-symfony-ReviewBundle.git'
+        src/SetupBundle: 'git@github.com:nikossvnk/commercetools-symfony-SetupBundle.git'
+        src/ShoppingListBundle: 'git@github.com:nikossvnk/commercetools-symfony-ShoppingListBundle.git'
+        src/StateBundle: 'git@github.com:nikossvnk/commercetools-symfony-StateBundle.git'

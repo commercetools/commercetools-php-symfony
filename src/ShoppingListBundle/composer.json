@@ -1,0 +1,25 @@
+{
+    "name": "commercetools/symfony-shopping-list-bundle",
+    "description": "Symfony ShoppingListBundle for Commercetools platform",
+    "type": "library",
+    "license": "MIT",
+    "autoload": {
+        "psr-4": {
+            "Commercetools\\Symfony\\ShoppingListBundle\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Commercetools\\Symfony\\ShoppingListBundle\\Tests\\": "Tests/"
+        }
+    },
+    "require": {
+        "commercetools/symfony-ctp-bundle": "^0.3",
+        "commercetools/symfony-catalog-bundle": "^0.3"
+    },
+    "extra": {
+        "branch-alias": {
+            "dev-master": "0.3.0-dev"
+        }
+    }
+}
