@@ -9,6 +9,8 @@ namespace Commercetools\Symfony\SetupBundle\Model\Repository;
 use Commercetools\Core\Builder\Request\RequestBuilder;
 use Commercetools\Core\Client;
 use Commercetools\Core\Model\Project\Project;
+use Commercetools\Core\Model\Type\Type;
+use Commercetools\Core\Model\Type\TypeDraft;
 use Commercetools\Symfony\CtpBundle\Logger\Logger;
 use Commercetools\Symfony\CtpBundle\Model\Repository;
 use Commercetools\Symfony\CtpBundle\Service\MapperFactory;
@@ -76,5 +78,16 @@ class SetupRepository extends Repository
     public function getActionBuilder(Project $project)
     {
         return new ProjectUpdateBuilder($project, $this);
+    }
+
+    /**
+     * @param TypeDraft $typeDraft
+     * @return Type
+     */
+    public function createCustomType(TypeDraft $typeDraft)
+    {
+        $request = RequestBuilder::of()->types()->create($typeDraft);
+
+        return $this->executeRequest($request);
     }
 }

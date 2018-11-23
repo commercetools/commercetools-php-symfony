@@ -110,11 +110,10 @@ class PaymentController extends AbstractController
             return $this->render('@Example/index.html.twig');
         }
 
-        // TODO fix hardcoded key
-//        $custom = CustomFieldObjectDraft::ofTypeKey('RelatePayments')->setFields(
-//            FieldContainer::of()->set('orderReference', $order->getId())
-//        );
-        $custom = null;
+//        $custom = CustomFieldObjectDraft::ofTypeKey('PaymentOrderReference')->setFields(
+        $custom = CustomFieldObjectDraft::ofTypeKey('order2pay')->setFields(
+            FieldContainer::of()->setOrderReference($order->getId())
+        );
 
         $payment = $this->createPayment($request->getLocale(), $order->getTotalPrice(), $session, $markingStorePaymentState, $user, $custom);
 
