@@ -111,8 +111,9 @@ class PaymentController extends AbstractController
         }
 
 //        $custom = CustomFieldObjectDraft::ofTypeKey('PaymentOrderReference')->setFields(
+        // XXX hardcoded key
         $custom = CustomFieldObjectDraft::ofTypeKey('order2pay')->setFields(
-            FieldContainer::of()->setOrderReference($order->getId())
+            FieldContainer::of()->set('orderReference', $order->getId())
         );
 
         $payment = $this->createPayment($request->getLocale(), $order->getTotalPrice(), $session, $markingStorePaymentState, $user, $custom);
