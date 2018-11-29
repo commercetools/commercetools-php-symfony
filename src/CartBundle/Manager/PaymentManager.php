@@ -4,6 +4,7 @@
 
 namespace Commercetools\Symfony\CartBundle\Manager;
 
+use Commercetools\Core\Error\InvalidArgumentException;
 use Commercetools\Core\Model\Common\Money;
 use Commercetools\Core\Model\Customer\CustomerReference;
 use Commercetools\Core\Model\Payment\Payment;
@@ -61,7 +62,11 @@ class PaymentManager
      */
     public function getPaymentForUser($locale, $paymentId, CustomerReference $customer = null, $anonymousId = null)
     {
-        return $this->repository->getPaymentForUser($locale, $paymentId, $customer, $anonymousId);
+        if (is_null($customer) && is_null($anonymousId)) {
+            throw new InvalidArgumentException('At least one of `customer` or `anonymousId` should be present');
+        }
+
+        return $this->repository->getPayment($locale, $paymentId, $customer, $anonymousId);
     }
 
     /**
@@ -82,13 +87,17 @@ class PaymentManager
      * @param PaymentStatus|null $paymentStatus
      * @return Payment
      */
-    public function createPayment(
+    public function createPaymentForUser(
         $locale,
         Money $amountPlanned,
         CustomerReference $customerReference = null,
         $anonymousId = null,
         PaymentStatus $paymentStatus = null
     ) {
+        if (is_null($customerReference) && is_null($anonymousId)) {
+            throw new InvalidArgumentException('At least one of `customerReference` or `anonymousId` should be present');
+        }
+
         $event = new PaymentCreateEvent();
         $this->dispatcher->dispatch(PaymentCreateEvent::class, $event);
 

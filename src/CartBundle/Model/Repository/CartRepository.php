@@ -6,7 +6,6 @@ namespace Commercetools\Symfony\CartBundle\Model\Repository;
 
 
 use Commercetools\Core\Builder\Request\RequestBuilder;
-use Commercetools\Core\Error\InvalidArgumentException;
 use Commercetools\Core\Model\Zone\Location;
 use Commercetools\Core\Model\Cart\CartState;
 use Commercetools\Symfony\CtpBundle\Model\QueryParams;
@@ -75,8 +74,6 @@ class CartRepository extends Repository
             $cartDraft->setCustomerId($customerId);
         } else if (!is_null($anonymousId)) {
             $cartDraft->setAnonymousId($anonymousId);
-        } else {
-            throw new InvalidArgumentException('At least one of CustomerId or AnonymousId should be present');
         }
 
         $request = RequestBuilder::of()->carts()->create($cartDraft);

@@ -184,11 +184,23 @@ class CartRepositoryTest extends TestCase
         ], $params);
     }
 
-    /**
-     * @expectedException InvalidArgumentException
-     */
-    public function testCreateCartWithMissingData()
+
+    public function testCreateCartWithoutUser()
     {
+        $this->client->execute(
+            Argument::that(function(CartCreateRequest $request) {
+                static::assertInstanceOf(CartDraft::class, $request->getObject());
+                static::assertNull($request->getObject()->getCustomerId());
+                static::assertSame('EUR', $request->getObject()->getCurrency());
+                static::assertSame('DE', $request->getObject()->getCountry());
+                static::assertNull($request->getObject()->getAnonymousId());
+                static::assertNull($request->getObject()->getLineItems());
+
+                return true;
+            }),
+            Argument::is(null)
+        )->willReturn($this->response->reveal())->shouldBeCalledOnce();
+
         $location = Location::of()->setCountry('DE');
         $cartRepository = $this->getCartRepository();
         $cartRepository->createCart('en', 'EUR', $location);

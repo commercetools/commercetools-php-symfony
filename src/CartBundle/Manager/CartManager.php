@@ -4,6 +4,7 @@
 
 namespace Commercetools\Symfony\CartBundle\Manager;
 
+use Commercetools\Core\Error\InvalidArgumentException;
 use Commercetools\Core\Model\Cart\Cart;
 use Commercetools\Core\Model\Cart\LineItemDraftCollection;
 use Commercetools\Core\Model\Zone\Location;
@@ -67,8 +68,12 @@ class CartManager
      * @param null $anonymousId
      * @return Cart|null
      */
-    public function createCart($locale, $currency, Location $location, LineItemDraftCollection $lineItemDraftCollection = null, $customerId = null, $anonymousId = null)
+    public function createCartForUser($locale, $currency, Location $location, LineItemDraftCollection $lineItemDraftCollection = null, $customerId = null, $anonymousId = null)
     {
+        if (is_null($customerId) && is_null($anonymousId)) {
+            throw new InvalidArgumentException('At least one of `customerId` or `anonymousId` should be present');
+        }
+
         $event = new CartCreateEvent();
         $this->dispatcher->dispatch(CartCreateEvent::class, $event);
 

@@ -7,6 +7,8 @@ namespace Commercetools\Symfony\ExampleBundle\Controller;
 use Commercetools\Core\Model\Cart\Cart;
 use Commercetools\Core\Model\Common\Money;
 use Commercetools\Core\Model\Customer\CustomerReference;
+use Commercetools\Core\Model\CustomField\CustomFieldObjectDraft;
+use Commercetools\Core\Model\CustomField\FieldContainer;
 use Commercetools\Core\Model\Order\Order;
 use Commercetools\Core\Model\Payment\Payment;
 use Commercetools\Core\Model\Payment\PaymentReference;
@@ -111,7 +113,13 @@ class PaymentController extends AbstractController
             return $this->render('@Example/index.html.twig');
         }
 
-        $payment = $this->createPayment($request->getLocale(), $order->getTotalPrice(), $session, $markingStorePaymentState, $user);
+//        $custom = CustomFieldObjectDraft::ofTypeKey('PaymentOrderReference')->setFields(
+        // XXX hardcoded key
+        $custom = CustomFieldObjectDraft::ofTypeKey('order2pay')->setFields(
+            FieldContainer::of()->set('orderReference', $order->getId())
+        );
+
+        $payment = $this->createPayment($request->getLocale(), $order->getTotalPrice(), $session, $markingStorePaymentState, $user, $custom);
 
         if (!$payment instanceof Payment) {
             $this->addFlash('error', $payment->getMessage());
@@ -174,6 +182,7 @@ class PaymentController extends AbstractController
      * @param SessionInterface $session
      * @param CtpMarkingStorePaymentState $markingStorePaymentState
      * @param UserInterface|null $user
+     * @param CustomFieldObjectDraft|null $customFieldObjectDraft
      * @return Payment
      */
     public function createPayment(
@@ -181,15 +190,16 @@ class PaymentController extends AbstractController
         Money $totalPrice,
         SessionInterface $session,
         CtpMarkingStorePaymentState $markingStorePaymentState,
-        UserInterface $user = null
+        UserInterface $user = null,
+        CustomFieldObjectDraft $customFieldObjectDraft = null
     ) {
         $paymentStatus = PaymentStatus::of()
             ->setInterfaceText('Paypal')
             ->setState($markingStorePaymentState->getStateReferenceOfInitial());
 
         $customerReference = is_null($user) ? null : CustomerReference::ofId($user->getId());
-        $payment = $this->manager->createPayment(
-            $locale, $totalPrice, $customerReference, $session->getId(), $paymentStatus
+        $payment = $this->manager->createPaymentForUser(
+            $locale, $totalPrice, $customerReference, $session->getId(), $paymentStatus, $customFieldObjectDraft
         );
 
         return $payment;
@@ -233,6 +243,8 @@ class PaymentController extends AbstractController
         }
 
         $workflow->apply($payment, $toState);
+
+        // TODO update order using a listener
 
         $orderId = $request->get('orderId');
 

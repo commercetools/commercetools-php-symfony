@@ -74,8 +74,6 @@ class OrderRepositoryTest extends TestCase
 
     public function testGetOrdersForCustomer()
     {
-        $client = $this->prophesize(Client::class);
-
         $this->client->execute(
             Argument::that(function(OrderQueryRequest $request){
                 static::assertSame(
@@ -131,20 +129,35 @@ class OrderRepositoryTest extends TestCase
         $orderRepository->getOrder('en', 'order-1', null, 'anon-1');
     }
 
-    /**
-     * @expectedException InvalidArgumentException
-     */
-    public function testGetOrderWithMissingData()
+    public function testGetOrderWithId()
     {
+        $this->client->execute(
+            Argument::that(function(OrderQueryRequest $request){
+                static::assertSame(
+                    'orders?where=id+%3D+%22order-1%22',
+                    (string)$request->httpRequest()->getUri()
+                );
+                return true;
+            }),
+            Argument::is(null)
+        )->willReturn($this->response->reveal())->shouldBeCalledOnce();
+
         $orderRepository = $this->getOrderRepository();
         $orderRepository->getOrder('en', 'order-1');
     }
 
-    /**
-     * @expectedException InvalidArgumentException
-     */
-    public function testGetOrdersWithMissingData()
+    public function testGetOrdersWithoutUser()
     {
+        $this->client->execute(
+            Argument::that(function(OrderQueryRequest $request){
+                static::assertStringStartsWith('orders', (string)$request->httpRequest()->getUri());
+                static::assertContains('sort=createdAt+desc', (string)$request->httpRequest()->getUri());
+                static::assertNotContains('where=', (string)$request->httpRequest()->getUri());
+                return true;
+            }),
+            Argument::is(null)
+        )->willReturn($this->response->reveal())->shouldBeCalledOnce();
+
         $orderRepository = $this->getOrderRepository();
         $orderRepository->getOrders('en');
     }
@@ -225,10 +238,11 @@ class OrderRepositoryTest extends TestCase
     {
         $this->client->execute(
             Argument::that(function(OrderQueryRequest $request){
-                static::assertSame(
-                    'orders?where=paymentInfo%28payments%28id+%3D+%22payment-1%22%29%29+and+customerId+%3D+%22user-1%22',
-                    (string)$request->httpRequest()->getUri()
-                );
+                static::assertStringStartsWith('orders', (string)$request->httpRequest()->getUri());
+                static::assertContains('where=', (string)$request->httpRequest()->getUri());
+                static::assertContains('paymentInfo%28payments%28id+%3D+%22payment-1%22%29%29', (string)$request->httpRequest()->getUri());
+                static::assertContains('customerId+%3D+%22user-1%22', (string)$request->httpRequest()->getUri());
+
                 return true;
             }),
             Argument::is(null)
@@ -241,11 +255,21 @@ class OrderRepositoryTest extends TestCase
         $orderRepository->getOrderFromPayment('en', 'payment-1', $user->reveal());
     }
 
-    /**
-     * @expectedException InvalidArgumentException
-     */
-    public function testGetOrderFromPaymentWithMissingData()
+    public function testGetOrderFromPaymentWithoutUser()
     {
+        $this->client->execute(
+            Argument::that(function(OrderQueryRequest $request){
+                static::assertStringStartsWith('orders', (string)$request->httpRequest()->getUri());
+                static::assertContains('where=', (string)$request->httpRequest()->getUri());
+                static::assertContains('paymentInfo%28payments%28id+%3D+%22payment-1%22%29%29', (string)$request->httpRequest()->getUri());
+                static::assertNotContains('customerId', (string)$request->httpRequest()->getUri());
+                static::assertNotContains('anonymousId', (string)$request->httpRequest()->getUri());
+
+                return true;
+            }),
+            Argument::is(null)
+        )->willReturn($this->response->reveal())->shouldBeCalledOnce();
+
         $orderRepository = $this->getOrderRepository();
         $orderRepository->getOrderFromPayment('en', 'payment-1');
     }

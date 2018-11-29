@@ -73,7 +73,7 @@ class CartManagerTest extends TestCase
 
         $manager = new CartManager($repository->reveal(), $dispatcher->reveal());
 
-        $cart = $manager->createCart('en', 'EUR', $location->reveal(), $lineItemDraftCollection, null, '123');
+        $cart = $manager->createCartForUser('en', 'EUR', $location->reveal(), $lineItemDraftCollection, null, '123');
         $this->assertInstanceOf(Cart::class, $cart);
     }
 

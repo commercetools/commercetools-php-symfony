@@ -6,6 +6,7 @@
 namespace Commercetools\Symfony\CartBundle\Tests\Manager;
 
 
+use Commercetools\Core\Error\InvalidArgumentException;
 use Commercetools\Core\Model\Common\Money;
 use Commercetools\Core\Model\Payment\Payment;
 use Commercetools\Core\Model\Payment\PaymentCollection;
@@ -21,6 +22,7 @@ use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
 class PaymentManagerTest extends TestCase
 {
+    /** @var PaymentRepository paymentRepository */
     private $paymentRepository;
     private $eventDispatcher;
 
@@ -44,7 +46,7 @@ class PaymentManagerTest extends TestCase
 
     public function testGetPaymentForUser()
     {
-        $this->paymentRepository->getPaymentForUser('en', '123', null, 'anon-1')
+        $this->paymentRepository->getPayment('en', '123', null, 'anon-1')
             ->willReturn(Payment::of())->shouldBeCalled();
 
         $manager = new PaymentManager($this->paymentRepository->reveal(), $this->eventDispatcher->reveal());
@@ -64,15 +66,24 @@ class PaymentManagerTest extends TestCase
         $this->assertInstanceOf(PaymentCollection::class, $payment);
     }
 
-    public function testCreatePayment()
+    public function testCreatePaymentForUser()
     {
-        $this->paymentRepository->createPayment('en', Money::of(), null, null, null)
+        $this->paymentRepository->createPayment('en', Argument::type(Money::class), null, 'anon-1', null, null)
             ->willReturn(Payment::of())->shouldBeCalled();
 
         $manager = new PaymentManager($this->paymentRepository->reveal(), $this->eventDispatcher->reveal());
-        $payment = $manager->createPayment('en', Money::of());
+        $manager->createPaymentForUser('en', Money::of(), null, 'anon-1');
+    }
 
-        $this->assertInstanceOf(Payment::class, $payment);
+    /**
+     * @expectedException InvalidArgumentException
+     */
+    public function testCreatePaymentWithoutUser()
+    {
+        $this->paymentRepository->createPayment('en', Money::of())->shouldNotBeCalled();
+
+        $manager = new PaymentManager($this->paymentRepository->reveal(), $this->eventDispatcher->reveal());
+        $manager->createPaymentForUser('en', Money::of());
     }
 
     public function testUpdate()

@@ -11,6 +11,7 @@ use Commercetools\Core\Error\ApiError;
 use Commercetools\Core\Model\Cart\Cart;
 use Commercetools\Core\Model\Common\Money;
 use Commercetools\Core\Model\Customer\CustomerReference;
+use Commercetools\Core\Model\CustomField\CustomFieldObjectDraft;
 use Commercetools\Core\Model\Order\Order;
 use Commercetools\Core\Model\Payment\Payment;
 use Commercetools\Core\Model\Payment\PaymentStatus;
@@ -150,12 +151,19 @@ class PaymentControllerTest extends WebTestCase
         $payment->setMessage('generic error message');
 
         $order = Order::of()
-            ->setTotalPrice(Money::ofCurrencyAndAmount('EUR', 100));
+            ->setTotalPrice(Money::ofCurrencyAndAmount('EUR', 100))
+            ->setId('order-1');
 
         $orderManager = $this->prophesize(OrderManager::class);
         $orderManager->getOrderForUser('en', 'order-1', null, 'baz')->willReturn($order)->shouldBeCalledOnce();
-        $this->paymentManager->createPayment('en', Argument::type(Money::class), null, 'baz', Argument::type(PaymentStatus::class), null)
-            ->willReturn($payment)->shouldBeCalledOnce();
+        $this->paymentManager->createPaymentForUser(
+            'en',
+            Argument::type(Money::class),
+            null,
+            'baz',
+            Argument::type(PaymentStatus::class),
+            Argument::type(CustomFieldObjectDraft::class)
+        )->willReturn($payment)->shouldBeCalledOnce();
 
         $controller = new PaymentController($this->client->reveal(), $this->paymentManager->reveal(), $this->registry->reveal());
         $controller->setContainer($this->myContainer->reveal());
@@ -182,7 +190,8 @@ class PaymentControllerTest extends WebTestCase
         $payment = Payment::of()->setId('payment-1');
 
         $order = Order::of()
-            ->setTotalPrice(Money::ofCurrencyAndAmount('EUR', 100));
+            ->setTotalPrice(Money::ofCurrencyAndAmount('EUR', 100))
+            ->setId('order-1');
 
         $orderUpdateBuilder = $this->prophesize(OrderUpdateBuilder::class);
         $orderUpdateBuilder->addAction(Argument::type(OrderAddPaymentAction::class))->will(function(){return $this;})->shouldBeCalled();
@@ -192,8 +201,14 @@ class PaymentControllerTest extends WebTestCase
         $orderManager->getOrderForUser('en', 'order-1', null, 'baz')->willReturn($order)->shouldBeCalledOnce();
         $orderManager->update(Argument::type(Order::class))->willReturn($orderUpdateBuilder)->shouldBeCalledOnce();
 
-        $this->paymentManager->createPayment('en', Argument::type(Money::class), null, 'baz', Argument::type(PaymentStatus::class), null)
-            ->willReturn($payment)->shouldBeCalledOnce();
+        $this->paymentManager->createPaymentForUser(
+            'en',
+            Argument::type(Money::class),
+            null,
+            'baz',
+            Argument::type(PaymentStatus::class),
+            Argument::type(CustomFieldObjectDraft::class)
+        )->willReturn($payment)->shouldBeCalledOnce();
 
         $controller = new PaymentController($this->client->reveal(), $this->paymentManager->reveal(), $this->registry->reveal());
         $controller->setContainer($this->myContainer->reveal());
@@ -262,8 +277,14 @@ class PaymentControllerTest extends WebTestCase
 
         $cartManager = $this->prophesize(CartManager::class);
         $cartManager->getCart('en', 'cart-1', $user->reveal(), 'baz')->willReturn($cart)->shouldBeCalledOnce();
-        $this->paymentManager->createPayment('en', Argument::type(Money::class), Argument::type(CustomerReference::class), 'baz', Argument::type(PaymentStatus::class))
-            ->willReturn($payment)->shouldBeCalledOnce();
+        $this->paymentManager->createPaymentForUser(
+            'en',
+            Argument::type(Money::class),
+            Argument::type(CustomerReference::class),
+            'baz',
+            Argument::type(PaymentStatus::class),
+            null
+        )->willReturn($payment)->shouldBeCalledOnce();
 
         $controller = new PaymentController($this->client->reveal(), $this->paymentManager->reveal(), $this->registry->reveal());
         $controller->setContainer($this->myContainer->reveal());
@@ -301,7 +322,7 @@ class PaymentControllerTest extends WebTestCase
         $cartManager->getCart('en', 'cart-1', null, 'baz')->willReturn($cart)->shouldBeCalledOnce();
         $cartManager->update(Argument::type(Cart::class))->willReturn($cartUpdateBuilder)->shouldBeCalledOnce();
 
-        $this->paymentManager->createPayment('en', Argument::type(Money::class), null, 'baz', Argument::type(PaymentStatus::class), null)
+        $this->paymentManager->createPaymentForUser('en', Argument::type(Money::class), null, 'baz', Argument::type(PaymentStatus::class), null)
             ->willReturn($payment)->shouldBeCalledOnce();
 
         $controller = new PaymentController($this->client->reveal(), $this->paymentManager->reveal(), $this->registry->reveal());
