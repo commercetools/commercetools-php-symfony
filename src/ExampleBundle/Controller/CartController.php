@@ -178,11 +178,7 @@ class CartController extends AbstractController
         $cartBuilder->addShoppingList(CartAddShoppingListAction::ofShoppingList($shoppingList));
         $cartBuilder->flush();
 
-        /**
-         * TODO delete shopping list using a listener
-         */
-
-        return new RedirectResponse($this->generateUrl('_ctp_example_shoppingList_delete', ['shoppingListId' => $shoppingListId]));
+        return new RedirectResponse($this->generateUrl('_ctp_example_cart'));
     }
 
 //    protected function getItemCount(Cart $cart)
