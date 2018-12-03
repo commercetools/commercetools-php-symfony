@@ -150,6 +150,15 @@ class Configuration implements ConfigurationInterface
                         ->end()
                     ->end()
                 ->end()
+                ->arrayNode('custom_types')
+                    ->useAttributeAsKey('key')
+                    ->prototype('array')
+                        ->children()
+                            ->scalarNode('name')->end()
+                            ->scalarNode('type')->end()
+                        ->end()
+                    ->end()
+                ->end()
             ->end()
         ;
 

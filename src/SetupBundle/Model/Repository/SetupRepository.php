@@ -10,8 +10,10 @@ use Commercetools\Core\Builder\Request\RequestBuilder;
 use Commercetools\Core\Client;
 use Commercetools\Core\Model\Project\Project;
 use Commercetools\Core\Model\Type\Type;
+use Commercetools\Core\Model\Type\TypeCollection;
 use Commercetools\Core\Model\Type\TypeDraft;
 use Commercetools\Symfony\CtpBundle\Logger\Logger;
+use Commercetools\Symfony\CtpBundle\Model\QueryParams;
 use Commercetools\Symfony\CtpBundle\Model\Repository;
 use Commercetools\Symfony\CtpBundle\Service\MapperFactory;
 use Commercetools\Symfony\SetupBundle\Model\ConfigureProject;
@@ -89,5 +91,17 @@ class SetupRepository extends Repository
         $request = RequestBuilder::of()->types()->create($typeDraft);
 
         return $this->executeRequest($request);
+    }
+
+    /**
+     * @param string $locale
+     * @param QueryParams|null $params
+     * @return TypeCollection
+     */
+    public function getCustomTypes($locale = 'en', QueryParams $params = null)
+    {
+        $request = RequestBuilder::of()->types()->query();
+
+        return $this->executeRequest($request, $locale, $params);
     }
 }

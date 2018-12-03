@@ -110,11 +110,23 @@ class PaymentController extends AbstractController
             return $this->render('@Example/index.html.twig');
         }
 
-//        $custom = CustomFieldObjectDraft::ofTypeKey('PaymentOrderReference')->setFields(
-        // XXX hardcoded key
-        $custom = CustomFieldObjectDraft::ofTypeKey('order2pay')->setFields(
-            FieldContainer::of()->set('orderReference', $order->getId())
-        );
+        $custom = null;
+        if ($this->container->hasParameter('commercetools.custom_types')) {
+            $customTypes = $this->container->getParameter('commercetools.custom_types');
+            if (isset($customTypes['paymentsRelations'])) {
+                $custom = CustomFieldObjectDraft::ofTypeKey('paymentsRelations')->setFields(
+                    FieldContainer::of()->set('orderReference', $order->getId())
+                );
+            }
+        }
+
+        // TODO
+//        $relationsType = $this->container->get('commercetools.custom_types')->get('paymentsRelations');
+//        if (!is_null($relationsType)) {
+//            $custom = CustomFieldObjectDraft::ofType($relationsType)->setFields(
+//                FieldContainer::of()->set('orderReference', $order->getId())
+//            );
+//        }
 
         $payment = $this->createPayment($request->getLocale(), $order->getTotalPrice(), $session, $markingStorePaymentState, $user, $custom);
 
@@ -149,11 +161,15 @@ class PaymentController extends AbstractController
             return $this->render('@Example/index.html.twig');
         }
 
-        // TODO fix hardcoded key
-//        $custom = CustomFieldObjectDraft::ofTypeKey('RelatePayments')->setFields(
-//            FieldContainer::of()->set('cartReference', $cartId)
-//        );
         $custom = null;
+        if ($this->container->hasParameter('commercetools.custom_types')) {
+            $customTypes = $this->container->getParameter('commercetools.custom_types');
+            if (isset($customTypes['paymentsRelations'])) {
+                $custom = CustomFieldObjectDraft::ofTypeKey('paymentsRelations')->setFields(
+                    FieldContainer::of()->set('cartReference', $cart->getId())
+                );
+            }
+        }
 
         $payment = $this->createPayment($request->getLocale(), $cart->getTotalPrice(), $session, $markingStorePaymentState, $user, $custom);
 

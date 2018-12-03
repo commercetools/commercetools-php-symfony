@@ -54,13 +54,10 @@ class CommercetoolsCreateCustomType extends ContainerAwareCommand
             'payment-interface-interaction', 'order', 'customer', 'category', 'asset', 'inventory-entry'],
             0
         );
-
         $question->setMultiselect(true);
-
         $customTypeResourceIds = $helper->ask($input, $output, $question);
 
         $fieldDefinitionCollection = FieldDefinitionCollection::of();
-
         $name = LocalizedString::ofLangAndText($customTypeNameLanguage, $customTypeName);
 
         do {
@@ -81,12 +78,15 @@ class CommercetoolsCreateCustomType extends ContainerAwareCommand
             $question = new Question('Please enter the two letter code of the language of the label of the field [en]: ', 'en');
             $fieldLabelLanguage = $helper->ask($input, $output, $question);
 
+            $question = new ChoiceQuestion('Is this field required [true]: ', ['true', 'false'], 0);
+            $fieldRequired = $helper->ask($input, $output, $question);
+
             $fieldDefinitionCollection->add(
                 FieldDefinition::of()
                     ->setType($fieldTypeClass::of())
                     ->setName($fieldName)
                     ->setLabel(LocalizedString::ofLangAndText($fieldLabelLanguage, $fieldLabel))
-                    ->setRequired(false)
+                    ->setRequired(($fieldRequired === 'true' ? true : false))
             );
             $continue = new ConfirmationQuestion('Add more fields? ', false);
         } while ($helper->ask($input, $output, $continue));
