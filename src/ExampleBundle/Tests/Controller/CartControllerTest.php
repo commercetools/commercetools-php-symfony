@@ -19,10 +19,10 @@ use Commercetools\Symfony\CartBundle\Model\CartUpdateBuilder;
 use Commercetools\Symfony\CustomerBundle\Security\User\CtpUser;
 use Commercetools\Symfony\ExampleBundle\Controller\CartController;
 use Commercetools\Symfony\ExampleBundle\Entity\ProductEntity;
-use Commercetools\Symfony\ExampleBundle\Model\Form\Type\AddToCartType;
 use Prophecy\Argument;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Symfony\Component\DependencyInjection\ContainerInterface;
+use Symfony\Component\DependencyInjection\ParameterBag\ParameterBag;
 use Symfony\Component\Form\Form;
 use Symfony\Component\Form\FormFactory;
 use Symfony\Component\HttpFoundation\Request;
@@ -194,14 +194,20 @@ class CartControllerTest extends WebTestCase
         $router = $this->prophesize(Router::class);
         $router->generate('_ctp_example_product', ['slug' => 'foo'], 1)->willReturn('bar')->shouldBeCalledOnce();
 
+        $parameterBag = $this->prophesize(ParameterBag::class);
+        $parameterBag->get('commercetools.project_settings.countries')->willReturn(['DE'])->shouldBeCalledOnce();
+        $parameterBag->get('commercetools.project_settings.currencies')->willReturn(['EUR'])->shouldBeCalledOnce();
+
         $this->myContainer->get('router')->willReturn($router)->shouldBeCalledOnce();
         $this->myContainer->has('templating')->shouldNotBeCalled();
+        $this->myContainer->has('parameter_bag')->willReturn(true)->shouldBeCalled();
+        $this->myContainer->get('parameter_bag')->willReturn($parameterBag->reveal())->shouldBeCalled();
         $this->myContainer->has('twig')->shouldNotBeCalled();
         $this->myContainer->get('twig')->shouldNotBeCalled();
-        $this->myContainer->getParameter('commercetools.project_settings.countries')->willReturn(['DE'])->shouldBeCalledOnce();
-        $this->myContainer->getParameter('commercetools.project_settings.currencies')->willReturn(['EUR'])->shouldBeCalledOnce();
 
-        $controller = new CartController($this->client->reveal(), $this->cartManager->reveal());
+        $parameterBag = $this->prophesize(ParameterBag::class);
+
+        $controller = new CartController($this->client->reveal(), $this->cartManager->reveal(), $parameterBag->reveal());
         $controller->setContainer($this->myContainer->reveal());
         $response = $controller->addLineItemAction($this->request->reveal(), $session->reveal(), $user->reveal());
 
@@ -228,7 +234,14 @@ class CartControllerTest extends WebTestCase
 
         $this->myContainer->get('form.factory')->willReturn($formFactory->reveal())->shouldBeCalled();
 
-        $this->cartManager->createCart('en', 'EUR', Argument::type(Location::class), Argument::type(LineItemDraftCollection::class), null, 'session-1')->shouldBeCalledOnce();
+        $this->cartManager->createCart(
+            'en',
+            'EUR',
+            Argument::type(Location::class),
+            Argument::type(LineItemDraftCollection::class),
+            null,
+            'session-1'
+        )->shouldBeCalledOnce();
 
         $router = $this->prophesize(Router::class);
         $router->generate('_ctp_example_product', ['slug' => 'foo'], 1)->willReturn('bar')->shouldBeCalledOnce();
@@ -237,10 +250,15 @@ class CartControllerTest extends WebTestCase
         $this->myContainer->has('templating')->shouldNotBeCalled();
         $this->myContainer->has('twig')->shouldNotBeCalled();
         $this->myContainer->get('twig')->shouldNotBeCalled();
-        $this->myContainer->getParameter('commercetools.project_settings.countries')->willReturn(['DE'])->shouldBeCalledOnce();
-        $this->myContainer->getParameter('commercetools.project_settings.currencies')->willReturn(['EUR'])->shouldBeCalledOnce();
 
-        $controller = new CartController($this->client->reveal(), $this->cartManager->reveal());
+        $parameterBag = $this->prophesize(ParameterBag::class);
+        $parameterBag->get('commercetools.project_settings.countries')->willReturn(['DE'])->shouldBeCalledOnce();
+        $parameterBag->get('commercetools.project_settings.currencies')->willReturn(['EUR'])->shouldBeCalledOnce();
+
+        $this->myContainer->has('parameter_bag')->willReturn(true)->shouldBeCalled();
+        $this->myContainer->get('parameter_bag')->willReturn($parameterBag->reveal())->shouldBeCalled();
+
+        $controller = new CartController($this->client->reveal(), $this->cartManager->reveal(), $parameterBag->reveal());
         $controller->setContainer($this->myContainer->reveal());
         $response = $controller->addLineItemAction($this->request->reveal(), $session->reveal());
 
@@ -371,12 +389,16 @@ class CartControllerTest extends WebTestCase
         $router = $this->prophesize(Router::class);
         $router->generate(Argument::type('string'), Argument::type('array'), 1)->willReturn('bar')->shouldBeCalledOnce();
 
+        $parameterBag = $this->prophesize(ParameterBag::class);
+        $parameterBag->get('commercetools.project_settings.countries')->willReturn(['DE'])->shouldBeCalledOnce();
+        $parameterBag->get('commercetools.project_settings.currencies')->willReturn(['EUR'])->shouldBeCalledOnce();
+
         $this->myContainer->get('router')->willReturn($router)->shouldBeCalledOnce();
         $this->myContainer->has('templating')->shouldNotBeCalled();
         $this->myContainer->has('twig')->shouldNotBeCalled();
         $this->myContainer->get('twig')->shouldNotBeCalled();
-        $this->myContainer->getParameter('commercetools.project_settings.countries')->willReturn(['DE'])->shouldBeCalledOnce();
-        $this->myContainer->getParameter('commercetools.project_settings.currencies')->willReturn(['EUR'])->shouldBeCalledOnce();
+        $this->myContainer->has('parameter_bag')->willReturn(true)->shouldBeCalledTimes(2);
+        $this->myContainer->get('parameter_bag')->willReturn($parameterBag->reveal())->shouldBeCalledTimes(2);
 
         $this->request->get('shoppingListId')->willReturn('foo')->shouldBeCalledOnce();
 
@@ -406,12 +428,16 @@ class CartControllerTest extends WebTestCase
         $router = $this->prophesize(Router::class);
         $router->generate(Argument::type('string'), Argument::type('array'), 1)->willReturn('bar')->shouldBeCalledOnce();
 
+        $parameterBag = $this->prophesize(ParameterBag::class);
+        $parameterBag->get('commercetools.project_settings.countries')->willReturn(['DE'])->shouldBeCalledOnce();
+        $parameterBag->get('commercetools.project_settings.currencies')->willReturn(['EUR'])->shouldBeCalledOnce();
+
         $this->myContainer->get('router')->willReturn($router)->shouldBeCalledOnce();
         $this->myContainer->has('templating')->shouldNotBeCalled();
         $this->myContainer->has('twig')->shouldNotBeCalled();
         $this->myContainer->get('twig')->shouldNotBeCalled();
-        $this->myContainer->getParameter('commercetools.project_settings.countries')->willReturn(['DE'])->shouldBeCalledOnce();
-        $this->myContainer->getParameter('commercetools.project_settings.currencies')->willReturn(['EUR'])->shouldBeCalledOnce();
+        $this->myContainer->has('parameter_bag')->willReturn(true)->shouldBeCalledTimes(2);
+        $this->myContainer->get('parameter_bag')->willReturn($parameterBag->reveal())->shouldBeCalledTimes(2);
 
         $this->request->get('shoppingListId')->willReturn('foo')->shouldBeCalledOnce();
 

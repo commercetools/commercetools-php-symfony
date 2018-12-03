@@ -17,7 +17,7 @@ use Commercetools\Symfony\CartBundle\Manager\CartManager;
 use Commercetools\Symfony\CartBundle\Manager\PaymentManager;
 use Commercetools\Symfony\CartBundle\Model\Repository\CartRepository;
 use Commercetools\Symfony\StateBundle\Model\CtpMarkingStore\CtpMarkingStorePaymentState;
-use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Commercetools\Core\Client;
 use Commercetools\Symfony\CartBundle\Manager\OrderManager;
 use Symfony\Component\HttpFoundation\Request;
@@ -28,7 +28,7 @@ use Symfony\Component\Workflow\Exception\InvalidArgumentException;
 use Symfony\Component\Workflow\Registry;
 
 
-class PaymentController extends Controller
+class PaymentController extends AbstractController
 {
     /**
      * @var Client

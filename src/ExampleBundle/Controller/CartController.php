@@ -15,20 +15,18 @@ use Commercetools\Core\Request\Carts\Command\CartRemoveLineItemAction;
 use Commercetools\Symfony\ExampleBundle\Entity\ProductEntity;
 use Commercetools\Symfony\ExampleBundle\Model\Form\Type\AddToCartType;
 use Commercetools\Symfony\CartBundle\Model\Repository\CartRepository;
-use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Commercetools\Core\Model\Cart\Cart;
 use Commercetools\Core\Client;
 use Commercetools\Symfony\CartBundle\Manager\CartManager;
-use Symfony\Component\Form\Extension\Core\Type\FormType;
 use Symfony\Component\Form\FormBuilder;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
 
 
-class CartController extends Controller
+class CartController extends AbstractController
 {
     const CSRF_TOKEN_NAME = 'csrfToken';
 

@@ -3,18 +3,22 @@
 namespace Commercetools\Symfony\SetupBundle\Command;
 
 use Commercetools\Symfony\SetupBundle\Model\Repository\SetupRepository;
-use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
+use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\DependencyInjection\Container;
 
-class CommercetoolsProjectApplyConfigurationCommand extends ContainerAwareCommand
+class CommercetoolsProjectApplyConfigurationCommand extends Command
 {
     private $repository;
 
-    public function __construct(SetupRepository $repository)
+    private $container;
+
+    public function __construct(SetupRepository $repository, Container $container)
     {
         parent::__construct();
         $this->repository = $repository;
+        $this->container = $container;
     }
 
     protected function configure()
@@ -27,7 +31,7 @@ class CommercetoolsProjectApplyConfigurationCommand extends ContainerAwareComman
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $config = $this->getContainer()->getParameter('commercetools.all');
+        $config = $this->container->getParameter('commercetools.all');
         $projectOnline = $this->repository->getProject();
 
         $result = $this->repository->applyConfiguration($config['project_settings'], $projectOnline);

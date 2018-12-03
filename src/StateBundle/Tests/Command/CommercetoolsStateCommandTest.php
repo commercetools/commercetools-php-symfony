@@ -33,7 +33,7 @@ class CommercetoolsStateCommandTest extends KernelTestCase
         )->shouldBeCalledOnce();
 
         $application = new Application(static::$kernel);
-        $application->add(new CommercetoolsStateCommand($stateRepository->reveal()));
+        $application->add(new CommercetoolsStateCommand($stateRepository->reveal(), static::$kernel->getContainer()));
 
         $command = $application->find('commercetools:set-state-machine-config');
         $command->setApplication($application);

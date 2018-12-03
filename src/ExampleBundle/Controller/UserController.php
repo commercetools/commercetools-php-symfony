@@ -10,20 +10,18 @@ use Commercetools\Core\Request\Customers\Command\CustomerChangeAddressAction;
 use Commercetools\Core\Request\Customers\Command\CustomerChangeEmailAction;
 use Commercetools\Core\Request\Customers\Command\CustomerSetFirstNameAction;
 use Commercetools\Core\Request\Customers\Command\CustomerSetLastNameAction;
-use Commercetools\Core\Request\Customers\CustomerByIdGetRequest;
 use Commercetools\Symfony\ExampleBundle\Entity\UserAddress;
 use Commercetools\Symfony\ExampleBundle\Entity\UserDetails;
 use Commercetools\Symfony\ExampleBundle\Model\Form\Type\AddressType;
 use Commercetools\Symfony\ExampleBundle\Model\Form\Type\UserType;
 use Commercetools\Symfony\CustomerBundle\Manager\CustomerManager;
-use Commercetools\Symfony\CustomerBundle\Security\User\User;
-use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Security\Core\User\UserInterface;
 
 
-class UserController extends Controller
+class UserController extends AbstractController
 {
     /**
      * @var Client

@@ -13,14 +13,14 @@ use Commercetools\Core\Model\Review\Review;
 use Commercetools\Symfony\CtpBundle\Model\QueryParams;
 use Commercetools\Symfony\ExampleBundle\Model\Form\Type\AddReviewType;
 use Commercetools\Symfony\ReviewBundle\Manager\ReviewManager;
-use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Workflow\Exception\InvalidArgumentException;
 use Symfony\Component\Workflow\Registry;
 
-class ReviewController extends Controller
+class ReviewController extends AbstractController
 {
     /**
      * @var Client

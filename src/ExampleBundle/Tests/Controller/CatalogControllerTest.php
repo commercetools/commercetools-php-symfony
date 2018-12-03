@@ -28,6 +28,7 @@ use Commercetools\Symfony\ShoppingListBundle\Manager\ShoppingListManager;
 use Prophecy\Argument;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Symfony\Component\DependencyInjection\ContainerInterface;
+use Symfony\Component\DependencyInjection\ParameterBag\ParameterBag;
 use Symfony\Component\Form\Extension\Core\Type\FormType;
 use Symfony\Component\Form\Form;
 use Symfony\Component\Form\FormBuilder;
@@ -88,7 +89,12 @@ class CatalogControllerTest extends WebTestCase
 
         $this->request->getRequestUri()->shouldBeCalled();
 
-        $this->myContainer->getParameter(Argument::type('string'))->willReturn(['foo'], ['bar'])->shouldBeCalled();
+        $parameterBag = $this->prophesize(ParameterBag::class);
+        $parameterBag->get('commercetools.project_settings.countries')->willReturn(['DE'])->shouldBeCalledOnce();
+        $parameterBag->get('commercetools.project_settings.currencies')->willReturn(['EUR'])->shouldBeCalledOnce();
+
+        $this->myContainer->has('parameter_bag')->willReturn(true)->shouldBeCalledTimes(2);
+        $this->myContainer->get('parameter_bag')->willReturn($parameterBag->reveal())->shouldBeCalledTimes(2);
 
         $controller = new CatalogController($this->client->reveal(), $this->catalogManager->reveal());
         $controller->setContainer($this->myContainer->reveal());
@@ -160,12 +166,18 @@ class CatalogControllerTest extends WebTestCase
 
         $this->request->getLocale()->willReturn('en')->shouldBeCalled();
 
-        $this->myContainer->getParameter(Argument::type('string'))->willReturn(['bar'], ['foo'])->shouldBeCalled();
+        $parameterBag = $this->prophesize(ParameterBag::class);
+        $parameterBag->get('commercetools.project_settings.countries')->willReturn(['DE'])->shouldBeCalledOnce();
+        $parameterBag->get('commercetools.project_settings.currencies')->willReturn(['EUR'])->shouldBeCalledOnce();
+
+        $this->myContainer->has('parameter_bag')->willReturn(true)->shouldBeCalledTimes(2);
+        $this->myContainer->get('parameter_bag')->willReturn($parameterBag->reveal())->shouldBeCalledTimes(2);
+
         $this->myContainer->get('session')->willReturn($session->reveal())->shouldBeCalled();
         $this->myContainer->has('session')->willReturn(true)->shouldBeCalled();
 
 
-        $this->catalogManager->getProductBySlug('en', 'prod-1', 'foo', 'bar')
+        $this->catalogManager->getProductBySlug('en', 'prod-1', 'EUR', 'DE')
             ->will(function(){throw new NotFoundHttpException();})->shouldBeCalledOnce();
 
         $controller = new CatalogController($this->client->reveal(), $this->catalogManager->reveal(), $shoppingListManager->reveal());
@@ -217,7 +229,12 @@ class CatalogControllerTest extends WebTestCase
         $this->myContainer->has('twig')->willReturn(true)->shouldNotBeCalled();
         $this->myContainer->get('twig')->willReturn($this->twig)->shouldNotBeCalled();
 
-        $this->myContainer->getParameter(Argument::type('string'))->willReturn(['bar'], ['baz'])->shouldBeCalled();
+        $parameterBag = $this->prophesize(ParameterBag::class);
+        $parameterBag->get('commercetools.project_settings.countries')->willReturn(['DE'])->shouldBeCalledOnce();
+        $parameterBag->get('commercetools.project_settings.currencies')->willReturn(['EUR'])->shouldBeCalledOnce();
+
+        $this->myContainer->has('parameter_bag')->willReturn(true)->shouldBeCalledTimes(2);
+        $this->myContainer->get('parameter_bag')->willReturn($parameterBag->reveal())->shouldBeCalledTimes(2);
 
         // TODO ~context related~
         $context = new Context();
@@ -238,7 +255,7 @@ class CatalogControllerTest extends WebTestCase
                 )
             );
 
-        $this->catalogManager->suggestProducts('en', 'foo', 5, 'baz', 'bar')->willReturn($productProjectionCollection)->shouldBeCalledOnce();
+        $this->catalogManager->suggestProducts('en', 'foo', 5, 'EUR', 'DE')->willReturn($productProjectionCollection)->shouldBeCalledOnce();
 
         $controller = new CatalogController($this->client->reveal(), $this->catalogManager->reveal());
         $controller->setContainer($this->myContainer->reveal());

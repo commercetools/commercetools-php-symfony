@@ -1,14 +1,13 @@
 <?php
 /**
- * @author: Ylambers <yaron.lambers@commercetools.de>
  */
 
 namespace Commercetools\Symfony\ExampleBundle\Controller;
 
 
-use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 
-class HomeController extends Controller
+class HomeController extends AbstractController
 {
     public function indexAction()
     {

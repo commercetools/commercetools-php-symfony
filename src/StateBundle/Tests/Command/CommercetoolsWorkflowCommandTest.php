@@ -34,7 +34,7 @@ class CommercetoolsWorkflowCommandTest extends KernelTestCase
         )->shouldBeCalledOnce();
 
         $application = new Application(static::$kernel);
-        $application->add(new CommercetoolsWorkflowCommand($stateRepository->reveal()));
+        $application->add(new CommercetoolsWorkflowCommand($stateRepository->reveal(), static::$kernel->getContainer()));
 
         $command = $application->find('commercetools:set-workflow-config');
         $command->setApplication($application);

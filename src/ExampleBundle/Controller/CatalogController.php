@@ -12,7 +12,7 @@ use Commercetools\Symfony\ExampleBundle\Entity\ProductToShoppingList;
 use Commercetools\Symfony\ExampleBundle\Model\Form\Type\AddToCartType;
 use Commercetools\Symfony\ExampleBundle\Model\Form\Type\AddToShoppingListType;
 use GuzzleHttp\Psr7\Uri;
-use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -24,7 +24,7 @@ use Symfony\Component\Security\Core\User\UserInterface;
 use Commercetools\Core\Model\Customer\CustomerReference;
 use Commercetools\Core\Model\ShoppingList\ShoppingList;
 
-class CatalogController extends Controller
+class CatalogController extends AbstractController
 {
     private $client;
     private $catalogManager;

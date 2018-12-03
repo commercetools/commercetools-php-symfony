@@ -8,7 +8,7 @@ use Commercetools\Core\Model\Order\Order;
 use Commercetools\Core\Model\State\StateReference;
 use Commercetools\Symfony\CartBundle\Manager\PaymentManager;
 use Commercetools\Symfony\StateBundle\Model\ItemStateWrapper;
-use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Commercetools\Core\Client;
 use Commercetools\Symfony\CartBundle\Manager\OrderManager;
 use Symfony\Component\HttpFoundation\Request;
@@ -18,7 +18,7 @@ use Symfony\Component\Workflow\Exception\InvalidArgumentException;
 use Symfony\Component\Workflow\Registry;
 
 
-class OrderController extends Controller
+class OrderController extends AbstractController
 {
     const CSRF_TOKEN_NAME = 'csrfToken';
 

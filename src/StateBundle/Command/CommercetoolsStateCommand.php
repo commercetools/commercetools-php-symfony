@@ -4,19 +4,23 @@ namespace Commercetools\Symfony\StateBundle\Command;
 
 use Commercetools\Symfony\StateBundle\Model\ProcessStates;
 use Commercetools\Symfony\StateBundle\Model\Repository\StateRepository;
-use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
+use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\DependencyInjection\Container;
 use Symfony\Component\Yaml\Yaml;
 
-class CommercetoolsStateCommand extends ContainerAwareCommand
+class CommercetoolsStateCommand extends Command
 {
     private $repository;
 
-    public function __construct(StateRepository $repository)
+    private $container;
+
+    public function __construct(StateRepository $repository, Container $container)
     {
         parent::__construct();
         $this->repository = $repository;
+        $this->container = $container;
     }
 
     protected function configure()
@@ -34,7 +38,7 @@ class CommercetoolsStateCommand extends ContainerAwareCommand
         $stateTypes = $helper->parse($states, 'state_machine');
 
         $yaml = Yaml::dump($stateTypes, 100, 4);
-        $kernel = $this->getContainer()->get('kernel');
+        $kernel = $this->container->get('kernel');
 
         $filename = $kernel->getProjectDir() . '/config/packages/' . $kernel->getEnvironment() . '/workflow.yaml';
 

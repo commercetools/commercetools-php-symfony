@@ -16,5 +16,7 @@
             <argument key="$logger" type="service" id="commercetools.logger" />
         </service>
 
+        <service id="Symfony\Component\DependencyInjection\Container"/>
+
     </services>
 </container>

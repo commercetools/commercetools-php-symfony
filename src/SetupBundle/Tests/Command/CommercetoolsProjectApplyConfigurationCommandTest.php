@@ -60,7 +60,7 @@ class CommercetoolsProjectApplyConfigurationCommandTest extends KernelTestCase
             ->willReturn(null)->shouldBeCalled();
 
         $application = new Application(static::$kernel);
-        $application->add(new CommercetoolsProjectApplyConfigurationCommand($setupRepository->reveal()));
+        $application->add(new CommercetoolsProjectApplyConfigurationCommand($setupRepository->reveal(), static::$container));
 
         $command = $application->find('commercetools:project-apply-configuration');
         $command->setApplication($application);
@@ -89,7 +89,7 @@ class CommercetoolsProjectApplyConfigurationCommandTest extends KernelTestCase
             ->willReturn(['foo' => 'bar'])->shouldBeCalled();
 
         $application = new Application(static::$kernel);
-        $application->add(new CommercetoolsProjectApplyConfigurationCommand($setupRepository->reveal()));
+        $application->add(new CommercetoolsProjectApplyConfigurationCommand($setupRepository->reveal(), static::$container));
 
         $command = $application->find('commercetools:project-apply-configuration');
         $command->setApplication($application);
