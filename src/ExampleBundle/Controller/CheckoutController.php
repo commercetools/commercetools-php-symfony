@@ -17,16 +17,16 @@ use Commercetools\Symfony\CartBundle\Manager\ShippingMethodManager;
 use Commercetools\Symfony\ExampleBundle\Entity\CartEntity;
 use Commercetools\Symfony\ExampleBundle\Model\Form\Type\AddressType;
 use Commercetools\Symfony\CartBundle\Model\Repository\CartRepository;
-use Commercetools\Symfony\StateBundle\Model\CtpMarkingStoreOrderState;
+use Commercetools\Symfony\StateBundle\Model\CtpMarkingStore\CtpMarkingStoreOrderState;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
-use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
 
-class CheckoutController extends Controller
+class CheckoutController extends AbstractController
 {
     /**
      * @var Client
@@ -213,8 +213,7 @@ class CheckoutController extends Controller
 
         $entity = CartEntity::ofCart($cart);
         if (!is_null($user) && count(array_diff_key($cart->getShippingAddress()->toArray(), ['country' => true])) == 0 ) {
-            $address = $user->getDefaultShippingAddress();
-            $entity->shippingAddress = $address->toArray();
+            $entity->setShippingAddress($user->getDefaultShippingAddress()->toArray());
         }
 
         $form = $this->createFormBuilder($entity)

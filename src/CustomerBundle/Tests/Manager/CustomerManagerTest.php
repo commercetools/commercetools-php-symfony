@@ -6,6 +6,9 @@ namespace Commercetools\Symfony\CustomerBundle\Tests\Manager;
 
 use Commercetools\Core\Model\Customer\Customer;
 use Commercetools\Core\Request\AbstractAction;
+use Commercetools\Core\Request\Customers\Command\CustomerSetKeyAction;
+use Commercetools\Symfony\CustomerBundle\Event\CustomerCreateEvent;
+use Commercetools\Symfony\CustomerBundle\Event\CustomerPostCreateEvent;
 use Commercetools\Symfony\CustomerBundle\Event\CustomerUpdateEvent;
 use Commercetools\Symfony\CustomerBundle\Event\CustomerPostUpdateEvent;
 use Commercetools\Symfony\CustomerBundle\Manager\CustomerManager;
@@ -17,72 +20,94 @@ use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
 class CustomerManagerTest extends TestCase
 {
+    private $repository;
+    private $dispatcher;
+
+    public function setUp()
+    {
+        $this->repository = $this->prophesize(CustomerRepository::class);
+        $this->dispatcher = $this->prophesize(EventDispatcherInterface::class);
+    }
 
     public function testApply()
     {
-        $customer = $this->prophesize(Customer::class);
-        $repository = $this->prophesize(CustomerRepository::class);
-        $dispatcher = $this->prophesize(EventDispatcherInterface::class);
-
-        $repository->update($customer, Argument::type('array'))
+        $this->repository->update(Customer::of(), Argument::type('array'))
             ->will(function ($args) { return $args[0]; })->shouldBeCalled();
 
-        $dispatcher->dispatch(
+        $this->dispatcher->dispatch(
             Argument::containingString(CustomerPostUpdateEvent::class),
             Argument::type(CustomerPostUpdateEvent::class)
         )->will(function ($args) { return $args[1]; })->shouldBeCalled();
 
-        $manager = new CustomerManager($repository->reveal(), $dispatcher->reveal());
-        $customer = $manager->apply($customer->reveal(), []);
+        $manager = new CustomerManager($this->repository->reveal(), $this->dispatcher->reveal());
+        $customer = $manager->apply(Customer::of(), []);
 
         $this->assertInstanceOf(Customer::class, $customer);
     }
 
     public function testDispatch()
     {
-        $customer = $this->prophesize(Customer::class);
-        $repository = $this->prophesize(CustomerRepository::class);
-        $dispatcher = $this->prophesize(EventDispatcherInterface::class);
-        $dispatcher->dispatch(
-            Argument::containingString(AbstractAction::class),
+        $this->dispatcher->dispatch(
+            Argument::containingString(CustomerSetKeyAction::class),
             Argument::type(CustomerUpdateEvent::class)
         )->will(function ($args) { return $args[1]; })->shouldBeCalled();
-        $action = $this->prophesize(AbstractAction::class);
 
-        $manager = new CustomerManager($repository->reveal(), $dispatcher->reveal());
+        $action = CustomerSetKeyAction::of()->setKey('bar');
+        $manager = new CustomerManager($this->repository->reveal(), $this->dispatcher->reveal());
 
-        $actions = $manager->dispatch($customer->reveal(), $action->reveal());
-        $this->assertInstanceOf(AbstractAction::class, current($actions));
+        $actions = $manager->dispatch(Customer::of(), $action);
         $this->assertCount(1, $actions);
+
+        $current = current($actions);
+        $this->assertInstanceOf(CustomerSetKeyAction::class, $current);
+        $this->assertSame('bar', $action->getKey());
     }
 
     public function testCreateCustomer()
     {
+        $this->repository->createCustomer('en', 'user@localhost', 'password', null)
+            ->willReturn(Customer::of())->shouldBeCalled();
 
+        $this->dispatcher->dispatch(CustomerCreateEvent::class, Argument::type(CustomerCreateEvent::class))
+            ->shouldBeCalledOnce();
+
+        $this->dispatcher->dispatch(CustomerPostCreateEvent::class, Argument::type(CustomerPostCreateEvent::class))
+            ->shouldBeCalledOnce();
+
+        $manager = new CustomerManager($this->repository->reveal(), $this->dispatcher->reveal());
+        $customer = $manager->createCustomer('en', 'user@localhost', 'password');
+
+        $this->assertInstanceOf(Customer::class, $customer);
+    }
+
+    public function testChangePassword()
+    {
+        $customer = Customer::of()->setId('user-1');
+        $this->repository->changePassword($customer, 'current-password', 'new-password')
+            ->willReturn($customer)->shouldBeCalledOnce();
+
+        $manager = new CustomerManager($this->repository->reveal(), $this->dispatcher->reveal());
+        $updated = $manager->changePassword($customer, 'current-password', 'new-password');
+
+        $this->assertInstanceOf(Customer::class, $updated);
+        $this->assertSame('user-1', $updated->getId());
     }
 
     public function testUpdate()
     {
-        $customer = $this->prophesize(Customer::class);
-        $repository = $this->prophesize(CustomerRepository::class);
-        $dispatcher = $this->prophesize(EventDispatcherInterface::class);
-
-        $manager = new CustomerManager($repository->reveal(), $dispatcher->reveal());
-        $this->assertInstanceOf(CustomerUpdateBuilder::class, $manager->update($customer->reveal()));
-
+        $manager = new CustomerManager($this->repository->reveal(), $this->dispatcher->reveal());
+        $this->assertInstanceOf(CustomerUpdateBuilder::class, $manager->update(Customer::of()));
     }
 
     public function testGetById()
     {
-        $repository = $this->prophesize(CustomerRepository::class);
-        $dispatcher = $this->prophesize(EventDispatcherInterface::class);
+        $this->repository->getCustomerById('en', 'customer-1', null)
+            ->willReturn(Customer::of()->setId('customer-1'))->shouldBeCalled();
 
-        $repository->getCustomerById('en', '123456', null)
-            ->willReturn(Customer::of())->shouldBeCalled();
+        $manager = new CustomerManager($this->repository->reveal(), $this->dispatcher->reveal());
+        $customer = $manager->getById('en', 'customer-1');
 
-        $manager = new CustomerManager($repository->reveal(), $dispatcher->reveal());
-        $list = $manager->getById('en', '123456');
-
-        $this->assertInstanceOf(Customer::class, $list);
+        $this->assertInstanceOf(Customer::class, $customer);
+        $this->assertSame('customer-1', $customer->getId());
     }
 }

@@ -6,21 +6,25 @@ use Commercetools\Core\Client;
 use Commercetools\Core\Model\Product\ProductProjection;
 use Commercetools\Core\Model\Product\Search\Filter;
 use Commercetools\Symfony\CatalogBundle\Manager\CatalogManager;
+use Commercetools\Symfony\CtpBundle\Model\QueryParams;
+use Commercetools\Symfony\ExampleBundle\Entity\ProductEntity;
+use Commercetools\Symfony\ExampleBundle\Entity\ProductToShoppingList;
 use Commercetools\Symfony\ExampleBundle\Model\Form\Type\AddToCartType;
 use Commercetools\Symfony\ExampleBundle\Model\Form\Type\AddToShoppingListType;
 use GuzzleHttp\Psr7\Uri;
-use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Commercetools\Symfony\ShoppingListBundle\Manager\ShoppingListManager;
+use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Commercetools\Core\Model\Customer\CustomerReference;
 use Commercetools\Core\Model\ShoppingList\ShoppingList;
 
-class CatalogController extends Controller
+class CatalogController extends AbstractController
 {
     private $client;
     private $catalogManager;
@@ -35,6 +39,7 @@ class CatalogController extends Controller
         $this->catalogManager = $catalogManager;
         $this->shoppingListManager = $shoppingListManager;
     }
+
     public function indexAction(Request $request, $categoryId = null, $productTypeId = null)
     {
         $form = $this->createFormBuilder()
@@ -81,39 +86,38 @@ class CatalogController extends Controller
 
     }
 
-    public function detailBySlugAction(Request $request, $slug, UserInterface $user = null)
+    public function detailBySlugAction(Request $request, $slug, SessionInterface $session, UserInterface $user = null)
     {
         $country = $this->getCountryFromConfig();
         $currency = $this->getCurrencyFromConfig();
 
         try {
-            $product = $this->catalogManager->getProductBySlug($slug, $request->getLocale(), $currency, $country);
+            $product = $this->catalogManager->getProductBySlug($request->getLocale(), $slug, $currency, $country);
         } catch (NotFoundHttpException $e) {
             $this->addFlash('error', sprintf('Cannot find product: %s', $slug));
             return $this->render('@Example/index.html.twig');
         }
 
-        return $this->productDetails($request, $product, $user);
+        return $this->productDetails($request, $product, $session, $user);
     }
 
-    public function detailByIdAction(Request $request, $id, UserInterface $user = null)
+    public function detailByIdAction(Request $request, $id, SessionInterface $session, UserInterface $user = null)
     {
-        $product = $this->catalogManager->getProductById($id, $request->getLocale());
+        $product = $this->catalogManager->getProductById($request->getLocale(), $id);
 
-        return $this->productDetails($request, $product, $user);
+        return $this->productDetails($request, $product, $session, $user);
     }
 
-    private function productDetails(Request $request, $product, UserInterface $user = null)
+    private function productDetails(Request $request, ProductProjection $product, SessionInterface $session, UserInterface $user = null)
     {
         $variantIds = [];
-
         foreach ($product->getAllVariants() as $variant) {
             $variantIds[$variant->getSku()] = $variant->getId();
         }
 
         $shoppingListsIds = [];
         if(is_null($user)){
-            $shoppingLists = $this->shoppingListManager->getAllOfAnonymous($request->getLocale(), $this->get('session')->getId());
+            $shoppingLists = $this->shoppingListManager->getAllOfAnonymous($request->getLocale(), $session->getId());
         } else {
             $shoppingLists = $this->shoppingListManager->getAllOfCustomer($request->getLocale(), CustomerReference::ofId($user->getId()));
         }
@@ -123,31 +127,34 @@ class CatalogController extends Controller
             $shoppingListsIds[(string)$shoppingList->getName()] = $shoppingList->getId();
         }
 
-        $data = [
-            '_productId' => $product->getId(),
-            'variantId' => 1,
-            'slug' => (string)$product->getSlug(),
-            'variant_choices' => $variantIds,
-            'shopping_lists' => $shoppingListsIds
-        ];
+        $productEntity = new ProductEntity();
+        $productEntity->setProductId($product->getId())
+            ->setSlug((string)$product->getSlug())
+            ->setAllVariants($variantIds);
 
-        $form = $this->createForm(AddToCartType::class, $data, ['action' => $this->generateUrl('_ctp_example_add_lineItem')]);
-        $form->handleRequest($request);
+        $addToCartForm = $this->createForm(AddToCartType::class, $productEntity, ['action' => $this->generateUrl('_ctp_example_add_lineItem')]);
+        $addToCartForm->handleRequest($request);
 
-        $shoppingListForm = $this->createForm(AddToShoppingListType::class, $data, ['action' => $this->generateUrl('_ctp_example_shoppingList_add_lineItem')]);
-        $shoppingListForm->handleRequest($request);
+        $productToShoppingList = new ProductToShoppingList();
+        $productToShoppingList->setProductId($product->getId())
+            ->setSlug((string)$product->getSlug())
+            ->setAllVariants($variantIds)
+            ->setAvailableShoppingLists($shoppingListsIds);
+
+        $addToShoppingListForm = $this->createForm(AddToShoppingListType::class, $productToShoppingList, ['action' => $this->generateUrl('_ctp_example_shoppingList_add_lineItem')]);
+        $addToShoppingListForm->handleRequest($request);
 
         return $this->render('ExampleBundle:catalog:product.html.twig', [
             'product' =>  $product,
-            'form' => $form->createView(),
-            'shoppingListForm' => $shoppingListForm->createView()
+            'addToCartForm' => $addToCartForm->createView(),
+            'addToShoppingListForm' => $addToShoppingListForm->createView()
         ]);
     }
 
     public function suggestAction(Request $request, $searchTerm)
     {
-        $country = $this->getCountry();
-        $currency = $this->getCurrency();
+        $country = $this->getCountryFromConfig();
+        $currency = $this->getCurrencyFromConfig();
 
         $products = $this->catalogManager->suggestProducts($request->getLocale(), $searchTerm, 5, $currency, $country);
 
@@ -174,7 +181,9 @@ class CatalogController extends Controller
 
     public function getCategoriesAction(Request $request, $sort = 'id asc')
     {
-        $categories = $this->catalogManager->getCategories($request->getLocale(), $sort);
+        $params = QueryParams::of()->add('sort', $sort);
+
+        $categories = $this->catalogManager->getCategories($request->getLocale(), $params);
 
         return $this->render( 'ExampleBundle:catalog:categoriesList.html.twig', [
             'categories' => $categories
@@ -183,7 +192,9 @@ class CatalogController extends Controller
 
     public function getProductTypesAction(Request $request, $sort = 'id asc')
     {
-        $productTypes = $this->catalogManager->getProductTypes($request->getLocale(), $sort);
+        $params = QueryParams::of()->add('sort', $sort);
+
+        $productTypes = $this->catalogManager->getProductTypes($request->getLocale(), $params);
 
         return $this->render( 'ExampleBundle:catalog:productTypesList.html.twig', [
             'productTypes' => $productTypes

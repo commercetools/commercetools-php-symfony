@@ -9,9 +9,11 @@ use Commercetools\Core\Client;
 use Commercetools\Core\Error\InvalidArgumentException;
 use Commercetools\Core\Model\Common\LocalizedString;
 use Commercetools\Core\Model\Product\Product;
+use Commercetools\Core\Model\Product\ProductDraft;
 use Commercetools\Core\Model\Product\ProductProjection;
 use Commercetools\Core\Model\Product\SuggestionCollection;
-use Commercetools\Core\Request\Products\ProductsSuggestRequest;
+use Commercetools\Core\Model\ProductType\ProductTypeDraft;
+use Commercetools\Core\Model\ProductType\ProductTypeReference;
 use Commercetools\Symfony\CtpBundle\Model\QueryParams;
 use Commercetools\Symfony\CtpBundle\Model\Repository;
 use Commercetools\Symfony\CatalogBundle\Model\Search;
@@ -41,40 +43,38 @@ class CatalogRepository extends Repository
 
 
     /**
-     * @param $slug
      * @param $locale
+     * @param $slug
      * @param $currency
      * @param $country
      * @return ProductProjection|null
      */
-    public function getProductBySlug($slug, $locale, $currency, $country)
+    public function getProductBySlug($locale, $slug, $currency, $country)
     {
-        $client = $this->getClient();
         $cacheKey = static::NAME . '-' . $slug . '-' . $locale;
 
         $productRequest = RequestBuilder::of()->productProjections()
-            ->getBySlug($slug, $client->getConfig()->getContext()->getLanguages())
+            ->getBySlug($slug, $this->client->getConfig()->getContext()->getLanguages())
             ->country($country)
             ->currency($currency);
 
-        $productProjection = $this->retrieve($client, $cacheKey, $productRequest, $locale);
+        $productProjection = $this->retrieve($cacheKey, $productRequest, $locale);
 
         return $productProjection;
     }
 
     /**
-     * @param $id
      * @param $locale
-     * @return \Commercetools\Core\Model\Common\JsonDeserializeInterface|null
+     * @param $id
+     * @return ProductProjection
      */
-    public function getProductById($id, $locale)
+    public function getProductById($locale, $id)
     {
-        $client = $this->getClient();
         $cacheKey = static::NAME . '-' . $id . '-' . $locale;
 
         $productRequest = RequestBuilder::of()->productProjections()->getById($id);
 
-        $product = $this->retrieve($client, $cacheKey, $productRequest, $locale);
+        $product = $this->retrieve($cacheKey, $productRequest, $locale);
 
         return $product;
     }
@@ -89,15 +89,13 @@ class CatalogRepository extends Repository
      */
     public function suggestProducts($locale, $term, $limit, $currency, $country)
     {
-        $client = $this->getClient();
-        $suggestRequest = ProductsSuggestRequest::ofKeywords(LocalizedString::ofLangAndText($locale, $term));
-        $response = $suggestRequest->executeWithClient($client);
+        $suggestRequest = RequestBuilder::of()->productProjections()->suggest(LocalizedString::ofLangAndText($locale, $term));
+        $response = $this->executeRequest($suggestRequest);
         $data = $response->toArray();
         $language = \Locale::getPrimaryLanguage($locale);
 
         if (isset($data['searchKeywords.'. $language])) {
             $suggestions = SuggestionCollection::fromArray($data['searchKeywords.'. $language]);
-
             $suggestion = $suggestions->current();
 
             if (!is_null($suggestion)) {
@@ -186,28 +184,34 @@ class CatalogRepository extends Repository
 
     /**
      * @param $locale
-     * @param $sort
+     * @param QueryParams $params
      * @return mixed
      */
-    public function getProductTypes($locale, $sort)
+    public function getProductTypes($locale, QueryParams $params = null)
     {
-        $productTypesRequest = $productTypes = RequestBuilder::of()->productTypes()->query()->sort($sort);
+        $productTypesRequest = $productTypes = RequestBuilder::of()->productTypes()->query();
 
-        return $this->executeRequest($productTypesRequest, $locale);
+        return $this->executeRequest($productTypesRequest, $locale, $params);
     }
 
     /**
      * @param $locale
-     * @param $sort
+     * @param QueryParams $params
      * @return mixed
      */
-    public function getCategories($locale, $sort)
+    public function getCategories($locale, QueryParams $params = null)
     {
-        $categoriesRequest = RequestBuilder::of()->categories()->query()->sort($sort);
+        $categoriesRequest = RequestBuilder::of()->categories()->query();
 
-        return $this->executeRequest($categoriesRequest, $locale);
+        return $this->executeRequest($categoriesRequest, $locale, $params);
     }
 
+    /**
+     * @param Product $product
+     * @param array $actions
+     * @param QueryParams|null $params
+     * @return mixed
+     */
     public function update(Product $product, array $actions, QueryParams $params = null)
     {
         $request = RequestBuilder::of()->products()->update($product)->setActions($actions);
@@ -219,5 +223,40 @@ class CatalogRepository extends Repository
         }
 
         return $this->executeRequest($request);
+    }
+
+    /**
+     * @param $locale
+     * @param ProductTypeReference $productType
+     * @param $name
+     * @param $slug
+     * @return mixed
+     */
+    public function createProduct($locale, ProductTypeReference $productType, $name, $slug)
+    {
+        $productDraft = ProductDraft::ofTypeNameAndSlug(
+            $productType,
+            LocalizedString::ofLangAndText($locale, $name),
+            LocalizedString::ofLangAndText($locale, $slug)
+        );
+
+        $request = RequestBuilder::of()->products()->create($productDraft);
+
+        return $this->executeRequest($request, $locale);
+    }
+
+    /**
+     * @param $locale
+     * @param $name
+     * @param $description
+     * @return mixed
+     */
+    public function createProductType($locale, $name, $description)
+    {
+        $productTypeDraft = ProductTypeDraft::ofNameAndDescription($name, $description);
+
+        $request = RequestBuilder::of()->productTypes()->create($productTypeDraft);
+
+        return $this->executeRequest($request, $locale);
     }
 }

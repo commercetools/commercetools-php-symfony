@@ -76,14 +76,17 @@ class Repository
     }
 
     /**
-     * @param Client $client
      * @param $cacheKey
      * @param QueryAllRequestInterface $request
+     * @param $locale
+     * @param bool $force
      * @param int $ttl
      * @return mixed
+     * @throws \Commercetools\Core\Error\ApiException
+     * @throws \Commercetools\Core\Error\InvalidTokenException
+     * @throws \Psr\Cache\InvalidArgumentException
      */
     protected function retrieveAll(
-        Client $client,
         $cacheKey,
         QueryAllRequestInterface $request,
         $locale,
@@ -97,16 +100,23 @@ class Repository
                 $data = $cachedData;
             }
             $result = unserialize($data->get());
-            $result->setContext($client->getConfig()->getContext());
+            $result->setContext($this->client->getConfig()->getContext());
         } else {
-            $result = $this->getAll($client, $request, $locale);
+            $result = $this->getAll($request, $locale);
             $this->store($cacheKey, serialize($result), $ttl);
         }
 
         return $result;
     }
 
-    protected function getAll(Client $client, QueryAllRequestInterface $request, $locale)
+    /**
+     * @param QueryAllRequestInterface $request
+     * @param $locale
+     * @return mixed
+     * @throws \Commercetools\Core\Error\ApiException
+     * @throws \Commercetools\Core\Error\InvalidTokenException
+     */
+    protected function getAll(QueryAllRequestInterface $request, $locale)
     {
         $lastId = null;
         $data = ['results' => []];
@@ -115,7 +125,7 @@ class Repository
             if ($lastId != null) {
                 $request->where('id > "' . $lastId . '"');
             }
-            $response = $client->execute($request);
+            $response = $this->client->execute($request);
             if ($response->isError() || is_null($response->toObject())) {
                 break;
             }
@@ -130,16 +140,16 @@ class Repository
     }
 
     /**
-     * @param Client $client
      * @param $cacheKey
      * @param AbstractApiRequest $request
      * @param $locale
      * @param bool $force
      * @param int $ttl
      * @return \Commercetools\Core\Model\Common\JsonDeserializeInterface|null
+     * @throws \Psr\Cache\InvalidArgumentException
      */
     protected function retrieve(
-        Client $client, $cacheKey,
+        $cacheKey,
         AbstractApiRequest $request,
         $locale,
         $force = false,
@@ -151,9 +161,9 @@ class Repository
                 throw new NotFoundHttpException("resource not found");
             }
             $result = unserialize($cachedData->get());
-            $result->setContext($client->getConfig()->getContext());
+            $result->setContext($this->client->getConfig()->getContext());
         } else {
-            $response = $request->executeWithClient($client);
+            $response = $request->executeWithClient($this->client);
             if ($response->isError() || is_null($response->toObject())) {
                 $this->store($cacheKey, '', $ttl);
                 throw new NotFoundHttpException("resource not found");
@@ -184,7 +194,7 @@ class Repository
      * @param QueryParams|null $params
      * @return mixed
      */
-    public function executeRequest(ClientRequestInterface $request, $locale = 'en', QueryParams $params = null)
+    protected function executeRequest(ClientRequestInterface $request, $locale = 'en', QueryParams $params = null)
     {
         $client = $this->getClient();
 

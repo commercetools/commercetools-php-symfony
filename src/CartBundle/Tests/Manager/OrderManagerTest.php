@@ -131,4 +131,19 @@ class OrderManagerTest extends TestCase
 
         $this->assertInstanceOf(OrderCollection::class, $orders);
     }
+
+    public function testGetOrderFromPayment()
+    {
+        $repository = $this->prophesize(OrderRepository::class);
+        $dispatcher = $this->prophesize(EventDispatcherInterface::class);
+
+        $repository->getOrderFromPayment('en', 'payment-1', null, null)
+            ->willReturn(Order::of()->setId('order-1'))->shouldBeCalled();
+
+        $manager = new OrderManager($repository->reveal(), $dispatcher->reveal());
+        $order = $manager->getOrderFromPayment('en', 'payment-1');
+
+        $this->assertInstanceOf(Order::class, $order);
+        $this->assertSame('order-1', $order->getId());
+    }
 }

@@ -18,14 +18,28 @@ use Psr\Cache\CacheItemPoolInterface;
 
 class SetupRepository extends Repository
 {
+    /**
+     * @var Logger
+     */
     private $logger;
 
+    /**
+     * SetupRepository constructor.
+     * @param $enableCache
+     * @param CacheItemPoolInterface $cache
+     * @param Client $client
+     * @param MapperFactory $mapperFactory
+     * @param Logger $logger
+     */
     public function __construct($enableCache, CacheItemPoolInterface $cache, Client $client, MapperFactory $mapperFactory, Logger $logger)
     {
         parent::__construct($enableCache, $cache, $client, $mapperFactory);
         $this->logger = $logger;
     }
 
+    /**
+     * @return mixed
+     */
     public function getProject()
     {
         $request = RequestBuilder::of()->project()->get();
@@ -33,6 +47,11 @@ class SetupRepository extends Repository
         return $this->executeRequest($request);
     }
 
+    /**
+     * @param Project $project
+     * @param array $actions
+     * @return mixed
+     */
     public function updateProject(Project $project, array $actions)
     {
         $updateRequest = RequestBuilder::of()->project()->update($project)->setActions($actions);
@@ -40,7 +59,12 @@ class SetupRepository extends Repository
         return $this->executeRequest($updateRequest);
     }
 
-    public function applyConfiguration($config, $online)
+    /**
+     * @param array $config
+     * @param Project $online
+     * @return Project|null
+     */
+    public function applyConfiguration(array $config, Project $online)
     {
         return ConfigureProject::of()->update($config, $online, $this->getActionBuilder($online));
     }

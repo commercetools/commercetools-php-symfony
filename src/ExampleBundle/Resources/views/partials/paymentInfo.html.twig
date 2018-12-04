@@ -1,8 +1,5 @@
 {% block paymentInfo %}
 
-    {#<tr>#}
-        {#<td colspan="3">{{ dump(payment) }}</td>#}
-    {#</tr>#}
     <tr>
         <td>{{ payment.id }}</td>
         {% for place in workflow_marked_places(payment) %}

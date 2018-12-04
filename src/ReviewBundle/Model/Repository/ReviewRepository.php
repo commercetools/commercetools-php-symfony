@@ -6,6 +6,7 @@ namespace Commercetools\Symfony\ReviewBundle\Model\Repository;
 
 use Commercetools\Core\Builder\Request\RequestBuilder;
 use Commercetools\Core\Model\Customer\CustomerReference;
+use Commercetools\Core\Model\Product\ProductReference;
 use Commercetools\Core\Model\Review\Review;
 use Commercetools\Core\Model\Review\ReviewDraft;
 use Commercetools\Symfony\CtpBundle\Model\QueryParams;
@@ -43,7 +44,7 @@ class ReviewRepository extends Repository
     {
         $predicate = 'target(id = "' . $productId . '") and target(typeId="product")';
 
-        $request = RequestBuilder::of()->reviews()->query()->where($predicate)->sort('createdAt desc');
+        $request = RequestBuilder::of()->reviews()->query()->where($predicate);
 
         return $this->executeRequest($request, $locale, $params);
     }
@@ -52,12 +53,12 @@ class ReviewRepository extends Repository
     {
         $predicate = 'id = "' . $reviewId . '" and customer(id = "' . $userId . '") and target(typeId="product")';
 
-        $request = RequestBuilder::of()->reviews()->query()->where($predicate)->sort('createdAt desc');
+        $request = RequestBuilder::of()->reviews()->query()->where($predicate);
 
         return $this->executeRequest($request, $locale, $params);
     }
 
-    public function createReviewForProduct($locale, $productReference, CustomerReference $customerReference = null, $text, $rating)
+    public function createReviewForProduct($locale, ProductReference $productReference, CustomerReference $customerReference = null, $text, $rating)
     {
         $reviewDraft = ReviewDraft::of()
             ->setText($text)
@@ -89,6 +90,5 @@ class ReviewRepository extends Repository
         $review = $request->mapFromResponse($response);
 
         return $review;
-
     }
 }

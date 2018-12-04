@@ -55,13 +55,13 @@ class PaymentManager
     /**
      * @param $locale
      * @param $paymentId
-     * @param UserInterface $user
+     * @param CustomerReference|null $customer
      * @param string|null $anonymousId
      * @return PaymentCollection
      */
-    public function getPaymentForUser($locale, $paymentId, UserInterface $user = null, $anonymousId = null)
+    public function getPaymentForUser($locale, $paymentId, CustomerReference $customer = null, $anonymousId = null)
     {
-        return $this->repository->getPaymentForUser($locale, $paymentId, $user, $anonymousId);
+        return $this->repository->getPaymentForUser($locale, $paymentId, $customer, $anonymousId);
     }
 
     /**
@@ -69,9 +69,9 @@ class PaymentManager
      * @param array $payments
      * @return array|mixed
      */
-    public function getPaymentsForOrder($locale, array $payments)
+    public function getMultiplePayments($locale, array $payments)
     {
-        return $this->repository->getPaymentsForOrder($locale, $payments);
+        return $this->repository->getMultiplePayments($locale, $payments);
     }
 
     /**

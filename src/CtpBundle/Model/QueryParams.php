@@ -1,9 +1,5 @@
 <?php
 /**
- * Created by PhpStorm.
- * User: nsotiropoulos
- * Date: 25/04/2018
- * Time: 16:34
  */
 
 namespace Commercetools\Symfony\CtpBundle\Model;
@@ -11,17 +7,34 @@ namespace Commercetools\Symfony\CtpBundle\Model;
 use Commercetools\Core\Request\Query\MultiParameter;
 use Commercetools\Core\Request\Query\Parameter;
 
-class QueryParams {
+class QueryParams
+{
+    /**
+     * @var array
+     */
     private $params = [];
 
+    /**
+     * @param $paramName
+     * @param $paramValue
+     * @return $this
+     */
     public function add($paramName, $paramValue)
     {
         $this->params[] = new MultiParameter($paramName, $paramValue);
+
+        return $this;
     }
 
+    /**
+     * @param Parameter $param
+     * @return $this
+     */
     public function addParamObject(Parameter $param)
     {
         $this->params[] = $param;
+
+        return $this;
     }
 
     /**
@@ -30,5 +43,13 @@ class QueryParams {
     public function getParams(): array
     {
         return $this->params;
+    }
+
+    /**
+     * @return QueryParams
+     */
+    public static function of()
+    {
+        return new static();
     }
 }

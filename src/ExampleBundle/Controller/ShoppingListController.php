@@ -10,15 +10,17 @@ use Commercetools\Core\Request\ShoppingLists\Command\ShoppingListAddLineItemActi
 use Commercetools\Core\Request\ShoppingLists\Command\ShoppingListChangeLineItemQuantityAction;
 use Commercetools\Core\Request\ShoppingLists\Command\ShoppingListRemoveLineItemAction;
 use Commercetools\Symfony\CtpBundle\Model\QueryParams;
+use Commercetools\Symfony\ExampleBundle\Entity\ProductToShoppingList;
 use Commercetools\Symfony\ExampleBundle\Model\Form\Type\AddToShoppingListType;
 use Commercetools\Symfony\ShoppingListBundle\Manager\ShoppingListManager;
-use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
 
 
-class ShoppingListController extends Controller
+class ShoppingListController extends AbstractController
 {
     /**
      * @var Client
@@ -39,13 +41,13 @@ class ShoppingListController extends Controller
         $this->manager = $manager;
     }
 
-    public function indexAction(Request $request, UserInterface $user = null)
+    public function indexAction(Request $request, SessionInterface $session, UserInterface $user = null)
     {
         $params = new QueryParams();
         $params->add('expand', 'lineItems[*].variant');
+        $params->add('sort', 'createdAt desc');
 
         if(is_null($user)){
-            $session = $this->get('session');
             $shoppingLists = $this->manager->getAllOfAnonymous($request->getLocale(), $session->getId(), $params);
         } else {
             $shoppingLists = $this->manager->getAllOfCustomer($request->getLocale(), CustomerReference::ofId($user->getId()), $params);
@@ -54,34 +56,34 @@ class ShoppingListController extends Controller
         return $this->render('ExampleBundle:shoppinglist:index.html.twig', ['lists' => $shoppingLists]);
     }
 
-    public function createAction(Request $request, UserInterface $user = null)
+    public function createAction(Request $request, SessionInterface $session, UserInterface $user = null)
     {
         if(is_null($user)){
-            $this->manager->createShoppingListByAnonymous($request->getLocale(), $this->get('session')->getId(), $request->get('_shoppingListName'));
+            $this->manager->createShoppingListByAnonymous($request->getLocale(), $session->getId(), $request->get('shoppingListName'));
         } else {
-            $this->manager->createShoppingListByCustomer($request->getLocale(), CustomerReference::ofId($user->getId()), $request->get('_shoppingListName'));
+            $this->manager->createShoppingListByCustomer($request->getLocale(), CustomerReference::ofId($user->getId()), $request->get('shoppingListName'));
         }
 
         return $this->redirectToRoute('_ctp_example_shoppingList');
     }
 
-    public function deleteByIdAction(Request $request, UserInterface $user = null, $shoppingListId)
+    public function deleteByIdAction(Request $request, $shoppingListId, SessionInterface $session, UserInterface $user = null)
     {
-        if(is_null($user)){
-            $this->manager->deleteShoppingListByAnonymous($request->getLocale(), $this->get('session')->getId(), $shoppingListId);
-        } else {
-            $this->manager->deleteShoppingListByCustomer($request->getLocale(), CustomerReference::ofId($user->getId()), $shoppingListId);
-        }
+        $customerReference = is_null($user) ? null : CustomerReference::ofId($user->getId());
+
+        $shoppingList = $this->manager->getShoppingListForUser($request->getLocale(), $shoppingListId, $customerReference, $session->getId());
+
+        $this->manager->deleteShoppingList($request->getLocale(), $shoppingList);
 
         return new RedirectResponse($this->generateUrl('_ctp_example_cart'));
     }
 
-    public function addLineItemAction(Request $request, UserInterface $user = null)
+    public function addLineItemAction(Request $request, SessionInterface $session, UserInterface $user = null)
     {
         $shoppingListsIds = [];
 
         if(is_null($user)){
-            $shoppingLists = $this->manager->getAllOfAnonymous($request->getLocale(), $this->get('session')->getId());
+            $shoppingLists = $this->manager->getAllOfAnonymous($request->getLocale(), $session->getId());
         } else {
             $shoppingLists = $this->manager->getAllOfCustomer($request->getLocale(), CustomerReference::ofId($user->getId()));
         }
@@ -91,24 +93,22 @@ class ShoppingListController extends Controller
             $shoppingListsIds[(string)$shoppingList->getName()] = $shoppingList->getId();
         }
 
-        $data = [
-            'variantIdText' => true,
-            'shopping_lists' => $shoppingListsIds
-        ];
+        $productEntity = new ProductToShoppingList();
+        $productEntity->setAvailableShoppingLists($shoppingListsIds);
 
-        $form = $this->createForm(AddToShoppingListType::class, $data);
+        $form = $this->createForm(AddToShoppingListType::class, $productEntity);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
 
-            $shoppingListId = $form->get('_shoppingListId')->getData();
+            $shoppingListId = $form->get('shoppingListId')->getData();
 
             if(!is_null($shoppingListId)){
                 $shoppingList = $this->manager->getById($request->getLocale(), $shoppingListId);
                 $updateBuilder = $this->manager->update($shoppingList);
                 $updateBuilder->addLineItem(function (ShoppingListAddLineItemAction $action) use($form): ShoppingListAddLineItemAction {
-                    $action->setProductId($form->get('_productId')->getData());
-                    $action->setVariantId((int)$form->get('_variantId')->getData());
+                    $action->setProductId($form->get('productId')->getData());
+                    $action->setVariantId((int)$form->get('variantId')->getData());
                     $action->setQuantity(1);
                     return $action;
                 });
@@ -125,9 +125,9 @@ class ShoppingListController extends Controller
 
     public function removeLineItemAction(Request $request)
     {
-        $shoppingList = $this->manager->getById($request->getLocale(), $request->get('_shoppingListId'));
+        $shoppingList = $this->manager->getById($request->getLocale(), $request->get('shoppingListId'));
         $builder = $this->manager->update($shoppingList)
-            ->addAction(ShoppingListRemoveLineItemAction::ofLineItemId($request->get('_lineItemId')));
+            ->addAction(ShoppingListRemoveLineItemAction::ofLineItemId($request->get('lineItemId')));
 
         $builder->flush();
 
@@ -136,10 +136,10 @@ class ShoppingListController extends Controller
 
     public function changeLineItemQuantityAction(Request $request)
     {
-        $shoppingList = $this->manager->getById($request->getLocale(), $request->get('_shoppingListId'));
+        $shoppingList = $this->manager->getById($request->getLocale(), $request->get('shoppingListId'));
         $builder = $this->manager->update($shoppingList)
             ->addAction(ShoppingListChangeLineItemQuantityAction::ofLineItemIdAndQuantity(
-                $request->get('_lineItemId'), (int)$request->get('_lineItemQuantity')));
+                $request->get('lineItemId'), (int)$request->get('lineItemQuantity')));
 
         $builder->flush();
 

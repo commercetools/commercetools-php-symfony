@@ -8,7 +8,7 @@ use Commercetools\Core\Model\Order\Order;
 use Commercetools\Core\Model\State\StateReference;
 use Commercetools\Symfony\CartBundle\Manager\PaymentManager;
 use Commercetools\Symfony\StateBundle\Model\ItemStateWrapper;
-use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Commercetools\Core\Client;
 use Commercetools\Symfony\CartBundle\Manager\OrderManager;
 use Symfony\Component\HttpFoundation\Request;
@@ -18,7 +18,7 @@ use Symfony\Component\Workflow\Exception\InvalidArgumentException;
 use Symfony\Component\Workflow\Registry;
 
 
-class OrderController extends Controller
+class OrderController extends AbstractController
 {
     const CSRF_TOKEN_NAME = 'csrfToken';
 
@@ -90,7 +90,7 @@ class OrderController extends Controller
 
         if (!is_null($order->getPaymentInfo())) {
             $paymentsIds = array_map(function($elem){return $elem['id'];}, $order->getPaymentInfo()->getPayments()->toArray());
-            $payments = $this->paymentManager->getPaymentsForOrder($request->getLocale(), $paymentsIds);
+            $payments = $this->paymentManager->getMultiplePayments($request->getLocale(), $paymentsIds);
         }
 
         return $this->render('ExampleBundle:user:order.html.twig', [

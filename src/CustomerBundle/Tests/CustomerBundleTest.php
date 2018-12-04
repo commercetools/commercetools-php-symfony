@@ -8,10 +8,10 @@ namespace Commercetools\Symfony\CustomerBundle\Tests;
 
 use Commercetools\Symfony\CustomerBundle\CustomerBundle;
 use Commercetools\Symfony\CustomerBundle\DependencyInjection\CustomerExtension;
-use Commercetools\Symfony\CustomerBundle\DependencyInjection\Factory\SecurityFactory;
 use PHPUnit\Framework\TestCase;
+use Prophecy\Argument;
+use Symfony\Bundle\SecurityBundle\DependencyInjection\SecurityExtension;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
-use Symfony\Component\DependencyInjection\Extension\Extension;
 
 class CustomerBundleTest extends TestCase
 {
@@ -20,4 +20,16 @@ class CustomerBundleTest extends TestCase
         $customerBundle = new CustomerBundle();
         $this->assertInstanceOf(CustomerExtension::class, $customerBundle->getContainerExtension());
     }
+
+    public function testBuild()
+    {
+        $ctpBundle = new CustomerBundle();
+        $containerBuilder = $this->prophesize(ContainerBuilder::class);
+        $containerBuilder->getExtension(Argument::is('security'))
+            ->willReturn(new SecurityExtension())
+            ->shouldBeCalled();
+
+        $ctpBundle->build($containerBuilder->reveal());
+    }
 }
+

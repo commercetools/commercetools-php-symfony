@@ -33,11 +33,19 @@ class ConfigureProject
     ];
 
 
+    /**
+     * @param array $value
+     * @return ProjectChangeMessagesEnabledAction
+     */
     private function transformMessageValue(array $value)
     {
         return ProjectChangeMessagesEnabledAction::ofMessagesEnabled($value['enabled']);
     }
 
+    /**
+     * @param array $configValues
+     * @return ProjectSetShippingRateInputTypeAction
+     */
     private function transformShippingRateInputTypeValue(array $configValues)
     {
         $type = ShippingRateInputType::of()->setType($configValues['type']);
@@ -56,6 +64,11 @@ class ConfigureProject
         return ProjectSetShippingRateInputTypeAction::of()->setShippingRateInputType($type);
     }
 
+    /**
+     * @param array $allChanges
+     * @param array $config
+     * @return array
+     */
     public function mapChangesToActions(array $allChanges, array $config)
     {
         return array_filter(array_map(function($change) use ($config){
@@ -72,6 +85,12 @@ class ConfigureProject
         }, $allChanges));
     }
 
+    /**
+     * @param array $config
+     * @param Project $online
+     * @param ProjectUpdateBuilder $actionBuilder
+     * @return Project|null
+     */
     public function update(array $config, Project $online, ProjectUpdateBuilder $actionBuilder)
     {
         $helper = new ArrayHelper();
@@ -92,6 +111,7 @@ class ConfigureProject
     }
 
     /**
+     * @param ProjectUpdateBuilder $builder
      * @param AbstractAction[] $mappedActions
      */
     private function addActions(ProjectUpdateBuilder $builder, array $mappedActions)
@@ -102,6 +122,9 @@ class ConfigureProject
         });
     }
 
+    /**
+     * @return ConfigureProject
+     */
     public static function of()
     {
         return new static();

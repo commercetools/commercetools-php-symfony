@@ -193,4 +193,42 @@ class CommercetoolsExtensionTest extends AbstractExtensionTestCase
         $this->assertContainerBuilderHasService('commercetools.client.config', 'Commercetools\Core\Config');
         $this->assertContainerBuilderHasService('commercetools.client.factory', 'Commercetools\Symfony\CtpBundle\Service\ClientFactory');
     }
+
+    public function testLoadWithFacets()
+    {
+        $config = [
+            'api' => [ 'clients' => [
+                'first' => [
+                    'client_id' => 'foo',
+                    'client_secret' => 'bar',
+                    'project' => 'other'
+                ]
+            ] ],
+            'project_settings' => [],
+            'facets' => [
+                'foobar' => [
+                    'alias' => 'bar',
+
+                ]
+            ]
+        ];
+
+        $expected = [
+            'foobar' => [
+                'alias' => 'bar',
+                'paramName' => null,
+                'field' => null,
+                'facetField' => null,
+                'filterField' => null,
+                'multiSelect' => true,
+                'hierarchical' => false,
+                'display' => '2column',
+                'type' => 'enum',
+                'ranges' => []
+            ]
+        ];
+
+        $this->load($config, $this->getContainerExtensions());
+        $this->assertContainerBuilderHasParameter('commercetools.facets', $expected);
+    }
 }

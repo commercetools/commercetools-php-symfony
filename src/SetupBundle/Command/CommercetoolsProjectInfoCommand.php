@@ -3,11 +3,11 @@
 namespace Commercetools\Symfony\SetupBundle\Command;
 
 use Commercetools\Symfony\SetupBundle\Model\Repository\SetupRepository;
-use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
+use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
-class CommercetoolsProjectInfoCommand extends ContainerAwareCommand
+class CommercetoolsProjectInfoCommand extends Command
 {
     private $repository;
 

@@ -12,7 +12,7 @@
         <form action="{{ path('_ctp_example_shoppingList_create') }}" method="post">
             <div class="form-group">
                 <label for="username">List name</label>
-                <input class="form-control" type="text" name="_shoppingListName" value="" placeholder="List name" />
+                <input class="form-control" type="text" name="shoppingListName" value="" placeholder="List name" />
                 <button class="btn btn-default" type="submit">Create</button>
             </div>
         </form>
@@ -38,9 +38,9 @@
                         <td class="table-20">
                             <form action="{{ path('_ctp_example_shoppingList_change_lineItem_quantity') }}" method="post">
                                 <div class="form-group">
-                                    <input type="hidden" name="_lineItemId" value="{{ lineItem.getId }}">
-                                    <input type="hidden" name="_shoppingListId" value="{{ list.getId }}">
-                                    <select name="_lineItemQuantity">
+                                    <input type="hidden" name="lineItemId" value="{{ lineItem.getId }}">
+                                    <input type="hidden" name="shoppingListId" value="{{ list.getId }}">
+                                    <select name="lineItemQuantity">
                                         {% for i in 1..50 %}
                                             <option value="{{ i }}" {% if lineItem.getQuantity == i %} selected="selected" {% endif %}>{{ i }}</option>
                                         {% endfor %}
@@ -54,8 +54,8 @@
                         <td class="table-20">
                             <form action="{{ path('_ctp_example_shoppingList_remove_lineItem') }}" method="post">
                                 <div class="form-group">
-                                    <input type="hidden" name="_lineItemId" value="{{ lineItem.getId }}">
-                                    <input type="hidden" name="_shoppingListId" value="{{ list.getId }}">
+                                    <input type="hidden" name="lineItemId" value="{{ lineItem.getId }}">
+                                    <input type="hidden" name="shoppingListId" value="{{ list.getId }}">
                                     <button class="btn btn-default" type="submit">Delete Item</button>
                                 </div>
                             </form>
@@ -66,7 +66,7 @@
 
             <form action="{{ path('_ctp_example_add_shoppingList_to_cart') }}" method="post">
                 <div class="form-group">
-                    <input type="hidden" name="_shoppingListId" value="{{ list.getId }}">
+                    <input type="hidden" name="shoppingListId" value="{{ list.getId }}">
                     <button class="btn btn-default" type="submit">Add ShoppingList to Cart</button>
                 </div>
             </form>

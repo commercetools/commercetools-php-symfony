@@ -12,22 +12,21 @@ use Commercetools\Core\Request\Carts\Command\CartAddLineItemAction;
 use Commercetools\Core\Request\Carts\Command\CartAddShoppingListAction;
 use Commercetools\Core\Request\Carts\Command\CartChangeLineItemQuantityAction;
 use Commercetools\Core\Request\Carts\Command\CartRemoveLineItemAction;
+use Commercetools\Symfony\ExampleBundle\Entity\ProductEntity;
 use Commercetools\Symfony\ExampleBundle\Model\Form\Type\AddToCartType;
 use Commercetools\Symfony\CartBundle\Model\Repository\CartRepository;
-use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Commercetools\Core\Model\Cart\Cart;
 use Commercetools\Core\Client;
 use Commercetools\Symfony\CartBundle\Manager\CartManager;
-use Symfony\Component\Form\Extension\Core\Type\FormType;
 use Symfony\Component\Form\FormBuilder;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
 
 
-class CartController extends Controller
+class CartController extends AbstractController
 {
     const CSRF_TOKEN_NAME = 'csrfToken';
 
@@ -66,12 +65,14 @@ class CartController extends Controller
 
     public function addLineItemAction(Request $request, SessionInterface $session, UserInterface $user = null)
     {
-        $form = $this->createForm(AddToCartType::class, ['variantIdText' => true]);
+        $productEntity = new ProductEntity();
+
+        $form = $this->createForm(AddToCartType::class, $productEntity);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
 
-            $productId = $form->get('_productId')->getData();
+            $productId = $form->get('productId')->getData();
             $variantId = (int)$form->get('variantId')->getData();
             $quantity = (int)$form->get('quantity')->getData();
             $slug = $form->get('slug')->getData();
@@ -103,7 +104,6 @@ class CartController extends Controller
             }
             $redirectUrl = $this->generateUrl('_ctp_example_product', ['slug' => $slug]);
 
-
         } else {
             $redirectUrl = $this->generateUrl('_ctp_example');
         }
@@ -111,16 +111,16 @@ class CartController extends Controller
         return new RedirectResponse($redirectUrl);
     }
 
-    public function miniCartAction(Request $request)
-    {
-        $response = new Response();
-        $response->headers->addCacheControlDirective('no-cache');
-        $response->headers->addCacheControlDirective('no-store');
-
-        $response = $this->render('ExampleBundle:cart:index.html.twig', $response);
-
-        return $response;
-    }
+//    public function miniCartAction(Request $request)
+//    {
+//        $response = new Response();
+//        $response->headers->addCacheControlDirective('no-cache');
+//        $response->headers->addCacheControlDirective('no-store');
+//
+//        $response = $this->render('ExampleBundle:cart:index.html.twig', $response);
+//
+//        return $response;
+//    }
 
     public function changeLineItemAction(Request $request, SessionInterface $session, UserInterface $user = null)
     {
@@ -157,13 +157,11 @@ class CartController extends Controller
     {
         $cartId = $session->get(CartRepository::CART_ID);
 
-        $shoppingListId = $request->get('_shoppingListId');
+        $shoppingListId = $request->get('shoppingListId');
         $shoppingList = ShoppingListReference::ofId($shoppingListId);
 
         if(!is_null($cartId)){
             $cart = $this->manager->getCart($request->getLocale(), $cartId, $user, $session->getId());
-
-
         } else {
             $countryCode = $this->getCountryFromConfig();
             $currency = $this->getCurrencyFromConfig();
@@ -180,19 +178,23 @@ class CartController extends Controller
         $cartBuilder->addShoppingList(CartAddShoppingListAction::ofShoppingList($shoppingList));
         $cartBuilder->flush();
 
+        /**
+         * TODO delete shopping list using a listener
+         */
+
         return new RedirectResponse($this->generateUrl('_ctp_example_shoppingList_delete', ['shoppingListId' => $shoppingListId]));
     }
 
-    protected function getItemCount(Cart $cart)
-    {
-        $count = 0;
-        if ($cart->getLineItems()) {
-            foreach ($cart->getLineItems() as $lineItem) {
-                $count+= $lineItem->getQuantity();
-            }
-        }
-        return $count;
-    }
+//    protected function getItemCount(Cart $cart)
+//    {
+//        $count = 0;
+//        if ($cart->getLineItems()) {
+//            foreach ($cart->getLineItems() as $lineItem) {
+//                $count+= $lineItem->getQuantity();
+//            }
+//        }
+//        return $count;
+//    }
 
     /**
      * Creates and returns a form builder instance.
@@ -203,10 +205,10 @@ class CartController extends Controller
      *
      * @return FormBuilder
      */
-    protected function createNamedFormBuilder($name, $data = null, array $options = array())
-    {
-        return $this->container->get('form.factory')->createNamedBuilder($name, FormType::class, $data, $options);
-    }
+//    protected function createNamedFormBuilder($name, $data = null, array $options = array())
+//    {
+//        return $this->container->get('form.factory')->createNamedBuilder($name, FormType::class, $data, $options);
+//    }
 
     // TODO duplicate code / move these to better place
     private function getCountryFromConfig()

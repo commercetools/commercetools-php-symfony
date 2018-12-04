@@ -6,6 +6,7 @@
 namespace Commercetools\Symfony\ExampleBundle\EventListener;
 
 
+use Commercetools\Core\Model\Cart\Cart;
 use Commercetools\Symfony\CartBundle\Event\CartCreateEvent;
 use Commercetools\Symfony\CartBundle\Event\CartGetEvent;
 use Commercetools\Symfony\CartBundle\Event\CartNotFoundEvent;

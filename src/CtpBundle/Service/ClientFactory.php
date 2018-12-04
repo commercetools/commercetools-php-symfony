@@ -9,7 +9,6 @@ use Commercetools\Core\Client;
 use Commercetools\Core\Config;
 use Commercetools\Core\Model\Common\Context;
 use Commercetools\Symfony\CtpBundle\Profiler\CommercetoolsProfilerExtension;
-use Commercetools\Symfony\CtpBundle\Profiler\ProfileMiddleware;
 use Psr\Log\LoggerInterface;
 
 class ClientFactory
@@ -26,7 +25,7 @@ class ClientFactory
         ContextFactory $contextFactory,
         $cache,
         LocaleConverter $converter,
-        LoggerInterface $logger,
+        LoggerInterface $logger = null,
         CommercetoolsProfilerExtension $profiler = null
     ) {
         $this->config = $config;
@@ -34,7 +33,6 @@ class ClientFactory
         $this->cache = $cache;
         $this->converter = $converter;
         $this->logger = $logger;
-        $this->config = $config;
         $this->profiler = $profiler;
     }
 
