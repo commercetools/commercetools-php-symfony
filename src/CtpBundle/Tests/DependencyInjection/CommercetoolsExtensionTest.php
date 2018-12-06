@@ -231,4 +231,18 @@ class CommercetoolsExtensionTest extends AbstractExtensionTestCase
         $this->load($config, $this->getContainerExtensions());
         $this->assertContainerBuilderHasParameter('commercetools.facets', $expected);
     }
+
+    public function testGetNamespace()
+    {
+        $extension = new CommercetoolsExtension();
+
+        $this->assertSame('http://commercetools.com/schema/dic/ctp-bundle', $extension->getNamespace());
+    }
+
+    public function testGetXsdValidationPath()
+    {
+        $extension = new CommercetoolsExtension();
+
+        $this->assertContains('/../Resources/config/schema', $extension->getXsdValidationBasePath());
+    }
 }
