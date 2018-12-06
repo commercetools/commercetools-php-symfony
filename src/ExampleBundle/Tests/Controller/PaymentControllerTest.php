@@ -193,13 +193,13 @@ class PaymentControllerTest extends WebTestCase
             ->setTotalPrice(Money::ofCurrencyAndAmount('EUR', 100))
             ->setId('order-1');
 
-        $orderUpdateBuilder = $this->prophesize(OrderUpdateBuilder::class);
-        $orderUpdateBuilder->addAction(Argument::type(OrderAddPaymentAction::class))->will(function(){return $this;})->shouldBeCalled();
-        $orderUpdateBuilder->flush()->willReturn($order)->shouldBeCalled();
+//        $orderUpdateBuilder = $this->prophesize(OrderUpdateBuilder::class);
+//        $orderUpdateBuilder->addAction(Argument::type(OrderAddPaymentAction::class))->will(function(){return $this;})->shouldBeCalled();
+//        $orderUpdateBuilder->flush()->willReturn($order)->shouldBeCalled();
 
         $orderManager = $this->prophesize(OrderManager::class);
         $orderManager->getOrderForUser('en', 'order-1', null, 'baz')->willReturn($order)->shouldBeCalledOnce();
-        $orderManager->update(Argument::type(Order::class))->willReturn($orderUpdateBuilder)->shouldBeCalledOnce();
+//        $orderManager->update(Argument::type(Order::class))->willReturn($orderUpdateBuilder)->shouldBeCalledOnce();
 
         $this->paymentManager->createPaymentForUser(
             'en',
@@ -283,7 +283,7 @@ class PaymentControllerTest extends WebTestCase
             Argument::type(CustomerReference::class),
             'baz',
             Argument::type(PaymentStatus::class),
-            null
+            Argument::type(CustomFieldObjectDraft::class)
         )->willReturn($payment)->shouldBeCalledOnce();
 
         $controller = new PaymentController($this->client->reveal(), $this->paymentManager->reveal(), $this->registry->reveal());
@@ -314,15 +314,21 @@ class PaymentControllerTest extends WebTestCase
         $cart = Cart::of()
             ->setTotalPrice(Money::ofCurrencyAndAmount('EUR', 100));
 
-        $cartUpdateBuilder = $this->prophesize(CartUpdateBuilder::class);
-        $cartUpdateBuilder->addAction(Argument::type(CartAddPaymentAction::class))->will(function(){return $this;})->shouldBeCalled();
-        $cartUpdateBuilder->flush()->willReturn($cart)->shouldBeCalled();
+//        $cartUpdateBuilder = $this->prophesize(CartUpdateBuilder::class);
+//        $cartUpdateBuilder->addAction(Argument::type(CartAddPaymentAction::class))->will(function(){return $this;})->shouldBeCalled();
+//        $cartUpdateBuilder->flush()->willReturn($cart)->shouldBeCalled();
 
         $cartManager = $this->prophesize(CartManager::class);
         $cartManager->getCart('en', 'cart-1', null, 'baz')->willReturn($cart)->shouldBeCalledOnce();
-        $cartManager->update(Argument::type(Cart::class))->willReturn($cartUpdateBuilder)->shouldBeCalledOnce();
+//        $cartManager->update(Argument::type(Cart::class))->willReturn($cartUpdateBuilder)->shouldBeCalledOnce();
 
-        $this->paymentManager->createPaymentForUser('en', Argument::type(Money::class), null, 'baz', Argument::type(PaymentStatus::class), null)
+        $this->paymentManager->createPaymentForUser(
+            'en',
+            Argument::type(Money::class),
+            null,
+            'baz',
+            Argument::type(PaymentStatus::class),
+            Argument::type(CustomFieldObjectDraft::class))
             ->willReturn($payment)->shouldBeCalledOnce();
 
         $controller = new PaymentController($this->client->reveal(), $this->paymentManager->reveal(), $this->registry->reveal());
@@ -350,11 +356,10 @@ class PaymentControllerTest extends WebTestCase
         $this->paymentManager->getPaymentForUser('en', 'payment-1', null, 'baz')
             ->willReturn(null)->shouldBeCalledOnce();
 
-        $orderManager = $this->prophesize(OrderManager::class);
 
         $controller = new PaymentController($this->client->reveal(), $this->paymentManager->reveal(), $this->registry->reveal());
         $controller->setContainer($this->myContainer->reveal());
-        $response = $controller->updatePaymentAction($this->request->reveal(), $session->reveal(), $orderManager->reveal(), 'state-2', 'payment-1');
+        $response = $controller->updatePaymentAction($this->request->reveal(), $session->reveal(), 'state-2', 'payment-1');
 
         $this->assertTrue($response->isOk());
     }
@@ -381,11 +386,9 @@ class PaymentControllerTest extends WebTestCase
         $this->paymentManager->getPaymentForUser('en', 'payment-1', null, 'baz')
             ->willReturn(Payment::of())->shouldBeCalledOnce();
 
-        $orderManager = $this->prophesize(OrderManager::class);
-
         $controller = new PaymentController($this->client->reveal(), $this->paymentManager->reveal(), $this->registry->reveal());
         $controller->setContainer($this->myContainer->reveal());
-        $response = $controller->updatePaymentAction($this->request->reveal(), $session->reveal(), $orderManager->reveal(), 'state-2', 'payment-1');
+        $response = $controller->updatePaymentAction($this->request->reveal(), $session->reveal(), 'state-2', 'payment-1');
 
         $this->assertTrue($response->isOk());
     }
@@ -411,11 +414,9 @@ class PaymentControllerTest extends WebTestCase
         $this->paymentManager->getPaymentForUser('en', 'payment-1', null, 'baz')
             ->willReturn(Payment::of())->shouldBeCalledOnce();
 
-        $orderManager = $this->prophesize(OrderManager::class);
-
         $controller = new PaymentController($this->client->reveal(), $this->paymentManager->reveal(), $this->registry->reveal());
         $controller->setContainer($this->myContainer->reveal());
-        $response = $controller->updatePaymentAction($this->request->reveal(), $session->reveal(), $orderManager->reveal(), 'state-2', 'payment-1');
+        $response = $controller->updatePaymentAction($this->request->reveal(), $session->reveal(), 'state-2', 'payment-1');
 
         $this->assertTrue($response->isRedirect());
     }
@@ -441,11 +442,9 @@ class PaymentControllerTest extends WebTestCase
         $this->paymentManager->getPaymentForUser('en', 'payment-1', null, 'baz')
             ->willReturn(Payment::of())->shouldBeCalledOnce();
 
-        $orderManager = $this->prophesize(OrderManager::class);
-
         $controller = new PaymentController($this->client->reveal(), $this->paymentManager->reveal(), $this->registry->reveal());
         $controller->setContainer($this->myContainer->reveal());
-        $response = $controller->updatePaymentAction($this->request->reveal(), $session->reveal(), $orderManager->reveal(), 'state-2', 'payment-1');
+        $response = $controller->updatePaymentAction($this->request->reveal(), $session->reveal(), 'state-2', 'payment-1');
 
         $this->assertTrue($response->isRedirect());
     }
@@ -473,11 +472,9 @@ class PaymentControllerTest extends WebTestCase
         $this->paymentManager->getPaymentForUser('en', 'payment-1', null, 'baz')
             ->willReturn(Payment::of())->shouldBeCalledOnce();
 
-        $orderManager = $this->prophesize(OrderManager::class);
-
         $controller = new PaymentController($this->client->reveal(), $this->paymentManager->reveal(), $this->registry->reveal());
         $controller->setContainer($this->myContainer->reveal());
-        $response = $controller->updatePaymentAction($this->request->reveal(), $session->reveal(), $orderManager->reveal(), 'state-2', 'payment-1');
+        $response = $controller->updatePaymentAction($this->request->reveal(), $session->reveal(), 'state-2', 'payment-1');
 
         $this->assertTrue($response->isOk());
     }
@@ -485,19 +482,19 @@ class PaymentControllerTest extends WebTestCase
     public function testUpdatePaymentActionPerformWorkflowToCompleted()
     {
         $session = $this->prophesize(Session::class);
-        $session->getId()->willReturn('baz')->shouldBeCalledTimes(2);
+        $session->getId()->willReturn('baz')->shouldBeCalledTimes(1);
 
         $this->request->get('orderId')->willReturn('order-1')->shouldBeCalledOnce();
-        $this->request->getLocale()->willReturn('en')->shouldBeCalledTimes(2);
+        $this->request->getLocale()->willReturn('en')->shouldBeCalledTimes(1);
 
         $workflow = $this->prophesize(Workflow::class);
         $workflow->can(Argument::type(Payment::class), 'toCompleted')->willReturn(true)->shouldBeCalledOnce();
-        $workflow->can(Argument::type(Order::class), 'toPaid')->willReturn(true)->shouldBeCalledOnce();
+//        $workflow->can(Argument::type(Order::class), 'toPaid')->willReturn(true)->shouldBeCalledOnce();
         $workflow->apply(Argument::type(Payment::class), 'toCompleted')->willReturn(true)->shouldBeCalledOnce();
-        $workflow->apply(Argument::type(Order::class), 'toPaid')->willReturn(true)->shouldBeCalledOnce();
+//        $workflow->apply(Argument::type(Order::class), 'toPaid')->willReturn(true)->shouldBeCalledOnce();
 
         $this->registry->get(Argument::type(Payment::class))->willReturn($workflow)->shouldBeCalledOnce();
-        $this->registry->get(Argument::type(Order::class))->willReturn($workflow)->shouldBeCalledOnce();
+//        $this->registry->get(Argument::type(Order::class))->willReturn($workflow)->shouldBeCalledOnce();
 
         $router = $this->prophesize(Router::class);
         $router->generate('_ctp_example_order', Argument::type('array'), 1)->willReturn('bar')->shouldBeCalledOnce();
@@ -506,13 +503,13 @@ class PaymentControllerTest extends WebTestCase
 
         $this->paymentManager->getPaymentForUser('en', 'payment-1', null, 'baz')
             ->willReturn(Payment::of()->setId('payment-1'))->shouldBeCalledOnce();
-
-        $orderManager = $this->prophesize(OrderManager::class);
-        $orderManager->getOrderFromPayment('en', 'payment-1', null, 'baz')->willReturn(Order::of()->setId('order-1'))->shouldBeCalledOnce();
+//
+//        $orderManager = $this->prophesize(OrderManager::class);
+//        $orderManager->getOrderFromPayment('en', 'payment-1', null, 'baz')->willReturn(Order::of()->setId('order-1'))->shouldBeCalledOnce();
 
         $controller = new PaymentController($this->client->reveal(), $this->paymentManager->reveal(), $this->registry->reveal());
         $controller->setContainer($this->myContainer->reveal());
-        $response = $controller->updatePaymentAction($this->request->reveal(), $session->reveal(), $orderManager->reveal(), 'toCompleted', 'payment-1');
+        $response = $controller->updatePaymentAction($this->request->reveal(), $session->reveal(), 'toCompleted', 'payment-1');
 
         $this->assertTrue($response->isRedirect());
     }
@@ -520,42 +517,46 @@ class PaymentControllerTest extends WebTestCase
     public function testUpdatePaymentActionPerformWorkflowCannotFindForOrder()
     {
         $session = $this->prophesize(Session::class);
-        $session->getId()->willReturn('baz')->shouldBeCalledTimes(2);
+        $session->getId()->willReturn('baz')->shouldBeCalledTimes(1);
 
         $this->request->get('orderId')->willReturn('order-1')->shouldBeCalledOnce();
-        $this->request->getLocale()->willReturn('en')->shouldBeCalledTimes(2);
+        $this->request->getLocale()->willReturn('en')->shouldBeCalledTimes(1);
 
         $workflow = $this->prophesize(Workflow::class);
         $workflow->can(Argument::type(Payment::class), 'toCompleted')->willReturn(true)->shouldBeCalledOnce();
         $workflow->apply(Argument::type(Payment::class), 'toCompleted')->willReturn(true)->shouldBeCalledOnce();
 
+        $router = $this->prophesize(Router::class);
+        $router->generate('_ctp_example_order', Argument::type('array'), 1)->willReturn('bar')->shouldBeCalledOnce();
+
+        $this->myContainer->get('router')->willReturn($router)->shouldBeCalledOnce();
 
         $this->registry->get(Argument::type(Payment::class))->willReturn($workflow)->shouldBeCalledOnce();
-        $this->registry->get(Argument::type(Order::class))->will(function(){
-            throw new InvalidArgumentException();
-        })->shouldBeCalledOnce();
+//        $this->registry->get(Argument::type(Order::class))->will(function(){
+//            throw new InvalidArgumentException();
+//        })->shouldBeCalledOnce();
 
-        $flashBag = $this->prophesize(FlashBag::class);
-        $flashBag->add(Argument::is('error'), Argument::is('Cannot find proper workflow configuration for Orders. Action aborted'))->shouldBeCalled();
-        $session->getFlashBag()->willReturn($flashBag->reveal())->shouldBeCalled();
+//        $flashBag = $this->prophesize(FlashBag::class);
+//        $flashBag->add(Argument::is('error'), Argument::is('Cannot find proper workflow configuration for Orders. Action aborted'))->shouldBeCalled();
+//        $session->getFlashBag()->willReturn($flashBag->reveal())->shouldBeCalled();
 
-        $this->myContainer->has('session')->willReturn(true)->shouldBeCalled();
-        $this->myContainer->get('session')->willReturn($session->reveal())->shouldBeCalled();
-        $this->myContainer->has('templating')->willReturn(false)->shouldBeCalledOnce();
-        $this->myContainer->has('twig')->willReturn(true)->shouldBeCalledOnce();
-        $this->myContainer->get('twig')->willReturn($this->twig)->shouldBeCalledOnce();
+//        $this->myContainer->has('session')->willReturn(true)->shouldBeCalled();
+//        $this->myContainer->get('session')->willReturn($session->reveal())->shouldBeCalled();
+//        $this->myContainer->has('templating')->willReturn(false)->shouldBeCalledOnce();
+//        $this->myContainer->has('twig')->willReturn(true)->shouldBeCalledOnce();
+//        $this->myContainer->get('twig')->willReturn($this->twig)->shouldBeCalledOnce();
 
         $this->paymentManager->getPaymentForUser('en', 'payment-1', null, 'baz')
             ->willReturn(Payment::of()->setId('payment-1'))->shouldBeCalledOnce();
-
-        $orderManager = $this->prophesize(OrderManager::class);
-        $orderManager->getOrderFromPayment('en', 'payment-1', null, 'baz')->willReturn(Order::of()->setId('order-1'))->shouldBeCalledOnce();
+//
+//        $orderManager = $this->prophesize(OrderManager::class);
+//        $orderManager->getOrderFromPayment('en', 'payment-1', null, 'baz')->willReturn(Order::of()->setId('order-1'))->shouldBeCalledOnce();
 
         $controller = new PaymentController($this->client->reveal(), $this->paymentManager->reveal(), $this->registry->reveal());
         $controller->setContainer($this->myContainer->reveal());
-        $response = $controller->updatePaymentAction($this->request->reveal(), $session->reveal(), $orderManager->reveal(), 'toCompleted', 'payment-1');
+        $response = $controller->updatePaymentAction($this->request->reveal(), $session->reveal(), 'toCompleted', 'payment-1');
 
-        $this->assertTrue($response->isOk());
+        $this->assertTrue($response->isRedirect());
     }
 
 }

@@ -6,6 +6,7 @@
 namespace Commercetools\Symfony\ExampleBundle\Tests\EventListener;
 
 
+use Commercetools\Core\Model\Payment\Payment;
 use Commercetools\Symfony\CartBundle\Event\PaymentPostCreateEvent;
 use Commercetools\Symfony\CartBundle\Manager\CartManager;
 use Commercetools\Symfony\CartBundle\Manager\OrderManager;
@@ -34,6 +35,7 @@ class PaymentSubscriberTest extends TestCase
         $registry = $this->prophesize(Registry::class);
         $subscriber = new PaymentSubscriber($orderManager->reveal(), $cartManager->reveal(), $registry->reveal());
         $event = $this->prophesize(PaymentPostCreateEvent::class);
+        $event->getPayment()->willReturn(Payment::of())->shouldBeCalledOnce();
 
         $this->assertTrue($subscriber->onPaymentPostCreate($event->reveal()));
     }
@@ -45,6 +47,7 @@ class PaymentSubscriberTest extends TestCase
         $registry = $this->prophesize(Registry::class);
         $subscriber = new PaymentSubscriber($orderManager->reveal(), $cartManager->reveal(), $registry->reveal());
         $event = $this->prophesize(Event::class);
+        $event->getSubject()->willReturn(Payment::of())->shouldBeCalledOnce();
 
         $this->assertTrue($subscriber->onPaymentCompleted($event->reveal()));
     }
