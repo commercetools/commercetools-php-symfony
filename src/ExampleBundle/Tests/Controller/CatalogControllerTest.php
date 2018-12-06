@@ -124,21 +124,24 @@ class CatalogControllerTest extends WebTestCase
         $router = $this->prophesize(RouterInterface::class);
         $router->generate(Argument::type('string'), [], 1)->willReturn('')->shouldBeCalled();
 
-        $this->myContainer->getParameter(Argument::type('string'))->willReturn(['bar'], ['foo'])->shouldBeCalled();
         $this->myContainer->get('router')->willReturn($router)->shouldBeCalled();
         $this->myContainer->get('form.factory')->willReturn($formFactory->reveal())->shouldBeCalled();
 
-        $this->markTestIncomplete();
-        // TODO getAllVariants does need raw data
+        $parameterBag = $this->prophesize(ParameterBag::class);
+        $parameterBag->get('commercetools.project_settings.countries')->willReturn(['DE'])->shouldBeCalledOnce();
+        $parameterBag->get('commercetools.project_settings.currencies')->willReturn(['EUR'])->shouldBeCalledOnce();
 
-        $productProjection = ProductProjection::of()->setId('projection-1')
+        $this->myContainer->has('parameter_bag')->willReturn(true)->shouldBeCalledTimes(2);
+        $this->myContainer->get('parameter_bag')->willReturn($parameterBag->reveal())->shouldBeCalledTimes(2);
+
+        $productProjection = ProductProjection::fromArray(ProductProjection::of()->setId('projection-1')
             ->setVariants(
                 ProductVariantCollection::of()
                     ->add(ProductVariant::of()->setId(1)->setSku('prod-1'))
                     ->add(ProductVariant::of()->setId(2)->setSku('prod-2'))
                     ->add(ProductVariant::of()->setId(3)->setSku('prod-3'))
-                )
-            ->setMasterVariant(ProductVariant::of()->setId(3)->setSku('prod-3')->setKey('key-3'));
+            )
+            ->setMasterVariant(ProductVariant::of()->setId(3)->setSku('prod-3')->setKey('key-3'))->toArray());
 
         $variantIds = [];
 
@@ -146,7 +149,8 @@ class CatalogControllerTest extends WebTestCase
             $variantIds[$variant->getSku()] = $variant->getId();
         }
 
-        $this->catalogManager->getProductBySlug('en', 'prod-1', 'foo', 'bar')->willReturn($productProjection)->shouldBeCalledOnce();
+        $this->catalogManager->getProductBySlug('en', 'prod-1', 'EUR', 'DE')
+            ->willReturn($productProjection)->shouldBeCalledOnce();
 
         $controller = new CatalogController($this->client->reveal(), $this->catalogManager->reveal(), $shoppingListManager->reveal());
         $controller->setContainer($this->myContainer->reveal());

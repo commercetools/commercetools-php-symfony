@@ -73,7 +73,6 @@ class CheckoutControllerTest extends WebTestCase
         $authenticationUtils->getLastUsername()->willReturn('bar')->shouldBeCalledOnce();
 
         $this->myContainer->get('security.authorization_checker')->willReturn($authorizationChecker->reveal())->shouldBeCalledOnce();
-        $this->myContainer->get('security.authentication_utils')->willReturn($authenticationUtils->reveal())->shouldBeCalledOnce();
 
         $this->myContainer->has('templating')->willReturn(false)->shouldBeCalledOnce();
         $this->myContainer->has('twig')->willReturn(true)->shouldBeCalledOnce();
@@ -82,7 +81,7 @@ class CheckoutControllerTest extends WebTestCase
 
         $controller = new CheckoutController($this->client->reveal(), $this->cartManager->reveal(), $this->shippingMethodManager->reveal(), $this->orderManager->reveal());
         $controller->setContainer($this->myContainer->reveal());
-        $response = $controller->signinAction();
+        $response = $controller->signinAction($authenticationUtils->reveal());
 
         $this->assertTrue($response->isOk());
     }
@@ -100,9 +99,11 @@ class CheckoutControllerTest extends WebTestCase
         $this->myContainer->get('router')->willReturn($router)->shouldBeCalledOnce();
         $this->myContainer->get('security.authorization_checker')->willReturn($authorizationChecker->reveal())->shouldBeCalledOnce();
 
+        $authenticationUtils = $this->prophesize(AuthenticationUtils::class);
+
         $controller = new CheckoutController($this->client->reveal(), $this->cartManager->reveal(), $this->shippingMethodManager->reveal(), $this->orderManager->reveal());
         $controller->setContainer($this->myContainer->reveal());
-        $response = $controller->signinAction();
+        $response = $controller->signinAction($authenticationUtils->reveal());
 
         $this->assertTrue($response->isRedirect());
     }

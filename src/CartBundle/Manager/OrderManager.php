@@ -49,7 +49,7 @@ class OrderManager
      */
     public function getOrderById($locale, $orderId)
     {
-        return $this->repository->getOrder($locale, $orderId);
+        return $this->repository->getOrderById($locale, $orderId);
     }
 
     /**

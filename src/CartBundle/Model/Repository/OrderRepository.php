@@ -17,6 +17,18 @@ use Symfony\Component\Security\Core\User\UserInterface;
 class OrderRepository extends Repository
 {
     /**
+     * @param string $locale
+     * @param string $orderId
+     * @return Order
+     */
+    public function getOrderById($locale, $orderId)
+    {
+        $request = RequestBuilder::of()->orders()->getById($orderId);
+
+        return $this->executeRequest($request, $locale);
+    }
+
+    /**
      * @param $locale
      * @param UserInterface|null $user
      * @param null $anonymousId

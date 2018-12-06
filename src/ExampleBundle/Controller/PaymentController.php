@@ -111,9 +111,10 @@ class PaymentController extends AbstractController
         }
 
         // TODO fix hardcoded key
-        $custom = CustomFieldObjectDraft::ofTypeKey('RelatePayments')->setFields(
-            FieldContainer::of()->set('orderReference', $order->getId())
-        );
+//        $custom = CustomFieldObjectDraft::ofTypeKey('RelatePayments')->setFields(
+//            FieldContainer::of()->set('orderReference', $order->getId())
+//        );
+        $custom = null;
 
         $payment = $this->createPayment($request->getLocale(), $order->getTotalPrice(), $session, $markingStorePaymentState, $user, $custom);
 
@@ -149,9 +150,10 @@ class PaymentController extends AbstractController
         }
 
         // TODO fix hardcoded key
-        $custom = CustomFieldObjectDraft::ofTypeKey('RelatePayments')->setFields(
-            FieldContainer::of()->set('cartReference', $cartId)
-        );
+//        $custom = CustomFieldObjectDraft::ofTypeKey('RelatePayments')->setFields(
+//            FieldContainer::of()->set('cartReference', $cartId)
+//        );
+        $custom = null;
 
         $payment = $this->createPayment($request->getLocale(), $cart->getTotalPrice(), $session, $markingStorePaymentState, $user, $custom);
 

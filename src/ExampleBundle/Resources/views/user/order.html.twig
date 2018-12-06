@@ -107,7 +107,7 @@
                         <td> {{ item.getPrice }} </td>
                         <td>{{ item.getQuantity }} </td>
                         <td> {{ item.getTotalPrice }} </td>
-                        <td><img src="{{ item.getVariant.getImages.current.getUrl }}" width="100px" height="100px" /></td>
+                        <td><img src="{{ item.getVariant.getImages.current.getUrl | default('') }}" width="100px" height="100px" /></td>
                         <td>
                             {% for itemState in item.state %}
                                 {% for place in workflow_marked_places(wrapItemState(order, itemState.state, item)) %}
