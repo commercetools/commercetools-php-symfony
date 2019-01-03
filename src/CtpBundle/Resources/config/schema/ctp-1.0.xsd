@@ -26,24 +26,6 @@
         </xsd:sequence>
     </xsd:complexType>
 
-    <xsd:complexType name="countriesType">
-        <xsd:sequence>
-            <xsd:element type="xsd:string" name="country" maxOccurs="unbounded"/>
-        </xsd:sequence>
-    </xsd:complexType>
-
-    <xsd:complexType name="currenciesType">
-        <xsd:sequence>
-            <xsd:element type="xsd:string" name="currency" maxOccurs="unbounded"/>
-        </xsd:sequence>
-    </xsd:complexType>
-
-    <xsd:complexType name="languagesType">
-        <xsd:sequence>
-            <xsd:element type="xsd:string" name="language" maxOccurs="unbounded"/>
-        </xsd:sequence>
-    </xsd:complexType>
-
     <xsd:complexType name="labelType">
         <xsd:sequence>
             <xsd:element type="xsd:string" name="language"/>
@@ -87,9 +69,9 @@
 
     <xsd:complexType name="project-settingsType">
         <xsd:sequence>
-            <xsd:element type="countriesType" name="countries"/>
-            <xsd:element type="currenciesType" name="currencies"/>
-            <xsd:element type="languagesType" name="languages"/>
+            <xsd:element type="xsd:string" name="country" maxOccurs="unbounded"/>
+            <xsd:element type="xsd:string" name="currency" maxOccurs="unbounded"/>
+            <xsd:element type="xsd:string" name="language" maxOccurs="unbounded"/>
             <xsd:element type="xsd:string" name="name"/>
             <xsd:element type="xsd:boolean" name="messages"/>
             <xsd:element type="shipping-rate-input-typeType" name="shipping-rate-input-type"/>
@@ -132,6 +114,7 @@
             <xsd:element type="facetType" name="facet" maxOccurs="unbounded"/>
         </xsd:sequence>
     </xsd:complexType>
+
     <xsd:complexType name="facetType">
         <xsd:sequence>
             <xsd:element type="xsd:string" name="alias" default="null"/>
@@ -147,19 +130,33 @@
         </xsd:sequence>
     </xsd:complexType>
 
+    <xsd:complexType name="cacheType">
+        <xsd:sequence>
+            <xsd:element type="xsd:boolean" name="setup" minOccurs="0"/>
+            <xsd:element type="xsd:boolean" name="states" minOccurs="0"/>
+            <xsd:element type="xsd:boolean" name="customer" minOccurs="0"/>
+            <xsd:element type="xsd:boolean" name="catalog" minOccurs="0"/>
+            <xsd:element type="xsd:boolean" name="cart" minOccurs="0"/>
+            <xsd:element type="xsd:boolean" name="shipping_method" minOccurs="0"/>
+            <xsd:element type="xsd:boolean" name="order" minOccurs="0"/>
+            <xsd:element type="xsd:boolean" name="payment" minOccurs="0"/>
+            <xsd:element type="xsd:boolean" name="shopping_list" minOccurs="0"/>
+            <xsd:element type="xsd:boolean" name="review" minOccurs="0"/>
+        </xsd:sequence>
+    </xsd:complexType>
 
     <xsd:group name="ctConfig">
         <xsd:all>
-            <xsd:element type="apiType" name="api" maxOccurs="1"/>
-            <xsd:element type="defaultsType" name="defaults" maxOccurs="1"/>
-            <xsd:element type="xsd:boolean" name="cache" maxOccurs="1"/>
-            <xsd:element type="project-settingsType" name="project-settings" maxOccurs="1"/>
-            <xsd:element type="fallback-languagesType" name="fallback-languages" maxOccurs="1"/>
-            <xsd:element type="facetsConfig" name="facets"/>
+            <xsd:element type="apiType" name="api"/>
+            <xsd:element type="defaultsType" name="defaults"/>
+            <xsd:element type="cacheType" name="cache"/>
+            <xsd:element type="project-settingsType" name="project-settings"/>
+            <xsd:element type="fallback-languagesType" name="fallback-languages"/>
+            <xsd:element type="facetsConfig" name="facets" minOccurs="0"/>
         </xsd:all>
     </xsd:group>
     <xsd:complexType name="commercetoolsType">
-        <xsd:group ref="ctConfig" maxOccurs="unbounded"/>
+        <xsd:group ref="ctConfig"/>
     </xsd:complexType>
 
 </xsd:schema>

@@ -35,7 +35,8 @@ class CommercetoolsExtensionTest extends AbstractExtensionTestCase
             ],
             'project_settings' => [
                 'currencies' => ['EUR']
-            ]
+            ],
+            'cache' => ['cart' => true]
         ];
 
         $this->load($config, $this->getContainerExtensions());
@@ -66,7 +67,8 @@ class CommercetoolsExtensionTest extends AbstractExtensionTestCase
             ],
             'project_settings' => [
                 'currencies' => ['eur']
-            ]
+            ],
+            'cache' => ['cart' => true]
         ];
 
         $this->load($config, $this->getContainerExtensions());
@@ -95,7 +97,8 @@ class CommercetoolsExtensionTest extends AbstractExtensionTestCase
             ],
             'project_settings' => [
                 'currencies' => ['usd']
-            ]
+            ],
+            'cache' => ['cart' => true]
         ];
 
         $this->load($config, $this->getContainerExtensions());
@@ -116,7 +119,7 @@ class CommercetoolsExtensionTest extends AbstractExtensionTestCase
     public function testLoadWithData()
     {
         $config = [
-            'cache' => ['foo' => true],
+            'cache' => ['catalog' => true],
             'api' => [ 'clients' => [
                 'first' => [
                     'client_id' => 'foo',
@@ -131,7 +134,7 @@ class CommercetoolsExtensionTest extends AbstractExtensionTestCase
 
         $this->load($config, $this->getContainerExtensions());
 
-        $this->assertContainerBuilderHasParameter('commercetools.cache.foo', true);
+        $this->assertContainerBuilderHasParameter('commercetools.cache.catalog', true);
         $this->assertContainerBuilderHasParameter('commercetools.project_settings.currencies', ['FOO']);
     }
 
@@ -152,7 +155,8 @@ class CommercetoolsExtensionTest extends AbstractExtensionTestCase
                 'name' => 'project',
                 'messages' => true,
                 'shipping_rate_input_type' => ['type' => 'CartValue']
-            ]
+            ],
+            'cache' => ['cart' => true]
         ];
 
         $this->load($config, $this->getContainerExtensions());
@@ -182,7 +186,8 @@ class CommercetoolsExtensionTest extends AbstractExtensionTestCase
             ] ],
             'project_settings' => [
                 'currencies' => ['foo']
-            ]
+            ],
+            'cache' => ['cart' => true]
         ];
 
         $this->load($config, $this->getContainerExtensions());
@@ -210,7 +215,8 @@ class CommercetoolsExtensionTest extends AbstractExtensionTestCase
                     'alias' => 'bar',
 
                 ]
-            ]
+            ],
+            'cache' => ['cart' => true]
         ];
 
         $expected = [
@@ -236,7 +242,7 @@ class CommercetoolsExtensionTest extends AbstractExtensionTestCase
     {
         $extension = new CommercetoolsExtension();
 
-        $this->assertSame('http://commercetools.com/schema/dic/ctp-bundle', $extension->getNamespace());
+        $this->assertSame('http://commercetools.com/schema/dic/ctp', $extension->getNamespace());
     }
 
     public function testGetXsdValidationPath()
