@@ -22,8 +22,6 @@ class ReviewExtensionTest extends AbstractExtensionTestCase
     {
         $this->load();
 
-        $this->assertContainerBuilderHasParameter('commercetools.cache.review', 'false');
-
         $this->assertContainerBuilderHasService('Commercetools\Symfony\ReviewBundle\Model\Repository\ReviewRepository');
         $this->assertContainerBuilderHasService('Commercetools\Symfony\ReviewBundle\Manager\ReviewManager');
 
