@@ -50,5 +50,10 @@
             <argument key="$client" type="service" id="Commercetools\Core\Client"/>
             <argument key="$mapperFactory" type="service" id="commmercetools.mapper.factory" />
         </service>
+
+        <!--to remove-->
+        <service id="commercetools.custom_types" class="Commercetools\Symfony\CtpBundle\Service\CustomType" public="true">
+            <argument>%commercetools.custom_types%</argument>
+        </service>
     </services>
 </container>

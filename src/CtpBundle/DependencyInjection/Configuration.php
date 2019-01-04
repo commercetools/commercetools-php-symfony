@@ -156,6 +156,7 @@ class Configuration implements ConfigurationInterface
                         ->children()
                             ->scalarNode('name')->end()
                             ->scalarNode('type')->end()
+                            ->scalarNode('id')->end()
                         ->end()
                     ->end()
                 ->end()
