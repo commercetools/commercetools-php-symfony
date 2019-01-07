@@ -7,6 +7,7 @@ namespace Commercetools\Symfony\SetupBundle\Command;
 
 
 use Commercetools\Symfony\CtpBundle\Model\QueryParams;
+use Commercetools\Symfony\SetupBundle\Model\ProcessCustomTypes;
 use Commercetools\Symfony\SetupBundle\Model\Repository\SetupRepository;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Input\InputInterface;
@@ -34,12 +35,13 @@ class CommercetoolsMapCustomTypes extends ContainerAwareCommand
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $params = QueryParams::of()->add('limit', '500');
-
         $customTypes = $this->repository->getCustomTypes('en', $params);
 
-        $yaml = Yaml::dump($customTypes->toArray(), 100, 4);
-        $kernel = $this->getContainer()->get('kernel');
+        $helper = ProcessCustomTypes::of();
+        $types = $helper->parse($customTypes);
 
+        $yaml = Yaml::dump($types, 100, 4);
+        $kernel = $this->getContainer()->get('kernel');
         $filename = $kernel->getProjectDir() . '/config/packages/' . $kernel->getEnvironment() . '/custom_types1.yaml';
 
         if ($kernel->getEnvironment() !== 'test') {
