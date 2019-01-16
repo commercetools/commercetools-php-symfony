@@ -97,9 +97,9 @@ class CartController extends AbstractController
                 $country = Location::of()->setCountry($countryCode);
 
                 if(is_null($user)){
-                    $this->manager->createCart($request->getLocale(), $currency, $country, $lineItemDraftCollection, null, $session->getId());
+                    $this->manager->createCartForUser($request->getLocale(), $currency, $country, $lineItemDraftCollection, null, $session->getId());
                 } else {
-                    $this->manager->createCart($request->getLocale(), $currency, $country, $lineItemDraftCollection, $user->getID());
+                    $this->manager->createCartForUser($request->getLocale(), $currency, $country, $lineItemDraftCollection, $user->getID());
                 }
             }
             $redirectUrl = $this->generateUrl('_ctp_example_product', ['slug' => $slug]);
@@ -168,9 +168,9 @@ class CartController extends AbstractController
             $country = Location::of()->setCountry(strtoupper($countryCode));
 
             if(is_null($user)){
-                $cart = $this->manager->createCart($request->getLocale(), $currency, $country, null, null, $session->getId());
+                $cart = $this->manager->createCartForUser($request->getLocale(), $currency, $country, null, null, $session->getId());
             } else {
-                $cart = $this->manager->createCart($request->getLocale(), $currency, $country, null, $user->getId());
+                $cart = $this->manager->createCartForUser($request->getLocale(), $currency, $country, null, $user->getId());
             }
         }
 
@@ -178,11 +178,7 @@ class CartController extends AbstractController
         $cartBuilder->addShoppingList(CartAddShoppingListAction::ofShoppingList($shoppingList));
         $cartBuilder->flush();
 
-        /**
-         * TODO delete shopping list using a listener
-         */
-
-        return new RedirectResponse($this->generateUrl('_ctp_example_shoppingList_delete', ['shoppingListId' => $shoppingListId]));
+        return new RedirectResponse($this->generateUrl('_ctp_example_cart'));
     }
 
 //    protected function getItemCount(Cart $cart)

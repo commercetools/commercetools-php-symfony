@@ -6,7 +6,6 @@ namespace Commercetools\Symfony\CartBundle\Model\Repository;
 
 
 use Commercetools\Core\Builder\Request\RequestBuilder;
-use Commercetools\Core\Error\InvalidArgumentException;
 use Commercetools\Core\Model\Common\Money;
 use Commercetools\Core\Model\Customer\CustomerReference;
 use Commercetools\Core\Model\Payment\Payment;
@@ -37,17 +36,19 @@ class PaymentRepository extends Repository
      * @param $anonymousId
      * @return PaymentCollection
      */
-    public function getPaymentForUser($locale, $paymentId, CustomerReference $customer = null, $anonymousId = null)
+    public function getPayment($locale, $paymentId, CustomerReference $customer = null, $anonymousId = null)
     {
         $request = RequestBuilder::of()->payments()->query();
 
+        $predicate = 'id = "' . $paymentId . '"';
+
         if (!is_null($customer)) {
-            $request->where('id = "' . $paymentId . '" and customer(id = "' . $customer->getId() . '")');
+            $predicate .= ' and customer(id = "' . $customer->getId() . '")';
         } elseif (!is_null($anonymousId)) {
-            $request->where('id = "' . $paymentId . '" and anonymousId = "' . $anonymousId . '"');
-        } else {
-            throw new InvalidArgumentException('At least one of CustomerReference or AnonymousId should be present');
+            $predicate .= ' and anonymousId = "' . $anonymousId . '"';
         }
+
+        $request->where($predicate);
 
         $payments = $this->executeRequest($request, $locale);
 
@@ -114,8 +115,6 @@ class PaymentRepository extends Repository
             $paymentDraft->setCustomer($customerReference);
         } else if (!is_null($anonymousId)) {
             $paymentDraft->setAnonymousId($anonymousId);
-        } else {
-            throw new InvalidArgumentException('At least one of CustomerReference or AnonymousId should be present');
         }
 
         $request = RequestBuilder::of()->payments()->create($paymentDraft);

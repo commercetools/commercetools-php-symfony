@@ -19,6 +19,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Security\Core\User\UserInterface;
+use Symfony\Component\Security\Http\Authentication\AuthenticationUtils;
 
 
 class UserController extends AbstractController
@@ -56,10 +57,8 @@ class UserController extends AbstractController
 //        );
 //    }
 
-    public function loginAction(Request $request)
+    public function loginAction(Request $request, AuthenticationUtils $authenticationUtils)
     {
-        $authenticationUtils = $this->get('security.authentication_utils');
-
         $error = $authenticationUtils->getLastAuthenticationError();
 
         $lastUsername = $authenticationUtils->getLastUsername();

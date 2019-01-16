@@ -6,6 +6,7 @@
 namespace Commercetools\Symfony\CartBundle\Tests\Manager;
 
 
+use Commercetools\Core\Error\InvalidArgumentException;
 use Commercetools\Core\Model\Cart\Cart;
 use Commercetools\Core\Model\Order\Order;
 use Commercetools\Core\Model\Order\OrderCollection;
@@ -132,18 +133,35 @@ class OrderManagerTest extends TestCase
         $this->assertInstanceOf(OrderCollection::class, $orders);
     }
 
-    public function testGetOrderFromPayment()
+    public function testGetOrderFromPaymentForUser()
     {
+        /** @var OrderRepository $repository */
         $repository = $this->prophesize(OrderRepository::class);
         $dispatcher = $this->prophesize(EventDispatcherInterface::class);
+        $user = $this->prophesize(User::class);
 
-        $repository->getOrderFromPayment('en', 'payment-1', null, null)
+        $repository->getOrderFromPayment('en', 'payment-1', Argument::type(User::class), null)
             ->willReturn(Order::of()->setId('order-1'))->shouldBeCalled();
 
         $manager = new OrderManager($repository->reveal(), $dispatcher->reveal());
-        $order = $manager->getOrderFromPayment('en', 'payment-1');
+        $order = $manager->getOrderFromPayment('en', 'payment-1', $user->reveal());
 
         $this->assertInstanceOf(Order::class, $order);
         $this->assertSame('order-1', $order->getId());
+    }
+
+    /**
+     * @expectedException InvalidArgumentException
+     */
+    public function testGetOrderFromPaymentWithoutUser()
+    {
+        /** @var OrderRepository $repository */
+        $repository = $this->prophesize(OrderRepository::class);
+        $dispatcher = $this->prophesize(EventDispatcherInterface::class);
+
+        $repository->getOrderFromPayment('en', 'payment-1')->shouldNotBeCalled();
+
+        $manager = new OrderManager($repository->reveal(), $dispatcher->reveal());
+        $manager->getOrderFromPayment('en', 'payment-1');
     }
 }

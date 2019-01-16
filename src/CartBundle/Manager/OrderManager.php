@@ -4,6 +4,7 @@
 
 namespace Commercetools\Symfony\CartBundle\Manager;
 
+use Commercetools\Core\Error\InvalidArgumentException;
 use Commercetools\Core\Model\Cart\Cart;
 use Commercetools\Core\Model\Order\Order;
 use Commercetools\Core\Model\Order\OrderCollection;
@@ -42,13 +43,27 @@ class OrderManager
     }
 
     /**
-     * @param $locale
+     * @param string $locale
+     * @param string $orderId
+     * @return Order
+     */
+    public function getOrderById($locale, $orderId)
+    {
+        return $this->repository->getOrderById($locale, $orderId);
+    }
+
+    /**
+     * @param string $locale
      * @param UserInterface|null $user
-     * @param null $anonymousId
+     * @param string|null $anonymousId
      * @return OrderCollection
      */
     public function getOrdersForUser($locale, UserInterface $user = null, $anonymousId = null)
     {
+        if (is_null($user) && is_null($anonymousId)) {
+            throw new InvalidArgumentException('At least one of `user` or `anonymousId` should be present');
+        }
+
         return $this->repository->getOrders($locale, $user, $anonymousId);
     }
 
@@ -61,6 +76,10 @@ class OrderManager
      */
     public function getOrderForUser($locale, $orderId, UserInterface $user = null, $anonymousId = null)
     {
+        if (is_null($user) && is_null($anonymousId)) {
+            throw new InvalidArgumentException('At least one of `user` or `anonymousId` should be present');
+        }
+
         return $this->repository->getOrder($locale, $orderId, $user, $anonymousId);
     }
 
@@ -73,6 +92,10 @@ class OrderManager
      */
     public function getOrderFromPayment($locale, $paymentId, UserInterface $user = null, $anonymousId = null)
     {
+        if (is_null($user) && is_null($anonymousId)) {
+            throw new InvalidArgumentException('At least one of `user` or `anonymousId` should be present');
+        }
+
         return $this->repository->getOrderFromPayment($locale, $paymentId, $user, $anonymousId);
     }
 

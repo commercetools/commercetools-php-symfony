@@ -6,7 +6,6 @@ namespace Commercetools\Symfony\CartBundle\Model\Repository;
 
 
 use Commercetools\Core\Builder\Request\RequestBuilder;
-use Commercetools\Core\Error\InvalidArgumentException;
 use Commercetools\Core\Model\Cart\Cart;
 use Commercetools\Core\Model\Order\Order;
 use Commercetools\Core\Model\Order\OrderCollection;
@@ -17,6 +16,18 @@ use Symfony\Component\Security\Core\User\UserInterface;
 
 class OrderRepository extends Repository
 {
+    /**
+     * @param string $locale
+     * @param string $orderId
+     * @return Order
+     */
+    public function getOrderById($locale, $orderId)
+    {
+        $request = RequestBuilder::of()->orders()->getById($orderId);
+
+        return $this->executeRequest($request, $locale);
+    }
+
     /**
      * @param $locale
      * @param UserInterface|null $user
@@ -31,32 +42,33 @@ class OrderRepository extends Repository
             $request->where('customerId = "' . $user->getId() . '"');
         } elseif (!is_null($anonymousId)) {
             $request->where('anonymousId = "' . $anonymousId . '"');
-        } else {
-            throw new InvalidArgumentException('At least one of CustomerId or AnonymousId should be present');
         }
+
         $request->sort('createdAt desc');
 
         return $this->executeRequest($request, $locale);
     }
 
     /**
-     * @param $locale
-     * @param $orderId
+     * @param string $locale
+     * @param string $orderId
      * @param UserInterface|null $user
-     * @param null $anonymousId
+     * @param string|null $anonymousId
      * @return Order
      */
     public function getOrder($locale, $orderId, UserInterface $user = null, $anonymousId = null)
     {
         $request = RequestBuilder::of()->orders()->query();
 
+        $where = 'id = "' . $orderId . '"';
+
         if (!is_null($user)) {
-            $request->where('id = "' . $orderId . '" and customerId = "' . $user->getId() . '"');
+            $where .= ' and customerId = "' . $user->getId() . '"';
         } else if (!is_null($anonymousId)) {
-            $request->where('id = "' . $orderId . '" and anonymousId = "' . $anonymousId . '"');
-        } else {
-            throw new InvalidArgumentException('At least one of CustomerId or AnonymousId should be present');
+            $where .= ' and anonymousId = "' . $anonymousId . '"';
         }
+
+        $request->where($where);
 
         $orders = $this->executeRequest($request, $locale);
 
@@ -80,8 +92,6 @@ class OrderRepository extends Repository
             $predicate .= ' and customerId = "' . $user->getId() . '"';
         } elseif (!is_null($anonymousId)) {
             $predicate .= ' and anonymousId = "' . $anonymousId . '"';
-        } else {
-            throw new InvalidArgumentException('At least one of CustomerId or AnonymousId should be present');
         }
 
         $request->where($predicate);

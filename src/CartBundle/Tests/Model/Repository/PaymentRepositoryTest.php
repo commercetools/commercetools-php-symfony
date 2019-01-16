@@ -84,7 +84,7 @@ class PaymentRepositoryTest extends TestCase
         )->willReturn($this->response->reveal())->shouldBeCalledOnce();
 
         $paymentRepository = $this->getPaymentRepository();
-        $paymentRepository->getPaymentForUser('en', 'payment-1', null, 'anon-1');
+        $paymentRepository->getPayment('en', 'payment-1', null, 'anon-1');
     }
 
     public function testGetPaymentForCustomer()
@@ -104,16 +104,26 @@ class PaymentRepositoryTest extends TestCase
         $user->getId()->willReturn('user-1')->shouldBeCalledOnce();
 
         $paymentRepository = $this->getPaymentRepository();
-        $paymentRepository->getPaymentForUser('en', 'payment-1', $user->reveal());
+        $paymentRepository->getPayment('en', 'payment-1', $user->reveal());
     }
 
-    /**
-     * @expectedException InvalidArgumentException
-     */
-    public function testGetPaymentForUserWithMissingData()
+    public function testGetPaymentWithoutUser()
     {
+        $this->client->execute(
+            Argument::that(function (PaymentQueryRequest $request) {
+                static::assertStringStartsWith('payments', (string)$request->httpRequest()->getUri());
+                static::assertContains('where=', (string)$request->httpRequest()->getUri());
+                static::assertContains('id+%3D+%22payment-1%22', (string)$request->httpRequest()->getUri());
+                static::assertNotContains('customer', (string)$request->httpRequest()->getUri());
+                static::assertNotContains('anonymousId', (string)$request->httpRequest()->getUri());
+
+                return true;
+            }),
+            Argument::is(null)
+        )->willReturn($this->response->reveal())->shouldBeCalledOnce();
+
         $paymentRepository = $this->getPaymentRepository();
-        $paymentRepository->getPaymentForUser('en', 'payment-1');
+        $paymentRepository->getPayment('en', 'payment-1');
     }
 
     public function testGetMultiplePayments()
@@ -216,12 +226,23 @@ class PaymentRepositoryTest extends TestCase
         $paymentRepository->createPayment('en', $money, $customer);
     }
 
-    /**
-     * @expectedException InvalidArgumentException
-     */
-    public function testCreateWithMissingData()
+    public function testCreateWithoutUser()
     {
+        $this->client->execute(
+            Argument::that(function (PaymentCreateRequest $request) {
+                static::assertInstanceOf(PaymentDraft::class, $request->getObject());
+                static::assertInstanceOf(Money::class, $request->getObject()->getAmountPlanned());
+                static::assertNull($request->getObject()->getPaymentStatus());
+                static::assertNull($request->getObject()->getCustomer());
+                static::assertNull($request->getObject()->getAnonymousId());
+                static::assertSame('EUR', $request->getObject()->getAmountPlanned()->getCurrencyCode());
+
+                return true;
+            }),
+            Argument::is(null)
+        )->willReturn($this->response->reveal())->shouldBeCalledOnce();
+
         $paymentRepository = $this->getPaymentRepository();
-        $paymentRepository->createPayment('en', Money::of());
+        $paymentRepository->createPayment('en', Money::of()->setCurrencyCode('EUR'));
     }
 }

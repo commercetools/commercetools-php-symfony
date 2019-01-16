@@ -61,11 +61,9 @@ class UserControllerTest extends WebTestCase
         $authenticationUtils->getLastAuthenticationError()->willReturn('foo')->shouldBeCalledOnce();
         $authenticationUtils->getLastUsername()->willReturn('bar')->shouldBeCalledOnce();
 
-        $this->myContainer->get('security.authentication_utils')->willReturn($authenticationUtils->reveal())->shouldBeCalled();
-
         $controller = new UserController($this->client->reveal(), $this->customerManager->reveal());
         $controller->setContainer($this->myContainer->reveal());
-        $response = $controller->loginAction($this->request->reveal());
+        $response = $controller->loginAction($this->request->reveal(), $authenticationUtils->reveal());
 
         $this->assertTrue($response->isOk());
     }

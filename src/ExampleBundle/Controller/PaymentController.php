@@ -7,12 +7,11 @@ namespace Commercetools\Symfony\ExampleBundle\Controller;
 use Commercetools\Core\Model\Cart\Cart;
 use Commercetools\Core\Model\Common\Money;
 use Commercetools\Core\Model\Customer\CustomerReference;
+use Commercetools\Core\Model\CustomField\CustomFieldObjectDraft;
+use Commercetools\Core\Model\CustomField\FieldContainer;
 use Commercetools\Core\Model\Order\Order;
 use Commercetools\Core\Model\Payment\Payment;
-use Commercetools\Core\Model\Payment\PaymentReference;
 use Commercetools\Core\Model\Payment\PaymentStatus;
-use Commercetools\Core\Request\Carts\Command\CartAddPaymentAction;
-use Commercetools\Core\Request\Orders\Command\OrderAddPaymentAction;
 use Commercetools\Symfony\CartBundle\Manager\CartManager;
 use Commercetools\Symfony\CartBundle\Manager\PaymentManager;
 use Commercetools\Symfony\CartBundle\Model\Repository\CartRepository;
@@ -111,19 +110,18 @@ class PaymentController extends AbstractController
             return $this->render('@Example/index.html.twig');
         }
 
-        $payment = $this->createPayment($request->getLocale(), $order->getTotalPrice(), $session, $markingStorePaymentState, $user);
+        // TODO fix hardcoded key
+//        $custom = CustomFieldObjectDraft::ofTypeKey('RelatePayments')->setFields(
+//            FieldContainer::of()->set('orderReference', $order->getId())
+//        );
+        $custom = null;
+
+        $payment = $this->createPayment($request->getLocale(), $order->getTotalPrice(), $session, $markingStorePaymentState, $user, $custom);
 
         if (!$payment instanceof Payment) {
             $this->addFlash('error', $payment->getMessage());
             return $this->render('@Example/index.html.twig');
         }
-
-        // attach payment to order
-        $orderBuilder = $orderManager->update($order);
-        $orderBuilder->addAction(
-            OrderAddPaymentAction::of()->setPayment(PaymentReference::ofId($payment->getId()))
-        );
-        $orderBuilder->flush();
 
         return $this->redirect($this->generateUrl('_ctp_example_order', ['orderId' => $orderId]));
     }
@@ -151,19 +149,18 @@ class PaymentController extends AbstractController
             return $this->render('@Example/index.html.twig');
         }
 
-        $payment = $this->createPayment($request->getLocale(), $cart->getTotalPrice(), $session, $markingStorePaymentState, $user);
+        // TODO fix hardcoded key
+//        $custom = CustomFieldObjectDraft::ofTypeKey('RelatePayments')->setFields(
+//            FieldContainer::of()->set('cartReference', $cartId)
+//        );
+        $custom = null;
+
+        $payment = $this->createPayment($request->getLocale(), $cart->getTotalPrice(), $session, $markingStorePaymentState, $user, $custom);
 
         if (!$payment instanceof Payment) {
             $this->addFlash('error', $payment->getMessage());
             return $this->render('@Example/cart/cartConfirm.html.twig');
         }
-
-        // attach payment to cart
-        $cartBuilder = $cartManager->update($cart);
-        $cartBuilder->addAction(
-            CartAddPaymentAction::of()->setPayment(PaymentReference::ofId($payment->getId()))
-        );
-        $cartBuilder->flush();
 
         return $this->redirect($this->generateUrl('_ctp_example_checkout_confirm'));
     }
@@ -174,6 +171,7 @@ class PaymentController extends AbstractController
      * @param SessionInterface $session
      * @param CtpMarkingStorePaymentState $markingStorePaymentState
      * @param UserInterface|null $user
+     * @param CustomFieldObjectDraft|null $customFieldObjectDraft
      * @return Payment
      */
     public function createPayment(
@@ -181,15 +179,16 @@ class PaymentController extends AbstractController
         Money $totalPrice,
         SessionInterface $session,
         CtpMarkingStorePaymentState $markingStorePaymentState,
-        UserInterface $user = null
+        UserInterface $user = null,
+        CustomFieldObjectDraft $customFieldObjectDraft = null
     ) {
         $paymentStatus = PaymentStatus::of()
             ->setInterfaceText('Paypal')
             ->setState($markingStorePaymentState->getStateReferenceOfInitial());
 
         $customerReference = is_null($user) ? null : CustomerReference::ofId($user->getId());
-        $payment = $this->manager->createPayment(
-            $locale, $totalPrice, $customerReference, $session->getId(), $paymentStatus
+        $payment = $this->manager->createPaymentForUser(
+            $locale, $totalPrice, $customerReference, $session->getId(), $paymentStatus, $customFieldObjectDraft
         );
 
         return $payment;
@@ -198,7 +197,6 @@ class PaymentController extends AbstractController
     /**
      * @param Request $request
      * @param SessionInterface $session
-     * @param OrderManager $orderManager
      * @param $toState
      * @param $paymentId
      * @param UserInterface|null $user
@@ -207,7 +205,6 @@ class PaymentController extends AbstractController
     public function updatePaymentAction(
         Request $request,
         SessionInterface $session,
-        OrderManager $orderManager,
         $toState,
         $paymentId,
         UserInterface $user = null
@@ -235,26 +232,6 @@ class PaymentController extends AbstractController
         $workflow->apply($payment, $toState);
 
         $orderId = $request->get('orderId');
-
-        if ($toState === 'toCompleted') {
-            // assuming there is only one payment, we update order status after a payment is completed
-            $order = $orderManager->getOrderFromPayment($request->getLocale(), $payment->getId(), $user, $session->getId());
-
-            if ($order instanceof Order) {
-                try {
-                    $workflow = $this->workflows->get($order);
-                } catch (InvalidArgumentException $e) {
-                    $this->addFlash('error', 'Cannot find proper workflow configuration for Orders. Action aborted');
-                    return $this->render('@Example/index.html.twig');
-                }
-
-                if ($workflow->can($order, 'toPaid')) {
-                    $workflow->apply($order, 'toPaid');
-                }
-
-                $orderId = $order->getId();
-            }
-        }
 
         if (is_null($orderId)) {
             return $this->redirect($this->generateUrl('_ctp_example_orders_all'));

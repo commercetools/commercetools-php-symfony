@@ -25,6 +25,7 @@ use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
+use Symfony\Component\Security\Http\Authentication\AuthenticationUtils;
 
 class CheckoutController extends AbstractController
 {
@@ -71,13 +72,11 @@ class CheckoutController extends AbstractController
     /**
      * @return \Symfony\Component\HttpFoundation\RedirectResponse|\Symfony\Component\HttpFoundation\Response
      */
-    public function signinAction()
+    public function signinAction(AuthenticationUtils $authenticationUtils)
     {
         if ($this->get('security.authorization_checker')->isGranted('IS_AUTHENTICATED_FULLY')) {
             return $this->redirect($this->generateUrl('_ctp_example_checkout_address'));
         }
-
-        $authenticationUtils = $this->get('security.authentication_utils');
 
         $error = $authenticationUtils->getLastAuthenticationError();
 

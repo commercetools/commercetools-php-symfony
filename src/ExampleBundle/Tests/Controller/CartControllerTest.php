@@ -189,7 +189,7 @@ class CartControllerTest extends WebTestCase
 
         $this->myContainer->get('form.factory')->willReturn($formFactory->reveal())->shouldBeCalled();
 
-        $this->cartManager->createCart('en', 'EUR', Argument::type(Location::class), Argument::type(LineItemDraftCollection::class), 'user-1')->shouldBeCalledOnce();
+        $this->cartManager->createCartForUser('en', 'EUR', Argument::type(Location::class), Argument::type(LineItemDraftCollection::class), 'user-1')->shouldBeCalledOnce();
 
         $router = $this->prophesize(Router::class);
         $router->generate('_ctp_example_product', ['slug' => 'foo'], 1)->willReturn('bar')->shouldBeCalledOnce();
@@ -234,14 +234,7 @@ class CartControllerTest extends WebTestCase
 
         $this->myContainer->get('form.factory')->willReturn($formFactory->reveal())->shouldBeCalled();
 
-        $this->cartManager->createCart(
-            'en',
-            'EUR',
-            Argument::type(Location::class),
-            Argument::type(LineItemDraftCollection::class),
-            null,
-            'session-1'
-        )->shouldBeCalledOnce();
+        $this->cartManager->createCartForUser('en', 'EUR', Argument::type(Location::class), Argument::type(LineItemDraftCollection::class), null, 'session-1')->shouldBeCalledOnce();
 
         $router = $this->prophesize(Router::class);
         $router->generate('_ctp_example_product', ['slug' => 'foo'], 1)->willReturn('bar')->shouldBeCalledOnce();
@@ -382,7 +375,7 @@ class CartControllerTest extends WebTestCase
         $cartUpdateBuilder->addShoppingList(Argument::type(CartAddShoppingListAction::class))->will(function(){return $this;})->shouldBeCalled();
         $cartUpdateBuilder->flush()->willReturn($cart)->shouldBeCalled();
 
-        $this->cartManager->createCart('en', 'EUR', Argument::type(Location::class), null, 'user-1')
+        $this->cartManager->createCartForUser('en', 'EUR', Argument::type(Location::class), null, 'user-1')
             ->willReturn($cart)->shouldBeCalledOnce();
         $this->cartManager->update(Argument::type(Cart::class))->willReturn($cartUpdateBuilder->reveal())->shouldBeCalledOnce();
 
@@ -421,7 +414,7 @@ class CartControllerTest extends WebTestCase
         $cartUpdateBuilder->addShoppingList(Argument::type(CartAddShoppingListAction::class))->will(function(){return $this;})->shouldBeCalled();
         $cartUpdateBuilder->flush()->willReturn($cart)->shouldBeCalled();
 
-        $this->cartManager->createCart('en', 'EUR', Argument::type(Location::class), null, null, 'session-1')
+        $this->cartManager->createCartForUser('en', 'EUR', Argument::type(Location::class), null, null, 'session-1')
             ->willReturn($cart)->shouldBeCalledOnce();
         $this->cartManager->update(Argument::type(Cart::class))->willReturn($cartUpdateBuilder->reveal())->shouldBeCalledOnce();
 
