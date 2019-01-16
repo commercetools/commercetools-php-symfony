@@ -51,8 +51,11 @@
             <argument key="$mapperFactory" type="service" id="commmercetools.mapper.factory" />
         </service>
 
-        <!--to remove-->
-        <service id="commercetools.custom_types" class="Commercetools\Symfony\CtpBundle\Service\CustomType" public="true">
+
+        <!--<service class="Commercetools\Symfony\CtpBundle\Service\CustomTypeFactory">-->
+        <!--</service>-->
+        <service id="commercetools.custom_types" class="Commercetools\Symfony\CtpBundle\Service\CustomTypeProvider" public="true">
+            <factory method="build" class="Commercetools\Symfony\CtpBundle\Service\CustomTypeProviderFactory"/>
             <argument>%commercetools.custom_types%</argument>
         </service>
     </services>

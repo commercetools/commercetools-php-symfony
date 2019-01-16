@@ -83,6 +83,8 @@ class OrderController extends AbstractController
     {
         $order = $this->manager->getOrderForUser($request->getLocale(), $orderId, $user, $session->getId());
 
+        dump($this->container->get('commercetools.custom_types'));
+
         if (!$order instanceof Order) {
             $this->addFlash('error', sprintf('Cannot find order: %s', $orderId));
             return $this->render('@Example/index.html.twig');

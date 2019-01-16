@@ -14,7 +14,7 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Yaml\Yaml;
 
-class CommercetoolsMapCustomTypes extends ContainerAwareCommand
+class CommercetoolsSyncCustomTypesFromServer extends ContainerAwareCommand
 {
     private $repository;
 
@@ -27,8 +27,8 @@ class CommercetoolsMapCustomTypes extends ContainerAwareCommand
     protected function configure()
     {
         $this
-            ->setName('commercetools:map-custom-types')
-            ->setDescription('Save custom types as a yaml file')
+            ->setName('commercetools:sync-custom-types-from-server')
+            ->setDescription('Sync custom types from server to local')
         ;
     }
 
@@ -37,10 +37,9 @@ class CommercetoolsMapCustomTypes extends ContainerAwareCommand
         $params = QueryParams::of()->add('limit', '500');
         $customTypes = $this->repository->getCustomTypes('en', $params);
 
-        $helper = ProcessCustomTypes::of();
-        $types = $helper->parse($customTypes);
-
+        $types = ProcessCustomTypes::of()->getConfigArray($customTypes);
         $yaml = Yaml::dump($types, 100, 4);
+
         $kernel = $this->getContainer()->get('kernel');
         $filename = $kernel->getProjectDir() . '/config/packages/' . $kernel->getEnvironment() . '/custom_types1.yaml';
 

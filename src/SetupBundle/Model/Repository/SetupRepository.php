@@ -12,6 +12,7 @@ use Commercetools\Core\Model\Project\Project;
 use Commercetools\Core\Model\Type\Type;
 use Commercetools\Core\Model\Type\TypeCollection;
 use Commercetools\Core\Model\Type\TypeDraft;
+use Commercetools\Core\Request\ClientRequestInterface;
 use Commercetools\Symfony\CtpBundle\Logger\Logger;
 use Commercetools\Symfony\CtpBundle\Model\QueryParams;
 use Commercetools\Symfony\CtpBundle\Model\Repository;
@@ -103,5 +104,10 @@ class SetupRepository extends Repository
         $request = RequestBuilder::of()->types()->query();
 
         return $this->executeRequest($request, $locale, $params);
+    }
+
+    public function executeRequest(ClientRequestInterface $request, $locale = 'en', QueryParams $params = null)
+    {
+        return parent::executeRequest($request, $locale, $params);
     }
 }

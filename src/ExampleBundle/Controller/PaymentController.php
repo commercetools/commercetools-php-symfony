@@ -110,7 +110,7 @@ class PaymentController extends AbstractController
             return $this->render('@Example/index.html.twig');
         }
 
-        $relationsType = $this->container->get('commercetools.custom_types')->get('paymentsRelations');
+        $relationsType = $this->container->get('commercetools.custom_types')->getTypeReference('paymentsRelations');
         if (!is_null($relationsType)) {
             $custom = CustomFieldObjectDraft::ofType($relationsType)->setFields(
                 FieldContainer::of()->set('orderReference', $order->getId())
