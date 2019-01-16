@@ -26,7 +26,7 @@ class AddressTypeTest extends TypeTestCase
             'apartment' => 'c',
             'postalCode' => '7676dc',
             'city' => 'berlin',
-            'country' => 'germany',
+            'country' => 'DE',
             'region' => 'neukoln',
             'state' => 'state1',
             'pOBox' => '49824',
@@ -53,7 +53,7 @@ class AddressTypeTest extends TypeTestCase
             ->setApartment('c')
             ->setPostalCode('7676dc')
             ->setCity('berlin')
-            ->setCountry('germany')
+            ->setCountry('DE')
             ->setRegion('neukoln')
             ->setState('state1')
             ->setPOBox('49824')
