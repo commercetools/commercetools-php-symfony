@@ -37,6 +37,10 @@ class ProcessCustomTypes
 
     const LOCALIZED_TYPES = ['name', 'description'];
 
+    const VALID_TYPE_FIELDS = [
+        'key', 'name', 'description', 'fieldDefinitions', 'label', 'version'
+    ];
+
     public function getConfigArray(TypeCollection $typeCollection)
     {
         return [
@@ -70,61 +74,12 @@ class ProcessCustomTypes
 
     public function getChangesForServerSync(TypeCollection $localTypes, TypeCollection $serverTypes)
     {
-        $helper = new ArrayHelper();
         $serverTypes = $serverTypes->toArray();
-
         $localTypes = $localTypes->toArray();
-        $changedTypes = $helper->arrayDiffRecursive($localTypes, $serverTypes);
 
-        $onlyOnServerToDelete = array_diff_key($serverTypes, $localTypes);
-        $onlyLocalToCreate = array_diff_key($localTypes, $serverTypes);
+        $changedTypes = $this->arrayDiffFirstLevel($localTypes, $serverTypes);
 
-        foreach ($onlyLocalToCreate as $key => $changed) {
-            unset($changedTypes[$key]);
-        }
-
-        foreach ($changedTypes as $changedTypeKey => $changedTypeValues) {
-
-            $changedTypes[$changedTypeKey]['version'] = $serverTypes[$changedTypeKey]['version'];
-
-            if (array_key_exists('fieldDefinitions', $changedTypeValues)) {
-                $localFieldDefinitions = $changedTypeValues['fieldDefinitions'];
-
-                $serverFieldDefinitions = $serverTypes[$changedTypeKey]['fieldDefinitions'] ?? [];
-
-                if ((empty($localFieldDefinitions) || is_null($localFieldDefinitions))
-                    && (!is_null($serverFieldDefinitions) && !empty($serverFieldDefinitions))) {
-                    unset($changedTypes[$changedTypeKey]['fieldDefinitions']);
-                    $changedTypes[$changedTypeKey]['fieldDefinitions']['delete'] = array_keys($serverFieldDefinitions);
-
-                } else {
-                    $diffFields = $helper->arrayDiffRecursive($localFieldDefinitions, $serverFieldDefinitions);
-
-                    $onlyOnServerFieldsToDelete = array_diff_key($serverFieldDefinitions, $localFieldDefinitions);
-                    $onlyLocalFieldsToCreate = array_diff_key($localFieldDefinitions, $serverFieldDefinitions);
-
-                    foreach ($onlyLocalFieldsToCreate as $onlyLocalFieldKey => $onlyLocalFieldValue) {
-                        unset($diffFields[$onlyLocalFieldKey]);
-                        $onlyLocalFieldsToCreate[$onlyLocalFieldKey] = FieldDefinition::fromArray($localTypes[$changedTypeKey]['fieldDefinitions'][$onlyLocalFieldKey]);
-                    }
-
-                    unset($changedTypes[$changedTypeKey]['fieldDefinitions']);
-                    $changedTypes[$changedTypeKey]['fieldDefinitions']['create'] = $onlyLocalFieldsToCreate;
-                    $changedTypes[$changedTypeKey]['fieldDefinitions']['delete'] = array_keys($onlyOnServerFieldsToDelete);
-                    $changedTypes[$changedTypeKey]['fieldDefinitions']['update'] = [];
-
-                    foreach ($diffFields as $diffFieldKey => $diffFieldValue) {
-                        $changedTypes[$changedTypeKey]['fieldDefinitions']['update'][$diffFieldKey] = $diffFieldValue;
-                    }
-                }
-            }
-        }
-
-        return [
-            'create' => $onlyLocalToCreate,
-            'delete' => $onlyOnServerToDelete,
-            'update' => $changedTypes
-        ];
+        return ($changedTypes);
     }
 
     public function mapChangesToRequests(array $changedTypes)
@@ -146,6 +101,7 @@ class ProcessCustomTypes
         foreach ($changedTypes['update'] as $changedTypeKey => $changedTypeFields) {
             foreach ($changedTypeFields as $changedTypeFieldKey => $changedTypeFieldValue) {
 
+                $allActions = [];
                 if ($changedTypeFieldKey === 'fieldDefinitions') {
                     foreach ($changedTypeFieldValue as $changedTypeAction => $changedTypeActionFields) {
                         if (!empty($changedTypeActionFields)) {
@@ -157,18 +113,13 @@ class ProcessCustomTypes
                                                 $this, self::TYPE_ACTIONS[$changedTypeFieldKey][$changedTypeAction][$changedItemKey][1]
                                             ], $changedTypeFieldDefinitionKey, $changedItemValue);
 
-                                            $requests[] = TypeUpdateByKeyRequest::ofKeyAndVersion(
-                                                $changedTypeKey, $changedTypeFields['version']
-                                            )->addAction($action);
+                                            $allActions[] = $action;
                                         }
                                     }
-
                                 } else {
                                     $class = self::TYPE_ACTIONS[$changedTypeFieldKey][$changedTypeAction][0];
                                     $actionName = self::TYPE_ACTIONS[$changedTypeFieldKey][$changedTypeAction][1];
-                                    $requests[] = TypeUpdateByKeyRequest::ofKeyAndVersion($changedTypeKey, $changedTypeFields['version'])->addAction(
-                                        $class::of()->$actionName($changedTypeFieldDefinitionValue)
-                                    );
+                                    $allActions[] = $class::of()->$actionName($changedTypeFieldDefinitionValue);
                                 }
                             }
                         }
@@ -178,15 +129,18 @@ class ProcessCustomTypes
                     $actionName = self::TYPE_ACTIONS[$changedTypeFieldKey][1];
 
                     if (in_array($changedTypeFieldKey, self::LOCALIZED_TYPES)) {
-                        $requests[] = TypeUpdateByKeyRequest::ofKeyAndVersion($changedTypeKey, $changedTypeFields['version'])->addAction(
-                            $class::of()->$actionName(LocalizedString::fromArray($changedTypeFieldValue))
-                        );
+                        $allActions[] = $class::of()->$actionName(LocalizedString::fromArray($changedTypeFieldValue));
                     } else {
-                        $requests[] = TypeUpdateByKeyRequest::ofKeyAndVersion($changedTypeKey, $changedTypeFields['version'])->addAction(
-                            $class::of()->$actionName($changedTypeFieldValue)
-                        );
+                        $allActions[] = $class::of()->$actionName($changedTypeFieldValue);
                     }
                 }
+
+                if (!empty($allActions)) {
+                    $version = is_array($changedTypeFields['version']) ? current($changedTypeFields['version']) : $changedTypeFields['version'];
+                    $requests[] = TypeUpdateByKeyRequest::ofKeyAndVersion($changedTypeKey, $version)
+                        ->setActions($allActions);
+                }
+
             }
         }
 
@@ -196,6 +150,163 @@ class ProcessCustomTypes
     private function changeLabelAction($fieldName, $label)
     {
         return TypeChangeLabelAction::of()->setFieldName($fieldName)->setLabel(LocalizedString::fromArray($label));
+    }
+
+    private function removeCommon(array $from, array $toRemove)
+    {
+        foreach ($toRemove as $key => $value) {
+            unset($from[$key]);
+        }
+        return $from;
+    }
+
+    public function arrayDiffFirstLevel(array $arr1, array $arr2)
+    {
+        $outputDiff = [
+            'create' => [],
+            'delete' => [],
+            'update' => []
+        ];
+
+        foreach ($arr1 as $key => $value) {
+            if (isset($arr2[$key]) || array_key_exists($key, $arr2)) {
+                if (is_array($value) && is_array($arr2[$key])) {
+                    $arr2Value = $arr2[$key];
+                    $internalDiff = $this->arrayDiffRecursiveInternal($value, $arr2Value);
+
+
+                    if (!empty($internalDiff)) {
+                        $outputDiff['update'][$key] = $internalDiff;
+                    }
+                } elseif ($value != $arr2[$key]) {
+                    $outputDiff['update'][$key] = $value;
+                }
+            } else {
+                $outputDiff['create'][$key] = $value;
+            }
+        }
+
+        foreach ($arr2 as $key => $value) {
+            if (!isset($arr1[$key]) && !array_key_exists($key, $arr1)) {
+                $outputDiff['delete'][$key] = $value;
+            } else {
+                if (is_array($value) && is_array($arr1[$key])) {
+                    $arr1Value = $arr1[$key];
+                    $internalDiff = $this->arrayDiffRecursiveInternalReversed($value, $arr1Value);
+
+                    if (!empty($internalDiff)) {
+                        $outputDiff['update'][$key] = $outputDiff['update'][$key] ?? [];
+                        $outputDiff['update'][$key] = array_merge($outputDiff['update'][$key], $internalDiff);
+                    }
+                }
+            }
+        }
+
+        return $outputDiff;
+    }
+
+    public function arrayDiffRecursiveInternal(array $arr1, array $arr2)
+    {
+        $outputDiff = [];
+
+        foreach ($arr1 as $key => $value) {
+            if ($key === 'fieldDefinitions') {
+                $arr2Value = isset($arr2[$key]) ? $arr2[$key] : [];
+                $recursiveDiff = $this->arrayDiffFirstLevel($value, $arr2Value);
+
+                if (!empty($recursiveDiff)) {
+                    $outputDiff[$key] = $recursiveDiff;
+                }
+
+            } else if (isset($arr2[$key]) || array_key_exists($key, $arr2)) {
+                if (is_array($value) && is_array($arr2[$key])) {
+                    $arr2Value = $arr2[$key];
+                    $recursiveDiff = $this->arrayDiffRecursiveInternal($value, $arr2Value);
+
+                    if (!empty($recursiveDiff)) {
+                        dump($key);
+
+                        $outputDiff[$key] = $recursiveDiff;
+                    }
+                } else if ($value != $arr2[$key]) {
+                    dump($key);
+
+                    $outputDiff[$key] = $value;
+                }
+            } else {
+
+                $outputDiff[$key] = $value;
+            }
+        }
+
+        return $outputDiff;
+    }
+
+    public function arrayDiffExternalReversed(array $arr1, array $arr2)
+    {
+        $outputDiff = [
+            'create' => [],
+            'delete' => [],
+            'update' => []
+        ];
+
+        foreach ($arr1 as $key => $value) {
+            if (!isset($arr2[$key]) && !array_key_exists($key, $arr2)) {
+                $outputDiff['delete'][] = $key;
+            }
+        }
+
+        return $outputDiff;
+    }
+
+    public function arrayDiffRecursiveInternalReversed(array $arr1, array $arr2)
+    {
+        $outputDiff = [];
+
+        foreach ($arr1 as $key => $value) {
+
+            if ($key === 'fieldDefinitions') {
+                $arr2Value = isset($arr2[$key]) ? $arr2[$key] : [];
+                $recursiveDiff = $this->arrayDiffExternalReversed($value, $arr2Value);
+
+                if (!empty($recursiveDiff)) {
+                    $outputDiff[$key] = $recursiveDiff;
+                }
+
+            } elseif (!isset($arr2[$key]) && !array_key_exists($key, $arr2)) {
+                if (in_array($key, self::VALID_TYPE_FIELDS)) {
+                    $outputDiff[$key] = $value;
+                }
+            } elseif (isset($arr2[$key]) || array_key_exists($key, $arr2)) {
+                if (is_array($value) && is_array($arr2[$key])) {
+                    $arr2Value = $arr2[$key];
+                    $internalDiff = $this->arrayDiffRecursiveInternal($value, $arr2Value);
+
+                    if (!empty($recursiveDiff)) {
+                        $outputDiff[$key] = $internalDiff;
+                    }
+                }
+            }
+        }
+
+        return $outputDiff;
+    }
+
+    public function convertFieldDefinitionsToObject(array $diffArray)
+    {
+        foreach ($diffArray as $actionKey => $items) {
+            foreach ($items as $itemKey => $itemValues) {
+                foreach ($itemValues as $itemValueKey => $itemValue) {
+                    if ($itemValueKey === 'fieldDefinitions') {
+                        foreach ($itemValue['create'] as $fdKey => $fdValue) {
+                            $diffArray[$actionKey][$itemKey]['fieldDefinitions']['create'][$fdKey] = FieldDefinition::fromArray($fdValue);
+                        }
+                    }
+                }
+            }
+        }
+
+        return $diffArray;
     }
 
 

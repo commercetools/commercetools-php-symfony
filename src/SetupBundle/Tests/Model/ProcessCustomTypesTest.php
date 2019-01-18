@@ -76,87 +76,7 @@ class ProcessCustomTypesTest extends TestCase
             ]
         ];
     }
-//
-//
-//  "order2pay" =>  [
-//        "id" => "f15be1f5-07e7-4748-8c61-23cb83f1e49d"
-//    "version" => 1
-//    "createdAt" => "2018-11-23T15:04:28.586Z"
-//    "lastModifiedAt" => "2018-11-23T15:04:28.586Z"
-//    "key" => "order2pay"
-//    "name" =>  [
-//        "en" => "order2pay"
-//    ]
-//    "description" =>  [
-//        "en" => "order2pay"
-//    ]
-//    "resourceTypeIds" =>  [
-//        0 => "payment"
-//    ]
-//    "fieldDefinitions" =>  [
-//        "orderReference" =>  [
-//        "name" => "orderReference"
-//        "label" =>  [
-//        "en" => "order-id"
-//    ]
-//        "required" => true
-//        "type" =>  [
-//        "name" => "String"
-//    ]
-//        "inputHint" => "SingleLine"
-//      ]
-//    ]
-//  ]
-//  "vita" =>  [
-//        "id" => "8e3e08d2-0d86-42ef-866e-2e0d372156b1"
-//    "version" => 2
-//    "createdAt" => "2018-11-23T15:30:22.370Z"
-//    "lastModifiedAt" => "2019-01-14T10:28:24.068Z"
-//    "key" => "vita"
-//    "name" =>  [
-//        "en" => "vita"
-//    ]
-//    "description" =>  [
-//        "en" => "vita"
-//    ]
-//    "resourceTypeIds" =>  [
-//        0 => "line-item"
-//      1 => "channel"
-//      2 => "discount-code"
-//      3 => "product-price"
-//    ]
-//    "fieldDefinitions" => []
-//  ]
-//  "anotherType" =>  [
-//        "id" => "169ff392-3b8f-4a15-97b7-31bc648d8716"
-//    "version" => 1
-//    "createdAt" => "2018-11-28T10:47:57.194Z"
-//    "lastModifiedAt" => "2018-11-28T10:47:57.194Z"
-//    "key" => "anotherType"
-//    "name" =>  [
-//        "en" => "anotherType"
-//    ]
-//    "description" =>  [
-//        "en" => "anotherType"
-//    ]
-//    "resourceTypeIds" =>  [
-//        0 => "shopping-list"
-//    ]
-//    "fieldDefinitions" =>  [
-//        "whomsdt" =>  [
-//        "name" => "whomsdt"
-//        "label" =>  [
-//        "en" => "whomsdt"
-//    ]
-//        "required" => true
-//        "type" =>  [
-//        "name" => "String"
-//    ]
-//        "inputHint" => "SingleLine"
-//      ]
-//    ]
-//  ]
-//
+
     public function getCollection2()
     {
         return  [
@@ -255,6 +175,9 @@ class ProcessCustomTypesTest extends TestCase
                 'key-1' => [
                     'foo' => 'bar',
                     'version' => 1
+                ],
+                'key-2' => [
+                    'version' => 1
                 ]
             ]
         ];
@@ -291,7 +214,11 @@ class ProcessCustomTypesTest extends TestCase
                 ]
             ],
             'delete' => [],
-            'update' => []
+            'update' => [
+                'key-1' => [
+                    'version' => 1
+                ]
+            ]
         ];
 
         $this->assertEquals($expected, $result);
@@ -371,6 +298,7 @@ class ProcessCustomTypesTest extends TestCase
         ]);
 
         $result = $processor->getChangesForServerSync($typeCollectionForLocal, $typeCollectionForServer);
+        $result = $processor->convertFieldDefinitionsToObject($result);
 
         $expected = [
             'create' => [],
@@ -395,6 +323,9 @@ class ProcessCustomTypesTest extends TestCase
                         'update' => [],
                         'delete' => []
                     ]
+                ],
+                'key-2' => [
+                    'version' => 1
                 ]
             ]
         ];
@@ -402,18 +333,22 @@ class ProcessCustomTypesTest extends TestCase
         $this->assertEquals($expected, $result);
     }
 
-    public function testGetChangesWithDeletedField()
+    public function testGetChangesWithMixedFields()
     {
-        $this->markTestIncomplete();
         $processor = ProcessCustomTypes::of();
 
         $typeCollectionForLocal = TypeCollection::fromArray([
             'key-1' => [
                 'foo' => 'bar',
-                'fieldDefinitions' => []
+                'name' => [
+                    'en' => 'new-name'
+                ]
             ],
             'key-2' => [
                 'baz' => 'foobar',
+            ],
+            'key-4' => [
+                'barbar' => 'foofoo',
             ]
         ]);
 
@@ -421,6 +356,9 @@ class ProcessCustomTypesTest extends TestCase
             'key-1' => [
                 'foo' => 'bar',
                 'version' => 2,
+                'name' => [
+                    'en' => 'old-name'
+                ],
                 "fieldDefinitions" =>  [
                     "field2" =>  [
                         "name" => "field2",
@@ -438,14 +376,29 @@ class ProcessCustomTypesTest extends TestCase
             'key-2' => [
                 'baz' => 'foobar',
                 'version' => 1
+            ],
+            'key-3' => [
+                'bar' => 'barfoo',
+                'version' => 3
             ]
         ]);
 
         $result = $processor->getChangesForServerSync($typeCollectionForLocal, $typeCollectionForServer);
 
+//        $processor->createChangesArray($typeCollectionForLocal, $typeCollectionForServer);
+
         $expected = [
-            'create' => [],
-            'delete' => [],
+            'create' => [
+                'key-4' => [
+                    'barbar' => 'foofoo',
+                ]
+            ],
+            'delete' => [
+                'key-3' => [
+                    'bar' => 'barfoo',
+                    'version' => 3
+                ]
+            ],
             'update' => [
                 'key-1' => [
                     'version' => 2,
@@ -453,7 +406,13 @@ class ProcessCustomTypesTest extends TestCase
                         'create' => [],
                         'update' => [],
                         'delete' => ['field2']
+                    ],
+                    'name' => [
+                        'en' => 'new-name'
                     ]
+                ],
+                'key-2' => [
+                    'version' => 1
                 ]
             ]
         ];
@@ -500,6 +459,7 @@ class ProcessCustomTypesTest extends TestCase
         ]);
 
         $result = $processor->getChangesForServerSync($typeCollectionForLocal, $typeCollectionForServer);
+        $result = $processor->convertFieldDefinitionsToObject($result);
 
         $expected = [
             'create' => [],
@@ -524,6 +484,9 @@ class ProcessCustomTypesTest extends TestCase
                         'update' => [],
                         'delete' => []
                     ]
+                ],
+                'key-2' => [
+                    'version' => 1
                 ]
             ]
         ];

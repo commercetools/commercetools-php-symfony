@@ -46,6 +46,7 @@ class CommercetoolsSyncCustomTypesFromLocalConfig extends ContainerAwareCommand
         $processor = ProcessCustomTypes::of();
 
         $actions = $processor->mapChangesToRequests($processor->getChangesForServerSync($localTypes, $serverTypesFormatted));
+//        $actions = $processor->mapChangesToRequests($processor->createChangesArray($localTypes, $serverTypesFormatted));
 
 //        dump($actions);
 
