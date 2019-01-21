@@ -41,7 +41,7 @@ class CommercetoolsSyncCustomTypesFromServer extends ContainerAwareCommand
         $yaml = Yaml::dump($types, 100, 4);
 
         $kernel = $this->getContainer()->get('kernel');
-        $filename = $kernel->getProjectDir() . '/config/packages/' . $kernel->getEnvironment() . '/custom_types1.yaml';
+        $filename = $kernel->getProjectDir() . '/config/packages/' . $kernel->getEnvironment() . '/custom_types.yaml';
 
         if ($kernel->getEnvironment() !== 'test') {
             file_put_contents($filename, $yaml);

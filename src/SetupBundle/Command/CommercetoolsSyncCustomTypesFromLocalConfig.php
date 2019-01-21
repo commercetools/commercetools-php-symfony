@@ -45,8 +45,9 @@ class CommercetoolsSyncCustomTypesFromLocalConfig extends ContainerAwareCommand
 
         $processor = ProcessCustomTypes::of();
 
-        $actions = $processor->mapChangesToRequests($processor->getChangesForServerSync($localTypes, $serverTypesFormatted));
-//        $actions = $processor->mapChangesToRequests($processor->createChangesArray($localTypes, $serverTypesFormatted));
+        $actions = $processor->getChangesForServerSync($localTypes, $serverTypesFormatted);
+        $actions = $processor->convertFieldDefinitionsToObject($actions);
+        $actions = $processor->mapChangesToRequests($actions);
 
 //        dump($actions);
 
@@ -59,18 +60,7 @@ class CommercetoolsSyncCustomTypesFromLocalConfig extends ContainerAwareCommand
 //        foreach ($results as $result) {
 //           dump($result);
 //        }
-
         dump($results);
-//        $types = $helper->parse($customTypes);
-
-//        $yaml = Yaml::dump($types, 100, 4);
-//        $yaml = Yaml::dump($customTypes->toArray(), 100, 4);
-//        $kernel = $this->getContainer()->get('kernel');
-//        $filename = $kernel->getProjectDir() . '/config/packages/' . $kernel->getEnvironment() . '/custom_types1.yaml';
-//
-//        if ($kernel->getEnvironment() !== 'test') {
-//            file_put_contents($filename, $yaml);
-//        }
 
         $output->writeln('CustomTypes synced to server successfully');
     }
