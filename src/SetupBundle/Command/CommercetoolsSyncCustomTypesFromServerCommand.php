@@ -9,12 +9,12 @@ namespace Commercetools\Symfony\SetupBundle\Command;
 use Commercetools\Symfony\CtpBundle\Model\QueryParams;
 use Commercetools\Symfony\SetupBundle\Model\ProcessCustomTypes;
 use Commercetools\Symfony\SetupBundle\Model\Repository\SetupRepository;
-use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
+use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Yaml\Yaml;
 
-class CommercetoolsSyncCustomTypesFromServer extends ContainerAwareCommand
+class CommercetoolsSyncCustomTypesFromServerCommand extends Command
 {
     private $repository;
 
@@ -40,7 +40,7 @@ class CommercetoolsSyncCustomTypesFromServer extends ContainerAwareCommand
         $types = ProcessCustomTypes::of()->getConfigArray($customTypes);
         $yaml = Yaml::dump($types, 100, 4);
 
-        $kernel = $this->getContainer()->get('kernel');
+        $kernel = $this->getApplication()->getKernel();
         $filename = $kernel->getProjectDir() . '/config/packages/' . $kernel->getEnvironment() . '/custom_types.yaml';
 
         if ($kernel->getEnvironment() !== 'test') {

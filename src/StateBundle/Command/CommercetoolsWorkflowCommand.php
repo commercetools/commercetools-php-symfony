@@ -7,7 +7,6 @@ use Commercetools\Symfony\StateBundle\Model\Repository\StateRepository;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
-use Symfony\Component\DependencyInjection\Container;
 use Symfony\Component\Yaml\Yaml;
 
 class CommercetoolsWorkflowCommand extends Command
@@ -23,11 +22,10 @@ class CommercetoolsWorkflowCommand extends Command
     private $container;
 
 
-    public function __construct(StateRepository $repository, Container $container)
+    public function __construct(StateRepository $repository)
     {
         parent::__construct();
         $this->repository = $repository;
-        $this->container = $container;
     }
 
     protected function configure()
@@ -45,7 +43,7 @@ class CommercetoolsWorkflowCommand extends Command
         $stateTypes = $helper->parse($states);
 
         $yaml = Yaml::dump($stateTypes, 100, 4);
-        $kernel = $this->container->get('kernel');
+        $kernel = $this->getApplication()->getKernel();
 
         $filename = $kernel->getProjectDir() . '/config/packages/' . $kernel->getEnvironment() . '/workflow.yaml';
 

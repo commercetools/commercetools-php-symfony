@@ -11,14 +11,14 @@ use Commercetools\Core\Model\Type\FieldDefinition;
 use Commercetools\Core\Model\Type\FieldDefinitionCollection;
 use Commercetools\Core\Model\Type\TypeDraft;
 use Commercetools\Symfony\SetupBundle\Model\Repository\SetupRepository;
-use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
+use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Question\ChoiceQuestion;
 use Symfony\Component\Console\Question\ConfirmationQuestion;
 use Symfony\Component\Console\Question\Question;
 
-class CommercetoolsCreateCustomType extends ContainerAwareCommand
+class CommercetoolsCreateCustomTypeCommand extends Command
 {
     private $repository;
 

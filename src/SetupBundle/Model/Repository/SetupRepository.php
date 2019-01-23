@@ -105,9 +105,4 @@ class SetupRepository extends Repository
 
         return $this->executeRequest($request, $locale, $params);
     }
-
-    public function executeRequest(ClientRequestInterface $request, $locale = 'en', QueryParams $params = null)
-    {
-        return parent::executeRequest($request, $locale, $params);
-    }
 }
