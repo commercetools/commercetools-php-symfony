@@ -22,11 +22,6 @@ class CartExtensionTest extends AbstractExtensionTestCase
     {
         $this->load();
 
-        $this->assertContainerBuilderHasParameter('commercetools.cache.cart', 'false');
-        $this->assertContainerBuilderHasParameter('commercetools.cache.shipping_method', 'false');
-        $this->assertContainerBuilderHasParameter('commercetools.cache.order', 'false');
-        $this->assertContainerBuilderHasParameter('commercetools.cache.payment', 'false');
-
         $this->assertContainerBuilderHasService('Commercetools\Symfony\CartBundle\Model\Repository\CartRepository');
         $this->assertContainerBuilderHasService('Commercetools\Symfony\CartBundle\Model\Repository\PaymentRepository');
         $this->assertContainerBuilderHasService('Commercetools\Symfony\CartBundle\Model\Repository\OrderRepository');

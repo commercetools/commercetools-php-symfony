@@ -90,4 +90,14 @@ class CommercetoolsExtension extends Extension
             ])
         ;
     }
+
+    public function getNamespace()
+    {
+        return 'http://commercetools.com/schema/dic/ctp';
+    }
+
+    public function getXsdValidationBasePath()
+    {
+        return __DIR__.'/../Resources/config/schema';
+    }
 }

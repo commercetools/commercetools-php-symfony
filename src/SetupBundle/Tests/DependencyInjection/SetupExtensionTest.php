@@ -21,8 +21,6 @@ class SetupExtensionTest extends AbstractExtensionTestCase
     {
         $this->load();
 
-        $this->assertContainerBuilderHasParameter('commercetools.cache.setup', 'false');
-
         $this->assertContainerBuilderHasService('Commercetools\Symfony\SetupBundle\Model\Repository\SetupRepository');
         $this->assertContainerBuilderHasService('Commercetools\Symfony\SetupBundle\Command\CommercetoolsProjectInfoCommand');
         $this->assertContainerBuilderHasService('Commercetools\Symfony\SetupBundle\Command\CommercetoolsProjectApplyConfigurationCommand');

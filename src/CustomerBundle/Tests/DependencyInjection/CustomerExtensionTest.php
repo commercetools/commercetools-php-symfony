@@ -22,8 +22,6 @@ class CustomerExtensionTest extends AbstractExtensionTestCase
     {
         $this->load();
 
-        $this->assertContainerBuilderHasParameter('commercetools.cache.customer', 'false');
-
         $this->assertContainerBuilderHasService('Commercetools\Symfony\CustomerBundle\Model\Repository\CustomerRepository');
         $this->assertContainerBuilderHasService('Commercetools\Symfony\CustomerBundle\Manager\CustomerManager');
         $this->assertContainerBuilderHasService('Commercetools\Symfony\CustomerBundle\Security\User\UserProvider');

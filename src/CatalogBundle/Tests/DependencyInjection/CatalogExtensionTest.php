@@ -22,8 +22,6 @@ class CatalogExtensionTest extends AbstractExtensionTestCase
     {
         $this->load();
 
-        $this->assertContainerBuilderHasParameter('commercetools.cache.catalog', 'false');
-
         $this->assertContainerBuilderHasService('Commercetools\Symfony\CatalogBundle\Model\Repository\CatalogRepository');
         $this->assertContainerBuilderHasService('Commercetools\Symfony\CatalogBundle\Manager\CatalogManager');
         $this->assertContainerBuilderHasService('Commercetools\Symfony\CatalogBundle\Model\Search');

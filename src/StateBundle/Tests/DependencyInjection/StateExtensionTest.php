@@ -21,8 +21,6 @@ class StateExtensionTest extends AbstractExtensionTestCase
     {
         $this->load();
 
-        $this->assertContainerBuilderHasParameter('commercetools.cache.states', 'false');
-
         $this->assertContainerBuilderHasService('Commercetools\Symfony\StateBundle\Model\Repository\StateRepository');
         $this->assertContainerBuilderHasService('Commercetools\Symfony\StateBundle\Command\CommercetoolsStateCommand');
         $this->assertContainerBuilderHasService('Commercetools\Symfony\StateBundle\Command\CommercetoolsWorkflowCommand');

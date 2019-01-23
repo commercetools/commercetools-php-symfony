@@ -22,9 +22,6 @@ class ShoppingListExtensionTest extends AbstractExtensionTestCase
     {
         $this->load();
 
-        $this->assertContainerBuilderHasParameter('commercetools.cache.shopping_list', 'false');
-
-
         $this->assertContainerBuilderHasService('Commercetools\Symfony\ShoppingListBundle\Model\Repository\ShoppingListRepository');
         $this->assertContainerBuilderHasService('Commercetools\Symfony\ShoppingListBundle\Manager\ShoppingListManager');
 
