@@ -23,6 +23,7 @@ use Commercetools\Symfony\CartBundle\Manager\OrderManager;
 use Commercetools\Symfony\CartBundle\Manager\PaymentManager;
 use Commercetools\Symfony\CartBundle\Model\CartUpdateBuilder;
 use Commercetools\Symfony\CartBundle\Model\OrderUpdateBuilder;
+use Commercetools\Symfony\CtpBundle\Service\CustomTypeProvider;
 use Commercetools\Symfony\CustomerBundle\Security\User\User;
 use Commercetools\Symfony\ExampleBundle\Controller\PaymentController;
 use Commercetools\Symfony\StateBundle\Model\CtpMarkingStore\CtpMarkingStorePaymentState;
@@ -136,11 +137,15 @@ class PaymentControllerTest extends WebTestCase
         $flashBag->add(Argument::is('error'), Argument::is('generic error message'))->shouldBeCalled();
         $session->getFlashBag()->willReturn($flashBag->reveal())->shouldBeCalled();
 
+        $customType = $this->prophesize(CustomTypeProvider::class);
+        $customType->getTypeReference('paymentsRelations')->willReturn(null)->shouldBeCalledOnce();
+
         $this->myContainer->has('session')->willReturn(true)->shouldBeCalled();
         $this->myContainer->get('session')->willReturn($session->reveal())->shouldBeCalled();
         $this->myContainer->has('templating')->willReturn(false)->shouldBeCalledOnce();
         $this->myContainer->has('twig')->willReturn(true)->shouldBeCalledOnce();
         $this->myContainer->get('twig')->willReturn($this->twig)->shouldBeCalledOnce();
+        $this->myContainer->get('commercetools.custom_types')->willReturn($customType->reveal())->shouldBeCalledOnce();
 
         $this->request->getLocale()->willReturn('en')->shouldBeCalledTimes(2);
 
@@ -183,7 +188,11 @@ class PaymentControllerTest extends WebTestCase
 
         $this->request->getLocale()->willReturn('en')->shouldBeCalledTimes(2);
 
+        $customType = $this->prophesize(CustomTypeProvider::class);
+        $customType->getTypeReference('paymentsRelations')->willReturn(null)->shouldBeCalledOnce();
+
         $this->myContainer->get('router')->willReturn($router)->shouldBeCalledOnce();
+        $this->myContainer->get('commercetools.custom_types')->willReturn($customType->reveal())->shouldBeCalledOnce();
 
         $markingStorePaymentState = $this->prophesize(CtpMarkingStorePaymentState::class);
         $markingStorePaymentState->getStateReferenceOfInitial()->willReturn(StateReference::ofId('state-1'))->shouldBeCalledOnce();
@@ -254,11 +263,15 @@ class PaymentControllerTest extends WebTestCase
         $flashBag->add(Argument::is('error'), Argument::is('generic error message'))->shouldBeCalled();
         $session->getFlashBag()->willReturn($flashBag->reveal())->shouldBeCalled();
 
+        $customType = $this->prophesize(CustomTypeProvider::class);
+        $customType->getTypeReference('paymentsRelations')->willReturn(null)->shouldBeCalledOnce();
+
         $this->myContainer->has('session')->willReturn(true)->shouldBeCalled();
         $this->myContainer->get('session')->willReturn($session->reveal())->shouldBeCalled();
         $this->myContainer->has('templating')->willReturn(false)->shouldBeCalledOnce();
         $this->myContainer->has('twig')->willReturn(true)->shouldBeCalledOnce();
         $this->myContainer->get('twig')->willReturn($this->twig)->shouldBeCalledOnce();
+        $this->myContainer->get('commercetools.custom_types')->willReturn($customType->reveal())->shouldBeCalledOnce();
 
         $this->request->getLocale()->willReturn('en')->shouldBeCalledTimes(2);
 
@@ -300,7 +313,11 @@ class PaymentControllerTest extends WebTestCase
 
         $this->request->getLocale()->willReturn('en')->shouldBeCalledTimes(2);
 
+        $customType = $this->prophesize(CustomTypeProvider::class);
+        $customType->getTypeReference('paymentsRelations')->willReturn(null)->shouldBeCalledOnce();
+
         $this->myContainer->get('router')->willReturn($router)->shouldBeCalledOnce();
+        $this->myContainer->get('commercetools.custom_types')->willReturn($customType->reveal())->shouldBeCalledOnce();
 
         $markingStorePaymentState = $this->prophesize(CtpMarkingStorePaymentState::class);
         $markingStorePaymentState->getStateReferenceOfInitial()->willReturn(StateReference::ofId('state-1'))->shouldBeCalledOnce();
