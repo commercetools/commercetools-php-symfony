@@ -7,7 +7,7 @@
     <xsd:element name="commercetools" type="commercetoolsType"/>
 
     <xsd:complexType name="clientType">
-        <xsd:sequence>
+        <xsd:all>
             <xsd:element type="xsd:string" name="client-id"/>
             <xsd:element type="xsd:string" name="client-secret"/>
             <xsd:element type="xsd:string" name="project"/>
@@ -15,13 +15,13 @@
             <xsd:element type="xsd:string" name="oauth-url" minOccurs="0"/>
             <xsd:element type="xsd:string" name="api-url" minOccurs="0"/>
             <xsd:element type="xsd:boolean" name="throwExceptions" minOccurs="0"/>
-        </xsd:sequence>
+        </xsd:all>
         <xsd:attribute type="xsd:string" name="name" use="required"/>
     </xsd:complexType>
 
     <xsd:complexType name="apiType">
         <xsd:sequence>
-            <xsd:element type="xsd:string" name="default-client" default="default"/>
+            <xsd:element type="xsd:string" name="default-client" default="default" minOccurs="0"/>
             <xsd:element type="clientType" name="client" maxOccurs="unbounded"/>
         </xsd:sequence>
     </xsd:complexType>
@@ -40,10 +40,10 @@
     </xsd:complexType>
 
     <xsd:complexType name="valueType">
-        <xsd:sequence>
+        <xsd:all>
             <xsd:element type="xsd:string" name="key"/>
             <xsd:element type="labelsType" name="labels"/>
-        </xsd:sequence>
+        </xsd:all>
     </xsd:complexType>
 
     <xsd:complexType name="valuesType">
@@ -67,32 +67,35 @@
         </xsd:sequence>
     </xsd:complexType>
 
-    <xsd:complexType name="project-settingsType">
-        <xsd:sequence>
+    <xsd:complexType name="projectSettingsType">
+        <xsd:group ref="projectSettingsTypeChoice" maxOccurs="unbounded" minOccurs="0"/>
+    </xsd:complexType>
+    <xsd:group name="projectSettingsTypeChoice">
+        <xsd:choice>
             <xsd:element type="xsd:string" name="country" maxOccurs="unbounded"/>
             <xsd:element type="xsd:string" name="currency" maxOccurs="unbounded"/>
             <xsd:element type="xsd:string" name="language" maxOccurs="unbounded"/>
-            <xsd:element type="xsd:string" name="name"/>
-            <xsd:element type="xsd:boolean" name="messages"/>
-            <xsd:element type="shipping-rate-input-typeType" name="shipping-rate-input-type"/>
-        </xsd:sequence>
-    </xsd:complexType>
+            <xsd:element type="xsd:string" name="name" minOccurs="0"/>
+            <xsd:element type="xsd:boolean" name="messages" minOccurs="0"/>
+            <xsd:element type="shipping-rate-input-typeType" name="shipping-rate-input-type" minOccurs="0"/>
+        </xsd:choice>
+    </xsd:group>
 
     <xsd:complexType name="contextType">
         <xsd:sequence>
             <xsd:element type="xsd:language" name="locale" default="en"/>
-            <xsd:element type="xsd:boolean" name="graceful" default="true"/>
+            <xsd:element type="xsd:boolean" name="graceful" default="true" minOccurs="0"/>
         </xsd:sequence>
     </xsd:complexType>
 
     <xsd:complexType name="defaultsType">
         <xsd:sequence>
-            <xsd:element type="xsd:string" name="country" default="DE"/>
-            <xsd:element type="contextType" name="context"/>
+            <xsd:element type="xsd:string" name="country"/>
+            <xsd:element type="contextType" name="context" maxOccurs="unbounded"/>
         </xsd:sequence>
     </xsd:complexType>
 
-    <xsd:complexType name="fallback-languagesType">
+    <xsd:complexType name="fallbackLanguagesType">
         <xsd:sequence>
             <xsd:element type="xsd:string" name="language" minOccurs="0" maxOccurs="unbounded"/>
         </xsd:sequence>
@@ -116,22 +119,22 @@
     </xsd:complexType>
 
     <xsd:complexType name="facetType">
-        <xsd:sequence>
-            <xsd:element type="xsd:string" name="alias" default="null"/>
-            <xsd:element type="xsd:string" name="paramName" default="null"/>
-            <xsd:element type="xsd:string" name="field" default="null"/>
-            <xsd:element type="xsd:string" name="facetField" default="null"/>
-            <xsd:element type="xsd:string" name="filterField" default="null"/>
-            <xsd:element type="xsd:string" name="multiSelect" default="true"/>
-            <xsd:element type="xsd:string" name="hierarchical" default="false"/>
-            <xsd:element type="xsd:string" name="display" default="2column"/>
-            <xsd:element type="xsd:string" name="type" default="enum"/>
-            <xsd:element type="rangesType" name="ranges"/>
-        </xsd:sequence>
+        <xsd:all>
+            <xsd:element type="xsd:string" name="alias" default="null" minOccurs="0"/>
+            <xsd:element type="xsd:string" name="paramName" default="null" minOccurs="0"/>
+            <xsd:element type="xsd:string" name="field" default="null" minOccurs="0"/>
+            <xsd:element type="xsd:string" name="facetField" default="null" minOccurs="0"/>
+            <xsd:element type="xsd:string" name="filterField" default="null" minOccurs="0"/>
+            <xsd:element type="xsd:string" name="multiSelect" default="true" minOccurs="0"/>
+            <xsd:element type="xsd:string" name="hierarchical" default="false" minOccurs="0"/>
+            <xsd:element type="xsd:string" name="display" default="2column" minOccurs="0"/>
+            <xsd:element type="xsd:string" name="type" default="enum" minOccurs="0"/>
+            <xsd:element type="rangesType" name="ranges" minOccurs="0"/>
+        </xsd:all>
     </xsd:complexType>
 
     <xsd:complexType name="cacheType">
-        <xsd:sequence>
+        <xsd:all>
             <xsd:element type="xsd:boolean" name="setup" minOccurs="0"/>
             <xsd:element type="xsd:boolean" name="states" minOccurs="0"/>
             <xsd:element type="xsd:boolean" name="customer" minOccurs="0"/>
@@ -142,16 +145,16 @@
             <xsd:element type="xsd:boolean" name="payment" minOccurs="0"/>
             <xsd:element type="xsd:boolean" name="shopping_list" minOccurs="0"/>
             <xsd:element type="xsd:boolean" name="review" minOccurs="0"/>
-        </xsd:sequence>
+        </xsd:all>
     </xsd:complexType>
 
     <xsd:group name="ctConfig">
         <xsd:all>
             <xsd:element type="apiType" name="api"/>
             <xsd:element type="defaultsType" name="defaults"/>
-            <xsd:element type="cacheType" name="cache"/>
-            <xsd:element type="project-settingsType" name="project-settings"/>
-            <xsd:element type="fallback-languagesType" name="fallback-languages"/>
+            <xsd:element type="cacheType" name="cache" minOccurs="0"/>
+            <xsd:element type="projectSettingsType" name="project-settings" minOccurs="0"/>
+            <xsd:element type="fallbackLanguagesType" name="fallback-languages" minOccurs="0"/>
             <xsd:element type="facetsConfig" name="facets" minOccurs="0"/>
         </xsd:all>
     </xsd:group>
