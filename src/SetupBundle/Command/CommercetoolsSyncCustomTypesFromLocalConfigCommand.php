@@ -15,20 +15,19 @@ use Commercetools\Symfony\SetupBundle\Model\Repository\SetupRepository;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
-use Symfony\Component\DependencyInjection\Container;
 
 class CommercetoolsSyncCustomTypesFromLocalConfigCommand extends Command
 {
     private $repository;
-    private $container;
     private $client;
+    private $parameters;
 
-    public function __construct(SetupRepository $repository, Container $container, Client $client)
+    public function __construct(SetupRepository $repository, Client $client, array $parameters)
     {
         parent::__construct();
         $this->repository = $repository;
-        $this->container = $container;
         $this->client = $client;
+        $this->parameters = $parameters;
     }
 
     protected function configure()
@@ -46,7 +45,7 @@ class CommercetoolsSyncCustomTypesFromLocalConfigCommand extends Command
 
         $serverTypesFormatted = TypeCollection::fromArray(ProcessCustomTypes::of()->parseTypes($serverTypes));
 
-        $localTypesArray = $this->container->getParameter('commercetools.custom_types');
+        $localTypesArray = $this->parameters;
         $localTypes = TypeCollection::fromArray($localTypesArray);
 
         $processor = ProcessCustomTypes::of();
