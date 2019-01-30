@@ -1,52 +1,39 @@
-# Sunrise symfony bundle installation guide
+# Symfony bundle installation guide
 
 ## Requirements
-Symfony 3:
-To install symfony go to http://symfony.com/doc/current/book/installation.html 
-
 Composer :
 To install the composer go to https://getcomposer.org/doc/00-intro.md
 
 ## Installation
-Create a new or open a symfony3 project and open it in any editor of choice
+Create a new or navigate to a symfony (>= 3.4) project directory
 
-Open composer.json and add to the attribute require this line
-
+Navigate to the project's directory and run
 ```sh
-composer require commercetools/symfony-bundle
+composer config extra.symfony.allow-contrib true
+```
+This will allow symfony to use the recipes (via Symfony Flex) that will automate most of the 
+configuration.
+
+To install the base CTP package open composer.json and add to the attribute `require` this line
+```json
+"commercetools/symfony-ctpbundle"
+```
+or run the following on the command line
+```sh
+composer require commercetools/symfony-ctpbundle
 ```
 
-Add the Commercetools Bundle to your application kernel
 
-```php
-class AppKernel extends Kernel
-{
-    public function registerBundles()
-    {
-        $bundles = [
-            // ...
-            new Commercetools\Symfony\CtpBundle\CtpBundle(),
-            // ...
-        ];
-        // ...
-    }
-    // ...
-```
+Open .env and edit these lines to add your credentials. The credentials can be retrieved through 
+Commercetools Merchant Center > Settings > Developer Settings
 
-Open App/config/parameters.yml.dist and add these lines
-```yaml	
-    commercetools.client_id: ~
-    commercetools.client_secret: ~
-    commercetools.project: ~
-```
-
-Open App/config/config.yml and these lines on the bottom of the document
-```yaml	
-commercetools:
-  credentials:
-    client_id: "%commercetools.client_id%"
-    client_secret: "%commercetools.client_secret%"
-    project: "%commercetools.project%"
+```dotenv
+CTP_CLIENT_ID=<your client id>
+CTP_CLIENT_SECRET=<your client secret>
+CTP_PROJECT_KEY=<your project id>
+CTP_AUTH_URL=https://auth.commercetools.com or https://auth.commercetools.co
+CTP_API_URL=https://api.commercetools.com or https://api.commercetools.co
+CTP_SCOPES=<your desired scopes>
 ```
 
 
