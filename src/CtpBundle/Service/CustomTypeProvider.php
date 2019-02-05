@@ -6,27 +6,26 @@
 namespace Commercetools\Symfony\CtpBundle\Service;
 
 use Commercetools\Core\Model\Type\TypeCollection;
-use Commercetools\Core\Model\Type\TypeReference;
 
 class CustomTypeProvider
 {
+    /** @var TypeCollection */
+    private $customTypes;
+
     public function __construct(TypeCollection $customTypes)
     {
-        foreach ($customTypes as $customType) {
-            $key = $customType->getKey();
-            $this->$key = $customType;
-        }
+        $this->customTypes = $customTypes;
     }
 
     public function getType($customTypeKey)
     {
-        return $this->$customTypeKey ?? null;
+        return $this->customTypes->getByKey($customTypeKey);
     }
 
     public function getTypeReference($customTypeKey)
     {
-        if (!is_null($this->$customTypeKey)) {
-            return TypeReference::ofId($this->$customTypeKey->getId());
+        if (!is_null($this->getType($customTypeKey))) {
+            return $this->getType($customTypeKey)->getReference();
         }
 
         return null;
