@@ -74,14 +74,14 @@ class CatalogController extends AbstractController
         $country = $this->getCountryFromConfig();
         $currency = $this->getCurrencyFromConfig();
 
-        list($products, $offset) = $this->catalogManager->getProducts(
+        list($products, $offset) = $this->catalogManager->searchProducts(
             $request->getLocale(), 12, 1, 'price asc', $currency, $country, $uri, $search, $filter
         );
 
         return $this->render('ExampleBundle:catalog:index.html.twig', [
-                'products' => $products,
-                'offset' => $offset,
-                'form' => $form->createView(),
+            'products' => $products,
+            'offset' => $offset,
+            'form' => $form->createView(),
         ]);
 
     }

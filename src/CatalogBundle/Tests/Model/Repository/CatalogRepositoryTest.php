@@ -187,9 +187,11 @@ class CatalogRepositoryTest extends TestCase
         $uri = $this->prophesize(UriInterface::class);
 
         $repository = $this->getCatalogRepository();
-        $repository->getProducts(
-            'en', 5, 2, 'id desc', 'EUR', 'DE', $uri->reveal()
-        );
+        $searchRequest = $repository->baseSearchProductsRequest(5, 2, 'id desc');
+        $searchRequest->currency('EUR')->country('DE');
+
+        $searchRequest = $repository->searchRequestAddSearchParameters($searchRequest, 'en', $uri->reveal(), null);
+        $repository->executeSearchRequest($searchRequest, 'en');
     }
 
     public function testGetProductsWithSearchAndFilters()
@@ -232,8 +234,13 @@ class CatalogRepositoryTest extends TestCase
         ];
 
         $repository = $this->getCatalogRepository();
-        $repository->getProducts('en', 5, 1, 'id desc', 'EUR', 'DE',
-            $uri->reveal(), 'searchTerm', $filter);
+
+        $searchRequest = $repository->baseSearchProductsRequest(5, 1, 'id desc');
+        $searchRequest->currency('EUR')->country('DE');
+
+        $searchRequest = $repository->searchRequestAddSearchParameters($searchRequest, 'en', $uri->reveal(), 'searchTerm');
+        $searchRequest = $repository->searchRequestAddSearchFilters($searchRequest, $filter);
+        $repository->executeSearchRequest($searchRequest, 'en');
     }
 
     /**
@@ -254,8 +261,13 @@ class CatalogRepositoryTest extends TestCase
 
         $filter = ['foo' => ['bar']];
         $repository = $this->getCatalogRepository();
-        $repository->getProducts('en', 5, 1, 'id desc', 'EUR', 'DE',
-            $uri->reveal(), 'searchTerm', $filter);
+
+        $searchRequest = $repository->baseSearchProductsRequest(5, 1, 'id desc');
+        $searchRequest->currency('EUR')->country('DE');
+
+        $searchRequest = $repository->searchRequestAddSearchParameters($searchRequest, 'en', $uri->reveal(), 'searchTerm');
+        $searchRequest = $repository->searchRequestAddSearchFilters($searchRequest, $filter);
+        $repository->executeSearchRequest($searchRequest, 'en');
     }
 
     public function testGetProductTypes()
@@ -347,5 +359,51 @@ class CatalogRepositoryTest extends TestCase
 
         $repository = $this->getCatalogRepository();
         $repository->createProductType('en', 'foo', 'bar');
+    }
+
+    public function testSearchRequestAddCountryAndCurrency()
+    {
+        $searchRequest = $this->prophesize(ProductProjectionSearchRequest::class);
+        $searchRequest->country('DE')->willReturn($searchRequest->reveal())->shouldBeCalledOnce();
+        $searchRequest->currency('EUR')->willReturn($searchRequest->reveal())->shouldBeCalledOnce();
+
+        $repository = $this->getCatalogRepository();
+        $request = $repository->searchRequestAddCountryAndCurrency($searchRequest->reveal(), 'DE', 'EUR');
+
+        $this->assertInstanceOf(ProductProjectionSearchRequest::class, $request);
+    }
+
+    public function testSearchRequestAddCountryAndCurrencyWithoutRequest()
+    {
+        $repository = $this->getCatalogRepository();
+        $request = $repository->searchRequestAddCountryAndCurrency();
+
+        $this->assertInstanceOf(ProductProjectionSearchRequest::class, $request);
+    }
+
+    public function testSearchRequestAddSearchParametersWithoutRequest()
+    {
+        $this->search->getSelectedValues(Argument::type(UriInterface::class))
+            ->willReturn(null)
+            ->shouldBeCalledOnce();
+
+        $this->search->addFacets(Argument::type(ProductProjectionSearchRequest::class), Argument::is(null))
+            ->will(function($args){return $args[0];})
+            ->shouldBeCalledOnce();
+
+        $uri = $this->prophesize(UriInterface::class);
+
+        $repository = $this->getCatalogRepository();
+        $request = $repository->searchRequestAddSearchParameters(null, 'en', $uri->reveal());
+
+        $this->assertInstanceOf(ProductProjectionSearchRequest::class, $request);
+    }
+
+    public function testSearchRequestAddSearchFiltersWithoutRequest()
+    {
+        $repository = $this->getCatalogRepository();
+        $request = $repository->searchRequestAddSearchFilters();
+
+        $this->assertInstanceOf(ProductProjectionSearchRequest::class, $request);
     }
 }
