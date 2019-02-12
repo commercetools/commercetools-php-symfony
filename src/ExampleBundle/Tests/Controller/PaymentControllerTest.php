@@ -5,24 +5,19 @@
 
 namespace Commercetools\Symfony\ExampleBundle\Tests\Controller;
 
-
 use Commercetools\Core\Client;
 use Commercetools\Core\Error\ApiError;
 use Commercetools\Core\Model\Cart\Cart;
 use Commercetools\Core\Model\Common\Money;
 use Commercetools\Core\Model\Customer\CustomerReference;
-use Commercetools\Core\Model\CustomField\CustomFieldObjectDraft;
 use Commercetools\Core\Model\Order\Order;
 use Commercetools\Core\Model\Payment\Payment;
 use Commercetools\Core\Model\Payment\PaymentStatus;
 use Commercetools\Core\Model\State\StateReference;
-use Commercetools\Core\Request\Carts\Command\CartAddPaymentAction;
-use Commercetools\Core\Request\Orders\Command\OrderAddPaymentAction;
 use Commercetools\Symfony\CartBundle\Manager\CartManager;
 use Commercetools\Symfony\CartBundle\Manager\OrderManager;
 use Commercetools\Symfony\CartBundle\Manager\PaymentManager;
-use Commercetools\Symfony\CartBundle\Model\CartUpdateBuilder;
-use Commercetools\Symfony\CartBundle\Model\OrderUpdateBuilder;
+use Commercetools\Symfony\CtpBundle\Service\CustomTypeProvider;
 use Commercetools\Symfony\CustomerBundle\Security\User\User;
 use Commercetools\Symfony\ExampleBundle\Controller\PaymentController;
 use Commercetools\Symfony\StateBundle\Model\CtpMarkingStore\CtpMarkingStorePaymentState;
@@ -119,10 +114,13 @@ class PaymentControllerTest extends WebTestCase
         $orderManager->getOrderForUser('en', 'order-1', null, 'baz')->willReturn(null)->shouldBeCalledOnce();
 
         $markingStorePaymentState = $this->prophesize(CtpMarkingStorePaymentState::class);
+        $customType = $this->prophesize(CustomTypeProvider::class);
 
         $controller = new PaymentController($this->client->reveal(), $this->paymentManager->reveal(), $this->registry->reveal());
         $controller->setContainer($this->myContainer->reveal());
-        $response = $controller->createPaymentForOrderAction($this->request->reveal(), $session->reveal(), $orderManager->reveal(), $markingStorePaymentState->reveal(), 'order-1');
+        $response = $controller->createPaymentForOrderAction(
+            $this->request->reveal(), $session->reveal(), $orderManager->reveal(), $markingStorePaymentState->reveal(), 'order-1', $customType->reveal()
+        );
 
         $this->assertTrue($response->isOk());
     }
@@ -135,6 +133,9 @@ class PaymentControllerTest extends WebTestCase
         $flashBag = $this->prophesize(FlashBag::class);
         $flashBag->add(Argument::is('error'), Argument::is('generic error message'))->shouldBeCalled();
         $session->getFlashBag()->willReturn($flashBag->reveal())->shouldBeCalled();
+
+        $customType = $this->prophesize(CustomTypeProvider::class);
+        $customType->getTypeReference('paymentsRelations')->willReturn(null)->shouldBeCalledOnce();
 
         $this->myContainer->has('session')->willReturn(true)->shouldBeCalled();
         $this->myContainer->get('session')->willReturn($session->reveal())->shouldBeCalled();
@@ -168,7 +169,9 @@ class PaymentControllerTest extends WebTestCase
 
         $controller = new PaymentController($this->client->reveal(), $this->paymentManager->reveal(), $this->registry->reveal());
         $controller->setContainer($this->myContainer->reveal());
-        $response = $controller->createPaymentForOrderAction($this->request->reveal(), $session->reveal(), $orderManager->reveal(), $markingStorePaymentState->reveal(), 'order-1');
+        $response = $controller->createPaymentForOrderAction(
+            $this->request->reveal(), $session->reveal(), $orderManager->reveal(), $markingStorePaymentState->reveal(), 'order-1', $customType->reveal()
+        );
 
         $this->assertTrue($response->isOk());
     }
@@ -182,6 +185,9 @@ class PaymentControllerTest extends WebTestCase
         $router->generate('_ctp_example_order', Argument::type('array'), 1)->willReturn('bar')->shouldBeCalledOnce();
 
         $this->request->getLocale()->willReturn('en')->shouldBeCalledTimes(2);
+
+        $customType = $this->prophesize(CustomTypeProvider::class);
+        $customType->getTypeReference('paymentsRelations')->willReturn(null)->shouldBeCalledOnce();
 
         $this->myContainer->get('router')->willReturn($router)->shouldBeCalledOnce();
 
@@ -208,7 +214,9 @@ class PaymentControllerTest extends WebTestCase
 
         $controller = new PaymentController($this->client->reveal(), $this->paymentManager->reveal(), $this->registry->reveal());
         $controller->setContainer($this->myContainer->reveal());
-        $response = $controller->createPaymentForOrderAction($this->request->reveal(), $session->reveal(), $orderManager->reveal(), $markingStorePaymentState->reveal(), 'order-1');
+        $response = $controller->createPaymentForOrderAction(
+            $this->request->reveal(), $session->reveal(), $orderManager->reveal(), $markingStorePaymentState->reveal(), 'order-1', $customType->reveal()
+        );
 
         $this->assertTrue($response->isRedirect());
     }
@@ -233,10 +241,13 @@ class PaymentControllerTest extends WebTestCase
         $cartManager->getCart('en', 'cart-1', null, 'baz')->willReturn(null)->shouldBeCalledOnce();
 
         $markingStorePaymentState = $this->prophesize(CtpMarkingStorePaymentState::class);
+        $customType = $this->prophesize(CustomTypeProvider::class);
 
         $controller = new PaymentController($this->client->reveal(), $this->paymentManager->reveal(), $this->registry->reveal());
         $controller->setContainer($this->myContainer->reveal());
-        $response = $controller->createPaymentForCartAction($this->request->reveal(), $session->reveal(), $cartManager->reveal(), $markingStorePaymentState->reveal());
+        $response = $controller->createPaymentForCartAction(
+            $this->request->reveal(), $session->reveal(), $cartManager->reveal(), $markingStorePaymentState->reveal(), $customType->reveal()
+        );
 
         $this->assertTrue($response->isOk());
     }
@@ -253,6 +264,9 @@ class PaymentControllerTest extends WebTestCase
         $flashBag = $this->prophesize(FlashBag::class);
         $flashBag->add(Argument::is('error'), Argument::is('generic error message'))->shouldBeCalled();
         $session->getFlashBag()->willReturn($flashBag->reveal())->shouldBeCalled();
+
+        $customType = $this->prophesize(CustomTypeProvider::class);
+        $customType->getTypeReference('paymentsRelations')->willReturn(null)->shouldBeCalledOnce();
 
         $this->myContainer->has('session')->willReturn(true)->shouldBeCalled();
         $this->myContainer->get('session')->willReturn($session->reveal())->shouldBeCalled();
@@ -284,7 +298,9 @@ class PaymentControllerTest extends WebTestCase
 
         $controller = new PaymentController($this->client->reveal(), $this->paymentManager->reveal(), $this->registry->reveal());
         $controller->setContainer($this->myContainer->reveal());
-        $response = $controller->createPaymentForCartAction($this->request->reveal(), $session->reveal(), $cartManager->reveal(), $markingStorePaymentState->reveal(), $user->reveal());
+        $response = $controller->createPaymentForCartAction(
+            $this->request->reveal(), $session->reveal(), $cartManager->reveal(), $markingStorePaymentState->reveal(), $customType->reveal(), $user->reveal()
+        );
 
         $this->assertTrue($response->isOk());
     }
@@ -299,6 +315,9 @@ class PaymentControllerTest extends WebTestCase
         $router->generate('_ctp_example_checkout_confirm', Argument::type('array'), 1)->willReturn('bar')->shouldBeCalledOnce();
 
         $this->request->getLocale()->willReturn('en')->shouldBeCalledTimes(2);
+
+        $customType = $this->prophesize(CustomTypeProvider::class);
+        $customType->getTypeReference('paymentsRelations')->willReturn(null)->shouldBeCalledOnce();
 
         $this->myContainer->get('router')->willReturn($router)->shouldBeCalledOnce();
 
@@ -324,7 +343,9 @@ class PaymentControllerTest extends WebTestCase
 
         $controller = new PaymentController($this->client->reveal(), $this->paymentManager->reveal(), $this->registry->reveal());
         $controller->setContainer($this->myContainer->reveal());
-        $response = $controller->createPaymentForCartAction($this->request->reveal(), $session->reveal(), $cartManager->reveal(), $markingStorePaymentState->reveal());
+        $response = $controller->createPaymentForCartAction(
+            $this->request->reveal(), $session->reveal(), $cartManager->reveal(), $markingStorePaymentState->reveal(), $customType->reveal()
+        );
 
         $this->assertTrue($response->isRedirect());
     }
@@ -346,7 +367,6 @@ class PaymentControllerTest extends WebTestCase
 
         $this->paymentManager->getPaymentForUser('en', 'payment-1', null, 'baz')
             ->willReturn(null)->shouldBeCalledOnce();
-
 
         $controller = new PaymentController($this->client->reveal(), $this->paymentManager->reveal(), $this->registry->reveal());
         $controller->setContainer($this->myContainer->reveal());

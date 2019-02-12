@@ -7,6 +7,7 @@ namespace Commercetools\Symfony\CartBundle\Manager;
 use Commercetools\Core\Error\InvalidArgumentException;
 use Commercetools\Core\Model\Common\Money;
 use Commercetools\Core\Model\Customer\CustomerReference;
+use Commercetools\Core\Model\CustomField\CustomFieldObjectDraft;
 use Commercetools\Core\Model\Payment\Payment;
 use Commercetools\Core\Model\Payment\PaymentCollection;
 use Commercetools\Core\Model\Payment\PaymentStatus;
@@ -18,7 +19,6 @@ use Commercetools\Symfony\CartBundle\Event\PaymentUpdateEvent;
 use Commercetools\Symfony\CartBundle\Model\PaymentUpdateBuilder;
 use Commercetools\Symfony\CartBundle\Model\Repository\PaymentRepository;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
-use Symfony\Component\Security\Core\User\UserInterface;
 
 class PaymentManager
 {
@@ -85,6 +85,7 @@ class PaymentManager
      * @param CustomerReference|null $customerReference
      * @param null $anonymousId
      * @param PaymentStatus|null $paymentStatus
+     * @param CustomFieldObjectDraft|null $customFieldObjectDraft
      * @return Payment
      */
     public function createPaymentForUser(
@@ -92,7 +93,8 @@ class PaymentManager
         Money $amountPlanned,
         CustomerReference $customerReference = null,
         $anonymousId = null,
-        PaymentStatus $paymentStatus = null
+        PaymentStatus $paymentStatus = null,
+        CustomFieldObjectDraft $customFieldObjectDraft = null
     ) {
         if (is_null($customerReference) && is_null($anonymousId)) {
             throw new InvalidArgumentException('At least one of `customerReference` or `anonymousId` should be present');
@@ -101,7 +103,7 @@ class PaymentManager
         $event = new PaymentCreateEvent();
         $this->dispatcher->dispatch(PaymentCreateEvent::class, $event);
 
-        $payment = $this->repository->createPayment($locale, $amountPlanned, $customerReference, $anonymousId, $paymentStatus);
+        $payment = $this->repository->createPayment($locale, $amountPlanned, $customerReference, $anonymousId, $paymentStatus, $customFieldObjectDraft);
 
         $eventPost = new PaymentPostCreateEvent($payment);
         $this->dispatcher->dispatch(PaymentPostCreateEvent::class, $eventPost);
