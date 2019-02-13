@@ -7,6 +7,7 @@ namespace Commercetools\Symfony\CartBundle\Model\Repository;
 use Commercetools\Core\Builder\Request\RequestBuilder;
 use Commercetools\Core\Model\Common\Money;
 use Commercetools\Core\Model\Customer\CustomerReference;
+use Commercetools\Core\Model\CustomField\CustomFieldObjectDraft;
 use Commercetools\Core\Model\Payment\Payment;
 use Commercetools\Core\Model\Payment\PaymentCollection;
 use Commercetools\Core\Model\Payment\PaymentDraft;
@@ -95,6 +96,7 @@ class PaymentRepository extends Repository
      * @param CustomerReference|null $customerReference
      * @param null $anonymousId
      * @param PaymentStatus|null $paymentStatus
+     * @param CustomFieldObjectDraft|null $customFieldObject
      * @return Payment
      */
     public function createPayment(
@@ -102,7 +104,8 @@ class PaymentRepository extends Repository
         Money $amountPlanned,
         CustomerReference $customerReference = null,
         $anonymousId = null,
-        PaymentStatus $paymentStatus = null
+        PaymentStatus $paymentStatus = null,
+        CustomFieldObjectDraft $customFieldObject = null
     ) {
         $paymentDraft = PaymentDraft::of()->setAmountPlanned($amountPlanned);
 
@@ -114,6 +117,10 @@ class PaymentRepository extends Repository
             $paymentDraft->setCustomer($customerReference);
         } elseif (!is_null($anonymousId)) {
             $paymentDraft->setAnonymousId($anonymousId);
+        }
+
+        if (!is_null($customFieldObject)) {
+            $paymentDraft->setCustom($customFieldObject);
         }
 
         $request = RequestBuilder::of()->payments()->create($paymentDraft);

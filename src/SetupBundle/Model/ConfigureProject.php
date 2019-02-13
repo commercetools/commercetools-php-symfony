@@ -103,7 +103,6 @@ class ConfigureProject
             return null;
         }
 
-
         $this->addActions($actionBuilder, $mapped);
         $project = $actionBuilder->flush();
 

@@ -8,6 +8,9 @@
         <defaults autowire="true" autoconfigure="true" public="false" />
         <prototype namespace="Commercetools\Symfony\SetupBundle\Command\" resource="../../Command/*" />
 
+        <service id="Commercetools\Symfony\SetupBundle\Command\CommercetoolsSyncCustomTypesFromLocalConfigCommand">
+            <argument key="$parameters">%commercetools.custom_types%</argument>
+        </service>
         <service id="Commercetools\Symfony\SetupBundle\Model\Repository\SetupRepository"
                  parent="Commercetools\Symfony\CtpBundle\Model\Repository" autowire="true" public="false" autoconfigure="false">
             <argument key="$enableCache">%commercetools.cache.setup%</argument>
