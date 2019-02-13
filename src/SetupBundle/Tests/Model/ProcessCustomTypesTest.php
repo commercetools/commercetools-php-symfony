@@ -5,7 +5,6 @@
 
 namespace Commercetools\Symfony\SetupBundle\Tests\Model;
 
-
 use Commercetools\Core\Model\Common\LocalizedString;
 use Commercetools\Core\Model\Type\FieldDefinition;
 use Commercetools\Core\Model\Type\TypeCollection;
@@ -725,7 +724,6 @@ class ProcessCustomTypesTest extends TestCase
         ];
 
         $this->assertEquals($expected, $requests);
-
     }
 
     public function testMapChangesWithFieldDefinitionsUpdate()
@@ -885,5 +883,4 @@ class ProcessCustomTypesTest extends TestCase
 
         $this->assertEquals($expected, $config);
     }
-
 }

@@ -120,7 +120,12 @@ class PaymentController extends AbstractController
         }
 
         $payment = $this->createPayment(
-            $request->getLocale(), $order->getTotalPrice(), $session, $markingStorePaymentState, $user, $custom ?? null
+            $request->getLocale(),
+            $order->getTotalPrice(),
+            $session,
+            $markingStorePaymentState,
+            $user,
+            $custom ?? null
         );
 
         if (!$payment instanceof Payment) {
@@ -164,7 +169,12 @@ class PaymentController extends AbstractController
         }
 
         $payment = $this->createPayment(
-            $request->getLocale(), $cart->getTotalPrice(), $session, $markingStorePaymentState, $user, $custom ?? null
+            $request->getLocale(),
+            $cart->getTotalPrice(),
+            $session,
+            $markingStorePaymentState,
+            $user,
+            $custom ?? null
         );
 
         if (!$payment instanceof Payment) {

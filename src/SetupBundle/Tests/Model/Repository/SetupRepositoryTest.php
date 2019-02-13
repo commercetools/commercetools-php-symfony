@@ -151,5 +151,4 @@ class SetupRepositoryTest extends TestCase
         $repository = $this->getSetupRepository();
         $repository->getCustomTypes();
     }
-
 }
