@@ -72,7 +72,7 @@ class ItemStateWrapper implements StateWrapper
         return $this->resource;
     }
 
-    function getResourceClass()
+    public function getResourceClass()
     {
         return get_class($this->resource);
     }

@@ -20,7 +20,6 @@ use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
 class ShoppingListManagerTest extends TestCase
 {
-
     public function testApply()
     {
         $shoppingList = $this->prophesize(ShoppingList::class);

@@ -9,5 +9,4 @@ use Symfony\Component\EventDispatcher\Event;
 
 class ReviewPostCreateEvent extends Event
 {
-
 }
