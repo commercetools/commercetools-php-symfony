@@ -268,7 +268,7 @@ class CatalogRepository extends Repository
     {
         $request = RequestBuilder::of()->products()->update($product)->setActions($actions);
 
-        if(!is_null($params)){
+        if (!is_null($params)) {
             foreach ($params->getParams() as $param) {
                 $request->addParamObject($param);
             }

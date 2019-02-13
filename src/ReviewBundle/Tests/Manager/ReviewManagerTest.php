@@ -28,12 +28,16 @@ class ReviewManagerTest extends TestCase
         $dispatcher = $this->prophesize(EventDispatcherInterface::class);
 
         $repository->update($review, Argument::type('array'))
-            ->will(function ($args) { return $args[0]; })->shouldBeCalled();
+            ->will(function ($args) {
+                return $args[0];
+            })->shouldBeCalled();
 
         $dispatcher->dispatch(
             Argument::containingString(ReviewPostUpdateEvent::class),
             Argument::type(ReviewPostUpdateEvent::class)
-        )->will(function ($args) { return $args[1]; })->shouldBeCalled();
+        )->will(function ($args) {
+            return $args[1];
+        })->shouldBeCalled();
 
         $manager = new ReviewManager($repository->reveal(), $dispatcher->reveal());
         $review = $manager->apply($review->reveal(), []);
@@ -49,7 +53,9 @@ class ReviewManagerTest extends TestCase
         $dispatcher->dispatch(
             Argument::containingString(AbstractAction::class),
             Argument::type(ReviewUpdateEvent::class)
-        )->will(function ($args) { return $args[1]; })->shouldBeCalled();
+        )->will(function ($args) {
+            return $args[1];
+        })->shouldBeCalled();
         $action = $this->prophesize(AbstractAction::class);
 
         $manager = new ReviewManager($repository->reveal(), $dispatcher->reveal());
@@ -71,7 +77,7 @@ class ReviewManagerTest extends TestCase
 
         $manager = new ReviewManager($repository->reveal(), $dispatcher->reveal());
 
-        $review = $manager->createForProduct('en', $productReference->reveal(), null, 'foo','2');
+        $review = $manager->createForProduct('en', $productReference->reveal(), null, 'foo', '2');
         $this->assertInstanceOf(Review::class, $review);
     }
 
@@ -83,7 +89,6 @@ class ReviewManagerTest extends TestCase
 
         $manager = new ReviewManager($repository->reveal(), $dispatcher->reveal());
         $this->assertInstanceOf(ReviewUpdateBuilder::class, $manager->update($review->reveal()));
-
     }
 
     public function testGetReviewById()

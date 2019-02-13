@@ -5,7 +5,6 @@
 
 namespace Commercetools\Symfony\StateBundle\Tests\Model\TransitionHandler;
 
-
 use Commercetools\Core\Model\Product\Product;
 use Commercetools\Core\Request\Products\Command\ProductTransitionStateAction;
 use Commercetools\Symfony\CatalogBundle\Manager\CatalogManager;

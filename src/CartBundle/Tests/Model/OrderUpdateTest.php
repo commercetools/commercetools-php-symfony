@@ -104,7 +104,9 @@ class OrderUpdateTest extends TestCase
             $order,
             Argument::type($actionClass),
             Argument::is(null)
-        )->will(function ($args) { return [$args[1]]; })->shouldBeCalledTimes(1);
+        )->will(function ($args) {
+            return [$args[1]];
+        })->shouldBeCalledTimes(1);
 
         $update = new OrderUpdateBuilder($order->reveal(), $manager->reveal());
 
@@ -133,7 +135,9 @@ class OrderUpdateTest extends TestCase
             $order,
             Argument::type($actionClass),
             Argument::is(null)
-        )->will(function ($args) { return [$args[1]]; })->shouldBeCalledTimes(1);
+        )->will(function ($args) {
+            return [$args[1]];
+        })->shouldBeCalledTimes(1);
 
         $update = new OrderUpdateBuilder($order->reveal(), $manager->reveal());
 

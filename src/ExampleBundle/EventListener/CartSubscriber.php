@@ -5,7 +5,6 @@
 
 namespace Commercetools\Symfony\ExampleBundle\EventListener;
 
-
 use Commercetools\Core\Request\AbstractAction;
 use Commercetools\Symfony\CartBundle\Event\CartCreateEvent;
 use Commercetools\Symfony\CartBundle\Event\CartGetEvent;
@@ -117,5 +116,4 @@ class CartSubscriber implements EventSubscriberInterface
 
         $this->shoppingListManager->deleteShoppingList($action->getContext()->getLocale(), $shoppingList);
     }
-
 }

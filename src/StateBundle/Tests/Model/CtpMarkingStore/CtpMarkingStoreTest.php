@@ -5,7 +5,6 @@
 
 namespace Commercetools\Symfony\StateBundle\Tests\Model;
 
-
 use Commercetools\Core\Model\Order\Order;
 use Commercetools\Core\Model\State\StateReference;
 use Commercetools\Symfony\StateBundle\Cache\StateKeyResolver;
@@ -34,7 +33,7 @@ class CtpMarkingStoreTest extends TestCase
     public function testGetMarkingForResource()
     {
         $stateKeyResolver = $this->prophesize(StateKeyResolver::class);
-        $stateKeyResolver->resolve(Argument::type(StateReference::class))->will(function($args){
+        $stateKeyResolver->resolve(Argument::type(StateReference::class))->will(function ($args) {
             $state = $args[0];
             return $state->getKey();
         })->shouldBeCalledOnce();
@@ -53,7 +52,7 @@ class CtpMarkingStoreTest extends TestCase
     public function testGetMarkingForStateWrapper()
     {
         $stateKeyResolver = $this->prophesize(StateKeyResolver::class);
-        $stateKeyResolver->resolve(Argument::type(StateReference::class))->will(function($args){
+        $stateKeyResolver->resolve(Argument::type(StateReference::class))->will(function ($args) {
             $state = $args[0];
             return $state->getKey();
         })->shouldBeCalledOnce();

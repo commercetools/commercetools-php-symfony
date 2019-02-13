@@ -5,7 +5,6 @@
 
 namespace Commercetools\Symfony\StateBundle\Model;
 
-
 use Commercetools\Core\Model\Cart\CustomLineItem;
 use Commercetools\Core\Model\Cart\LineItem;
 use Commercetools\Core\Model\Common\Resource;
@@ -86,7 +85,7 @@ class ItemStateWrapper implements StateWrapper
 
         if ($item instanceof LineItem) {
             $this->lineItem = $item;
-        } else if ($item instanceof CustomLineItem) {
+        } elseif ($item instanceof CustomLineItem) {
             $this->customLineItem = $item;
         }
     }
@@ -100,12 +99,18 @@ class ItemStateWrapper implements StateWrapper
     {
         if ($this->lineItem) {
             return OrderTransitionLineItemStateAction::ofLineItemIdQuantityAndFromToState(
-                $this->lineItem->getId(), $this->getQuantity(), $this->stateReference, StateReference::ofKey($toState)
+                $this->lineItem->getId(),
+                $this->getQuantity(),
+                $this->stateReference,
+                StateReference::ofKey($toState)
             );
         }
 
         return OrderTransitionCustomLineItemStateAction::ofCustomLineItemIdQuantityAndFromToState(
-            $this->customLineItem->getId(), $this->getQuantity(), $this->stateReference, StateReference::ofKey($toState)
+            $this->customLineItem->getId(),
+            $this->getQuantity(),
+            $this->stateReference,
+            StateReference::ofKey($toState)
         );
     }
 

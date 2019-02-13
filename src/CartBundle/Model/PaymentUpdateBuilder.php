@@ -4,7 +4,6 @@
 
 namespace Commercetools\Symfony\CartBundle\Model;
 
-
 use Commercetools\Core\Builder\Update\PaymentsActionBuilder;
 use Commercetools\Core\Model\Payment\Payment;
 use Commercetools\Core\Request\AbstractAction;

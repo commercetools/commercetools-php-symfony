@@ -5,7 +5,6 @@
 
 namespace Commercetools\Symfony\CatalogBundle\Tests\Model;
 
-
 use Commercetools\Core\Model\Product\Product;
 use Commercetools\Core\Request\Products\Command\ProductAddPriceAction;
 use Commercetools\Core\Request\Products\Command\ProductSetKeyAction;
@@ -44,7 +43,9 @@ class ProductUpdateTest extends TestCase
             $cart,
             Argument::type($actionClass),
             Argument::is(null)
-        )->will(function ($args) { return [$args[1]]; })->shouldBeCalledTimes(1);
+        )->will(function ($args) {
+            return [$args[1]];
+        })->shouldBeCalledTimes(1);
 
         $update = new ProductUpdateBuilder($cart->reveal(), $manager->reveal());
 
@@ -73,7 +74,9 @@ class ProductUpdateTest extends TestCase
             $cart,
             Argument::type($actionClass),
             Argument::is(null)
-        )->will(function ($args) { return [$args[1]]; })->shouldBeCalledTimes(1);
+        )->will(function ($args) {
+            return [$args[1]];
+        })->shouldBeCalledTimes(1);
 
         $update = new ProductUpdateBuilder($cart->reveal(), $manager->reveal());
 

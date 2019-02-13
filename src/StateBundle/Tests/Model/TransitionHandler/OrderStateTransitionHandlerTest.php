@@ -5,7 +5,6 @@
 
 namespace Commercetools\Symfony\StateBundle\Tests\Model\TransitionHandler;
 
-
 use Commercetools\Core\Model\Order\Order;
 use Commercetools\Core\Request\Orders\Command\OrderTransitionStateAction;
 use Commercetools\Symfony\CartBundle\Manager\OrderManager;

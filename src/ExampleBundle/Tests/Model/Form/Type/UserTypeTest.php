@@ -5,7 +5,6 @@
 
 namespace Commercetools\Symfony\ExampleBundle\Tests\Model\Form\Type;
 
-
 use Commercetools\Symfony\ExampleBundle\Entity\UserDetails;
 use Commercetools\Symfony\ExampleBundle\Model\Form\Type\UserType;
 use Symfony\Component\Form\Test\TypeTestCase;
@@ -48,5 +47,4 @@ class UserTypeTest extends TypeTestCase
             $this->assertArrayHasKey($key, $children);
         }
     }
-
 }

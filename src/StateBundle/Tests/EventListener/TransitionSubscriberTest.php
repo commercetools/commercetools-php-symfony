@@ -5,7 +5,6 @@
 
 namespace Commercetools\Symfony\StateBundle\Tests\EventListener;
 
-
 use Commercetools\Symfony\StateBundle\EventListener\TransitionSubscriber;
 use Commercetools\Symfony\StateBundle\Model\TransitionHandler\SubjectHandler;
 use PHPUnit\Framework\TestCase;
@@ -24,5 +23,4 @@ class TransitionSubscriberTest extends TestCase
         $this->assertInstanceOf(TransitionSubscriber::class, $transitionSubscriber);
         $transitionSubscriber->transitionSubject($event->reveal());
     }
-
 }

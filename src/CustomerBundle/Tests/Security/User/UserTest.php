@@ -5,7 +5,6 @@
 
 namespace Commercetools\Symfony\CustomerBundle\Tests\Security\User;
 
-
 use Commercetools\Symfony\CustomerBundle\Security\User\User;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Security\Core\User\UserInterface;
@@ -55,4 +54,3 @@ class UserTest extends TestCase
         $this->assertSame('bar', $user->getShippingAddresses());
     }
 }
-

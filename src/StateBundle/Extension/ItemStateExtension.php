@@ -5,7 +5,6 @@
 
 namespace Commercetools\Symfony\StateBundle\Extension;
 
-
 use Commercetools\Core\Model\Order\Order;
 use Commercetools\Core\Model\State\StateReference;
 use Commercetools\Symfony\StateBundle\Cache\StateKeyResolver;

@@ -28,12 +28,16 @@ class ShoppingListManagerTest extends TestCase
         $dispatcher = $this->prophesize(EventDispatcherInterface::class);
 
         $repository->update($shoppingList, Argument::type('array'))
-            ->will(function ($args) { return $args[0]; })->shouldBeCalled();
+            ->will(function ($args) {
+                return $args[0];
+            })->shouldBeCalled();
 
         $dispatcher->dispatch(
             Argument::containingString(ShoppingListPostUpdateEvent::class),
             Argument::type(ShoppingListPostUpdateEvent::class)
-        )->will(function ($args) { return $args[1]; })->shouldBeCalled();
+        )->will(function ($args) {
+            return $args[1];
+        })->shouldBeCalled();
 
         $manager = new ShoppingListManager($repository->reveal(), $dispatcher->reveal());
         $list = $manager->apply($shoppingList->reveal(), []);
@@ -109,7 +113,6 @@ class ShoppingListManagerTest extends TestCase
 
         $manager = new ShoppingListManager($repository->reveal(), $dispatcher->reveal());
         $manager->getShoppingListForUser('en', 'list-1');
-
     }
 
     public function testCreateShoppingListByCustomer()
@@ -164,7 +167,9 @@ class ShoppingListManagerTest extends TestCase
         $dispatcher->dispatch(
             Argument::containingString(AbstractAction::class),
             Argument::type(ShoppingListUpdateEvent::class)
-        )->will(function ($args) { return $args[1]; })->shouldBeCalled();
+        )->will(function ($args) {
+            return $args[1];
+        })->shouldBeCalled();
         $action = $this->prophesize(AbstractAction::class);
 
         $manager = new ShoppingListManager($repository->reveal(), $dispatcher->reveal());
@@ -182,7 +187,6 @@ class ShoppingListManagerTest extends TestCase
 
         $manager = new ShoppingListManager($repository->reveal(), $dispatcher->reveal());
         $this->assertInstanceOf(ShoppingListUpdateBuilder::class, $manager->update($shoppingList->reveal()));
-
     }
 
     public function testGetById()

@@ -4,7 +4,6 @@
 
 namespace Commercetools\Symfony\ReviewBundle\Manager;
 
-
 use Commercetools\Core\Model\Customer\CustomerReference;
 use Commercetools\Core\Model\Product\ProductReference;
 use Commercetools\Core\Request\AbstractAction;

@@ -147,7 +147,7 @@ class FacetConfig
                     break;
                 case static::TYPE_CATEGORIES:
                     $this->filterField = 'categories.id';
-                    break;                    
+                    break;
                 default:
                     throw new \InvalidArgumentException(sprintf('Facet type not configured for facet %s', $this->getField()));
             }
@@ -292,7 +292,6 @@ class FacetConfig
             if (isset($range['to']) && $range['to'] != '*') {
                 $rangeObject->setTo($range['to']);
             }
-
         }
         return $rangeObject;
     }

@@ -142,7 +142,7 @@ class CartManager
      */
     public function dispatchPostGet(Cart $cart = null)
     {
-        if (is_null($cart)){
+        if (is_null($cart)) {
             $event = new CartNotFoundEvent();
             $this->dispatcher->dispatch(CartNotFoundEvent::class, $event);
         } else {

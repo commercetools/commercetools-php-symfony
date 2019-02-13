@@ -5,7 +5,6 @@
 
 namespace Commercetools\Symfony\StateBundle\Tests\Model\CtpMarkingStore;
 
-
 use Commercetools\Core\Model\Order\Order;
 use Commercetools\Core\Model\Payment\Payment;
 use Commercetools\Core\Model\Payment\PaymentStatus;

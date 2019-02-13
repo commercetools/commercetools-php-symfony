@@ -5,7 +5,6 @@
 
 namespace Commercetools\Symfony\StateBundle\Tests\Cache;
 
-
 use Commercetools\Symfony\StateBundle\Cache\StateKeyResolver;
 use Commercetools\Symfony\StateBundle\Cache\StateWarmer;
 use PHPUnit\Framework\TestCase;
@@ -21,5 +20,4 @@ class StateWarmerTest extends TestCase
         $this->assertTrue($stateWarmer->isOptional());
         $stateWarmer->warmUp(null);
     }
-
 }

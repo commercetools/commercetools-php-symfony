@@ -5,7 +5,6 @@
 
 namespace Commercetools\Symfony\StateBundle\Model\CtpMarkingStore;
 
-
 use Commercetools\Core\Model\Payment\Payment;
 
 class CtpMarkingStorePaymentState extends CtpMarkingStore

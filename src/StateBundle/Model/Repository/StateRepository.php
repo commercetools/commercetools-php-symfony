@@ -5,7 +5,6 @@
 
 namespace Commercetools\Symfony\StateBundle\Model\Repository;
 
-
 use Commercetools\Core\Builder\Request\RequestBuilder;
 use Commercetools\Core\Client;
 use Commercetools\Core\Model\State\State;

@@ -58,7 +58,9 @@ class ReviewUpdateTest extends TestCase
             $review,
             Argument::type($actionClass),
             Argument::is(null)
-        )->will(function ($args) { return [$args[1]]; })->shouldBeCalledTimes(1);
+        )->will(function ($args) {
+            return [$args[1]];
+        })->shouldBeCalledTimes(1);
 
         $update = new ReviewUpdateBuilder($review->reveal(), $manager->reveal());
 
@@ -87,7 +89,9 @@ class ReviewUpdateTest extends TestCase
             $review,
             Argument::type($actionClass),
             Argument::is(null)
-        )->will(function ($args) { return [$args[1]]; })->shouldBeCalledTimes(1);
+        )->will(function ($args) {
+            return [$args[1]];
+        })->shouldBeCalledTimes(1);
 
         $update = new ReviewUpdateBuilder($review->reveal(), $manager->reveal());
 

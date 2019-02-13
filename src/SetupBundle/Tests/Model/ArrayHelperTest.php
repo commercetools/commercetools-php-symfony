@@ -5,7 +5,6 @@
 
 namespace Commercetools\Symfony\SetupBundle\Tests\Model;
 
-
 use Commercetools\Symfony\SetupBundle\Model\ArrayHelper;
 use PHPUnit\Framework\TestCase;
 

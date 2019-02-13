@@ -5,7 +5,6 @@
 
 namespace Commercetools\Symfony\ExampleBundle\EventListener;
 
-
 use Commercetools\Core\Model\Order\Order;
 use Commercetools\Core\Model\Payment\PaymentReference;
 use Commercetools\Core\Request\Carts\Command\CartAddPaymentAction;
@@ -64,7 +63,7 @@ class PaymentSubscriber implements EventSubscriberInterface
                     OrderAddPaymentAction::of()->setPayment(PaymentReference::ofId($event->getPayment()->getId()))
                 );
                 $orderBuilder->flush();
-            } else if (!empty($cartId)) {
+            } elseif (!empty($cartId)) {
                 $cart = $this->cartManager->getCart($event->getPayment()->getContext()->getLocale(), $cartId);
 
                 $cartBuilder = $this->cartManager->update($cart);

@@ -4,7 +4,6 @@
 
 namespace Commercetools\Symfony\CartBundle\Model\Repository;
 
-
 use Commercetools\Core\Builder\Request\RequestBuilder;
 use Commercetools\Core\Model\Common\Money;
 use Commercetools\Core\Model\Customer\CustomerReference;
@@ -81,7 +80,7 @@ class PaymentRepository extends Repository
     {
         $request = RequestBuilder::of()->payments()->update($payment)->setActions($actions);
 
-        if(!is_null($params)){
+        if (!is_null($params)) {
             foreach ($params->getParams() as $param) {
                 $request->addParamObject($param);
             }
@@ -113,7 +112,7 @@ class PaymentRepository extends Repository
 
         if (!is_null($customerReference)) {
             $paymentDraft->setCustomer($customerReference);
-        } else if (!is_null($anonymousId)) {
+        } elseif (!is_null($anonymousId)) {
             $paymentDraft->setAnonymousId($anonymousId);
         }
 

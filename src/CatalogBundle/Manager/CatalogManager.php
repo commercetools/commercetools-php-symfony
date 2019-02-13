@@ -4,7 +4,6 @@
 
 namespace Commercetools\Symfony\CatalogBundle\Manager;
 
-
 use Commercetools\Core\Model\Product\Product;
 use Commercetools\Core\Model\Product\ProductProjection;
 use Commercetools\Core\Request\AbstractAction;
@@ -61,7 +60,7 @@ class CatalogManager
         UriInterface $uri,
         $search = null,
         $filters = null
-    ){
+    ) {
         $searchRequest = $this->repository->baseSearchProductsRequest($itemsPerPage, $currentPage, $sort);
         $searchRequest = $this->repository->searchRequestAddCountryAndCurrency($searchRequest, $country, $currency);
         $searchRequest = $this->repository->searchRequestAddSearchParameters($searchRequest, $locale, $uri, $search);

@@ -5,7 +5,6 @@
 
 namespace Commercetools\Symfony\ExampleBundle\Tests\Controller;
 
-
 use Commercetools\Core\Client;
 use Commercetools\Core\Error\ApiError;
 use Commercetools\Core\Model\Cart\Cart;
@@ -370,7 +369,7 @@ class PaymentControllerTest extends WebTestCase
         $this->myContainer->has('twig')->willReturn(true)->shouldBeCalledOnce();
         $this->myContainer->get('twig')->willReturn($this->twig)->shouldBeCalledOnce();
 
-        $this->registry->get(Argument::type(Payment::class))->will(function(){
+        $this->registry->get(Argument::type(Payment::class))->will(function () {
             throw new InvalidArgumentException();
         })->shouldBeCalledOnce();
 

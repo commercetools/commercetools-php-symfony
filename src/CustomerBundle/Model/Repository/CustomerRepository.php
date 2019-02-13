@@ -38,7 +38,7 @@ class CustomerRepository extends Repository
     {
         $request = RequestBuilder::of()->customers()->update($customer)->setActions($actions);
 
-        if(!is_null($params)){
+        if (!is_null($params)) {
             foreach ($params->getParams() as $param) {
                 $request->addParamObject($param);
             }
@@ -73,9 +73,8 @@ class CustomerRepository extends Repository
             ->setEmail($email)
             ->setPassword($password);
 
-        if (!is_null($session)){
+        if (!is_null($session)) {
             $customerDraft->setAnonymousId($session->getId());
-
         }
 
         $request = RequestBuilder::of()->customers()->create($customerDraft);

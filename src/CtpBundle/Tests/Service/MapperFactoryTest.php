@@ -5,7 +5,6 @@
 
 namespace Commercetools\Symfony\CtpBundle\Tests\Service;
 
-
 use Commercetools\Core\Model\JsonObjectMapper;
 use Commercetools\Symfony\CtpBundle\Service\ContextFactory;
 use Commercetools\Symfony\CtpBundle\Service\MapperFactory;

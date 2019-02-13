@@ -5,7 +5,6 @@
 
 namespace Commercetools\Symfony\CustomerBundle\Tests\Security\User;
 
-
 use Commercetools\Symfony\CustomerBundle\Security\User\CtpUser;
 use Commercetools\Symfony\CustomerBundle\Security\User\User;
 use Commercetools\Symfony\CustomerBundle\Security\User\UserProvider;
@@ -64,6 +63,3 @@ class UserProviderTest extends TestCase
         $this->assertFalse($this->userProvider->supportsClass(CtpUser::class));
     }
 }
-
-
-

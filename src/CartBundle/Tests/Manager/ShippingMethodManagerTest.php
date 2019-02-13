@@ -5,7 +5,6 @@
 
 namespace Commercetools\Symfony\CartBundle\Tests\Manager;
 
-
 use Commercetools\Core\Model\ShippingMethod\ShippingMethod;
 use Commercetools\Core\Model\ShippingMethod\ShippingMethodCollection;
 use Commercetools\Core\Model\Zone\Location;

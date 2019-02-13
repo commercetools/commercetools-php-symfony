@@ -5,7 +5,6 @@
 
 namespace Commercetools\Symfony\StateBundle\Cache;
 
-
 use Commercetools\Symfony\StateBundle\Model\Repository\StateRepository;
 use Psr\Cache\CacheItemPoolInterface;
 use Symfony\Component\HttpKernel\CacheWarmer\CacheWarmerInterface;

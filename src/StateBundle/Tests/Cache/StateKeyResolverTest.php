@@ -5,7 +5,6 @@
 
 namespace Commercetools\Symfony\StateBundle\Tests\Cache;
 
-
 use Cache\Adapter\Common\CacheItem;
 use Commercetools\Core\Model\State\State;
 use Commercetools\Core\Model\State\StateCollection;
@@ -132,5 +131,4 @@ class StateKeyResolverTest extends TestCase
         $stateKeyResolver = new StateKeyResolver($stateRepository->reveal(), $cache->reveal());
         $stateKeyResolver->fillCache();
     }
-
 }

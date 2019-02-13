@@ -5,7 +5,6 @@
 
 namespace Commercetools\Symfony\StateBundle\Tests\Model;
 
-
 use Commercetools\Core\Model\State\State;
 use Commercetools\Core\Model\State\StateCollection;
 use Commercetools\Core\Model\State\StateReference;
@@ -30,26 +29,21 @@ class ProcessStatesTest extends TestCase
                     StateReferenceCollection::of()
                         ->add(StateReference::ofId('123'))
                         ->add(StateReference::ofId('456'))
-                )
-            )
+                ))
             ->add(State::of()
                 ->setType('OrderState')
                 ->setKey('canceled')
-                ->setId('123')
-            )
+                ->setId('123'))
             ->add(State::of()
                 ->setType('OrderState')
                 ->setKey('shipped')
-                ->setId('456')
-            )->add(State::of()
+                ->setId('456'))->add(State::of()
                 ->setType('OrderState')
                 ->setKey('completed')
                 ->setTransitions(
                     StateReferenceCollection::of()
                         ->add(StateReference::ofId('123'))
-                )
-            );
-
+                ));
     }
 
     public function testParseAsStateMachine()

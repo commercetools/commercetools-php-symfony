@@ -5,7 +5,6 @@
 
 namespace Commercetools\Symfony\StateBundle\Model\TransitionHandler;
 
-
 use Commercetools\Symfony\CartBundle\Manager\OrderManager;
 use Commercetools\Symfony\CartBundle\Model\OrderUpdateBuilder;
 use Symfony\Component\Workflow\Event\Event;

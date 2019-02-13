@@ -5,7 +5,6 @@
 
 namespace Commercetools\Symfony\CartBundle\Tests\Event;
 
-
 use Commercetools\Core\Model\Payment\Payment;
 use Commercetools\Symfony\CartBundle\Event\PaymentPostCreateEvent;
 use PHPUnit\Framework\TestCase;

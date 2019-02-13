@@ -5,7 +5,6 @@
 
 namespace Commercetools\Symfony\ShoppingListBundle\Tests\Event;
 
-
 use Commercetools\Core\Model\ShoppingList\ShoppingList;
 use Commercetools\Core\Request\ShoppingLists\Command\ShoppingListChangeNameAction;
 use Commercetools\Core\Request\ShoppingLists\Command\ShoppingListSetCustomerAction;

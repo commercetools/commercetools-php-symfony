@@ -32,13 +32,15 @@ class ClientFactoryTest extends TestCase
         $this->profiler = $this->prophesize(CommercetoolsProfilerExtension::class);
 
         $this->cache = new ExternalAdapter();
-
     }
 
     public function testBuild()
     {
         $factory = new ClientFactory(
-            $this->config->reveal(), $this->contextFactory->reveal(), $this->cache, $this->converter->reveal()
+            $this->config->reveal(),
+            $this->contextFactory->reveal(),
+            $this->cache,
+            $this->converter->reveal()
         );
 
         $client = $factory->build();
@@ -54,7 +56,12 @@ class ClientFactoryTest extends TestCase
         $profiler->getProfileMiddleWare()->willReturn(ProfileMiddleware::create($profiler->reveal()))->shouldBeCalledOnce();
 
         $factory = new ClientFactory(
-            $this->config->reveal(), $this->contextFactory->reveal(), $this->cache, $this->converter->reveal(), $logger->reveal(), $profiler->reveal()
+            $this->config->reveal(),
+            $this->contextFactory->reveal(),
+            $this->cache,
+            $this->converter->reveal(),
+            $logger->reveal(),
+            $profiler->reveal()
         );
 
         $client = $factory->build('en', null, [
