@@ -1,11 +1,15 @@
-# Symfony bundle installation guide
+# commercetools Symfony bundle
+
+commercetools Symfony Bundle is collection of symfony bundles that ease the usage of 
+[commercetools PHP-SDK](https://github.com/commercetools/commercetools-php-sdk) when using
+on a Symfony project.
 
 ## Requirements
 Composer :
 To install the composer go to https://getcomposer.org/doc/00-intro.md
 
 ## Installation
-Create a new symfony project 
+Create a new Symfony project 
 ```sh
 composer create-project symfony/skeleton
 ```
@@ -42,18 +46,21 @@ CTP_SCOPES=<your desired scopes>
 
 ## Usage
 
-commercetools symfony bundle consists of 8 smaller bundles
+commercetools symfony bundle consists of 8 smaller bundles (The dependencies mentioned are
+only the additional ones, required for bundle-specific functionalities)
 
 - CartBundle
 - CatalogBundle
 - CtpBundle
 - CustomerBundle
+    - depends: `symfony/security-bundle`
 - ReviewBundle
 - SetupBundle
+    - depends: `symfony/console`
 - ShoppingListBundle
 - StateBundle
+    - depends: `symfony/console`, `symfony/workflow`, `twig/extensions`
 
-### Usage of 
 
 ### Usage of available services 
 
@@ -71,10 +78,13 @@ class MyController
 {
     public function index(CatalogManager $manager)
     {
+        /** @var CategoryCollection $categories */
         $categories = $manager->getCategories('en');
 
         return new Response(
-            '<html><body>categories: '.json_encode($categories).'</body></html>'
+            '<html><body>categories: '
+            // handle CategoryCollection $categories
+            .'</body></html>'
         );
     }
 }
@@ -89,8 +99,13 @@ class MyController
     - ShippingMethodManager
 - CatalogBundle
     - CatalogManager
+    - Search
 - CtpBundle
     - ClientFactory
+    - ContextFactory
+    - MapperFactory
+    - LocaleConverter
+    - CustomTypeProvider
 - CustomerBundle
     - CustomerManager
     - AuthenticationProvider
@@ -103,6 +118,37 @@ class MyController
     - ShoppingListManager
 - StateBundle
     - ...
+    
+### Available console commands
+
+To use the commands navigate to your project's directory and run
+
+```sh
+bin/console commercetools:<command-name>
+```
+
+#### Available console commands
+
+- SetupBundle
+    - `project-info` // Fetches and displays information from commercetoools platform
+    about the configured project
+    - `project-apply-configuration` // Save the local project configuration that resides under
+    `commercetools` key on the commercetools platform
+    - `create-custom-type` // Interactive CLI to create CustomTypes on your project
+    - `sync-custom-types-from-server` // Saves the CustomTypes currently present on the project
+    in `<PROJECT_DIR>/config/packages/<ENV>/custom_types.yaml`
+    - `sync-custom-types-from-local` // Saves or updates the CustomTypes present in 
+    `<PROJECT_DIR>/config/packages/<ENV>/custom_types.yaml` on your commercetools project
+    
+- StateBundle
+    - `set-state-machine-config` // Fetches States from commercetools platform and creates a 
+    Symfony `state_machine` type configuration file at 
+    `<PROJECT_DIR>/config/packages/<ENV>/workflow.yaml`
+    - `set-workflow-config` // Fetches States from commercetools platform and creates a Symfony
+    `workflow` type configuration file at `<PROJECT_DIR>/config/packages/<ENV>/workflow.yaml`
+    
+      More info on working with Symfony Workflows can be found on Symfony's documentation:
+      https://symfony.com/doc/current/workflow/usage.html
 
 ### Usage of SDK Models in templates
 
@@ -119,3 +165,15 @@ Clone the project and navigate on the project's directory. On the command line, 
 composer install
 ./vendor/bin/phpunit
 ```
+
+## Report an issue
+
+[TODO]
+
+## Contribute
+
+[TODO]
+
+## License
+This bundle is under the MIT license. See the complete license in the bundle:
+[MIT License](https://github.com/commercetools/commercetools-php-symfony/blob/develop/LICENSE)
