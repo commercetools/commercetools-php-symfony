@@ -8,10 +8,14 @@ namespace Commercetools\Symfony\SetupBundle\Tests\Model\Repository;
 
 use Commercetools\Core\Builder\Update\ProjectActionBuilder;
 use Commercetools\Core\Client;
+use Commercetools\Core\Model\Common\LocalizedString;
 use Commercetools\Core\Model\Project\Project;
+use Commercetools\Core\Model\Type\TypeDraft;
 use Commercetools\Core\Request\Project\Command\ProjectChangeNameAction;
 use Commercetools\Core\Request\Project\ProjectGetRequest;
 use Commercetools\Core\Request\Project\ProjectUpdateRequest;
+use Commercetools\Core\Request\Types\TypeCreateRequest;
+use Commercetools\Core\Request\Types\TypeQueryRequest;
 use Commercetools\Core\Response\ResourceResponse;
 use Commercetools\Symfony\CtpBundle\Logger\Logger;
 use Commercetools\Symfony\CtpBundle\Service\MapperFactory;
@@ -119,6 +123,35 @@ class SetupRepositoryTest extends TestCase
         $repository = $this->getSetupRepository();
         $builder = $repository->getActionBuilder(Project::of());
         $this->assertInstanceOf(ProjectActionBuilder::class, $builder);
+    }
+
+    public function testCreateCustomType()
+    {
+        $this->client->execute(
+            Argument::type(TypeCreateRequest::class),
+            Argument::is(null)
+        )->willReturn($this->response->reveal())->shouldBeCalledOnce();
+
+        $typeDraft = TypeDraft::ofKeyNameDescriptionAndResourceTypes(
+            'key-1',
+            LocalizedString::ofLangAndText('en', 'name-1'),
+            LocalizedString::ofLangAndText('en', 'description-1'),
+            ['resource-1']
+        );
+
+        $repository = $this->getSetupRepository();
+        $repository->createCustomType($typeDraft);
+    }
+
+    public function testGetCustomTypes()
+    {
+        $this->client->execute(
+            Argument::type(TypeQueryRequest::class),
+            Argument::is(null)
+        )->willReturn($this->response->reveal())->shouldBeCalledOnce();
+
+        $repository = $this->getSetupRepository();
+        $repository->getCustomTypes();
     }
 
 }

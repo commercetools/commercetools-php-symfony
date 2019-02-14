@@ -50,5 +50,14 @@
             <argument key="$client" type="service" id="Commercetools\Core\Client"/>
             <argument key="$mapperFactory" type="service" id="commmercetools.mapper.factory" />
         </service>
+
+
+        <!--<service class="Commercetools\Symfony\CtpBundle\Service\CustomTypeFactory">-->
+        <!--</service>-->
+        <service id="commercetools.custom_types" class="Commercetools\Symfony\CtpBundle\Service\CustomTypeProvider" public="true">
+            <factory method="build" class="Commercetools\Symfony\CtpBundle\Service\CustomTypeProviderFactory"/>
+            <argument>%commercetools.custom_types%</argument>
+        </service>
+        <service id="Commercetools\Symfony\CtpBundle\Service\CustomTypeProvider" alias="commercetools.custom_types"/>
     </services>
 </container>
