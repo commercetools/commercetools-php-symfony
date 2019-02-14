@@ -15,6 +15,7 @@ use Commercetools\Core\Model\Payment\PaymentStatus;
 use Commercetools\Symfony\CartBundle\Manager\CartManager;
 use Commercetools\Symfony\CartBundle\Manager\PaymentManager;
 use Commercetools\Symfony\CartBundle\Model\Repository\CartRepository;
+use Commercetools\Symfony\CtpBundle\Service\CustomTypeProvider;
 use Commercetools\Symfony\StateBundle\Model\CtpMarkingStore\CtpMarkingStorePaymentState;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Commercetools\Core\Client;
@@ -89,10 +90,11 @@ class PaymentController extends AbstractController
     /**
      * @param Request $request
      * @param SessionInterface $session
-     * @param UserInterface|null $user
-     * @param $orderId
      * @param OrderManager $orderManager
      * @param CtpMarkingStorePaymentState $markingStorePaymentState
+     * @param $orderId
+     * @param CustomTypeProvider $customTypeProvider
+     * @param UserInterface|null $user
      * @return \Symfony\Component\HttpFoundation\RedirectResponse|\Symfony\Component\HttpFoundation\Response
      */
     public function createPaymentForOrderAction(
@@ -101,6 +103,7 @@ class PaymentController extends AbstractController
         OrderManager $orderManager,
         CtpMarkingStorePaymentState $markingStorePaymentState,
         $orderId,
+        CustomTypeProvider $customTypeProvider,
         UserInterface $user = null
     ) {
         $order = $orderManager->getOrderForUser($request->getLocale(), $orderId, $user, $session->getId());
@@ -110,13 +113,16 @@ class PaymentController extends AbstractController
             return $this->render('@Example/index.html.twig');
         }
 
-        // TODO fix hardcoded key
-//        $custom = CustomFieldObjectDraft::ofTypeKey('RelatePayments')->setFields(
-//            FieldContainer::of()->set('orderReference', $order->getId())
-//        );
-        $custom = null;
+        $relationsType = $customTypeProvider->getTypeReference('paymentsRelations');
+        if (!is_null($relationsType)) {
+            $custom = CustomFieldObjectDraft::ofType($relationsType)->setFields(
+                FieldContainer::of()->set('orderReference', $order->getId())
+            );
+        }
 
-        $payment = $this->createPayment($request->getLocale(), $order->getTotalPrice(), $session, $markingStorePaymentState, $user, $custom);
+        $payment = $this->createPayment(
+            $request->getLocale(), $order->getTotalPrice(), $session, $markingStorePaymentState, $user, $custom ?? null
+        );
 
         if (!$payment instanceof Payment) {
             $this->addFlash('error', $payment->getMessage());
@@ -131,6 +137,7 @@ class PaymentController extends AbstractController
      * @param SessionInterface $session
      * @param CartManager $cartManager
      * @param CtpMarkingStorePaymentState $markingStorePaymentState
+     * @param CustomTypeProvider $customTypeProvider
      * @param UserInterface|null $user
      * @return \Symfony\Component\HttpFoundation\RedirectResponse|Response
      */
@@ -139,6 +146,7 @@ class PaymentController extends AbstractController
         SessionInterface $session,
         CartManager $cartManager,
         CtpMarkingStorePaymentState $markingStorePaymentState,
+        CustomTypeProvider $customTypeProvider,
         UserInterface $user = null
     ) {
         $cartId = $session->get(CartRepository::CART_ID);
@@ -149,13 +157,16 @@ class PaymentController extends AbstractController
             return $this->render('@Example/index.html.twig');
         }
 
-        // TODO fix hardcoded key
-//        $custom = CustomFieldObjectDraft::ofTypeKey('RelatePayments')->setFields(
-//            FieldContainer::of()->set('cartReference', $cartId)
-//        );
-        $custom = null;
+        $relationsType = $customTypeProvider->getTypeReference('paymentsRelations');
+        if (!is_null($relationsType)) {
+            $custom = CustomFieldObjectDraft::ofType($relationsType)->setFields(
+                FieldContainer::of()->set('cartReference', $cart->getId())
+            );
+        }
 
-        $payment = $this->createPayment($request->getLocale(), $cart->getTotalPrice(), $session, $markingStorePaymentState, $user, $custom);
+        $payment = $this->createPayment(
+            $request->getLocale(), $cart->getTotalPrice(), $session, $markingStorePaymentState, $user, $custom ?? null
+        );
 
         if (!$payment instanceof Payment) {
             $this->addFlash('error', $payment->getMessage());

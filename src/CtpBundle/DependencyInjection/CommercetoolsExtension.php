@@ -4,7 +4,6 @@
 
 namespace Commercetools\Symfony\CtpBundle\DependencyInjection;
 
-use Commercetools\Symfony\CtpBundle\Model\FacetConfig;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\ChildDefinition;
 use Symfony\Component\DependencyInjection\ContainerBuilder;

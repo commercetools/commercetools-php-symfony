@@ -150,6 +150,7 @@ class Configuration implements ConfigurationInterface
                         ->end()
                     ->end()
                 ->end()
+                ->variableNode('custom_types')->end()
             ->end()
         ;
 
