@@ -798,12 +798,12 @@ class ProcessCustomTypesTest extends TestCase
                 'key' => 'key-1',
                 'version' => 2,
                 'fieldDefinitions' => [
-                   [
-                       'name' => 'field-1',
-                       'label' => [
-                           'en' => 'new-label'
-                       ]
-                   ]
+                    [
+                        'name' => 'field-1',
+                        'label' => [
+                            'en' => 'new-label'
+                        ]
+                    ]
                 ]
             ]))
         ];

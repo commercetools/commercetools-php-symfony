@@ -42,7 +42,7 @@ class ArrayHelperTest extends TestCase
 
         $array2 = [
             'foo' => [
-              'level1' => 'fail',
+                'level1' => 'fail',
             ],
             'key' => 'value'
 
