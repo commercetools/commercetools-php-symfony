@@ -130,7 +130,7 @@ class CatalogRepository extends Repository
      */
     public function baseSearchProductsRequest($itemsPerPage = 20, $currentPage = 1, $sort = 'id asc')
     {
-        return $searchRequest = RequestBuilder::of()->productProjections()->search()
+        return RequestBuilder::of()->productProjections()->search()
             ->sort($sort)
             ->limit($itemsPerPage)
             ->offset(min($itemsPerPage * ($currentPage - 1), 100000));
@@ -138,8 +138,8 @@ class CatalogRepository extends Repository
 
     /**
      * @param ProductProjectionSearchRequest|null $searchRequest
-     * @param null $country
-     * @param null $currency
+     * @param string|null $country
+     * @param string|null $currency
      * @return ProductProjectionSearchRequest
      */
     public function searchRequestAddCountryAndCurrency(ProductProjectionSearchRequest $searchRequest = null, $country = null, $currency = null)
@@ -163,7 +163,7 @@ class CatalogRepository extends Repository
      * @param ProductProjectionSearchRequest|null $searchRequest
      * @param $locale
      * @param UriInterface $uri
-     * @param null $search
+     * @param string|null $search
      * @return ProductProjectionSearchRequest
      */
     public function searchRequestAddSearchParameters(ProductProjectionSearchRequest $searchRequest = null, $locale, UriInterface $uri, $search = null)
@@ -241,7 +241,7 @@ class CatalogRepository extends Repository
      */
     public function getProductTypes($locale, QueryParams $params = null)
     {
-        $productTypesRequest = $productTypes = RequestBuilder::of()->productTypes()->query();
+        $productTypesRequest = RequestBuilder::of()->productTypes()->query();
 
         return $this->executeRequest($productTypesRequest, $locale, $params);
     }

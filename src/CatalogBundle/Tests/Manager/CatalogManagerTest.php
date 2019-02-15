@@ -128,7 +128,7 @@ class CatalogManagerTest extends TestCase
         $products = $manager->searchProducts(
             'en', 5, 1, null, 'EUR', 'DE', $uri->reveal());
 
-        $this->assertInternalType('array', $products);
+        $this->assertIsArray($products);
     }
 
     public function testUpdate()
