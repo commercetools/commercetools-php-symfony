@@ -231,7 +231,7 @@ class OrderRepositoryTest extends TestCase
         )->willReturn($this->response->reveal())->shouldBeCalledOnce();
 
         $orderRepository = $this->getOrderRepository();
-        $orderRepository->getOrderFromPayment('en', 'payment-1', null, 'anon-1');
+        $orderRepository->getOrdersFromPayment('en', 'payment-1', null, 'anon-1');
     }
 
     public function testGetOrderFromPaymentForCustomer()
@@ -252,7 +252,7 @@ class OrderRepositoryTest extends TestCase
         $user->getId()->willReturn('user-1')->shouldBeCalledOnce();
 
         $orderRepository = $this->getOrderRepository();
-        $orderRepository->getOrderFromPayment('en', 'payment-1', $user->reveal());
+        $orderRepository->getOrdersFromPayment('en', 'payment-1', $user->reveal());
     }
 
     public function testGetOrderFromPaymentWithoutUser()
@@ -271,7 +271,7 @@ class OrderRepositoryTest extends TestCase
         )->willReturn($this->response->reveal())->shouldBeCalledOnce();
 
         $orderRepository = $this->getOrderRepository();
-        $orderRepository->getOrderFromPayment('en', 'payment-1');
+        $orderRepository->getOrdersFromPayment('en', 'payment-1');
     }
 
     public function testDeleteOrder()
