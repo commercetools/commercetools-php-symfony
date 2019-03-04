@@ -1,8 +1,8 @@
 # commercetools Symfony bundle
 
 commercetools Symfony Bundle is collection of symfony bundles that ease the usage of 
-[commercetools PHP-SDK](https://github.com/commercetools/commercetools-php-sdk) when using
-on a Symfony project.
+[commercetools PHP-SDK](https://github.com/commercetools/commercetools-php-sdk) when implementing
+a Symfony project.
 
 ## Requirements
 Composer :
@@ -112,16 +112,18 @@ class MyController
     - UserProvider
 - ReviewBundle
     - ReviewManager
-- SetupBundle
-    - ...
 - ShoppingListBundle
     - ShoppingListManager
 - StateBundle
-    - ...
+    - CtpMarkingStoreLineItemState
+    - CtpMarkingStoreOrderState
+    - CtpMarkingStorePaymentState
+    - CtpMarkingStoreProductState
+    - CtpMarkingStoreReviewState
     
 ### Available console commands
 
-To use the commands navigate to your project's directory and run
+To use the console commands navigate to your project's directory and run
 
 ```sh
 bin/console commercetools:<command-name>
@@ -168,7 +170,8 @@ composer install
 
 ## Report an issue
 
-[TODO]
+Open a new issue in 
+https://github.com/commercetools/commercetools-php-symfony/issues/new
 
 ## Contribute
 
