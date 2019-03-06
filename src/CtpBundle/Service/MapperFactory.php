@@ -12,13 +12,17 @@ class MapperFactory
 {
     private $factory;
 
+    /**
+     * MapperFactory constructor.
+     * @param ContextFactory $factory
+     */
     public function __construct(ContextFactory $factory)
     {
         $this->factory = $factory;
     }
 
     /**
-     * @param $locale
+     * @param string $locale
      * @return MapperInterface
      */
     public function build($locale)
