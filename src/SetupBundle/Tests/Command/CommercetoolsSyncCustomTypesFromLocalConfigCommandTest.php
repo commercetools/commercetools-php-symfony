@@ -5,7 +5,6 @@
 
 namespace Commercetools\Symfony\SetupBundle\Tests\Command;
 
-
 use Commercetools\Core\Client;
 use Commercetools\Core\Model\Type\Type;
 use Commercetools\Core\Model\Type\TypeCollection;
@@ -27,7 +26,8 @@ class CommercetoolsSyncCustomTypesFromLocalConfigCommandTest extends KernelTestC
 {
     public static function setUpBeforeClass()
     {
-        static::$kernel = new TestKernel(function (ContainerBuilder $container) {});
+        static::$kernel = new TestKernel(function (ContainerBuilder $container) {
+        });
         static::$kernel->boot();
     }
 
@@ -80,7 +80,7 @@ class CommercetoolsSyncCustomTypesFromLocalConfigCommandTest extends KernelTestC
         )->shouldBeCalledOnce();
 
         $client = $this->prophesize(Client::class);
-        $client->execute(Argument::that(function(TypeCreateRequest $request){
+        $client->execute(Argument::that(function (TypeCreateRequest $request) {
             static::assertInstanceOf(TypeDraft::class, $request->getObject());
             return true;
         }), Argument::is(null))->shouldBeCalled();
@@ -119,7 +119,7 @@ class CommercetoolsSyncCustomTypesFromLocalConfigCommandTest extends KernelTestC
         )->shouldBeCalledOnce();
 
         $client = $this->prophesize(Client::class);
-        $client->execute(Argument::that(function(TypeDeleteByKeyRequest $request){
+        $client->execute(Argument::that(function (TypeDeleteByKeyRequest $request) {
             static::assertSame('bar', $request->getKey());
             return true;
         }), Argument::is(null))->shouldBeCalled();
@@ -156,7 +156,7 @@ class CommercetoolsSyncCustomTypesFromLocalConfigCommandTest extends KernelTestC
         )->shouldBeCalledOnce();
 
         $client = $this->prophesize(Client::class);
-        $client->execute(Argument::that(function(TypeDeleteByKeyRequest $request){
+        $client->execute(Argument::that(function (TypeDeleteByKeyRequest $request) {
             static::assertSame('bar', $request->getKey());
             return true;
         }), Argument::is(null))->willReturn($errorResponse->reveal())->shouldBeCalled();
@@ -178,5 +178,4 @@ class CommercetoolsSyncCustomTypesFromLocalConfigCommandTest extends KernelTestC
 
         $this->assertRegExp('/Action failed/', $commandTester->getDisplay());
     }
-
 }

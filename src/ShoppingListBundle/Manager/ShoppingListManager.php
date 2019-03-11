@@ -4,7 +4,6 @@
 
 namespace Commercetools\Symfony\ShoppingListBundle\Manager;
 
-
 use Commercetools\Core\Error\InvalidArgumentException;
 use Commercetools\Core\Model\ShoppingList\ShoppingList;
 use Commercetools\Core\Request\AbstractAction;

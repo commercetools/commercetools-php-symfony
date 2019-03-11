@@ -38,7 +38,6 @@ use Prophecy\Argument;
 use Psr\Http\Message\UriInterface;
 use Symfony\Component\Cache\Tests\Fixtures\ExternalAdapter;
 
-
 class CatalogRepositoryTest extends TestCase
 {
     private $cache;
@@ -121,11 +120,11 @@ class CatalogRepositoryTest extends TestCase
     public function testGetProductById()
     {
         $this->response->toObject()->willReturn(ProductProjectionCollection::of()->add(
-            ProductProjection::of()->setId('product-1')->setKey('foo'))
-        )->shouldBeCalled();
+            ProductProjection::of()->setId('product-1')->setKey('foo')
+        ))->shouldBeCalled();
 
         $this->client->execute(
-            Argument::that(function(ProductProjectionByIdGetRequest $request){
+            Argument::that(function (ProductProjectionByIdGetRequest $request) {
                 static::assertSame(ProductProjection::class, $request->getResultClass());
                 static::assertSame('foo', $request->getId());
 
@@ -148,7 +147,7 @@ class CatalogRepositoryTest extends TestCase
         )->willReturn($this->response->reveal())->shouldBeCalledTimes(2);
 
         $repository = $this->getCatalogRepository();
-        $repository->suggestProducts('en','foo', null, null, null);
+        $repository->suggestProducts('en', 'foo', null, null, null);
     }
 
     public function testGetProducts()
@@ -158,7 +157,9 @@ class CatalogRepositoryTest extends TestCase
             ->shouldBeCalledOnce();
 
         $this->search->addFacets(Argument::type(ProductProjectionSearchRequest::class), Argument::is(null))
-            ->will(function($args){return $args[0];})
+            ->will(function ($args) {
+                return $args[0];
+            })
             ->shouldBeCalledOnce();
 
         $response = $this->prophesize(PagedSearchResponse::class);
@@ -170,7 +171,7 @@ class CatalogRepositoryTest extends TestCase
         $response->getTotal()->willReturn(null)->shouldBeCalledOnce();
 
         $this->client->execute(
-            Argument::that(function(ProductProjectionSearchRequest $request){
+            Argument::that(function (ProductProjectionSearchRequest $request) {
                 static::assertContains('limit=5', (string)$request->httpRequest()->getBody());
                 static::assertContains('priceCurrency=EUR', (string)$request->httpRequest()->getBody());
                 static::assertContains('priceCountry=DE', (string)$request->httpRequest()->getBody());
@@ -201,7 +202,9 @@ class CatalogRepositoryTest extends TestCase
             ->shouldBeCalledOnce();
 
         $this->search->addFacets(Argument::type(ProductProjectionSearchRequest::class), Argument::is(null))
-            ->will(function($args){return $args[0];})
+            ->will(function ($args) {
+                return $args[0];
+            })
             ->shouldBeCalledOnce();
 
         $response = $this->prophesize(PagedSearchResponse::class);
@@ -213,7 +216,7 @@ class CatalogRepositoryTest extends TestCase
         $response->getTotal()->willReturn(null)->shouldBeCalledOnce();
 
         $this->client->execute(
-            Argument::that(function(ProductProjectionSearchRequest $request){
+            Argument::that(function (ProductProjectionSearchRequest $request) {
                 static::assertContains('text.en=searchTerm', (string)$request->httpRequest()->getBody());
                 static::assertContains('fuzzy=true', (string)$request->httpRequest()->getBody());
                 static::assertContains('filter=foo%3A%22bar%22', (string)$request->httpRequest()->getBody());
@@ -254,7 +257,9 @@ class CatalogRepositoryTest extends TestCase
             ->shouldBeCalledOnce();
 
         $this->search->addFacets(Argument::type(ProductProjectionSearchRequest::class), Argument::is(null))
-            ->will(function($args){return $args[0];})
+            ->will(function ($args) {
+                return $args[0];
+            })
             ->shouldBeCalledOnce();
 
         $uri = $this->prophesize(UriInterface::class);
@@ -295,7 +300,7 @@ class CatalogRepositoryTest extends TestCase
     public function testUpdateProduct()
     {
         $this->client->execute(
-            Argument::that(function(ProductUpdateRequest $request) {
+            Argument::that(function (ProductUpdateRequest $request) {
                 $action = current($request->getActions());
 
                 static::assertSame(Product::class, $request->getResultClass());
@@ -388,7 +393,9 @@ class CatalogRepositoryTest extends TestCase
             ->shouldBeCalledOnce();
 
         $this->search->addFacets(Argument::type(ProductProjectionSearchRequest::class), Argument::is(null))
-            ->will(function($args){return $args[0];})
+            ->will(function ($args) {
+                return $args[0];
+            })
             ->shouldBeCalledOnce();
 
         $uri = $this->prophesize(UriInterface::class);

@@ -5,7 +5,6 @@
 
 namespace Commercetools\Symfony\ExampleBundle\Tests\Controller;
 
-
 use Commercetools\Core\Client;
 use Commercetools\Core\Model\Customer\CustomerReference;
 use Commercetools\Core\Model\Product\ProductReference;
@@ -86,11 +85,17 @@ class ReviewControllerTest extends WebTestCase
 
         $form = $this->prophesize(Form::class);
         $form->handleRequest(Argument::type(Request::class))
-            ->will(function(){return $this;})->shouldBeCalled();
+            ->will(function () {
+                return $this;
+            })->shouldBeCalled();
         $form->isSubmitted()->willReturn(true)->shouldBeCalledOnce();
         $form->isValid()->willReturn(true)->shouldBeCalledOnce();
-        $form->get('text')->will(function(){return $this;})->shouldBeCalledOnce();
-        $form->get('rating')->will(function(){return $this;})->shouldBeCalledOnce();
+        $form->get('text')->will(function () {
+            return $this;
+        })->shouldBeCalledOnce();
+        $form->get('rating')->will(function () {
+            return $this;
+        })->shouldBeCalledOnce();
         $form->getData()->willReturn('foobar')->shouldBeCalledTimes(2);
 
         $formFactory = $this->prophesize(FormFactory::class);
@@ -104,7 +109,12 @@ class ReviewControllerTest extends WebTestCase
         $this->myContainer->get('form.factory')->willReturn($formFactory->reveal())->shouldBeCalled();
 
         $this->reviewManager->createForProduct(
-            'en', Argument::type(ProductReference::class), Argument::type(CustomerReference::class), Argument::type('string'), Argument::type('string'))
+            'en',
+            Argument::type(ProductReference::class),
+            Argument::type(CustomerReference::class),
+            Argument::type('string'),
+            Argument::type('string')
+        )
             ->willReturn('foo')->shouldBeCalledOnce();
 
         $controller = new ReviewController($this->client->reveal(), $this->reviewManager->reveal(), $this->registry->reveal());
@@ -121,7 +131,9 @@ class ReviewControllerTest extends WebTestCase
 
         $form = $this->prophesize(Form::class);
         $form->handleRequest(Argument::type(Request::class))
-            ->will(function(){return $this;})->shouldBeCalled();
+            ->will(function () {
+                return $this;
+            })->shouldBeCalled();
         $form->isSubmitted()->willReturn(false)->shouldBeCalledOnce();
 
         $formFactory = $this->prophesize(FormFactory::class);
@@ -244,7 +256,7 @@ class ReviewControllerTest extends WebTestCase
             Review::of()->setTarget(ProductReference::ofId('product-1'))
         );
 
-        $this->registry->get(Argument::type(Review::class))->will(function (){
+        $this->registry->get(Argument::type(Review::class))->will(function () {
             throw new InvalidArgumentException();
         })->shouldBeCalledOnce();
 
@@ -297,6 +309,4 @@ class ReviewControllerTest extends WebTestCase
 
         $this->assertTrue($response->isOk());
     }
-
-
 }

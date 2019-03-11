@@ -5,7 +5,6 @@
 
 namespace Commercetools\Symfony\CustomerBundle\Tests\Event;
 
-
 use Commercetools\Core\Model\Customer\Customer;
 use Commercetools\Symfony\CustomerBundle\Event\CustomerPostCreateEvent;
 use PHPUnit\Framework\TestCase;

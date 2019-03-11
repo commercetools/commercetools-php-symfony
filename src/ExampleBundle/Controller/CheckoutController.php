@@ -61,8 +61,7 @@ class CheckoutController extends AbstractController
         CartManager $cartManager,
         ShippingMethodManager $shippingMethodManager,
         OrderManager $orderManager
-    )
-    {
+    ) {
         $this->client = $client;
         $this->cartManager = $cartManager;
         $this->shippingMethodManager = $shippingMethodManager;
@@ -187,7 +186,9 @@ class CheckoutController extends AbstractController
         }
 
         $order = $this->orderManager->createOrderFromCart(
-            $request->getLocale(), $cart, $markingStoreOrderState->getStateReferenceOfInitial()
+            $request->getLocale(),
+            $cart,
+            $markingStoreOrderState->getStateReferenceOfInitial()
         );
 
         return $this->render('ExampleBundle:cart:cartSuccess.html.twig', [
@@ -211,17 +212,20 @@ class CheckoutController extends AbstractController
         }
 
         $entity = CartEntity::ofCart($cart);
-        if (!is_null($user) && count(array_diff_key($cart->getShippingAddress()->toArray(), ['country' => true])) == 0 ) {
+        if (!is_null($user) && count(array_diff_key($cart->getShippingAddress()->toArray(), ['country' => true])) == 0) {
             $entity->setShippingAddress($user->getDefaultShippingAddress()->toArray());
         }
 
         $form = $this->createFormBuilder($entity)
-            ->add('check', CheckboxType::class,
+            ->add(
+                'check',
+                CheckboxType::class,
                 [
                     'required' => false,
                     'label' => 'Shipping and Billing addresses are the same ',
-                    'empty_data' => NULL
-                ])
+                    'empty_data' => null
+                ]
+            )
             ->add('shippingAddress', AddressType::class)
             ->add('billingAddress', AddressType::class)
             ->add('Submit', SubmitType::class)
@@ -230,13 +234,12 @@ class CheckoutController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-
             $check = $form->get('check')->getData();
             $shippingAddress = Address::fromArray($form->get('shippingAddress')->getData());
 
             $billingAddress = $shippingAddress;
 
-            if($check !== true) {
+            if ($check !== true) {
                 $billingAddress = Address::fromArray($form->get('billingAddress')->getData());
             }
 
@@ -256,4 +259,3 @@ class CheckoutController extends AbstractController
         ]);
     }
 }
-

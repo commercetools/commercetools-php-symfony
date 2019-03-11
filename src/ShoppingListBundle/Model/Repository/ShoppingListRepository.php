@@ -43,7 +43,7 @@ class ShoppingListRepository extends Repository
 
         if (!is_null($customer)) {
             $predicate .= ' and customer(id = "' . $customer->getId() . '")';
-        } else if (!is_null($anonymousId)) {
+        } elseif (!is_null($anonymousId)) {
             $predicate .= ' and anonymousId = "' . $anonymousId . '"';
         }
 
@@ -111,7 +111,7 @@ class ShoppingListRepository extends Repository
         $client = $this->getClient();
         $request = RequestBuilder::of()->shoppingLists()->update($shoppingList)->setActions($actions);
 
-        if(!is_null($params)){
+        if (!is_null($params)) {
             foreach ($params->getParams() as $param) {
                 $request->addParamObject($param);
             }

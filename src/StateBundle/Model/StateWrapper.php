@@ -5,7 +5,6 @@
 
 namespace Commercetools\Symfony\StateBundle\Model;
 
-
 interface StateWrapper
 {
     public function getResource();

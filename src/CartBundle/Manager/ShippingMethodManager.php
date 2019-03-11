@@ -5,7 +5,6 @@
 
 namespace Commercetools\Symfony\CartBundle\Manager;
 
-
 use Commercetools\Core\Model\Zone\Location;
 use Commercetools\Symfony\CartBundle\Model\Repository\ShippingMethodRepository;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;

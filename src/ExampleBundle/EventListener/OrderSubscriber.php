@@ -5,7 +5,6 @@
 
 namespace Commercetools\Symfony\ExampleBundle\EventListener;
 
-
 use Commercetools\Symfony\CartBundle\Event\OrderCreateEvent;
 use Commercetools\Symfony\CartBundle\Event\OrderPostCreateEvent;
 use Commercetools\Symfony\CartBundle\Model\Repository\CartRepository;
@@ -39,6 +38,4 @@ class OrderSubscriber implements EventSubscriberInterface
         $this->session->remove(CartRepository::CART_ID);
         $this->session->remove(CartRepository::CART_ITEM_COUNT);
     }
-
-
 }

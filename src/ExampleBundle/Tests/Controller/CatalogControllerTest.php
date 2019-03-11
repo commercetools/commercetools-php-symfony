@@ -5,7 +5,6 @@
 
 namespace Commercetools\Symfony\ExampleBundle\Tests\Controller;
 
-
 use Commercetools\Core\Client;
 use Commercetools\Core\Helper\CurrencyFormatter;
 use Commercetools\Core\Model\Common\Context;
@@ -69,16 +68,22 @@ class CatalogControllerTest extends WebTestCase
     {
         $form = $this->prophesize(Form::class);
         $form->handleRequest(Argument::type(Request::class))
-            ->will(function(){return $this;})->shouldBeCalled();
+            ->will(function () {
+                return $this;
+            })->shouldBeCalled();
         $form->isSubmitted()->willReturn(true)->shouldBeCalledOnce();
         $form->isValid()->willReturn(true)->shouldBeCalledOnce();
-        $form->get('search')->will(function(){return $this;})->shouldBeCalledOnce();
+        $form->get('search')->will(function () {
+            return $this;
+        })->shouldBeCalledOnce();
         $form->getData()->willReturn(true)->shouldBeCalledOnce();
         $form->createView()->shouldBeCalled();
 
         $formBuilder = $this->prophesize(FormBuilder::class);
         $formBuilder->add(Argument::type('string'), Argument::type('string'), Argument::type('array'))
-            ->will(function(){return $this;})->shouldBeCalledTimes(2);
+            ->will(function () {
+                return $this;
+            })->shouldBeCalledTimes(2);
         $formBuilder->getForm()->willReturn($form)->shouldBeCalled();
 
         $formFactory = $this->prophesize(FormFactory::class);
@@ -114,7 +119,9 @@ class CatalogControllerTest extends WebTestCase
 
         $form = $this->prophesize(Form::class);
         $form->handleRequest(Argument::type(Request::class))
-            ->will(function(){return $this;})->shouldBeCalled();
+            ->will(function () {
+                return $this;
+            })->shouldBeCalled();
         $form->createView()->shouldBeCalled();
 
         $formFactory = $this->prophesize(FormFactory::class);
@@ -182,7 +189,9 @@ class CatalogControllerTest extends WebTestCase
 
 
         $this->catalogManager->getProductBySlug('en', 'prod-1', 'EUR', 'DE')
-            ->will(function(){throw new NotFoundHttpException();})->shouldBeCalledOnce();
+            ->will(function () {
+                throw new NotFoundHttpException();
+            })->shouldBeCalledOnce();
 
         $controller = new CatalogController($this->client->reveal(), $this->catalogManager->reveal(), $shoppingListManager->reveal());
         $controller->setContainer($this->myContainer->reveal());
@@ -205,7 +214,9 @@ class CatalogControllerTest extends WebTestCase
 
         $form = $this->prophesize(Form::class);
         $form->handleRequest(Argument::type(Request::class))
-            ->will(function(){return $this;})->shouldBeCalled();
+            ->will(function () {
+                return $this;
+            })->shouldBeCalled();
         $form->createView()->shouldBeCalled();
 
         $formFactory = $this->prophesize(FormFactory::class);
@@ -255,9 +266,7 @@ class CatalogControllerTest extends WebTestCase
                 ->setMasterVariant(ProductVariant::of()
                     ->setId(1)
                     ->setImages(ImageCollection::of()->add(Image::of()->setUrl('foo://bar')))
-                    ->setPrice(Price::ofMoney(Money::ofCurrencyAndAmount('EUR',100)))
-                )
-            );
+                    ->setPrice(Price::ofMoney(Money::ofCurrencyAndAmount('EUR', 100)))));
 
         $this->catalogManager->suggestProducts('en', 'foo', 5, 'EUR', 'DE')->willReturn($productProjectionCollection)->shouldBeCalledOnce();
 

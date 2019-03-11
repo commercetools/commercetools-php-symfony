@@ -50,7 +50,7 @@ class ConfigureProject
     {
         $type = ShippingRateInputType::of()->setType($configValues['type']);
 
-        if($type->getType() == CartClassificationType::of()->getType()){
+        if ($type->getType() == CartClassificationType::of()->getType()) {
             $values = LocalizedEnumCollection::of();
 
             foreach ($configValues['values'] as $value) {
@@ -71,10 +71,10 @@ class ConfigureProject
      */
     public function mapChangesToActions(array $allChanges, array $config)
     {
-        return array_filter(array_map(function($change) use ($config){
+        return array_filter(array_map(function ($change) use ($config) {
             if (isset(self::VALUE_TRANSFORMATION[$change])) {
                 return call_user_func(array($this, self::VALUE_TRANSFORMATION[$change]), $config[$change]);
-            } else if (isset(self::VALID_ACTIONS[$change])) {
+            } elseif (isset(self::VALID_ACTIONS[$change])) {
                 $actionClass = self::VALID_ACTIONS[$change];
                 $action = $actionClass::of();
                 $setValue = 'set' . ucfirst($change);
@@ -115,7 +115,7 @@ class ConfigureProject
      */
     private function addActions(ProjectUpdateBuilder $builder, array $mappedActions)
     {
-        array_walk($mappedActions, function(AbstractAction $action) use($builder) {
+        array_walk($mappedActions, function (AbstractAction $action) use ($builder) {
             $fn = $action->getAction();
             $builder->$fn($action);
         });

@@ -5,7 +5,6 @@
 
 namespace Commercetools\Symfony\StateBundle\Tests\Model\TransitionHandler;
 
-
 use Commercetools\Core\Model\Review\Review;
 use Commercetools\Core\Request\Reviews\Command\ReviewTransitionStateAction;
 use Commercetools\Symfony\ReviewBundle\Manager\ReviewManager;

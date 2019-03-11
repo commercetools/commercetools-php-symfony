@@ -27,7 +27,6 @@ use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Workflow\Exception\InvalidArgumentException;
 use Symfony\Component\Workflow\Registry;
 
-
 class PaymentController extends AbstractController
 {
     /**
@@ -81,7 +80,7 @@ class PaymentController extends AbstractController
             return new Response();
         }
 
-        return $this->render( '@Example/partials/paymentInfo.html.twig', [
+        return $this->render('@Example/partials/paymentInfo.html.twig', [
             'payment' => $payment,
             'orderId' => $orderId
         ]);
@@ -121,7 +120,12 @@ class PaymentController extends AbstractController
         }
 
         $payment = $this->createPayment(
-            $request->getLocale(), $order->getTotalPrice(), $session, $markingStorePaymentState, $user, $custom ?? null
+            $request->getLocale(),
+            $order->getTotalPrice(),
+            $session,
+            $markingStorePaymentState,
+            $user,
+            $custom ?? null
         );
 
         if (!$payment instanceof Payment) {
@@ -165,7 +169,12 @@ class PaymentController extends AbstractController
         }
 
         $payment = $this->createPayment(
-            $request->getLocale(), $cart->getTotalPrice(), $session, $markingStorePaymentState, $user, $custom ?? null
+            $request->getLocale(),
+            $cart->getTotalPrice(),
+            $session,
+            $markingStorePaymentState,
+            $user,
+            $custom ?? null
         );
 
         if (!$payment instanceof Payment) {
@@ -199,7 +208,12 @@ class PaymentController extends AbstractController
 
         $customerReference = is_null($user) ? null : CustomerReference::ofId($user->getId());
         $payment = $this->manager->createPaymentForUser(
-            $locale, $totalPrice, $customerReference, $session->getId(), $paymentStatus, $customFieldObjectDraft
+            $locale,
+            $totalPrice,
+            $customerReference,
+            $session->getId(),
+            $paymentStatus,
+            $customFieldObjectDraft
         );
 
         return $payment;
@@ -249,6 +263,5 @@ class PaymentController extends AbstractController
         }
 
         return $this->redirect($this->generateUrl('_ctp_example_order', ['orderId' => $orderId]));
-
     }
 }

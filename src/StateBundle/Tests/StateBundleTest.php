@@ -5,14 +5,12 @@
 
 namespace Commercetools\Symfony\StateBundle\Tests;
 
-
 use Commercetools\Symfony\StateBundle\DependencyInjection\Compiler\CtpStateMachinePass;
 use Commercetools\Symfony\StateBundle\DependencyInjection\StateExtension;
 use Commercetools\Symfony\StateBundle\StateBundle;
 use PHPUnit\Framework\TestCase;
 use Prophecy\Argument;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
-
 
 class StateBundleTest extends TestCase
 {

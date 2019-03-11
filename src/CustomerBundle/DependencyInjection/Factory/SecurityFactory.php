@@ -32,5 +32,4 @@ class SecurityFactory extends FormLoginFactory
 
         return $provider;
     }
-
 }

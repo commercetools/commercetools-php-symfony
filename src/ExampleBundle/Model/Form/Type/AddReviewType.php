@@ -4,7 +4,6 @@
 
 namespace Commercetools\Symfony\ExampleBundle\Model\Form\Type;
 
-
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
@@ -16,14 +15,17 @@ class AddReviewType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
-            ->add('text', TextareaType::class,
-            [
+            ->add(
+                'text',
+                TextareaType::class,
+                [
                 'attr' => [
                     'placeholder' => 'Write a review...',
                 ],
                 'label' => false,
                 'required' => false,
-            ])
+                ]
+            )
             ->add('rating', ChoiceType::class, [
                 'label' => 'rating',
                 'choices' => [

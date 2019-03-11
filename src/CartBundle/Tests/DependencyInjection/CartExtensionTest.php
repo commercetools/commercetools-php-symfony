@@ -5,7 +5,6 @@
 
 namespace Commercetools\Symfony\CartBundle\Tests\DependencyInjection;
 
-
 use Commercetools\Symfony\CartBundle\DependencyInjection\CartExtension;
 use Matthias\SymfonyDependencyInjectionTest\PhpUnit\AbstractExtensionTestCase;
 

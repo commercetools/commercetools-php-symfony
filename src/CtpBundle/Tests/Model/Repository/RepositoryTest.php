@@ -5,7 +5,6 @@
 
 namespace Commercetools\Symfony\CtpBundle\Tests\Model\Repository;
 
-
 use Cache\Adapter\Common\CacheItem;
 use Commercetools\Core\Client;
 use Commercetools\Core\Config;
@@ -64,14 +63,24 @@ class RepositoryTest extends TestCase
     public function testRetrieveAll()
     {
         $request = $this->prophesize(AbstractQueryRequest::class);
-        $request->sort('id')->will(function(){return $this;})->shouldBeCalledOnce();
-        $request->limit(Repository::DEFAULT_PAGE_SIZE)->will(function(){return $this;})->shouldBeCalledOnce();
-        $request->withTotal(false)->will(function(){return $this;})->shouldBeCalledOnce();
+        $request->sort('id')->will(function () {
+            return $this;
+        })->shouldBeCalledOnce();
+        $request->limit(Repository::DEFAULT_PAGE_SIZE)->will(function () {
+            return $this;
+        })->shouldBeCalledOnce();
+        $request->withTotal(false)->will(function () {
+            return $this;
+        })->shouldBeCalledOnce();
         $request->getResultClass()->willReturn(ProductCollection::class)->shouldBeCalledOnce();
 
         $cachedItem = $this->prophesize(CacheItem::class);
-        $cachedItem->set(Argument::type('string'))->will(function(){return $this;})->shouldBeCalledOnce();
-        $cachedItem->expiresAfter(Repository::CACHE_TTL)->will(function(){return $this;})->shouldBeCalledOnce();
+        $cachedItem->set(Argument::type('string'))->will(function () {
+            return $this;
+        })->shouldBeCalledOnce();
+        $cachedItem->expiresAfter(Repository::CACHE_TTL)->will(function () {
+            return $this;
+        })->shouldBeCalledOnce();
 
         $this->cache->hasItem('foo')->willReturn(false)->shouldBeCalledOnce();
         $this->cache->getItem('foo')->willReturn($cachedItem->reveal())->shouldBeCalledOnce();
@@ -142,8 +151,12 @@ class RepositoryTest extends TestCase
     public function testStore()
     {
         $cachedItem = $this->prophesize(CacheItem::class);
-        $cachedItem->set('bar')->will(function(){return $this;})->shouldBeCalledOnce();
-        $cachedItem->expiresAfter(100)->will(function(){return $this;})->shouldBeCalledOnce();
+        $cachedItem->set('bar')->will(function () {
+            return $this;
+        })->shouldBeCalledOnce();
+        $cachedItem->expiresAfter(100)->will(function () {
+            return $this;
+        })->shouldBeCalledOnce();
 
         $this->cache->getItem('foo')->willReturn($cachedItem->reveal())->shouldBeCalledOnce();
         $this->cache->save(Argument::type(CacheItem::class))->shouldBeCalledOnce();
@@ -151,13 +164,16 @@ class RepositoryTest extends TestCase
         $repository = $this->getRepository();
         $repository->store('foo', 'bar', 100);
     }
-
 }
 
 class TestRepository extends Repository
 {
     public function retrieveAll(
-        $cacheKey, QueryAllRequestInterface $request, $locale, $force = false, $ttl = self::CACHE_TTL
+        $cacheKey,
+        QueryAllRequestInterface $request,
+        $locale,
+        $force = false,
+        $ttl = self::CACHE_TTL
     ) {
         return parent::retrieveAll($cacheKey, $request, $locale, $force, $ttl);
     }

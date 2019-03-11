@@ -5,7 +5,6 @@
 
 namespace Commercetools\Symfony\StateBundle\Tests\Model\TransitionHandler;
 
-
 use Commercetools\Core\Model\Payment\Payment;
 use Commercetools\Core\Request\Payments\Command\PaymentTransitionStateAction;
 use Commercetools\Symfony\CartBundle\Manager\PaymentManager;

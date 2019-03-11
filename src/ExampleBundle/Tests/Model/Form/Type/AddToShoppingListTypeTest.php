@@ -5,7 +5,6 @@
 
 namespace Commercetools\Symfony\ExampleBundle\Tests\Model\Form\Type;
 
-
 use Commercetools\Symfony\ExampleBundle\Entity\ProductToShoppingList;
 use Commercetools\Symfony\ExampleBundle\Model\Form\Type\AddToShoppingListType;
 use Symfony\Component\Form\Test\TypeTestCase;
@@ -41,7 +40,6 @@ class AddToShoppingListTypeTest extends TypeTestCase
         foreach (array_keys($formData) as $key) {
             $this->assertArrayHasKey($key, $children);
         }
-
     }
 
     public function testSubmitValidDataWithoutVariant()
@@ -72,7 +70,8 @@ class AddToShoppingListTypeTest extends TypeTestCase
             ->setAllVariants([
                 '1' => 'one',
                 '2' => 'two'
-            ]);;
+            ]);
+        ;
 
         $form->submit($formData);
 
@@ -86,5 +85,4 @@ class AddToShoppingListTypeTest extends TypeTestCase
             $this->assertArrayHasKey($key, $children);
         }
     }
-
 }

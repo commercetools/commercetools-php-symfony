@@ -5,7 +5,6 @@
 
 namespace Commercetools\Symfony\SetupBundle\Tests\Model\Repository;
 
-
 use Commercetools\Core\Builder\Update\ProjectActionBuilder;
 use Commercetools\Core\Client;
 use Commercetools\Core\Model\Common\LocalizedString;
@@ -44,7 +43,6 @@ class SetupRepositoryTest extends TestCase
         $this->response->isError()->willReturn(false);
 
         $this->client = $this->prophesize(Client::class);
-
     }
 
     private function getSetupRepository()
@@ -72,7 +70,7 @@ class SetupRepositoryTest extends TestCase
     public function testUpdateProject()
     {
         $this->client->execute(
-            Argument::that(function(ProjectUpdateRequest $request) {
+            Argument::that(function (ProjectUpdateRequest $request) {
                 $action = current($request->getActions());
 
                 static::assertSame(Project::class, $request->getResultClass());
@@ -93,7 +91,7 @@ class SetupRepositoryTest extends TestCase
     public function testApplyConfiguration()
     {
         $this->client->execute(
-            Argument::that(function(ProjectUpdateRequest $request) {
+            Argument::that(function (ProjectUpdateRequest $request) {
                 $action = current($request->getActions());
 
                 static::assertSame(Project::class, $request->getResultClass());
@@ -153,5 +151,4 @@ class SetupRepositoryTest extends TestCase
         $repository = $this->getSetupRepository();
         $repository->getCustomTypes();
     }
-
 }

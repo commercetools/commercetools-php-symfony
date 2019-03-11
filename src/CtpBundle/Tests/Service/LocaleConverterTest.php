@@ -5,7 +5,6 @@
 
 namespace Commercetools\Symfony\CtpBundle\Tests\Service;
 
-
 use Commercetools\Symfony\CtpBundle\Service\LocaleConverter;
 use PHPUnit\Framework\TestCase;
 

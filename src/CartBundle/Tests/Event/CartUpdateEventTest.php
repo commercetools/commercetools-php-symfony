@@ -5,7 +5,6 @@
 
 namespace Commercetools\Symfony\CartBundle\Tests\Event;
 
-
 use Commercetools\Core\Model\Cart\Cart;
 use Commercetools\Core\Request\Carts\Command\CartSetCustomerEmailAction;
 use Commercetools\Core\Request\Carts\Command\CartSetShippingMethodTaxAmountAction;

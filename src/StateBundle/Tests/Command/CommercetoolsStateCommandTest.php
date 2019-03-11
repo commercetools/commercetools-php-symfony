@@ -5,7 +5,6 @@
 
 namespace Commercetools\Symfony\StateBundle\Tests\Command;
 
-
 use Commercetools\Core\Model\State\State;
 use Commercetools\Core\Model\State\StateCollection;
 use Commercetools\Symfony\CtpBundle\Tests\TestKernel;
@@ -16,12 +15,12 @@ use Symfony\Component\Console\Tester\CommandTester;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Bundle\FrameworkBundle\Console\Application;
 
-
 class CommercetoolsStateCommandTest extends KernelTestCase
 {
     public static function setUpBeforeClass()
     {
-        static::$kernel = new TestKernel(function (ContainerBuilder $container) {});
+        static::$kernel = new TestKernel(function (ContainerBuilder $container) {
+        });
         static::$kernel->boot();
     }
 
@@ -43,5 +42,4 @@ class CommercetoolsStateCommandTest extends KernelTestCase
 
         $this->assertRegExp('/Configuration file saved successfully at/', $commandTester->getDisplay());
     }
-
 }

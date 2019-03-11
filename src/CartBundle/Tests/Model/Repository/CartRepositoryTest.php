@@ -5,7 +5,6 @@
 
 namespace Commercetools\Symfony\CartBundle\Tests\Model\Repository;
 
-
 use Commercetools\Core\Client;
 use Commercetools\Core\Error\InvalidArgumentException;
 use Commercetools\Core\Model\Cart\Cart;
@@ -45,7 +44,6 @@ class CartRepositoryTest extends TestCase
         $this->response->isError()->willReturn(false);
 
         $this->client = $this->prophesize(Client::class);
-
     }
 
     private function getCartRepository()
@@ -61,7 +59,7 @@ class CartRepositoryTest extends TestCase
     public function testGetCartForAnonymous()
     {
         $this->client->execute(
-            Argument::that(function(CartQueryRequest $request){
+            Argument::that(function (CartQueryRequest $request) {
                 static::assertSame(
                     'carts?limit=1&where=cartState+%3D+%22Active%22+and+id+%3D+%22cart-1%22+and+anonymousId+%3D+%22anon-1%22',
                     (string)$request->httpRequest()->getUri()
@@ -79,7 +77,7 @@ class CartRepositoryTest extends TestCase
     public function testGetCartForCustomer()
     {
         $this->client->execute(
-            Argument::that(function(CartQueryRequest $request){
+            Argument::that(function (CartQueryRequest $request) {
                 static::assertSame(
                     'carts?limit=1&where=cartState+%3D+%22Active%22+and+id+%3D+%22cart-1%22+and+customerId+%3D+%22user-1%22',
                     (string)$request->httpRequest()->getUri()
@@ -101,22 +99,22 @@ class CartRepositoryTest extends TestCase
         $this->client->execute(
             Argument::allOf(
                 Argument::type(CartCreateRequest::class),
-                Argument::that(function(CartCreateRequest $request) {
+                Argument::that(function (CartCreateRequest $request) {
                     return $request->getObject() instanceof CartDraft;
                 }),
-                Argument::that(function(CartCreateRequest $request) {
+                Argument::that(function (CartCreateRequest $request) {
                     return $request->getObject()->getAnonymousId() === 'foo-123';
                 }),
-                Argument::that(function(CartCreateRequest $request) {
+                Argument::that(function (CartCreateRequest $request) {
                     return $request->getObject()->getCurrency() === 'EUR';
                 }),
-                Argument::that(function(CartCreateRequest $request) {
+                Argument::that(function (CartCreateRequest $request) {
                     return is_null($request->getObject()->getLineItems());
                 }),
-                Argument::that(function(CartCreateRequest $request) {
+                Argument::that(function (CartCreateRequest $request) {
                     return is_null($request->getObject()->getCustomerId());
                 }),
-                Argument::that(function(CartCreateRequest $request) {
+                Argument::that(function (CartCreateRequest $request) {
                     return $request->getObject()->getCountry() === 'DE';
                 })
             ),
@@ -131,7 +129,7 @@ class CartRepositoryTest extends TestCase
     public function testCreateCartForCustomerWithLineItems()
     {
         $this->client->execute(
-            Argument::that(function(CartCreateRequest $request) {
+            Argument::that(function (CartCreateRequest $request) {
                 static::assertInstanceOf(CartDraft::class, $request->getObject());
                 static::assertSame('customer-123', $request->getObject()->getCustomerId());
                 static::assertSame('EUR', $request->getObject()->getCurrency());
@@ -157,7 +155,7 @@ class CartRepositoryTest extends TestCase
     public function testUpdateCart()
     {
         $this->client->execute(
-            Argument::that(function(CartUpdateRequest $request) {
+            Argument::that(function (CartUpdateRequest $request) {
                 $action = current($request->getActions());
 
                 static::assertSame(Cart::class, $request->getResultClass());
@@ -188,7 +186,7 @@ class CartRepositoryTest extends TestCase
     public function testCreateCartWithoutUser()
     {
         $this->client->execute(
-            Argument::that(function(CartCreateRequest $request) {
+            Argument::that(function (CartCreateRequest $request) {
                 static::assertInstanceOf(CartDraft::class, $request->getObject());
                 static::assertNull($request->getObject()->getCustomerId());
                 static::assertSame('EUR', $request->getObject()->getCurrency());
@@ -209,7 +207,7 @@ class CartRepositoryTest extends TestCase
     public function testDeleteCart()
     {
         $this->client->execute(
-            Argument::that(function(CartDeleteRequest $request) {
+            Argument::that(function (CartDeleteRequest $request) {
                 static::assertSame(Cart::class, $request->getResultClass());
                 static::assertSame('cart-1', $request->getId());
                 static::assertSame(1, $request->getVersion());
@@ -222,5 +220,4 @@ class CartRepositoryTest extends TestCase
         $cartRepository = $this->getCartRepository();
         $cartRepository->delete(Cart::of()->setId('cart-1')->setVersion(1));
     }
-
 }

@@ -5,7 +5,6 @@
 
 namespace Commercetools\Symfony\ExampleBundle\Tests\Model\Form\Type;
 
-
 use Commercetools\Symfony\ExampleBundle\Entity\UserAddress;
 use Commercetools\Symfony\ExampleBundle\Model\Form\Type\AddressType;
 use Symfony\Component\Form\Test\TypeTestCase;

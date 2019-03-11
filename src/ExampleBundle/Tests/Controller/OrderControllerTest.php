@@ -5,7 +5,6 @@
 
 namespace Commercetools\Symfony\ExampleBundle\Tests\Controller;
 
-
 use Commercetools\Core\Client;
 use Commercetools\Core\Model\Cart\LineItem;
 use Commercetools\Core\Model\Cart\LineItemCollection;
@@ -297,7 +296,9 @@ class OrderControllerTest extends WebTestCase
 
         $this->orderManager->getOrderForUser('en', 'order-1', $user->reveal(), 'baz')->willReturn($order)->shouldBeCalledOnce();
 
-        $this->registry->get(Argument::type(ItemStateWrapper::class))->will(function(){throw new InvalidArgumentException();})->shouldBeCalledOnce();
+        $this->registry->get(Argument::type(ItemStateWrapper::class))->will(function () {
+            throw new InvalidArgumentException();
+        })->shouldBeCalledOnce();
 
         $controller = new OrderController($this->client->reveal(), $this->orderManager->reveal(), $this->registry->reveal(), $this->paymentManager->reveal());
         $controller->setContainer($this->myContainer->reveal());
@@ -354,7 +355,9 @@ class OrderControllerTest extends WebTestCase
 
         $this->orderManager->getOrderForUser('en', 'order-1', $user->reveal(), 'baz')->willReturn($order)->shouldBeCalledOnce();
 
-        $this->registry->get(Argument::type(Order::class))->will(function(){throw new InvalidArgumentException();})->shouldBeCalledOnce();
+        $this->registry->get(Argument::type(Order::class))->will(function () {
+            throw new InvalidArgumentException();
+        })->shouldBeCalledOnce();
 
         $controller = new OrderController($this->client->reveal(), $this->orderManager->reveal(), $this->registry->reveal(), $this->paymentManager->reveal());
         $controller->setContainer($this->myContainer->reveal());

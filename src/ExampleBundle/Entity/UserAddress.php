@@ -4,7 +4,6 @@
 
 namespace Commercetools\Symfony\ExampleBundle\Entity;
 
-
 use Commercetools\Core\Model\Common\Address;
 use Symfony\Component\Validator\Constraints\Email;
 use Symfony\Component\Validator\Constraints\Length;
@@ -473,9 +472,8 @@ class UserAddress
         $metadata->addPropertyConstraint('phone', new Length(['min' => 3, 'max' => 255]));
 
         $metadata->addPropertyConstraint('email', new NotBlank());
-        $metadata->addPropertyConstraint('email', new Email() );
+        $metadata->addPropertyConstraint('email', new Email());
         $metadata->addPropertyConstraint('email', new Length(['min' => 5, 'max' => 255]));
-
     }
 
     /**
