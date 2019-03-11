@@ -51,7 +51,7 @@ class CatalogManager
      * @param null $filters
      * @return array
      */
-    public function getProducts(
+    public function searchProducts(
         $locale,
         $itemsPerPage,
         $currentPage,
@@ -62,7 +62,12 @@ class CatalogManager
         $search = null,
         $filters = null
     ){
-        return $this->repository->getProducts($locale, $itemsPerPage, $currentPage, $sort, $currency, $country, $uri, $search, $filters);
+        $searchRequest = $this->repository->baseSearchProductsRequest($itemsPerPage, $currentPage, $sort);
+        $searchRequest = $this->repository->searchRequestAddCountryAndCurrency($searchRequest, $country, $currency);
+        $searchRequest = $this->repository->searchRequestAddSearchParameters($searchRequest, $locale, $uri, $search);
+        $searchRequest = $this->repository->searchRequestAddSearchFilters($searchRequest, $filters);
+
+        return $this->repository->executeSearchRequest($searchRequest, $locale);
     }
 
     /**
