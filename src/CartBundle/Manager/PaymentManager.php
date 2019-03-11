@@ -44,8 +44,8 @@ class PaymentManager
     }
 
     /**
-     * @param $locale
-     * @param $paymentId
+     * @param string $locale
+     * @param string $paymentId
      * @return Payment
      */
     public function getPaymentById($locale, $paymentId)
@@ -54,11 +54,11 @@ class PaymentManager
     }
 
     /**
-     * @param $locale
-     * @param $paymentId
+     * @param string $locale
+     * @param string $paymentId
      * @param CustomerReference|null $customer
      * @param string|null $anonymousId
-     * @return PaymentCollection
+     * @return Payment
      */
     public function getPaymentForUser($locale, $paymentId, CustomerReference $customer = null, $anonymousId = null)
     {
@@ -70,20 +70,20 @@ class PaymentManager
     }
 
     /**
-     * @param $locale
+     * @param string $locale
      * @param array $payments
      * @return array|mixed
      */
     public function getMultiplePayments($locale, array $payments)
     {
-        return $this->repository->getMultiplePayments($locale, $payments);
+        return $this->repository->getPaymentsBulk($locale, $payments);
     }
 
     /**
-     * @param $locale
+     * @param string $locale
      * @param Money $amountPlanned
      * @param CustomerReference|null $customerReference
-     * @param null $anonymousId
+     * @param string|null $anonymousId
      * @param PaymentStatus|null $paymentStatus
      * @param CustomFieldObjectDraft|null $customFieldObjectDraft
      * @return Payment
@@ -123,7 +123,7 @@ class PaymentManager
     /**
      * @param Payment $payment
      * @param AbstractAction $action
-     * @param null $eventName
+     * @param string|null $eventName
      * @return AbstractAction[]
      */
     public function dispatch(Payment $payment, AbstractAction $action, $eventName = null)

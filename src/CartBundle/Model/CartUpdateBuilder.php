@@ -32,7 +32,11 @@ class CartUpdateBuilder extends CartsActionBuilder
         $this->cart = $cart;
     }
 
-
+    /**
+     * @param AbstractAction $action
+     * @param string|null $eventName
+     * @return $this
+     */
     public function addAction(AbstractAction $action, $eventName = null)
     {
         $actions = $this->manager->dispatch($this->cart, $action, $eventName);

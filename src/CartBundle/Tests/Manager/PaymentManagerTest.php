@@ -56,7 +56,7 @@ class PaymentManagerTest extends TestCase
 
     public function testGetMultiplePayments()
     {
-        $this->paymentRepository->getMultiplePayments('en', ['payment-1', 'payment-2'])
+        $this->paymentRepository->getPaymentsBulk('en', ['payment-1', 'payment-2'])
             ->willReturn(PaymentCollection::of())->shouldBeCalled();
 
         $manager = new PaymentManager($this->paymentRepository->reveal(), $this->eventDispatcher->reveal());

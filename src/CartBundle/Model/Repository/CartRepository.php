@@ -21,10 +21,10 @@ class CartRepository extends Repository
     const CART_ITEM_COUNT = 'cart.itemCount';
 
     /**
-     * @param $locale
-     * @param null $cartId
+     * @param string $locale
+     * @param string|null $cartId
      * @param UserInterface|null $user
-     * @param null $anonymousId
+     * @param string|null $anonymousId
      * @return mixed
      */
     public function getCart($locale, $cartId = null, UserInterface $user = null, $anonymousId = null)
@@ -51,12 +51,12 @@ class CartRepository extends Repository
     }
 
     /**
-     * @param $locale
-     * @param $currency
+     * @param string $locale
+     * @param string $currency
      * @param Location $location
-     * @param LineItemDraftCollection $lineItemDraftCollection
-     * @param $customerId
-     * @param $anonymousId
+     * @param LineItemDraftCollection|null $lineItemDraftCollection
+     * @param string|null $customerId
+     * @param string|null $anonymousId
      * @return Cart|null
      */
     public function createCart($locale, $currency, Location $location, LineItemDraftCollection $lineItemDraftCollection = null, $customerId = null, $anonymousId = null)

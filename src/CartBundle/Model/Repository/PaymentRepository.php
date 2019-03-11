@@ -56,11 +56,11 @@ class PaymentRepository extends Repository
     }
 
     /**
-     * @param $locale
+     * @param string $locale
      * @param array $payments
      * @return PaymentCollection
      */
-    public function getMultiplePayments($locale, array $payments)
+    public function getPaymentsBulk($locale, array $payments)
     {
         $request = RequestBuilder::of()->payments()->query();
 
@@ -91,10 +91,10 @@ class PaymentRepository extends Repository
     }
 
     /**
-     * @param $locale
+     * @param string $locale
      * @param Money $amountPlanned
      * @param CustomerReference|null $customerReference
-     * @param null $anonymousId
+     * @param string|null $anonymousId
      * @param PaymentStatus|null $paymentStatus
      * @param CustomFieldObjectDraft|null $customFieldObject
      * @return Payment
