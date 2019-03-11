@@ -18,8 +18,8 @@ use Commercetools\Symfony\CtpBundle\Model\Repository;
 class PaymentRepository extends Repository
 {
     /**
-     * @param $locale
-     * @param $paymentId
+     * @param string $locale
+     * @param string $paymentId
      * @return Payment
      */
     public function getPaymentById($locale, $paymentId)
@@ -30,11 +30,11 @@ class PaymentRepository extends Repository
     }
 
     /**
-     * @param $locale
-     * @param $paymentId
+     * @param string $locale
+     * @param string $paymentId
      * @param CustomerReference|null $customer
-     * @param $anonymousId
-     * @return PaymentCollection
+     * @param string|null $anonymousId
+     * @return Payment
      */
     public function getPayment($locale, $paymentId, CustomerReference $customer = null, $anonymousId = null)
     {
