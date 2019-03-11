@@ -100,7 +100,7 @@ class ReviewRepositoryTest extends TestCase
             Argument::is(null)
         )->willReturn($this->response->reveal())->shouldBeCalledOnce();
 
-         $reviewRepository = $this->getReviewRepository();
+        $reviewRepository = $this->getReviewRepository();
         $reviewRepository->getReviewForUser('en', 'user-1', 'review-id');
     }
 

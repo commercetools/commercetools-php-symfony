@@ -5,7 +5,6 @@
 
 namespace Commercetools\Symfony\CatalogBundle\Tests\Model;
 
-
 use Commercetools\Core\Error\InvalidArgumentException;
 use Commercetools\Core\Model\Product\Search\FilterRange;
 use Commercetools\Core\Model\Product\Search\FilterRangeCollection;
@@ -46,12 +45,14 @@ class FacetConfigTest extends TestCase
         $this->assertSame(false, $this->facet->isMultiSelect());
     }
 
-    public function testType(){
+    public function testType()
+    {
         $this->facet->setType('foo');
         $this->assertSame('foo', $this->facet->getType());
     }
 
-    public function testDisplay(){
+    public function testDisplay()
+    {
         $this->facet->setDisplay('foo');
         $this->assertSame('foo', $this->facet->getDisplay());
     }

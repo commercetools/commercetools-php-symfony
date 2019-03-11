@@ -19,7 +19,6 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
 
-
 class ShoppingListController extends AbstractController
 {
     /**
@@ -47,7 +46,7 @@ class ShoppingListController extends AbstractController
         $params->add('expand', 'lineItems[*].variant');
         $params->add('sort', 'createdAt desc');
 
-        if(is_null($user)){
+        if (is_null($user)) {
             $shoppingLists = $this->manager->getAllOfAnonymous($request->getLocale(), $session->getId(), $params);
         } else {
             $shoppingLists = $this->manager->getAllOfCustomer($request->getLocale(), CustomerReference::ofId($user->getId()), $params);
@@ -58,7 +57,7 @@ class ShoppingListController extends AbstractController
 
     public function createAction(Request $request, SessionInterface $session, UserInterface $user = null)
     {
-        if(is_null($user)){
+        if (is_null($user)) {
             $this->manager->createShoppingListByAnonymous($request->getLocale(), $session->getId(), $request->get('shoppingListName'));
         } else {
             $this->manager->createShoppingListByCustomer($request->getLocale(), CustomerReference::ofId($user->getId()), $request->get('shoppingListName'));
@@ -82,7 +81,7 @@ class ShoppingListController extends AbstractController
     {
         $shoppingListsIds = [];
 
-        if(is_null($user)){
+        if (is_null($user)) {
             $shoppingLists = $this->manager->getAllOfAnonymous($request->getLocale(), $session->getId());
         } else {
             $shoppingLists = $this->manager->getAllOfCustomer($request->getLocale(), CustomerReference::ofId($user->getId()));
@@ -100,13 +99,12 @@ class ShoppingListController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-
             $shoppingListId = $form->get('shoppingListId')->getData();
 
-            if(!is_null($shoppingListId)){
+            if (!is_null($shoppingListId)) {
                 $shoppingList = $this->manager->getById($request->getLocale(), $shoppingListId);
                 $updateBuilder = $this->manager->update($shoppingList);
-                $updateBuilder->addLineItem(function (ShoppingListAddLineItemAction $action) use($form): ShoppingListAddLineItemAction {
+                $updateBuilder->addLineItem(function (ShoppingListAddLineItemAction $action) use ($form): ShoppingListAddLineItemAction {
                     $action->setProductId($form->get('productId')->getData());
                     $action->setVariantId((int)$form->get('variantId')->getData());
                     $action->setQuantity(1);
@@ -114,7 +112,6 @@ class ShoppingListController extends AbstractController
                 });
 
                 $updateBuilder->flush();
-
             } else {
                 $this->addFlash('error', 'Not valid shopping list provided');
             }
@@ -139,11 +136,12 @@ class ShoppingListController extends AbstractController
         $shoppingList = $this->manager->getById($request->getLocale(), $request->get('shoppingListId'));
         $builder = $this->manager->update($shoppingList)
             ->addAction(ShoppingListChangeLineItemQuantityAction::ofLineItemIdAndQuantity(
-                $request->get('lineItemId'), (int)$request->get('lineItemQuantity')));
+                $request->get('lineItemId'),
+                (int)$request->get('lineItemQuantity')
+            ));
 
         $builder->flush();
 
         return $this->redirectToRoute('_ctp_example_shoppingList');
     }
-
 }

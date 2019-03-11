@@ -4,7 +4,6 @@
 
 namespace Commercetools\Symfony\CustomerBundle\Manager;
 
-
 use Commercetools\Core\Request\AbstractAction;
 use Commercetools\Core\Model\Customer\Customer;
 use Commercetools\Symfony\CtpBundle\Model\QueryParams;

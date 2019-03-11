@@ -5,7 +5,6 @@
 
 namespace Commercetools\Symfony\SetupBundle\Tests\DependencyInjection\Command;
 
-
 use Commercetools\Core\Model\Common\Collection;
 use Commercetools\Core\Model\Message\MessagesConfiguration;
 use Commercetools\Core\Model\Project\Project;
@@ -22,7 +21,8 @@ class CommercetoolsProjectInfoCommandTest extends KernelTestCase
 {
     public static function setUpBeforeClass()
     {
-        static::$kernel = new TestKernel(function (ContainerBuilder $container) {});
+        static::$kernel = new TestKernel(function (ContainerBuilder $container) {
+        });
         static::$kernel->boot();
     }
 

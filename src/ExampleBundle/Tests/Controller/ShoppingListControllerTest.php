@@ -5,7 +5,6 @@
 
 namespace Commercetools\Symfony\ExampleBundle\Tests\Controller;
 
-
 use Commercetools\Core\Client;
 use Commercetools\Core\Model\Common\Context;
 use Commercetools\Core\Model\Common\LocalizedString;
@@ -150,7 +149,7 @@ class ShoppingListControllerTest extends WebTestCase
 
         $this->myContainer->get('router')->willReturn($router)->shouldBeCalledOnce();
 
-        $this->shoppingListManager->getShoppingListForUser('en', 'bar', null,'baz')
+        $this->shoppingListManager->getShoppingListForUser('en', 'bar', null, 'baz')
             ->willReturn(ShoppingList::of())->shouldBeCalledOnce();
         $this->shoppingListManager->deleteShoppingList('en', Argument::type(ShoppingList::class))
             ->willReturn('foo')->shouldBeCalledOnce();
@@ -197,10 +196,12 @@ class ShoppingListControllerTest extends WebTestCase
 
         $form = $this->prophesize(Form::class);
         $form->handleRequest(Argument::type(Request::class))
-            ->will(function(){return $this;})->shouldBeCalled();
+            ->will(function () {
+                return $this;
+            })->shouldBeCalled();
         $form->isSubmitted()->willReturn(true)->shouldBeCalledOnce();
         $form->isValid()->willReturn(true)->shouldBeCalledOnce();
-        $form->get('shoppingListId')->will(function(){
+        $form->get('shoppingListId')->will(function () {
             $this->getData()->willReturn('list-1');
             return $this;
         });
@@ -226,7 +227,9 @@ class ShoppingListControllerTest extends WebTestCase
         )->setContext($context);
 
         $shoppingListUpdateBuilder = $this->prophesize(ShoppingListUpdateBuilder::class);
-        $shoppingListUpdateBuilder->addLineItem(Argument::type('closure'))->will(function(){ return $this;})->shouldBeCalled();
+        $shoppingListUpdateBuilder->addLineItem(Argument::type('closure'))->will(function () {
+            return $this;
+        })->shouldBeCalled();
         $shoppingListUpdateBuilder->flush()->shouldBeCalled();
 
         $this->shoppingListManager->getAllOfCustomer('en', Argument::type(CustomerReference::class))
@@ -254,10 +257,12 @@ class ShoppingListControllerTest extends WebTestCase
 
         $form = $this->prophesize(Form::class);
         $form->handleRequest(Argument::type(Request::class))
-            ->will(function(){return $this;})->shouldBeCalled();
+            ->will(function () {
+                return $this;
+            })->shouldBeCalled();
         $form->isSubmitted()->willReturn(true)->shouldBeCalledOnce();
         $form->isValid()->willReturn(true)->shouldBeCalledOnce();
-        $form->get('shoppingListId')->will(function(){
+        $form->get('shoppingListId')->will(function () {
             $this->getData()->willReturn(null);
             return $this;
         });
@@ -303,7 +308,9 @@ class ShoppingListControllerTest extends WebTestCase
         $this->myContainer->get('router')->willReturn($router)->shouldBeCalledOnce();
 
         $shoppingListUpdateBuilder = $this->prophesize(ShoppingListUpdateBuilder::class);
-        $shoppingListUpdateBuilder->addAction(Argument::type(ShoppingListRemoveLineItemAction::class))->will(function(){return $this;})->shouldBeCalled();
+        $shoppingListUpdateBuilder->addAction(Argument::type(ShoppingListRemoveLineItemAction::class))->will(function () {
+            return $this;
+        })->shouldBeCalled();
         $shoppingListUpdateBuilder->flush()->shouldBeCalled();
 
         $this->shoppingListManager->getById('en', 'bar')
@@ -330,7 +337,9 @@ class ShoppingListControllerTest extends WebTestCase
         $this->myContainer->get('router')->willReturn($router)->shouldBeCalledOnce();
 
         $shoppingListUpdateBuilder = $this->prophesize(ShoppingListUpdateBuilder::class);
-        $shoppingListUpdateBuilder->addAction(Argument::type(ShoppingListChangeLineItemQuantityAction::class))->will(function(){return $this;})->shouldBeCalled();
+        $shoppingListUpdateBuilder->addAction(Argument::type(ShoppingListChangeLineItemQuantityAction::class))->will(function () {
+            return $this;
+        })->shouldBeCalled();
         $shoppingListUpdateBuilder->flush()->shouldBeCalled();
 
         $this->shoppingListManager->getById('en', 'bar')

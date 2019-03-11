@@ -5,7 +5,6 @@
 
 namespace Commercetools\Symfony\CustomerBundle\Tests\Model\Repository;
 
-
 use Commercetools\Core\Client;
 use Commercetools\Core\Model\Customer\Customer;
 use Commercetools\Core\Model\Customer\CustomerDraft;
@@ -57,7 +56,7 @@ class CustomerRepositoryTest extends TestCase
     public function testGetCustomer()
     {
         $this->client->execute(
-            Argument::that(function(CustomerByIdGetRequest $request){
+            Argument::that(function (CustomerByIdGetRequest $request) {
                 static::assertSame(Customer::class, $request->getResultClass());
                 static::assertSame('customer-1', $request->getId());
                 return true;
@@ -75,7 +74,7 @@ class CustomerRepositoryTest extends TestCase
         $customer = Customer::of()->setId('customer-1')->setVersion(1);
 
         $this->client->execute(
-            Argument::that(function(CustomerUpdateRequest $request){
+            Argument::that(function (CustomerUpdateRequest $request) {
                 static::assertSame(Customer::class, $request->getResultClass());
                 static::assertSame('customer-1', $request->getId());
                 static::assertSame(1, $request->getVersion());
@@ -101,7 +100,7 @@ class CustomerRepositoryTest extends TestCase
     {
         $customer = Customer::of()->setId('customer-1')->setVersion(1);
         $this->client->execute(
-            Argument::that(function(CustomerPasswordChangeRequest $request){
+            Argument::that(function (CustomerPasswordChangeRequest $request) {
                 static::assertSame(Customer::class, $request->getResultClass());
                 static::assertSame('customer-1', $request->getId());
                 static::assertSame(1, $request->getVersion());
@@ -121,7 +120,7 @@ class CustomerRepositoryTest extends TestCase
         $session->getId()->willReturn('bar')->shouldBeCalledOnce();
 
         $this->client->execute(
-            Argument::that(function(CustomerCreateRequest $request){
+            Argument::that(function (CustomerCreateRequest $request) {
                 static::assertInstanceOf(CustomerDraft::class, $request->getObject());
                 static::assertSame('email@localhost', $request->getObject()->getEmail());
                 static::assertSame('foo', $request->getObject()->getPassword());
@@ -139,7 +138,7 @@ class CustomerRepositoryTest extends TestCase
     {
         $customer = Customer::of()->setId('customer-1')->setVersion(1);
         $this->client->execute(
-            Argument::that(function(CustomerDeleteRequest $request){
+            Argument::that(function (CustomerDeleteRequest $request) {
                 static::assertSame(Customer::class, $request->getResultClass());
                 static::assertSame('customer-1', $request->getId());
                 static::assertSame(1, $request->getVersion());
@@ -152,5 +151,4 @@ class CustomerRepositoryTest extends TestCase
         $repository = $this->getCustomerRepository();
         $repository->delete($customer);
     }
-
 }

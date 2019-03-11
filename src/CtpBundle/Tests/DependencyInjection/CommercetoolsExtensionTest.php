@@ -88,7 +88,6 @@ class CommercetoolsExtensionTest extends AbstractExtensionTestCase
         $this->assertContainerBuilderHasParameter('commercetools.cache.setup', false);
         $this->assertContainerBuilderHasParameter('commercetools.cache.shopping_list', false);
         $this->assertContainerBuilderHasParameter('commercetools.cache.states', false);
-
     }
 
     public function testLoadDefaultSecondClient()

@@ -119,7 +119,12 @@ class PaymentControllerTest extends WebTestCase
         $controller = new PaymentController($this->client->reveal(), $this->paymentManager->reveal(), $this->registry->reveal());
         $controller->setContainer($this->myContainer->reveal());
         $response = $controller->createPaymentForOrderAction(
-            $this->request->reveal(), $session->reveal(), $orderManager->reveal(), $markingStorePaymentState->reveal(), 'order-1', $customType->reveal()
+            $this->request->reveal(),
+            $session->reveal(),
+            $orderManager->reveal(),
+            $markingStorePaymentState->reveal(),
+            'order-1',
+            $customType->reveal()
         );
 
         $this->assertTrue($response->isOk());
@@ -170,7 +175,12 @@ class PaymentControllerTest extends WebTestCase
         $controller = new PaymentController($this->client->reveal(), $this->paymentManager->reveal(), $this->registry->reveal());
         $controller->setContainer($this->myContainer->reveal());
         $response = $controller->createPaymentForOrderAction(
-            $this->request->reveal(), $session->reveal(), $orderManager->reveal(), $markingStorePaymentState->reveal(), 'order-1', $customType->reveal()
+            $this->request->reveal(),
+            $session->reveal(),
+            $orderManager->reveal(),
+            $markingStorePaymentState->reveal(),
+            'order-1',
+            $customType->reveal()
         );
 
         $this->assertTrue($response->isOk());
@@ -215,7 +225,12 @@ class PaymentControllerTest extends WebTestCase
         $controller = new PaymentController($this->client->reveal(), $this->paymentManager->reveal(), $this->registry->reveal());
         $controller->setContainer($this->myContainer->reveal());
         $response = $controller->createPaymentForOrderAction(
-            $this->request->reveal(), $session->reveal(), $orderManager->reveal(), $markingStorePaymentState->reveal(), 'order-1', $customType->reveal()
+            $this->request->reveal(),
+            $session->reveal(),
+            $orderManager->reveal(),
+            $markingStorePaymentState->reveal(),
+            'order-1',
+            $customType->reveal()
         );
 
         $this->assertTrue($response->isRedirect());
@@ -246,7 +261,11 @@ class PaymentControllerTest extends WebTestCase
         $controller = new PaymentController($this->client->reveal(), $this->paymentManager->reveal(), $this->registry->reveal());
         $controller->setContainer($this->myContainer->reveal());
         $response = $controller->createPaymentForCartAction(
-            $this->request->reveal(), $session->reveal(), $cartManager->reveal(), $markingStorePaymentState->reveal(), $customType->reveal()
+            $this->request->reveal(),
+            $session->reveal(),
+            $cartManager->reveal(),
+            $markingStorePaymentState->reveal(),
+            $customType->reveal()
         );
 
         $this->assertTrue($response->isOk());
@@ -299,7 +318,12 @@ class PaymentControllerTest extends WebTestCase
         $controller = new PaymentController($this->client->reveal(), $this->paymentManager->reveal(), $this->registry->reveal());
         $controller->setContainer($this->myContainer->reveal());
         $response = $controller->createPaymentForCartAction(
-            $this->request->reveal(), $session->reveal(), $cartManager->reveal(), $markingStorePaymentState->reveal(), $customType->reveal(), $user->reveal()
+            $this->request->reveal(),
+            $session->reveal(),
+            $cartManager->reveal(),
+            $markingStorePaymentState->reveal(),
+            $customType->reveal(),
+            $user->reveal()
         );
 
         $this->assertTrue($response->isOk());
@@ -344,7 +368,11 @@ class PaymentControllerTest extends WebTestCase
         $controller = new PaymentController($this->client->reveal(), $this->paymentManager->reveal(), $this->registry->reveal());
         $controller->setContainer($this->myContainer->reveal());
         $response = $controller->createPaymentForCartAction(
-            $this->request->reveal(), $session->reveal(), $cartManager->reveal(), $markingStorePaymentState->reveal(), $customType->reveal()
+            $this->request->reveal(),
+            $session->reveal(),
+            $cartManager->reveal(),
+            $markingStorePaymentState->reveal(),
+            $customType->reveal()
         );
 
         $this->assertTrue($response->isRedirect());
@@ -390,7 +418,7 @@ class PaymentControllerTest extends WebTestCase
         $this->myContainer->has('twig')->willReturn(true)->shouldBeCalledOnce();
         $this->myContainer->get('twig')->willReturn($this->twig)->shouldBeCalledOnce();
 
-        $this->registry->get(Argument::type(Payment::class))->will(function(){
+        $this->registry->get(Argument::type(Payment::class))->will(function () {
             throw new InvalidArgumentException();
         })->shouldBeCalledOnce();
 

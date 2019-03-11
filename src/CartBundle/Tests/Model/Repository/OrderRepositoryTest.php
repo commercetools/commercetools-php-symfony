@@ -5,7 +5,6 @@
 
 namespace Commercetools\Symfony\CartBundle\Tests\Model\Repository;
 
-
 use Commercetools\Core\Client;
 use Commercetools\Core\Error\InvalidArgumentException;
 use Commercetools\Core\Model\Cart\Cart;
@@ -58,7 +57,7 @@ class OrderRepositoryTest extends TestCase
     public function testGetOrdersForAnonymous()
     {
         $this->client->execute(
-            Argument::that(function(OrderQueryRequest $request){
+            Argument::that(function (OrderQueryRequest $request) {
                 static::assertSame(
                     'orders?sort=createdAt+desc&where=anonymousId+%3D+%22anon-1%22',
                     (string)$request->httpRequest()->getUri()
@@ -69,13 +68,13 @@ class OrderRepositoryTest extends TestCase
         )->willReturn($this->response->reveal())->shouldBeCalledOnce();
 
         $orderRepository = $this->getOrderRepository();
-        $orderRepository->getOrders('en',null, 'anon-1');
+        $orderRepository->getOrders('en', null, 'anon-1');
     }
 
     public function testGetOrdersForCustomer()
     {
         $this->client->execute(
-            Argument::that(function(OrderQueryRequest $request){
+            Argument::that(function (OrderQueryRequest $request) {
                 static::assertSame(
                     'orders?sort=createdAt+desc&where=customerId+%3D+%22user-1%22',
                     (string)$request->httpRequest()->getUri()
@@ -95,7 +94,7 @@ class OrderRepositoryTest extends TestCase
     public function testGetOrderForCustomer()
     {
         $this->client->execute(
-            Argument::that(function(OrderQueryRequest $request){
+            Argument::that(function (OrderQueryRequest $request) {
                 static::assertSame(
                     'orders?where=id+%3D+%22order-1%22+and+customerId+%3D+%22user-1%22',
                     (string)$request->httpRequest()->getUri()
@@ -115,7 +114,7 @@ class OrderRepositoryTest extends TestCase
     public function testGetOrderForAnonymous()
     {
         $this->client->execute(
-            Argument::that(function(OrderQueryRequest $request){
+            Argument::that(function (OrderQueryRequest $request) {
                 static::assertSame(
                     'orders?where=id+%3D+%22order-1%22+and+anonymousId+%3D+%22anon-1%22',
                     (string)$request->httpRequest()->getUri()
@@ -132,7 +131,7 @@ class OrderRepositoryTest extends TestCase
     public function testGetOrderWithId()
     {
         $this->client->execute(
-            Argument::that(function(OrderQueryRequest $request){
+            Argument::that(function (OrderQueryRequest $request) {
                 static::assertSame(
                     'orders?where=id+%3D+%22order-1%22',
                     (string)$request->httpRequest()->getUri()
@@ -149,7 +148,7 @@ class OrderRepositoryTest extends TestCase
     public function testGetOrdersWithoutUser()
     {
         $this->client->execute(
-            Argument::that(function(OrderQueryRequest $request){
+            Argument::that(function (OrderQueryRequest $request) {
                 static::assertStringStartsWith('orders', (string)$request->httpRequest()->getUri());
                 static::assertContains('sort=createdAt+desc', (string)$request->httpRequest()->getUri());
                 static::assertNotContains('where=', (string)$request->httpRequest()->getUri());
@@ -165,7 +164,7 @@ class OrderRepositoryTest extends TestCase
     public function testCreateOrderFromCart()
     {
         $this->client->execute(
-            Argument::that(function(OrderCreateFromCartRequest $request) {
+            Argument::that(function (OrderCreateFromCartRequest $request) {
                 static::assertSame(Order::class, $request->getResultClass());
                 static::assertSame('cart-1', $request->getCartId());
                 static::assertSame(1, $request->getVersion());
@@ -187,7 +186,7 @@ class OrderRepositoryTest extends TestCase
     public function testUpdateOrder()
     {
         $this->client->execute(
-            Argument::that(function(OrderUpdateRequest $request) {
+            Argument::that(function (OrderUpdateRequest $request) {
                 static::assertSame(Order::class, $request->getResultClass());
                 static::assertSame('order-1', $request->getId());
                 static::assertSame(1, $request->getVersion());
@@ -220,7 +219,7 @@ class OrderRepositoryTest extends TestCase
     public function testGetOrderFromPaymentForAnonymous()
     {
         $this->client->execute(
-            Argument::that(function(OrderQueryRequest $request){
+            Argument::that(function (OrderQueryRequest $request) {
                 static::assertSame(
                     'orders?where=paymentInfo%28payments%28id+%3D+%22payment-1%22%29%29+and+anonymousId+%3D+%22anon-1%22',
                     (string)$request->httpRequest()->getUri()
@@ -237,7 +236,7 @@ class OrderRepositoryTest extends TestCase
     public function testGetOrderFromPaymentForCustomer()
     {
         $this->client->execute(
-            Argument::that(function(OrderQueryRequest $request){
+            Argument::that(function (OrderQueryRequest $request) {
                 static::assertStringStartsWith('orders', (string)$request->httpRequest()->getUri());
                 static::assertContains('where=', (string)$request->httpRequest()->getUri());
                 static::assertContains('paymentInfo%28payments%28id+%3D+%22payment-1%22%29%29', (string)$request->httpRequest()->getUri());
@@ -258,7 +257,7 @@ class OrderRepositoryTest extends TestCase
     public function testGetOrderFromPaymentWithoutUser()
     {
         $this->client->execute(
-            Argument::that(function(OrderQueryRequest $request){
+            Argument::that(function (OrderQueryRequest $request) {
                 static::assertStringStartsWith('orders', (string)$request->httpRequest()->getUri());
                 static::assertContains('where=', (string)$request->httpRequest()->getUri());
                 static::assertContains('paymentInfo%28payments%28id+%3D+%22payment-1%22%29%29', (string)$request->httpRequest()->getUri());
@@ -277,7 +276,7 @@ class OrderRepositoryTest extends TestCase
     public function testDeleteOrder()
     {
         $this->client->execute(
-            Argument::that(function(OrderDeleteRequest $request) {
+            Argument::that(function (OrderDeleteRequest $request) {
                 static::assertSame(Order::class, $request->getResultClass());
                 static::assertSame('order-1', $request->getId());
                 static::assertSame(1, $request->getVersion());

@@ -5,7 +5,6 @@
 
 namespace Commercetools\Symfony\StateBundle\Tests\Model\Repository;
 
-
 use Commercetools\Core\Client;
 use Commercetools\Core\Request\States\StateByIdGetRequest;
 use Commercetools\Core\Request\States\StateQueryRequest;
@@ -64,7 +63,7 @@ class StateRepositoryTest extends TestCase
     public function testGetById()
     {
         $this->client->execute(
-            Argument::that(function(StateByIdGetRequest $request){
+            Argument::that(function (StateByIdGetRequest $request) {
                 static::assertSame('state-1', $request->getId());
                 return true;
             }),
@@ -78,7 +77,7 @@ class StateRepositoryTest extends TestCase
     public function testGetByTypeAndKey()
     {
         $this->client->execute(
-            Argument::that(function(StateQueryRequest $request){
+            Argument::that(function (StateQueryRequest $request) {
                 static::assertContains(urlencode('type = "type-1"'), (string)$request->httpRequest()->getUri());
                 static::assertContains(urlencode('key = "key-1"'), (string)$request->httpRequest()->getUri());
                 return true;
@@ -93,7 +92,7 @@ class StateRepositoryTest extends TestCase
     public function testGetByKey()
     {
         $this->client->execute(
-            Argument::that(function(StateQueryRequest $request){
+            Argument::that(function (StateQueryRequest $request) {
                 static::assertNotContains('type', (string)$request->httpRequest()->getUri());
                 static::assertContains(urlencode('key = "key-1"'), (string)$request->httpRequest()->getUri());
                 return true;

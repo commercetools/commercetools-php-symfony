@@ -5,7 +5,6 @@
 
 namespace Commercetools\Symfony\ExampleBundle\Tests;
 
-
 use Commercetools\Symfony\CtpBundle\DependencyInjection\Compiler\ProfilerControllerPass;
 use Commercetools\Symfony\ExampleBundle\DependencyInjection\ExampleExtension;
 use Commercetools\Symfony\ExampleBundle\ExampleBundle;

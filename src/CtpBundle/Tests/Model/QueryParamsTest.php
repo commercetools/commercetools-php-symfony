@@ -5,7 +5,6 @@
 
 namespace Commercetools\Symfony\CtpBundle\Tests\Model;
 
-
 use Commercetools\Core\Request\Query\Parameter;
 use Commercetools\Symfony\CtpBundle\Model\QueryParams;
 use PHPUnit\Framework\TestCase;
@@ -30,5 +29,4 @@ class QueryParamsTest extends TestCase
         $this->assertSame('foo', $first->getId());
         $this->assertSame('bar', $first->getValue());
     }
-
 }

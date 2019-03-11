@@ -5,7 +5,6 @@
 
 namespace Commercetools\Symfony\SetupBundle\Tests\Model;
 
-
 use Commercetools\Core\Model\Project\Project;
 use Commercetools\Core\Request\Project\Command\ProjectChangeCountriesAction;
 use Commercetools\Core\Request\Project\Command\ProjectChangeCurrenciesAction;
@@ -57,4 +56,3 @@ class ProjectUpdateBuilderTest extends TestCase
         $update->flush();
     }
 }
-

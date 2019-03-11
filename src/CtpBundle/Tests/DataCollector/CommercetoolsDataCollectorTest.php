@@ -5,7 +5,6 @@
 
 namespace Commercetools\Symfony\CtpBundle\Tests\DataCollector;
 
-
 use Commercetools\Symfony\CtpBundle\DataCollector\CommercetoolsDataCollector;
 use Commercetools\Symfony\CtpBundle\Profiler\Profile;
 use PHPUnit\Framework\TestCase;
@@ -51,5 +50,4 @@ class CommercetoolsDataCollectorTest extends TestCase
         $this->assertSame(0, $dataCollector->getRequestCount());
         $this->assertSame(0, $dataCollector->getDuration());
     }
-
 }

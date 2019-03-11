@@ -4,7 +4,6 @@
 
 namespace Commercetools\Symfony\CartBundle\Model\Repository;
 
-
 use Commercetools\Core\Builder\Request\RequestBuilder;
 use Commercetools\Core\Model\Zone\Location;
 use Commercetools\Core\Model\Cart\CartState;
@@ -15,7 +14,6 @@ use Commercetools\Core\Model\Cart\CartDraft;
 use Commercetools\Core\Model\Cart\LineItemDraftCollection;
 use Commercetools\Core\Model\Common\Address;
 use Symfony\Component\Security\Core\User\UserInterface;
-
 
 class CartRepository extends Repository
 {
@@ -72,7 +70,7 @@ class CartRepository extends Repository
 
         if (!is_null($customerId)) {
             $cartDraft->setCustomerId($customerId);
-        } else if (!is_null($anonymousId)) {
+        } elseif (!is_null($anonymousId)) {
             $cartDraft->setAnonymousId($anonymousId);
         }
 
@@ -91,7 +89,7 @@ class CartRepository extends Repository
     {
         $request = RequestBuilder::of()->carts()->update($cart)->setActions($actions);
 
-        if(!is_null($params)){
+        if (!is_null($params)) {
             foreach ($params->getParams() as $param) {
                 $request->addParamObject($param);
             }

@@ -4,7 +4,6 @@
 
 namespace Commercetools\Symfony\ShoppingListBundle\Model;
 
-
 use Commercetools\Core\Builder\Update\ShoppingListsActionBuilder;
 use Commercetools\Core\Model\ShoppingList\ShoppingList;
 use Commercetools\Core\Request\AbstractAction;

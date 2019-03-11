@@ -42,8 +42,7 @@ class AuthenticationProvider extends UserAuthenticationProvider
         $providerKey,
         $hideUserNotFoundExceptions = true,
         LoggerInterface $logger
-    )
-    {
+    ) {
         parent::__construct($userChecker, $providerKey, $hideUserNotFoundExceptions);
         $this->userProvider = $userProvider;
         $this->client = $client;

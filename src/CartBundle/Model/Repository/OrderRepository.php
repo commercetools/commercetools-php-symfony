@@ -4,7 +4,6 @@
 
 namespace Commercetools\Symfony\CartBundle\Model\Repository;
 
-
 use Commercetools\Core\Builder\Request\RequestBuilder;
 use Commercetools\Core\Model\Cart\Cart;
 use Commercetools\Core\Model\Order\Order;
@@ -64,7 +63,7 @@ class OrderRepository extends Repository
 
         if (!is_null($user)) {
             $where .= ' and customerId = "' . $user->getId() . '"';
-        } else if (!is_null($anonymousId)) {
+        } elseif (!is_null($anonymousId)) {
             $where .= ' and anonymousId = "' . $anonymousId . '"';
         }
 
@@ -136,7 +135,7 @@ class OrderRepository extends Repository
     {
         $request = RequestBuilder::of()->orders()->update($order)->setActions($actions);
 
-        if(!is_null($params)){
+        if (!is_null($params)) {
             foreach ($params->getParams() as $param) {
                 $request->addParamObject($param);
             }

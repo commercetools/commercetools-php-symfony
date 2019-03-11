@@ -4,7 +4,6 @@
 
 namespace Commercetools\Symfony\ReviewBundle\Model;
 
-
 use Commercetools\Core\Builder\Update\ReviewsActionBuilder;
 use Commercetools\Core\Model\Review\Review;
 use Commercetools\Core\Request\AbstractAction;

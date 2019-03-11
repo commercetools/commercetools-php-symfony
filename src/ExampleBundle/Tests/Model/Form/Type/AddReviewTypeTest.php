@@ -5,7 +5,6 @@
 
 namespace Commercetools\Symfony\ExampleBundle\Tests\Model\Form\Type;
 
-
 use Commercetools\Symfony\ExampleBundle\Model\Form\Type\AddReviewType;
 use Symfony\Component\Form\Test\TypeTestCase;
 
@@ -32,5 +31,4 @@ class AddReviewTypeTest extends TypeTestCase
             $this->assertArrayHasKey($key, $children);
         }
     }
-
 }
