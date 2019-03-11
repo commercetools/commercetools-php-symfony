@@ -16,8 +16,8 @@ class CustomerRepository extends Repository
     const CUSTOMER_ID = 'customer.id';
 
     /**
-     * @param $locale
-     * @param $customerId
+     * @param string $locale
+     * @param string $customerId
      * @param QueryParams|null $params
      * @return Customer
      */
@@ -32,7 +32,7 @@ class CustomerRepository extends Repository
      * @param Customer $customer
      * @param array $actions
      * @param QueryParams|null $params
-     * @return mixed
+     * @return Customer
      */
     public function update(Customer $customer, array $actions, QueryParams $params = null)
     {
@@ -49,9 +49,9 @@ class CustomerRepository extends Repository
 
     /**
      * @param Customer $customer
-     * @param $currentPassword
-     * @param $newPassword
-     * @return mixed
+     * @param string $currentPassword
+     * @param string $newPassword
+     * @return Customer
      */
     public function changePassword(Customer $customer, $currentPassword, $newPassword)
     {
@@ -61,11 +61,11 @@ class CustomerRepository extends Repository
     }
 
     /**
-     * @param $locale
-     * @param $email
-     * @param $password
+     * @param string $locale
+     * @param string $email
+     * @param string $password
      * @param SessionInterface|null $session
-     * @return mixed
+     * @return Customer
      */
     public function createCustomer($locale, $email, $password, SessionInterface $session = null)
     {
@@ -84,7 +84,7 @@ class CustomerRepository extends Repository
 
     /**
      * @param Customer $customer
-     * @return mixed
+     * @return Customer
      */
     public function delete(Customer $customer)
     {

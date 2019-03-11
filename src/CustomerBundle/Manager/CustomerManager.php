@@ -39,6 +39,12 @@ class CustomerManager
         $this->dispatcher = $dispatcher;
     }
 
+    /**
+     * @param string $locale
+     * @param string $customerId
+     * @param QueryParams|null $params
+     * @return Customer
+     */
     public function getById($locale, $customerId, QueryParams $params = null)
     {
         return $this->repository->getCustomerById($locale, $customerId, $params);
@@ -53,6 +59,12 @@ class CustomerManager
         return new CustomerUpdateBuilder($customer, $this);
     }
 
+    /**
+     * @param Customer $customer
+     * @param AbstractAction $action
+     * @param string|null $eventName
+     * @return AbstractAction[]
+     */
     public function dispatch(Customer $customer, AbstractAction $action, $eventName = null)
     {
         $eventName = is_null($eventName) ? get_class($action) : $eventName;
@@ -75,6 +87,11 @@ class CustomerManager
         return $this->dispatchPostUpdate($customer, $actions);
     }
 
+    /**
+     * @param Customer $customer
+     * @param array $actions
+     * @return Customer
+     */
     public function dispatchPostUpdate(Customer $customer, array $actions)
     {
         $event = new CustomerPostUpdateEvent($customer, $actions);
@@ -83,11 +100,24 @@ class CustomerManager
         return $event->getCustomer();
     }
 
+    /**
+     * @param Customer $customer
+     * @param string $currentPassword
+     * @param string $newPassword
+     * @return mixed
+     */
     public function changePassword(Customer $customer, $currentPassword, $newPassword)
     {
         return $this->repository->changePassword($customer, $currentPassword, $newPassword);
     }
 
+    /**
+     * @param string $locale
+     * @param string $email
+     * @param string $password
+     * @param SessionInterface|null $session
+     * @return Customer
+     */
     public function createCustomer($locale, $email, $password, SessionInterface $session = null)
     {
         $event = new CustomerCreateEvent();
