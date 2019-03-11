@@ -5,7 +5,6 @@
 
 namespace Commercetools\Symfony\CtpBundle\Tests\Logger;
 
-
 use Commercetools\Symfony\CtpBundle\Logger\Logger;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\LoggerInterface;

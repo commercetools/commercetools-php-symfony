@@ -5,7 +5,6 @@
 
 namespace Commercetools\Symfony\StateBundle\Model\TransitionHandler;
 
-
 use Commercetools\Core\Model\State\StateReference;
 use Commercetools\Core\Request\Products\Command\ProductTransitionStateAction;
 use Commercetools\Symfony\CatalogBundle\Model\ProductUpdateBuilder;

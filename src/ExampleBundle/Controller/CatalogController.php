@@ -43,31 +43,34 @@ class CatalogController extends AbstractController
     public function indexAction(Request $request, $categoryId = null, $productTypeId = null)
     {
         $form = $this->createFormBuilder()
-            ->add('search', TextType::class,
+            ->add(
+                'search',
+                TextType::class,
                 [
                     'attr' => [
                         'placeholder' => 'Search...',
                     ],
                     'label' => false,
                     'required' => false,
-                ])
+                ]
+            )
             ->add('save', SubmitType::class, ['label' => 'Search'])
             ->getForm();
         $form->handleRequest($request);
 
         $search = null;
-        if ($form->isSubmitted() && $form->isValid()){
+        if ($form->isSubmitted() && $form->isValid()) {
             $search = $form->get('search')->getData();
         }
 
         $uri = new Uri($request->getRequestUri());
 
         $filter = null;
-        if(!is_null($categoryId)){
+        if (!is_null($categoryId)) {
             $filter['filter'][] = Filter::ofName('categories.id')->setValue($categoryId);
         }
 
-        if(!is_null($productTypeId)){
+        if (!is_null($productTypeId)) {
             $filter['filter'][] = Filter::ofName('productType.id')->setValue($productTypeId);
         }
 
@@ -75,7 +78,15 @@ class CatalogController extends AbstractController
         $currency = $this->getCurrencyFromConfig();
 
         list($products, $offset) = $this->catalogManager->searchProducts(
-            $request->getLocale(), 12, 1, 'price asc', $currency, $country, $uri, $search, $filter
+            $request->getLocale(),
+            12,
+            1,
+            'price asc',
+            $currency,
+            $country,
+            $uri,
+            $search,
+            $filter
         );
 
         return $this->render('ExampleBundle:catalog:index.html.twig', [
@@ -83,7 +94,6 @@ class CatalogController extends AbstractController
             'offset' => $offset,
             'form' => $form->createView(),
         ]);
-
     }
 
     public function detailBySlugAction(Request $request, $slug, SessionInterface $session, UserInterface $user = null)
@@ -116,7 +126,7 @@ class CatalogController extends AbstractController
         }
 
         $shoppingListsIds = [];
-        if(is_null($user)){
+        if (is_null($user)) {
             $shoppingLists = $this->shoppingListManager->getAllOfAnonymous($request->getLocale(), $session->getId());
         } else {
             $shoppingLists = $this->shoppingListManager->getAllOfCustomer($request->getLocale(), CustomerReference::ofId($user->getId()));
@@ -170,7 +180,6 @@ class CatalogController extends AbstractController
             $items[$product->getId()]['image'] = (string)$product->getMasterVariant()->getImages()->current()->getUrl();
             $items[$product->getId()]['desc'] = (string)$product->getDescription();
             $items[$product->getId()]['price'] = (string)$product->getMasterVariant()->getPrice()->getCurrentValue();
-
         }
 
         $res = new JsonResponse();
@@ -185,7 +194,7 @@ class CatalogController extends AbstractController
 
         $categories = $this->catalogManager->getCategories($request->getLocale(), $params);
 
-        return $this->render( 'ExampleBundle:catalog:categoriesList.html.twig', [
+        return $this->render('ExampleBundle:catalog:categoriesList.html.twig', [
             'categories' => $categories
         ]);
     }
@@ -196,7 +205,7 @@ class CatalogController extends AbstractController
 
         $productTypes = $this->catalogManager->getProductTypes($request->getLocale(), $params);
 
-        return $this->render( 'ExampleBundle:catalog:productTypesList.html.twig', [
+        return $this->render('ExampleBundle:catalog:productTypesList.html.twig', [
             'productTypes' => $productTypes
         ]);
     }

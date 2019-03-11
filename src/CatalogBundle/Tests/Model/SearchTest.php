@@ -5,7 +5,6 @@
 
 namespace Commercetools\Symfony\CatalogBundle\Tests\Model;
 
-
 use Commercetools\Core\Model\Product\Search\Facet;
 use Commercetools\Core\Model\Product\Search\Filter;
 use Commercetools\Core\Request\Products\ProductProjectionSearchRequest;
@@ -130,5 +129,4 @@ class SearchTest extends TestCase
 
         $this->search->addFacets($request->reveal(), $selectedValues);
     }
-
 }

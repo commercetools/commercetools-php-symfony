@@ -5,7 +5,6 @@
 
 namespace Commercetools\Symfony\StateBundle\Tests\DependencyInjection\Compiler;
 
-
 use Commercetools\Symfony\CtpBundle\Tests\ContainerTrait;
 use Commercetools\Symfony\StateBundle\DependencyInjection\Compiler\CtpStateMachinePass;
 use PHPUnit\Framework\TestCase;

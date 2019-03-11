@@ -5,7 +5,6 @@
 
 namespace Commercetools\Symfony\CartBundle\Tests\Manager;
 
-
 use Commercetools\Core\Error\InvalidArgumentException;
 use Commercetools\Core\Model\Cart\Cart;
 use Commercetools\Core\Model\Order\Order;
@@ -31,12 +30,16 @@ class OrderManagerTest extends TestCase
         $dispatcher = $this->prophesize(EventDispatcherInterface::class);
 
         $repository->update($order, Argument::type('array'))
-            ->will(function ($args) { return $args[0]; })->shouldBeCalled();
+            ->will(function ($args) {
+                return $args[0];
+            })->shouldBeCalled();
 
         $dispatcher->dispatch(
             Argument::containingString(OrderPostUpdateEvent::class),
             Argument::type(OrderPostUpdateEvent::class)
-        )->will(function ($args) { return $args[1]; })->shouldBeCalled();
+        )->will(function ($args) {
+            return $args[1];
+        })->shouldBeCalled();
 
         $manager = new OrderManager($repository->reveal(), $dispatcher->reveal());
         $order = $manager->apply($order->reveal(), []);
@@ -52,7 +55,9 @@ class OrderManagerTest extends TestCase
         $dispatcher->dispatch(
             Argument::containingString(AbstractAction::class),
             Argument::type(OrderUpdateEvent::class)
-        )->will(function ($args) { return $args[1]; })->shouldBeCalled();
+        )->will(function ($args) {
+            return $args[1];
+        })->shouldBeCalled();
         $action = $this->prophesize(AbstractAction::class);
 
         $manager = new OrderManager($repository->reveal(), $dispatcher->reveal());
@@ -86,7 +91,6 @@ class OrderManagerTest extends TestCase
 
         $manager = new OrderManager($repository->reveal(), $dispatcher->reveal());
         $this->assertInstanceOf(OrderUpdateBuilder::class, $manager->update($order->reveal()));
-
     }
 
     public function testGetOrderForCustomer()

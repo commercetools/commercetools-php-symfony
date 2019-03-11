@@ -42,6 +42,5 @@ class CommercetoolsProjectApplyConfigurationCommand extends Command
         }
 
         $output->writeln(sprintf('CTP response: %s', json_encode($result)));
-
     }
 }

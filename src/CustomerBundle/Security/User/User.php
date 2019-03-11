@@ -4,7 +4,6 @@
 
 namespace Commercetools\Symfony\CustomerBundle\Security\User;
 
-
 use Symfony\Component\Security\Core\User\UserInterface;
 
 class User implements CtpUser
@@ -38,7 +37,9 @@ class User implements CtpUser
         return $this->password;
     }
 
-    public function getSalt(){}
+    public function getSalt()
+    {
+    }
 
     public function getUsername()
     {
@@ -93,7 +94,9 @@ class User implements CtpUser
         $this->cartItemCount = $cartItemCount;
     }
 
-    public function eraseCredentials(){}
+    public function eraseCredentials()
+    {
+    }
 
     public function isEqualTo(UserInterface $user)
     {

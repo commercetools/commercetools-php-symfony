@@ -127,4 +127,3 @@ class Profile implements \IteratorAggregate, \Serializable
         list($this->name, $this->starts, $this->ends, $this->profiles, $this->request, $this->response) = unserialize($data);
     }
 }
-

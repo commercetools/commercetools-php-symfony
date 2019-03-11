@@ -52,5 +52,4 @@ class ProjectUpdateBuilder extends ProjectActionBuilder
     {
         return $this->repository->updateProject($this->project, $this->getActions());
     }
-
 }

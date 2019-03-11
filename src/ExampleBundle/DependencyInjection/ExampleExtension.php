@@ -2,7 +2,6 @@
 
 namespace Commercetools\Symfony\ExampleBundle\DependencyInjection;
 
-
 use Commercetools\Symfony\CtpBundle\DependencyInjection\Configuration;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\ContainerBuilder;

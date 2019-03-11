@@ -5,7 +5,6 @@
 
 namespace Commercetools\Symfony\SetupBundle\Tests\Model;
 
-
 use Commercetools\Symfony\SetupBundle\Model\ArrayHelper;
 use PHPUnit\Framework\TestCase;
 
@@ -43,7 +42,7 @@ class ArrayHelperTest extends TestCase
 
         $array2 = [
             'foo' => [
-              'level1' => 'fail',
+                'level1' => 'fail',
             ],
             'key' => 'value'
 

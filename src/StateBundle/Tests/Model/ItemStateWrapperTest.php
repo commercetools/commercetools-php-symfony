@@ -5,7 +5,6 @@
 
 namespace Commercetools\Symfony\StateBundle\Tests\Model;
 
-
 use Commercetools\Core\Model\Cart\CustomLineItem;
 use Commercetools\Core\Model\Cart\LineItem;
 use Commercetools\Core\Model\Order\Order;
@@ -60,5 +59,4 @@ class ItemStateWrapperTest extends TestCase
         $this->assertSame('customLineItem-1', $updateAction->getCustomLineItemId());
         $this->assertSame('foo', $updateAction->getToState()->getKey());
     }
-
 }

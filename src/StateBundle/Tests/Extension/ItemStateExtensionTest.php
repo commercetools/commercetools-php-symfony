@@ -5,7 +5,6 @@
 
 namespace Commercetools\Symfony\StateBundle\Tests\Extension;
 
-
 use Commercetools\Core\Model\Cart\LineItem;
 use Commercetools\Core\Model\Order\Order;
 use Commercetools\Core\Model\State\StateReference;

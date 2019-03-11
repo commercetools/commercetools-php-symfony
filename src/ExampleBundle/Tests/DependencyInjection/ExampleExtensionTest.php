@@ -5,7 +5,6 @@
 
 namespace Commercetools\Symfony\ExampleBundle\Tests\DependencyInjection;
 
-
 use Commercetools\Symfony\ExampleBundle\DependencyInjection\ExampleExtension;
 use Matthias\SymfonyDependencyInjectionTest\PhpUnit\AbstractExtensionTestCase;
 

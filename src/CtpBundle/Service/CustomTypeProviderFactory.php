@@ -5,7 +5,6 @@
 
 namespace Commercetools\Symfony\CtpBundle\Service;
 
-
 use Commercetools\Core\Model\Type\TypeCollection;
 
 class CustomTypeProviderFactory

@@ -4,7 +4,6 @@
 
 namespace Commercetools\Symfony\ExampleBundle\Model\Form\Type;
 
-
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\CountryType;
@@ -41,7 +40,7 @@ class AddressType extends AbstractType
         $builder->add('additionalStreetInfo', TextareaType::class, [
             'required' => false, 'attr'  => ['class' => 'form_text']
         ]);
-        $builder->add('phone', TextType::class, ['required' => false] );
-        $builder->add('mobile', TextType::class, ['required' => false] );
+        $builder->add('phone', TextType::class, ['required' => false]);
+        $builder->add('mobile', TextType::class, ['required' => false]);
     }
 }

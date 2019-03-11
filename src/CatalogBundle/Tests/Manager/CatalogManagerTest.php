@@ -126,7 +126,14 @@ class CatalogManagerTest extends TestCase
 
         $manager = new CatalogManager($this->repository->reveal(), $this->eventDispatcher->reveal());
         $products = $manager->searchProducts(
-            'en', 5, 1, null, 'EUR', 'DE', $uri->reveal());
+            'en',
+            5,
+            1,
+            null,
+            'EUR',
+            'DE',
+            $uri->reveal()
+        );
 
         $this->assertIsArray($products);
     }
@@ -144,12 +151,16 @@ class CatalogManagerTest extends TestCase
         $product = Product::of()->setId('1');
 
         $this->repository->update($product, Argument::type('array'))
-            ->will(function ($args) { return $args[0]; })->shouldBeCalled();
+            ->will(function ($args) {
+                return $args[0];
+            })->shouldBeCalled();
 
         $this->eventDispatcher->dispatch(
             Argument::containingString(ProductPostUpdateEvent::class),
             Argument::type(ProductPostUpdateEvent::class)
-        )->will(function ($args) { return $args[1]; })->shouldBeCalled();
+        )->will(function ($args) {
+            return $args[1];
+        })->shouldBeCalled();
 
         $manager = new CatalogManager($this->repository->reveal(), $this->eventDispatcher->reveal());
         $product = $manager->apply($product, []);
@@ -166,7 +177,9 @@ class CatalogManagerTest extends TestCase
         $this->eventDispatcher->dispatch(
             Argument::containingString(ProductSetKeyAction::class),
             Argument::type(ProductUpdateEvent::class)
-        )->will(function ($args) { return $args[1]; })->shouldBeCalled();
+        )->will(function ($args) {
+            return $args[1];
+        })->shouldBeCalled();
 
         $manager = new CatalogManager($this->repository->reveal(), $this->eventDispatcher->reveal());
 
@@ -183,7 +196,9 @@ class CatalogManagerTest extends TestCase
         $this->eventDispatcher->dispatch(
             Argument::containingString(ProductPostUpdateEvent::class),
             Argument::type(ProductPostUpdateEvent::class)
-        )->will(function ($args) { return $args[1]; })->shouldBeCalled();
+        )->will(function ($args) {
+            return $args[1];
+        })->shouldBeCalled();
 
         $manager = new CatalogManager($this->repository->reveal(), $this->eventDispatcher->reveal());
 

@@ -5,7 +5,6 @@
 
 namespace Commercetools\Symfony\SetupBundle\Command;
 
-
 use Commercetools\Core\Model\Common\LocalizedString;
 use Commercetools\Core\Model\Type\FieldDefinition;
 use Commercetools\Core\Model\Type\FieldDefinitionCollection;
@@ -48,7 +47,8 @@ class CommercetoolsCreateCustomTypeCommand extends Command
         $question = new Question('Please enter the two letter code of the language of the name you just entered [en]: ', 'en');
         $customTypeNameLanguage = $helper->ask($input, $output, $question);
 
-        $question = new ChoiceQuestion('Please enter the ids of the resources that this custom type can be applied at: ',
+        $question = new ChoiceQuestion(
+            'Please enter the ids of the resources that this custom type can be applied at: ',
             ['line-item', 'shopping-list', 'review', 'channel', 'discount-code', 'product-price',
             'shopping-list-text-line-item', 'customer-group', 'order-edit', 'custom-line-item', 'cart-discount', 'payment',
             'payment-interface-interaction', 'order', 'customer', 'category', 'asset', 'inventory-entry'],
@@ -62,7 +62,8 @@ class CommercetoolsCreateCustomTypeCommand extends Command
 
         do {
             // only support "simple" types for the moment
-            $question = new ChoiceQuestion('Please selecte the type: ',
+            $question = new ChoiceQuestion(
+                'Please selecte the type: ',
                 ['BooleanType', 'StringType', 'LocalizedStringType', 'NumberType', 'MoneyType', 'DateType', 'TimeType', 'DateTimeType'],
                 0
             );

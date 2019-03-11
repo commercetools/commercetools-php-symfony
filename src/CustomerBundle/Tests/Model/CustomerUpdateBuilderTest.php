@@ -40,31 +40,31 @@ class CustomerUpdateBuilderTest extends TestCase
     public function getActionProvider()
     {
         return [
-           ['addAddress', CustomerAddAddressAction::class],
-           ['addBillingAddressId', CustomerAddBillingAddressAction::class],
-           ['addShippingAddressId', CustomerAddShippingAddressAction::class],
-           ['changeAddress', CustomerChangeAddressAction::class],
-           ['changeEmail', CustomerChangeEmailAction::class],
-           ['removeAddress', CustomerRemoveAddressAction::class],
-           ['removeBillingAddressId', CustomerRemoveBillingAddressAction::class],
-           ['removeShippingAddressId', CustomerRemoveShippingAddressAction::class],
-           ['setCompanyName', CustomerSetCompanyNameAction::class],
-           ['setCustomField', CustomerSetCustomFieldAction::class],
-           ['setCustomType', CustomerSetCustomTypeAction::class],
-           ['setCustomerGroup', CustomerSetCustomerGroupAction::class],
-           ['setCustomerNumber', CustomerSetCustomerNumberAction::class],
-           ['setDateOfBirth', CustomerSetDateOfBirthAction::class],
-           ['setDefaultBillingAddress', CustomerSetDefaultBillingAddressAction::class],
-           ['setDefaultShippingAddress', CustomerSetDefaultShippingAddressAction::class],
-           ['setExternalId', CustomerSetExternalIdAction::class],
-           ['setFirstName', CustomerSetFirstNameAction::class],
-           ['setKey', CustomerSetKeyAction::class],
-           ['setLastName', CustomerSetLastNameAction::class],
-           ['setLocale', CustomerSetLocaleAction::class],
-           ['setMiddleName', CustomerSetMiddleNameAction::class],
-           ['setSalutation', CustomerSetSalutationAction::class],
-           ['setTitle', CustomerSetTitleAction::class],
-           ['setVatId', CustomerSetVatIdAction::class]
+            ['addAddress', CustomerAddAddressAction::class],
+            ['addBillingAddressId', CustomerAddBillingAddressAction::class],
+            ['addShippingAddressId', CustomerAddShippingAddressAction::class],
+            ['changeAddress', CustomerChangeAddressAction::class],
+            ['changeEmail', CustomerChangeEmailAction::class],
+            ['removeAddress', CustomerRemoveAddressAction::class],
+            ['removeBillingAddressId', CustomerRemoveBillingAddressAction::class],
+            ['removeShippingAddressId', CustomerRemoveShippingAddressAction::class],
+            ['setCompanyName', CustomerSetCompanyNameAction::class],
+            ['setCustomField', CustomerSetCustomFieldAction::class],
+            ['setCustomType', CustomerSetCustomTypeAction::class],
+            ['setCustomerGroup', CustomerSetCustomerGroupAction::class],
+            ['setCustomerNumber', CustomerSetCustomerNumberAction::class],
+            ['setDateOfBirth', CustomerSetDateOfBirthAction::class],
+            ['setDefaultBillingAddress', CustomerSetDefaultBillingAddressAction::class],
+            ['setDefaultShippingAddress', CustomerSetDefaultShippingAddressAction::class],
+            ['setExternalId', CustomerSetExternalIdAction::class],
+            ['setFirstName', CustomerSetFirstNameAction::class],
+            ['setKey', CustomerSetKeyAction::class],
+            ['setLastName', CustomerSetLastNameAction::class],
+            ['setLocale', CustomerSetLocaleAction::class],
+            ['setMiddleName', CustomerSetMiddleNameAction::class],
+            ['setSalutation', CustomerSetSalutationAction::class],
+            ['setTitle', CustomerSetTitleAction::class],
+            ['setVatId', CustomerSetVatIdAction::class]
         ];
     }
 
@@ -87,7 +87,9 @@ class CustomerUpdateBuilderTest extends TestCase
             $customer,
             Argument::type($actionClass),
             Argument::is(null)
-        )->will(function ($args) { return [$args[1]]; })->shouldBeCalledTimes(1);
+        )->will(function ($args) {
+            return [$args[1]];
+        })->shouldBeCalledTimes(1);
 
         $update = new CustomerUpdateBuilder($customer->reveal(), $manager->reveal());
 
@@ -116,7 +118,9 @@ class CustomerUpdateBuilderTest extends TestCase
             $customer,
             Argument::type($actionClass),
             Argument::is(null)
-        )->will(function ($args) { return [$args[1]]; })->shouldBeCalledTimes(1);
+        )->will(function ($args) {
+            return [$args[1]];
+        })->shouldBeCalledTimes(1);
 
         $update = new CustomerUpdateBuilder($customer->reveal(), $manager->reveal());
 

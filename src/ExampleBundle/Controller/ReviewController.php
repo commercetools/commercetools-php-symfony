@@ -5,7 +5,6 @@
 
 namespace Commercetools\Symfony\ExampleBundle\Controller;
 
-
 use Commercetools\Core\Client;
 use Commercetools\Core\Model\Customer\CustomerReference;
 use Commercetools\Core\Model\Product\ProductReference;
@@ -111,7 +110,7 @@ class ReviewController extends AbstractController
      */
     public function updateReviewAction(Request $request, $reviewId, UserInterface $user = null)
     {
-        if(is_null($user)){
+        if (is_null($user)) {
             $this->addFlash('error', 'Do not allow anonymous reviews for now');
             return $this->render('@Example/index.html.twig');
         }
@@ -140,5 +139,4 @@ class ReviewController extends AbstractController
         $workflow->apply($review, $request->get('toState'));
         return $this->redirect($this->generateUrl('_ctp_example_product_by_id', ['id' => $review->getTarget()->getid()]));
     }
-
 }

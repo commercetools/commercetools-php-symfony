@@ -5,8 +5,6 @@
 
 namespace Commercetools\Symfony\CtpBundle\Tests\Controller;
 
-
-
 use Commercetools\Symfony\CtpBundle\Controller\ProfilerController;
 use Commercetools\Symfony\CtpBundle\DataCollector\CommercetoolsDataCollector;
 use PHPUnit\Framework\TestCase;
@@ -35,7 +33,9 @@ class ProfilerControllerTest extends TestCase
 
         $templating = $this->prophesize(EngineInterface::class);
         $templating->renderResponse(Argument::containingString('details.html.twig'), Argument::type('array'))
-            ->will(function($args){return $args;})->shouldBeCalledOnce();
+            ->will(function ($args) {
+                return $args;
+            })->shouldBeCalledOnce();
 
         $profilerController = new ProfilerController($profiler->reveal(), $templating->reveal());
         $response = $profilerController->details('foo', 'bar');
@@ -71,7 +71,9 @@ class ProfilerControllerTest extends TestCase
 
         $templating = $this->prophesize(EngineInterface::class);
         $templating->renderResponse(Argument::containingString('details.html.twig'), Argument::type('array'))
-            ->will(function($args){return $args;})->shouldBeCalledOnce();
+            ->will(function ($args) {
+                return $args;
+            })->shouldBeCalledOnce();
 
         $profilerController = new ProfilerController($profiler->reveal(), $templating->reveal());
         $response = $profilerController->details('foo', 'baz');
@@ -88,6 +90,4 @@ class ProfilerControllerTest extends TestCase
 
         $this->assertEquals($expected, $response);
     }
-
-
 }

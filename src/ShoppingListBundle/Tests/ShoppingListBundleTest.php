@@ -5,7 +5,6 @@
 
 namespace Commercetools\Symfony\ShoppingListBundle\Tests;
 
-
 use Commercetools\Symfony\ShoppingListBundle\DependencyInjection\ShoppingListExtension;
 use Commercetools\Symfony\ShoppingListBundle\ShoppingListBundle;
 use PHPUnit\Framework\TestCase;

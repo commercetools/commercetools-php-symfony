@@ -5,7 +5,6 @@
 
 namespace Commercetools\Symfony\CustomerBundle\Tests\Security\Authentication\Provider;
 
-
 use Commercetools\Core\Client;
 use Commercetools\Core\Model\Cart\Cart;
 use Commercetools\Core\Model\Cart\LineItem;
@@ -189,7 +188,7 @@ class AuthenticationProviderTest extends TestCase
         $user->setId('id-1')->shouldBeCalledOnce();
         $user->setCartId('cart-1')->shouldBeCalledOnce();
         $user->setCartItemCount(2)->shouldBeCalledOnce();
-        $user->setDefaultShippingAddress(Argument::that(function(Address $address){
+        $user->setDefaultShippingAddress(Argument::that(function (Address $address) {
             static::assertSame('address-1', $address->getId());
             static::assertSame('DE', $address->getCountry());
             return true;
@@ -250,7 +249,7 @@ class AuthenticationProviderTest extends TestCase
 
         $token->getUser()->willReturn(null)->shouldBeCalled();
 
-        $this->userProvider->loadUserByUsername('foo')->will(function(){
+        $this->userProvider->loadUserByUsername('foo')->will(function () {
             throw new UsernameNotFoundException('foo');
         })->shouldBeCalled();
 

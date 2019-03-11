@@ -4,7 +4,6 @@
 
 namespace Commercetools\Symfony\CustomerBundle\Model;
 
-
 use Commercetools\Core\Builder\Update\CustomersActionBuilder;
 use Commercetools\Core\Model\Customer\Customer;
 use Commercetools\Core\Request\AbstractAction;

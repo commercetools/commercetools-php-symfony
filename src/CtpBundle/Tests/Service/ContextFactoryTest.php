@@ -5,7 +5,6 @@
 
 namespace Commercetools\Symfony\CtpBundle\Tests\Service;
 
-
 use Commercetools\Core\Model\Common\Context;
 use Commercetools\Symfony\CtpBundle\Service\ContextFactory;
 use Commercetools\Symfony\CtpBundle\Service\LocaleConverter;
@@ -31,5 +30,4 @@ class ContextFactoryTest extends TestCase
         $this->assertSame('foo', current($context->getLanguages()));
         $this->assertSame('foo', $context->getLocale());
     }
-
 }

@@ -4,7 +4,6 @@
 
 namespace Commercetools\Symfony\CartBundle\Model\Repository;
 
-
 use Commercetools\Core\Builder\Request\RequestBuilder;
 use Commercetools\Core\Model\ShippingMethod\ShippingMethodCollection;
 use Commercetools\Core\Model\Zone\Location;

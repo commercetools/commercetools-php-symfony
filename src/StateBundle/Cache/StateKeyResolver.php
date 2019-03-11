@@ -5,7 +5,6 @@
 
 namespace Commercetools\Symfony\StateBundle\Cache;
 
-
 use Commercetools\Core\Model\State\State;
 use Commercetools\Core\Model\State\StateReference;
 use Commercetools\Symfony\StateBundle\Model\Repository\StateRepository;

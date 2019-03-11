@@ -21,7 +21,7 @@ class ReviewPostUpdateEventTest extends TestCase
         $postUpdateEvent = new ReviewPostUpdateEvent($review->reveal(), [$action->reveal()]);
         $postUpdateEvent->setReview($secondReview->reveal());
 
-        $this->assertNotSame($review->reveal(),$secondReview->reveal());
+        $this->assertNotSame($review->reveal(), $secondReview->reveal());
         $this->assertSame($secondReview->reveal(), $postUpdateEvent->getReview());
         $this->assertNotSame($review->reveal(), $postUpdateEvent->getReview());
 
