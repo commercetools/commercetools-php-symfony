@@ -68,10 +68,10 @@ class OrderManager
     }
 
     /**
-     * @param $locale
-     * @param $orderId
+     * @param string $locale
+     * @param string orderId
      * @param UserInterface|null $user
-     * @param null $anonymousId
+     * @param string|null $anonymousId
      * @return Order
      */
     public function getOrderForUser($locale, $orderId, UserInterface $user = null, $anonymousId = null)
@@ -84,23 +84,41 @@ class OrderManager
     }
 
     /**
-     * @param $locale
-     * @param $paymentId
+     * @param string $locale
+     * @param string $paymentId
      * @param UserInterface|null $user
-     * @param null $anonymousId
-     * @return mixed
+     * @param string|null $anonymousId
+     * @return Order
      */
-    public function getOrderFromPayment($locale, $paymentId, UserInterface $user = null, $anonymousId = null)
+    public function getFirstOrderFromPayment($locale, $paymentId, UserInterface $user = null, $anonymousId = null)
     {
         if (is_null($user) && is_null($anonymousId)) {
             throw new InvalidArgumentException('At least one of `user` or `anonymousId` should be present');
         }
 
-        return $this->repository->getOrderFromPayment($locale, $paymentId, $user, $anonymousId);
+        $orders = $this->repository->getOrdersFromPayment($locale, $paymentId, $user, $anonymousId);
+
+        return $orders->current();
     }
 
     /**
-     * @param $locale
+     * @param string $locale
+     * @param string $paymentId
+     * @param UserInterface|null $user
+     * @param string|null $anonymousId
+     * @return OrderCollection
+     */
+    public function getOrdersFromPayment($locale, $paymentId, UserInterface $user = null, $anonymousId = null)
+    {
+        if (is_null($user) && is_null($anonymousId)) {
+            throw new InvalidArgumentException('At least one of `user` or `anonymousId` should be present');
+        }
+
+        return $this->repository->getOrdersFromPayment($locale, $paymentId, $user, $anonymousId);
+    }
+
+    /**
+     * @param string $locale
      * @param Cart $cart
      * @param StateReference $stateReference
      * @return Order
@@ -130,7 +148,7 @@ class OrderManager
     /**
      * @param Order $order
      * @param AbstractAction $action
-     * @param null $eventName
+     * @param string|null $eventName
      * @return AbstractAction[]
      */
     public function dispatch(Order $order, AbstractAction $action, $eventName = null)

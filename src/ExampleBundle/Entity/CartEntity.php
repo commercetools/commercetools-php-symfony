@@ -4,7 +4,6 @@
 
 namespace Commercetools\Symfony\ExampleBundle\Entity;
 
-
 use Commercetools\Core\Model\Cart\Cart;
 
 class CartEntity

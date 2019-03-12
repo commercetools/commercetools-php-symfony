@@ -5,7 +5,6 @@
 
 namespace Commercetools\Symfony\CartBundle\Tests\Event;
 
-
 use Commercetools\Core\Model\Cart\Cart;
 use Commercetools\Symfony\CartBundle\Event\CartPostCreateEvent;
 use PHPUnit\Framework\TestCase;

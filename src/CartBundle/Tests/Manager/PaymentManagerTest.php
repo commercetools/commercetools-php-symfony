@@ -5,7 +5,6 @@
 
 namespace Commercetools\Symfony\CartBundle\Tests\Manager;
 
-
 use Commercetools\Core\Error\InvalidArgumentException;
 use Commercetools\Core\Model\Common\Money;
 use Commercetools\Core\Model\Payment\Payment;
@@ -57,7 +56,7 @@ class PaymentManagerTest extends TestCase
 
     public function testGetMultiplePayments()
     {
-        $this->paymentRepository->getMultiplePayments('en', ['payment-1', 'payment-2'])
+        $this->paymentRepository->getPaymentsBulk('en', ['payment-1', 'payment-2'])
             ->willReturn(PaymentCollection::of())->shouldBeCalled();
 
         $manager = new PaymentManager($this->paymentRepository->reveal(), $this->eventDispatcher->reveal());
@@ -99,12 +98,16 @@ class PaymentManagerTest extends TestCase
         $payment = Payment::of()->setId('1');
 
         $this->paymentRepository->update($payment, Argument::type('array'))
-            ->will(function ($args) { return $args[0]; })->shouldBeCalled();
+            ->will(function ($args) {
+                return $args[0];
+            })->shouldBeCalled();
 
         $this->eventDispatcher->dispatch(
             Argument::containingString(PaymentPostUpdateEvent::class),
             Argument::type(PaymentPostUpdateEvent::class)
-        )->will(function ($args) { return $args[1]; })->shouldBeCalled();
+        )->will(function ($args) {
+            return $args[1];
+        })->shouldBeCalled();
 
         $manager = new PaymentManager($this->paymentRepository->reveal(), $this->eventDispatcher->reveal());
         $payment = $manager->apply($payment, []);
@@ -121,7 +124,9 @@ class PaymentManagerTest extends TestCase
         $this->eventDispatcher->dispatch(
             Argument::containingString(PaymentSetAmountPaidAction::class),
             Argument::type(PaymentUpdateEvent::class)
-        )->will(function ($args) { return $args[1]; })->shouldBeCalled();
+        )->will(function ($args) {
+            return $args[1];
+        })->shouldBeCalled();
 
         $manager = new PaymentManager($this->paymentRepository->reveal(), $this->eventDispatcher->reveal());
 
@@ -138,7 +143,9 @@ class PaymentManagerTest extends TestCase
         $this->eventDispatcher->dispatch(
             Argument::containingString(PaymentPostUpdateEvent::class),
             Argument::type(PaymentPostUpdateEvent::class)
-        )->will(function ($args) { return $args[1]; })->shouldBeCalled();
+        )->will(function ($args) {
+            return $args[1];
+        })->shouldBeCalled();
 
         $manager = new PaymentManager($this->paymentRepository->reveal(), $this->eventDispatcher->reveal());
 

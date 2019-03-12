@@ -4,7 +4,6 @@
 
 namespace Commercetools\Symfony\CartBundle\Model\Repository;
 
-
 use Commercetools\Core\Builder\Request\RequestBuilder;
 use Commercetools\Core\Model\Cart\Cart;
 use Commercetools\Core\Model\Order\Order;
@@ -29,9 +28,9 @@ class OrderRepository extends Repository
     }
 
     /**
-     * @param $locale
+     * @param string $locale
      * @param UserInterface|null $user
-     * @param null $anonymousId
+     * @param string|null $anonymousId
      * @return OrderCollection
      */
     public function getOrders($locale, UserInterface $user = null, $anonymousId = null)
@@ -64,7 +63,7 @@ class OrderRepository extends Repository
 
         if (!is_null($user)) {
             $where .= ' and customerId = "' . $user->getId() . '"';
-        } else if (!is_null($anonymousId)) {
+        } elseif (!is_null($anonymousId)) {
             $where .= ' and anonymousId = "' . $anonymousId . '"';
         }
 
@@ -76,13 +75,13 @@ class OrderRepository extends Repository
     }
 
     /**
-     * @param $locale
-     * @param $paymentId
+     * @param string $locale
+     * @param string $paymentId
      * @param UserInterface|null $user
-     * @param null $anonymousId
-     * @return mixed
+     * @param string|null $anonymousId
+     * @return OrderCollection
      */
-    public function getOrderFromPayment($locale, $paymentId, UserInterface $user = null, $anonymousId = null)
+    public function getOrdersFromPayment($locale, $paymentId, UserInterface $user = null, $anonymousId = null)
     {
         $request = RequestBuilder::of()->orders()->query();
 
@@ -95,15 +94,14 @@ class OrderRepository extends Repository
         }
 
         $request->where($predicate);
-        $orders = $this->executeRequest($request, $locale);
 
-        return $orders->current();
+        return $this->executeRequest($request, $locale);
     }
 
     /**
-     * @param $locale
+     * @param string $locale
      * @param Cart $cart
-     * @param StateReference $stateReference
+     * @param StateReference|null $stateReference
      * @return Order
      */
     public function createOrderFromCart($locale, Cart $cart, StateReference $stateReference = null)
@@ -137,7 +135,7 @@ class OrderRepository extends Repository
     {
         $request = RequestBuilder::of()->orders()->update($order)->setActions($actions);
 
-        if(!is_null($params)){
+        if (!is_null($params)) {
             foreach ($params->getParams() as $param) {
                 $request->addParamObject($param);
             }

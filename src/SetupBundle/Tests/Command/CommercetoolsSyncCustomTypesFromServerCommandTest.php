@@ -5,7 +5,6 @@
 
 namespace Commercetools\Symfony\SetupBundle\Tests\Command;
 
-
 use Commercetools\Core\Model\Type\Type;
 use Commercetools\Core\Model\Type\TypeCollection;
 use Commercetools\Symfony\CtpBundle\Model\QueryParams;
@@ -22,7 +21,8 @@ class CommercetoolsSyncCustomTypesFromServerCommandTest extends KernelTestCase
 {
     public static function setUpBeforeClass()
     {
-        static::$kernel = new TestKernel(function (ContainerBuilder $container) {});
+        static::$kernel = new TestKernel(function (ContainerBuilder $container) {
+        });
         static::$kernel->boot();
     }
 
@@ -48,5 +48,4 @@ class CommercetoolsSyncCustomTypesFromServerCommandTest extends KernelTestCase
 
         $this->assertRegExp('/CustomTypes map file saved successfully at/', $commandTester->getDisplay());
     }
-
 }

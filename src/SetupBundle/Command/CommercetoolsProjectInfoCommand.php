@@ -38,11 +38,11 @@ class CommercetoolsProjectInfoCommand extends Command
         $output->writeln(sprintf('Created at: %s', $project->getCreatedAt()->format('c')));
         $output->writeln(sprintf('Messages: %s', ($project->getMessages()->getEnabled()) ? 'enabled': 'disabled'));
 
-        if($project->getTrialUntil()){
+        if ($project->getTrialUntil()) {
             $output->writeln(sprintf('Trial until: %s', $project->getTrialUntil()->format('c')));
         }
 
-        if($project->getShippingRateInputType()){
+        if ($project->getShippingRateInputType()) {
             $output->writeln(sprintf('Shipping rate input type: %s', json_encode($project->getShippingRateInputType())));
         }
     }

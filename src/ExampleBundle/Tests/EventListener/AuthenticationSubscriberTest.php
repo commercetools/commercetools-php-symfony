@@ -5,7 +5,6 @@
 
 namespace Commercetools\Symfony\ExampleBundle\Tests\EventListener;
 
-
 use Commercetools\Symfony\CartBundle\Model\Repository\CartRepository;
 use Commercetools\Symfony\CustomerBundle\Model\Repository\CustomerRepository;
 use Commercetools\Symfony\CustomerBundle\Security\User\User;
@@ -42,11 +41,11 @@ class AuthenticationSubscriberTest extends TestCase
         $session->set(CartRepository::CART_ITEM_COUNT, 3)->shouldBeCalledOnce();
         $session->set(CartRepository::CART_ID, 'cart-1')->shouldBeCalledOnce();
 
-        $token->getUser()->will(function($args) use ($user){
+        $token->getUser()->will(function ($args) use ($user) {
             return $user->reveal();
         })->shouldBeCalledOnce();
 
-        $event->getAuthenticationToken()->will(function($args) use ($token){
+        $event->getAuthenticationToken()->will(function ($args) use ($token) {
             return $token->reveal();
         })->shouldBeCalledOnce();
 
@@ -69,11 +68,11 @@ class AuthenticationSubscriberTest extends TestCase
         $session->remove(CartRepository::CART_ITEM_COUNT)->shouldBeCalledTimes(2);
         $session->remove(CartRepository::CART_ID)->shouldBeCalledOnce();
 
-        $token->getUser()->will(function($args) use ($user){
+        $token->getUser()->will(function ($args) use ($user) {
             return $user->reveal();
         })->shouldBeCalledOnce();
 
-        $event->getAuthenticationToken()->will(function($args) use ($token){
+        $event->getAuthenticationToken()->will(function ($args) use ($token) {
             return $token->reveal();
         })->shouldBeCalledOnce();
 
@@ -95,12 +94,11 @@ class AuthenticationSubscriberTest extends TestCase
 
         $token->getUser()->willReturn(null)->shouldBeCalledOnce();
 
-        $event->getAuthenticationToken()->will(function($args) use ($token){
+        $event->getAuthenticationToken()->will(function ($args) use ($token) {
             return $token->reveal();
         })->shouldBeCalledOnce();
 
         $subscriber = new AuthenticationSubscriber($session->reveal());
         $subscriber->onAuthenticationSuccess($event->reveal());
     }
-
 }

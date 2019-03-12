@@ -4,7 +4,6 @@
 
 namespace Commercetools\Symfony\CartBundle\Model\Repository;
 
-
 use Commercetools\Core\Builder\Request\RequestBuilder;
 use Commercetools\Core\Model\Zone\Location;
 use Commercetools\Core\Model\Cart\CartState;
@@ -16,17 +15,16 @@ use Commercetools\Core\Model\Cart\LineItemDraftCollection;
 use Commercetools\Core\Model\Common\Address;
 use Symfony\Component\Security\Core\User\UserInterface;
 
-
 class CartRepository extends Repository
 {
     const CART_ID = 'cart.id';
     const CART_ITEM_COUNT = 'cart.itemCount';
 
     /**
-     * @param $locale
-     * @param null $cartId
+     * @param string $locale
+     * @param string|null $cartId
      * @param UserInterface|null $user
-     * @param null $anonymousId
+     * @param string|null $anonymousId
      * @return mixed
      */
     public function getCart($locale, $cartId = null, UserInterface $user = null, $anonymousId = null)
@@ -53,12 +51,12 @@ class CartRepository extends Repository
     }
 
     /**
-     * @param $locale
-     * @param $currency
+     * @param string $locale
+     * @param string $currency
      * @param Location $location
-     * @param LineItemDraftCollection $lineItemDraftCollection
-     * @param $customerId
-     * @param $anonymousId
+     * @param LineItemDraftCollection|null $lineItemDraftCollection
+     * @param string|null $customerId
+     * @param string|null $anonymousId
      * @return Cart|null
      */
     public function createCart($locale, $currency, Location $location, LineItemDraftCollection $lineItemDraftCollection = null, $customerId = null, $anonymousId = null)
@@ -72,7 +70,7 @@ class CartRepository extends Repository
 
         if (!is_null($customerId)) {
             $cartDraft->setCustomerId($customerId);
-        } else if (!is_null($anonymousId)) {
+        } elseif (!is_null($anonymousId)) {
             $cartDraft->setAnonymousId($anonymousId);
         }
 
@@ -91,7 +89,7 @@ class CartRepository extends Repository
     {
         $request = RequestBuilder::of()->carts()->update($cart)->setActions($actions);
 
-        if(!is_null($params)){
+        if (!is_null($params)) {
             foreach ($params->getParams() as $param) {
                 $request->addParamObject($param);
             }

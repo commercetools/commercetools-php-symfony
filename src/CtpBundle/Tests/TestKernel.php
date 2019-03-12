@@ -15,6 +15,8 @@ class TestKernel extends BaseKernel
 
     const CONFIG_EXTS = '.{php,xml,yaml,yml}';
 
+    private $containerConfigurator;
+
     public function __construct(\Closure $containerConfigurator, $environment = 'test', $debug = false)
     {
         $this->containerConfigurator = $containerConfigurator;

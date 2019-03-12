@@ -5,7 +5,6 @@
 
 namespace Commercetools\Symfony\CustomerBundle\Tests\DependencyInjection\Factory;
 
-
 use Commercetools\Symfony\CustomerBundle\DependencyInjection\Factory\SecurityFactory;
 use PHPUnit\Framework\TestCase;
 use Prophecy\Argument;
@@ -46,7 +45,6 @@ class FactoryTest extends TestCase
         $factory = new SecurityFactory();
         $this->assertSame('commercetools-login', $factory->getKey());
     }
-
 }
 
 class TestSecurityFactory extends SecurityFactory

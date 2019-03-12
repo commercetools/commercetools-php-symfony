@@ -5,7 +5,6 @@
 
 namespace Commercetools\Symfony\CartBundle\Tests\Manager;
 
-
 use Commercetools\Core\Model\Cart\Cart;
 use Commercetools\Core\Model\Cart\LineItemDraftCollection;
 use Commercetools\Core\Model\Zone\Location;
@@ -29,12 +28,16 @@ class CartManagerTest extends TestCase
         $dispatcher = $this->prophesize(EventDispatcherInterface::class);
 
         $repository->update($cart->reveal(), Argument::type('array'))
-            ->will(function ($args) { return $args[0]; })->shouldBeCalled();
+            ->will(function ($args) {
+                return $args[0];
+            })->shouldBeCalled();
 
         $dispatcher->dispatch(
             Argument::containingString(CartPostUpdateEvent::class),
             Argument::type(CartPostUpdateEvent::class)
-        )->will(function ($args) { return $args[1]; })->shouldBeCalled();
+        )->will(function ($args) {
+            return $args[1];
+        })->shouldBeCalled();
 
         $manager = new CartManager($repository->reveal(), $dispatcher->reveal());
         $cart = $manager->apply($cart->reveal(), []);
@@ -50,7 +53,9 @@ class CartManagerTest extends TestCase
         $dispatcher->dispatch(
             Argument::containingString(AbstractAction::class),
             Argument::type(CartUpdateEvent::class)
-        )->will(function ($args) { return $args[1]; })->shouldBeCalled();
+        )->will(function ($args) {
+            return $args[1];
+        })->shouldBeCalled();
         $action = $this->prophesize(AbstractAction::class);
 
         $manager = new CartManager($repository->reveal(), $dispatcher->reveal());

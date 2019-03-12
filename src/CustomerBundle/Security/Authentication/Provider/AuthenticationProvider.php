@@ -35,6 +35,15 @@ class AuthenticationProvider extends UserAuthenticationProvider
      */
     private $logger;
 
+    /**
+     * AuthenticationProvider constructor.
+     * @param Client $client
+     * @param UserProviderInterface $userProvider
+     * @param UserCheckerInterface $userChecker
+     * @param $providerKey
+     * @param bool $hideUserNotFoundExceptions
+     * @param LoggerInterface $logger
+     */
     public function __construct(
         Client $client,
         UserProviderInterface $userProvider,
@@ -42,8 +51,7 @@ class AuthenticationProvider extends UserAuthenticationProvider
         $providerKey,
         $hideUserNotFoundExceptions = true,
         LoggerInterface $logger
-    )
-    {
+    ) {
         parent::__construct($userChecker, $providerKey, $hideUserNotFoundExceptions);
         $this->userProvider = $userProvider;
         $this->client = $client;

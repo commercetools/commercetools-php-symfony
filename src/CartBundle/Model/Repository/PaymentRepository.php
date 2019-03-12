@@ -4,7 +4,6 @@
 
 namespace Commercetools\Symfony\CartBundle\Model\Repository;
 
-
 use Commercetools\Core\Builder\Request\RequestBuilder;
 use Commercetools\Core\Model\Common\Money;
 use Commercetools\Core\Model\Customer\CustomerReference;
@@ -19,8 +18,8 @@ use Commercetools\Symfony\CtpBundle\Model\Repository;
 class PaymentRepository extends Repository
 {
     /**
-     * @param $locale
-     * @param $paymentId
+     * @param string $locale
+     * @param string $paymentId
      * @return Payment
      */
     public function getPaymentById($locale, $paymentId)
@@ -31,11 +30,11 @@ class PaymentRepository extends Repository
     }
 
     /**
-     * @param $locale
-     * @param $paymentId
+     * @param string $locale
+     * @param string $paymentId
      * @param CustomerReference|null $customer
-     * @param $anonymousId
-     * @return PaymentCollection
+     * @param string|null $anonymousId
+     * @return Payment
      */
     public function getPayment($locale, $paymentId, CustomerReference $customer = null, $anonymousId = null)
     {
@@ -57,11 +56,11 @@ class PaymentRepository extends Repository
     }
 
     /**
-     * @param $locale
+     * @param string $locale
      * @param array $payments
      * @return PaymentCollection
      */
-    public function getMultiplePayments($locale, array $payments)
+    public function getPaymentsBulk($locale, array $payments)
     {
         $request = RequestBuilder::of()->payments()->query();
 
@@ -82,7 +81,7 @@ class PaymentRepository extends Repository
     {
         $request = RequestBuilder::of()->payments()->update($payment)->setActions($actions);
 
-        if(!is_null($params)){
+        if (!is_null($params)) {
             foreach ($params->getParams() as $param) {
                 $request->addParamObject($param);
             }
@@ -92,10 +91,10 @@ class PaymentRepository extends Repository
     }
 
     /**
-     * @param $locale
+     * @param string $locale
      * @param Money $amountPlanned
      * @param CustomerReference|null $customerReference
-     * @param null $anonymousId
+     * @param string|null $anonymousId
      * @param PaymentStatus|null $paymentStatus
      * @param CustomFieldObjectDraft|null $customFieldObject
      * @return Payment
@@ -116,7 +115,7 @@ class PaymentRepository extends Repository
 
         if (!is_null($customerReference)) {
             $paymentDraft->setCustomer($customerReference);
-        } else if (!is_null($anonymousId)) {
+        } elseif (!is_null($anonymousId)) {
             $paymentDraft->setAnonymousId($anonymousId);
         }
 

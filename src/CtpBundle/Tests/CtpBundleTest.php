@@ -5,7 +5,6 @@
 
 namespace Commercetools\Symfony\Ctp\Tests;
 
-
 use Commercetools\Symfony\CtpBundle\CtpBundle;
 use Commercetools\Symfony\CtpBundle\DependencyInjection\CommercetoolsExtension;
 use Commercetools\Symfony\CtpBundle\DependencyInjection\Compiler\ProfilerControllerPass;
@@ -30,5 +29,3 @@ class CtpBundleTest extends TestCase
         $ctpBundle->build($containerBuilder->reveal());
     }
 }
-
-

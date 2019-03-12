@@ -4,7 +4,6 @@
 
 namespace Commercetools\Symfony\ExampleBundle\Tests\Entity;
 
-
 use Commercetools\Core\Model\Customer\Customer;
 use Commercetools\Symfony\ExampleBundle\Entity\UserDetails;
 use PHPUnit\Framework\TestCase;

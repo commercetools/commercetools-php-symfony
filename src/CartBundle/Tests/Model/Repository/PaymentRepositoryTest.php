@@ -5,7 +5,6 @@
 
 namespace Commercetools\Symfony\CartBundle\Tests\Model\Repository;
 
-
 use Commercetools\Core\Client;
 use Commercetools\Core\Error\InvalidArgumentException;
 use Commercetools\Core\Model\Common\Money;
@@ -142,7 +141,7 @@ class PaymentRepositoryTest extends TestCase
         $payments = ['payment-1', 'payment-2', 'payment-7'];
 
         $paymentRepository = $this->getPaymentRepository();
-        $paymentRepository->getMultiplePayments('en', $payments);
+        $paymentRepository->getPaymentsBulk('en', $payments);
     }
 
     public function testUpdatePayment()

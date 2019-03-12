@@ -5,7 +5,6 @@
 
 namespace Commercetools\Symfony\CartBundle\Tests\Model\Repository;
 
-
 use Commercetools\Core\Client;
 use Commercetools\Core\Model\ShippingMethod\ShippingMethod;
 use Commercetools\Core\Model\ShippingMethod\ShippingMethodCollection;
@@ -53,7 +52,7 @@ class ShippingMethodRepositoryTest extends TestCase
     public function testGetShippingMethodsByLocation()
     {
         $this->client->execute(
-            Argument::that(function(ShippingMethodByLocationGetRequest $request){
+            Argument::that(function (ShippingMethodByLocationGetRequest $request) {
                 static::assertSame(ShippingMethodCollection::class, $request->getResultClass());
                 static::assertSame(
                     'shipping-methods?country=DE',
@@ -71,7 +70,7 @@ class ShippingMethodRepositoryTest extends TestCase
     public function testGetShippingMethodsByLocationAndCurrency()
     {
         $this->client->execute(
-            Argument::that(function(ShippingMethodByLocationGetRequest $request){
+            Argument::that(function (ShippingMethodByLocationGetRequest $request) {
                 static::assertSame(ShippingMethodCollection::class, $request->getResultClass());
                 static::assertSame(
                     'shipping-methods?country=DE&currency=EUR',
@@ -89,7 +88,7 @@ class ShippingMethodRepositoryTest extends TestCase
     public function testGetShippingMethodsByCart()
     {
         $this->client->execute(
-            Argument::that(function(ShippingMethodByCartIdGetRequest $request){
+            Argument::that(function (ShippingMethodByCartIdGetRequest $request) {
                 static::assertSame(ShippingMethodCollection::class, $request->getResultClass());
                 static::assertSame(
                     'shipping-methods?cartId=cart-1',
@@ -107,7 +106,7 @@ class ShippingMethodRepositoryTest extends TestCase
     public function testGetShippingMethodById()
     {
         $this->client->execute(
-            Argument::that(function(ShippingMethodByIdGetRequest $request){
+            Argument::that(function (ShippingMethodByIdGetRequest $request) {
                 static::assertSame(ShippingMethod::class, $request->getResultClass());
                 static::assertSame('shippingMethod-1', $request->getId());
                 return true;

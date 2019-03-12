@@ -80,7 +80,7 @@ class ReviewRepository extends Repository
         $client = $this->getClient();
         $request = RequestBuilder::of()->reviews()->update($review)->setActions($actions);
 
-        if(!is_null($params)){
+        if (!is_null($params)) {
             foreach ($params->getParams() as $param) {
                 $request->addParamObject($param);
             }

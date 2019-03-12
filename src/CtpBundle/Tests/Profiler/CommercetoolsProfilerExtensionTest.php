@@ -5,7 +5,6 @@
 
 namespace Commercetools\Symfony\CtpBundle\Tests\Profiler;
 
-
 use Commercetools\Symfony\CtpBundle\Profiler\CommercetoolsProfilerExtension;
 use Commercetools\Symfony\CtpBundle\Profiler\Profile;
 use Commercetools\Symfony\CtpBundle\Profiler\ProfileMiddleware;
@@ -35,7 +34,9 @@ class CommercetoolsProfilerExtensionTest extends TestCase
         $profile->leave()->shouldBeCalledOnce();
 
         $stopwatch = $this->prophesize(Stopwatch::class);
-        $stopwatch->start('foo', 'commercetools')->will(function(){return $this;})->shouldBeCalledOnce();
+        $stopwatch->start('foo', 'commercetools')->will(function () {
+            return $this;
+        })->shouldBeCalledOnce();
         $stopwatch->stop('foo')->shouldBeCalled();
 
         $profilerExtension = new CommercetoolsProfilerExtension($profile->reveal(), $stopwatch->reveal());
@@ -64,7 +65,8 @@ class CommercetoolsProfilerExtensionTest extends TestCase
         $profilerExtension = new CommercetoolsProfilerExtension($profile->reveal(), $stopwatch->reveal());
 
         $middleWare = $profilerExtension->getProfileMiddleWare();
-        $this->assertInstanceOf(ProfileMiddleware::class, $middleWare(function(){return true;}));
+        $this->assertInstanceOf(ProfileMiddleware::class, $middleWare(function () {
+            return true;
+        }));
     }
-
 }

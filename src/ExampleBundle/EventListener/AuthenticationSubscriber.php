@@ -61,5 +61,7 @@ class AuthenticationSubscriber implements EventSubscriberInterface
         }
     }
 
-    public function onAuthenticationFailure(AuthenticationFailureEvent $event){}
+    public function onAuthenticationFailure(AuthenticationFailureEvent $event)
+    {
+    }
 }

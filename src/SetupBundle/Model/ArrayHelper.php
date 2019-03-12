@@ -54,8 +54,8 @@ class ArrayHelper
 
     public function arrayCamelizeKeys(array $arr)
     {
-        foreach ($arr as $key => $value){
-            if(is_string($key)){
+        foreach ($arr as $key => $value) {
+            if (is_string($key)) {
                 $fixedKey = $this->camelize($key);
             } else {
                 $fixedKey = $key;
@@ -65,7 +65,7 @@ class ArrayHelper
                 $value = $this->arrayCamelizeKeys($value);
             }
 
-            if ($key !== $fixedKey){
+            if ($key !== $fixedKey) {
                 $arr[$fixedKey] = $value;
                 unset($arr[$key]);
             } else {
