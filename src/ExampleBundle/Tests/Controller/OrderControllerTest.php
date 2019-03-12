@@ -27,6 +27,7 @@ use Symfony\Component\Routing\Router;
 use Symfony\Component\Workflow\Exception\InvalidArgumentException;
 use Symfony\Component\Workflow\Registry;
 use Symfony\Component\Workflow\Workflow;
+use Twig\Environment;
 
 class OrderControllerTest extends WebTestCase
 {
@@ -44,7 +45,7 @@ class OrderControllerTest extends WebTestCase
     {
         $this->request = $this->prophesize(Request::class);
         $this->myContainer = $this->prophesize(ContainerInterface::class);
-        $this->twig = $this->prophesize(\Twig_Environment::class);
+        $this->twig = $this->prophesize(Environment::class);
         $this->client = $this->prophesize(Client::class);
         $this->orderManager = $this->prophesize(OrderManager::class);
         $this->paymentManager = $this->prophesize(PaymentManager::class);

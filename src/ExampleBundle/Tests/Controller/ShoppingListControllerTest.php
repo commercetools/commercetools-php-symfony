@@ -30,6 +30,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Session\Flash\FlashBag;
 use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\Routing\Router;
+use Twig\Environment;
 
 class ShoppingListControllerTest extends WebTestCase
 {
@@ -44,7 +45,7 @@ class ShoppingListControllerTest extends WebTestCase
     {
         $this->request = $this->prophesize(Request::class);
         $this->myContainer = $this->prophesize(ContainerInterface::class);
-        $this->twig = $this->prophesize(\Twig_Environment::class);
+        $this->twig = $this->prophesize(Environment::class);
         $this->client = $this->prophesize(Client::class);
         $this->shoppingListManager = $this->prophesize(ShoppingListManager::class);
 

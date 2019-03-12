@@ -39,6 +39,7 @@ use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Routing\RouterInterface;
+use Twig\Environment;
 
 class CatalogControllerTest extends WebTestCase
 {
@@ -53,7 +54,7 @@ class CatalogControllerTest extends WebTestCase
     {
         $this->request = $this->prophesize(Request::class);
         $this->myContainer = $this->prophesize(ContainerInterface::class);
-        $this->twig = $this->prophesize(\Twig_Environment::class);
+        $this->twig = $this->prophesize(Environment::class);
         $this->client = $this->prophesize(Client::class);
         $this->catalogManager = $this->prophesize(CatalogManager::class);
 
