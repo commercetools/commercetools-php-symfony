@@ -1,7 +1,7 @@
 {
     "name": "commercetools/symfony-bundle",
     "description": "Symfony bundle for Commercetools platform",
-    "type": "library",
+    "type": "symfony-bundle",
     "license": "MIT",
     "autoload": {
         "psr-4": {
