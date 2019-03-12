@@ -5,17 +5,19 @@
 
 namespace Commercetools\Symfony\StateBundle\Cache;
 
-use Commercetools\Symfony\StateBundle\Model\Repository\StateRepository;
-use Psr\Cache\CacheItemPoolInterface;
+use Commercetools\Core\Error\ApiException;
+use Psr\Log\LoggerInterface;
 use Symfony\Component\HttpKernel\CacheWarmer\CacheWarmerInterface;
 
 class StateWarmer implements CacheWarmerInterface
 {
     private $stateKeyResolver;
+    private $logger;
 
-    public function __construct(StateKeyResolver $stateKeyResolver)
+    public function __construct(StateKeyResolver $stateKeyResolver, LoggerInterface $logger)
     {
         $this->stateKeyResolver = $stateKeyResolver;
+        $this->logger = $logger;
     }
 
     public function isOptional()
@@ -25,6 +27,10 @@ class StateWarmer implements CacheWarmerInterface
 
     public function warmUp($cacheDir)
     {
-        $this->stateKeyResolver->fillCache();
+        try {
+            $this->stateKeyResolver->fillCache();
+        } catch (ApiException $exception) {
+            $this->logger->info("Could not fetch states from commercetools");
+        }
     }
 }
