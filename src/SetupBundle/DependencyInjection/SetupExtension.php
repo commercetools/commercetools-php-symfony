@@ -21,11 +21,5 @@ class SetupExtension extends Extension
         $configuration = new Configuration();
 
         $config = $this->processConfiguration($configuration, $configs);
-
-        if (isset($config['custom_types'])) {
-            $container->setParameter('commercetools.custom_types', $config['custom_types']);
-        } else {
-            $container->setParameter('commercetools.custom_types', []);
-        }
     }
 }

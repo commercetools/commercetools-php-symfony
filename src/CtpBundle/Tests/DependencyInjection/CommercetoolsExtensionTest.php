@@ -266,4 +266,26 @@ class CommercetoolsExtensionTest extends AbstractExtensionTestCase
 
         $this->assertContains('/../Resources/config/schema', $extension->getXsdValidationBasePath());
     }
+
+    public function testExtensionLoadsWithCustomTypes()
+    {
+        $config = [
+            'api' => [ 'clients' => [
+                'first' => [
+                    'client_id' => 'foo',
+                    'client_secret' => 'bar',
+                    'project' => 'other'
+                ]
+            ] ],
+            'custom_types' => [
+                'foo' => 'bar'
+            ]
+        ];
+
+        $this->load($config, $this->getContainerExtensions());
+
+        $this->assertContainerBuilderHasParameter('commercetools.custom_types');
+        $customTypes = $this->container->getParameter('commercetools.custom_types');
+        $this->assertEquals(['foo' => 'bar'], $customTypes);
+    }
 }
