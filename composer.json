@@ -17,7 +17,7 @@
         "symfony/validator": "^3.4 | ^4.0",
         "symfony/serializer": "^3.4 | ^4.0",
         "symfony/cache": "^3.4 | ^4.0",
-        "commercetools/php-sdk": "dev-develop",
+        "commercetools/php-sdk": "^2.6",
         "symfony/var-dumper": "^3.4 | ^4.0",
         "symfony/dotenv": "^3.4 | ^4.0",
         "symfony/stopwatch": "^3.4 | ^4.0",
