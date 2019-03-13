@@ -4,6 +4,7 @@
 
 namespace Commercetools\Symfony\CustomerBundle\Manager;
 
+use Commercetools\Core\Model\Customer\CustomerSigninResult;
 use Commercetools\Core\Request\AbstractAction;
 use Commercetools\Core\Model\Customer\Customer;
 use Commercetools\Symfony\CtpBundle\Model\QueryParams;
@@ -104,7 +105,7 @@ class CustomerManager
      * @param Customer $customer
      * @param string $currentPassword
      * @param string $newPassword
-     * @return mixed
+     * @return Customer
      */
     public function changePassword(Customer $customer, $currentPassword, $newPassword)
     {
@@ -116,7 +117,7 @@ class CustomerManager
      * @param string $email
      * @param string $password
      * @param SessionInterface|null $session
-     * @return Customer
+     * @return CustomerSigninResult
      */
     public function createCustomer($locale, $email, $password, SessionInterface $session = null)
     {
@@ -125,7 +126,7 @@ class CustomerManager
 
         $customer = $this->repository->createCustomer($locale, $email, $password, $session);
 
-        $eventPost = new CustomerPostCreateEvent($customer);
+        $eventPost = new CustomerPostCreateEvent($customer->getCustomer());
         $this->dispatcher->dispatch(CustomerPostCreateEvent::class, $eventPost);
 
         return $customer;

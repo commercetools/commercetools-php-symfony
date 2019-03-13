@@ -5,6 +5,7 @@
 namespace Commercetools\Symfony\CustomerBundle\Tests\Manager;
 
 use Commercetools\Core\Model\Customer\Customer;
+use Commercetools\Core\Model\Customer\CustomerSigninResult;
 use Commercetools\Core\Request\AbstractAction;
 use Commercetools\Core\Request\Customers\Command\CustomerSetKeyAction;
 use Commercetools\Symfony\CustomerBundle\Event\CustomerCreateEvent;
@@ -20,6 +21,9 @@ use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
 class CustomerManagerTest extends TestCase
 {
+    /**
+     * @var CustomerRepository
+     */
     private $repository;
     private $dispatcher;
 
@@ -72,7 +76,7 @@ class CustomerManagerTest extends TestCase
     public function testCreateCustomer()
     {
         $this->repository->createCustomer('en', 'user@localhost', 'password', null)
-            ->willReturn(Customer::of())->shouldBeCalled();
+            ->willReturn(CustomerSigninResult::of()->setCustomer(Customer::of()))->shouldBeCalled();
 
         $this->dispatcher->dispatch(CustomerCreateEvent::class, Argument::type(CustomerCreateEvent::class))
             ->shouldBeCalledOnce();
@@ -83,7 +87,7 @@ class CustomerManagerTest extends TestCase
         $manager = new CustomerManager($this->repository->reveal(), $this->dispatcher->reveal());
         $customer = $manager->createCustomer('en', 'user@localhost', 'password');
 
-        $this->assertInstanceOf(Customer::class, $customer);
+        $this->assertInstanceOf(CustomerSigninResult::class, $customer);
     }
 
     public function testChangePassword()
