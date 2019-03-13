@@ -48,11 +48,11 @@ class ShippingMethodManagerTest extends TestCase
 
     public function testGetShippingMethodByCart()
     {
-        $this->repository->getShippingMethodByCart('en', Location::of())
+        $this->repository->getShippingMethodsByCart('en', Location::of())
             ->willReturn(ShippingMethod::of())->shouldBeCalled();
 
         $manager = new ShippingMethodManager($this->repository->reveal(), $this->dispatcher->reveal());
-        $payment = $manager->getShippingMethodByCart('en', Location::of());
+        $payment = $manager->getShippingMethodsByCart('en', Location::of());
 
         $this->assertInstanceOf(ShippingMethod::class, $payment);
     }

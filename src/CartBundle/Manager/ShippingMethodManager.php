@@ -58,10 +58,10 @@ class ShippingMethodManager
     /**
      * @param string $locale
      * @param string $cartId
-     * @return ShippingMethod
+     * @return ShippingMethodCollection
      */
-    public function getShippingMethodByCart($locale, $cartId)
+    public function getShippingMethodsByCart($locale, $cartId)
     {
-        return $this->repository->getShippingMethodByCart($locale, $cartId);
+        return $this->repository->getShippingMethodsByCart($locale, $cartId);
     }
 }

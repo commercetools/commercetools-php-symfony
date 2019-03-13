@@ -28,9 +28,9 @@ class ShippingMethodRepository extends Repository
     /**
      * @param string $locale
      * @param string $cartId
-     * @return ShippingMethod
+     * @return ShippingMethodCollection
      */
-    public function getShippingMethodByCart($locale, $cartId)
+    public function getShippingMethodsByCart($locale, $cartId)
     {
         $request = RequestBuilder::of()->shippingMethods()->getByCartId($cartId);
 

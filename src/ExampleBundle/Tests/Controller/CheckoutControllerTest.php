@@ -162,7 +162,7 @@ class CheckoutControllerTest extends WebTestCase
 
         $shippingMethod = ShippingMethodCollection::of()->add(ShippingMethod::of()->setName('sh-mtd')->setId('sh-mtd-1'));
 
-        $this->shippingMethodManager->getShippingMethodByCart('en', 'cart-id-1')->willReturn($shippingMethod)->shouldBeCalledOnce();
+        $this->shippingMethodManager->getShippingMethodsByCart('en', 'cart-id-1')->willReturn($shippingMethod)->shouldBeCalledOnce();
         $this->cartManager->getCart('en', 'cart-id-1', Argument::type(CtpUser::class), 'baz')->willReturn($cart)->shouldBeCalledOnce();
         $this->cartManager->update(Argument::type(Cart::class))->willReturn($cartUpdateBuilder->reveal())->shouldBeCalledOnce();
 
@@ -216,7 +216,7 @@ class CheckoutControllerTest extends WebTestCase
 
         $shippingMethod = ShippingMethodCollection::of()->add(ShippingMethod::of()->setName('sh-mtd')->setId('sh-mtd-1'));
 
-        $this->shippingMethodManager->getShippingMethodByCart('en', 'cart-id-1')->willReturn($shippingMethod)->shouldBeCalledOnce();
+        $this->shippingMethodManager->getShippingMethodsByCart('en', 'cart-id-1')->willReturn($shippingMethod)->shouldBeCalledOnce();
         $this->cartManager->getCart('en', 'cart-id-1', Argument::type(CtpUser::class), 'baz')->willReturn($cart)->shouldBeCalledOnce();
 
         $controller = new CheckoutController($this->client->reveal(), $this->cartManager->reveal(), $this->shippingMethodManager->reveal(), $this->orderManager->reveal());
@@ -245,7 +245,7 @@ class CheckoutControllerTest extends WebTestCase
 
         $shippingMethod = ShippingMethodCollection::of()->add(ShippingMethod::of()->setName('sh-mtd')->setId('sh-mtd-1'));
 
-        $this->shippingMethodManager->getShippingMethodByCart('en', 'cart-id-1')->willReturn($shippingMethod)->shouldBeCalledOnce();
+        $this->shippingMethodManager->getShippingMethodsByCart('en', 'cart-id-1')->willReturn($shippingMethod)->shouldBeCalledOnce();
         $this->cartManager->getCart('en', 'cart-id-1', Argument::type(CtpUser::class), 'baz')->willReturn($cart)->shouldBeCalledOnce();
 
         $controller = new CheckoutController($this->client->reveal(), $this->cartManager->reveal(), $this->shippingMethodManager->reveal(), $this->orderManager->reveal());
@@ -489,6 +489,7 @@ class CheckoutControllerTest extends WebTestCase
     }
 }
 
+//phpcs:disable
 class MockAuthorizationChecker
 {
     public function isGranted($attributes, $subject = null)
