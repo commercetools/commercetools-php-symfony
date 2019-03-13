@@ -42,7 +42,7 @@ class Repository
 
     /**
      * Repository constructor.
-     * @param $enableCache
+     * @param string|bool $enableCache
      * @param CacheItemPoolInterface $cache
      * @param Client $client
      * @param MapperFactory $mapperFactory

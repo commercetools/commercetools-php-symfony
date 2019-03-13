@@ -4,8 +4,11 @@
 
 namespace Commercetools\Symfony\CatalogBundle\Manager;
 
+use Commercetools\Core\Model\Category\CategoryCollection;
 use Commercetools\Core\Model\Product\Product;
 use Commercetools\Core\Model\Product\ProductProjection;
+use Commercetools\Core\Model\Product\ProductProjectionCollection;
+use Commercetools\Core\Model\ProductType\ProductTypeCollection;
 use Commercetools\Core\Request\AbstractAction;
 use Commercetools\Symfony\CatalogBundle\Model\ProductUpdateBuilder;
 use Commercetools\Symfony\CatalogBundle\Event\ProductPostUpdateEvent;
@@ -39,15 +42,15 @@ class CatalogManager
     }
 
     /**
-     * @param $locale
-     * @param $itemsPerPage
-     * @param $currentPage
-     * @param $sort
-     * @param $currency
-     * @param $country
+     * @param string $locale
+     * @param int|null $itemsPerPage
+     * @param int|null  $currentPage
+     * @param string|null $sort
+     * @param string|null $currency
+     * @param string|null $country
      * @param UriInterface $uri
-     * @param null $search
-     * @param null $filters
+     * @param string|null $search
+     * @param array|null $filters
      * @return array
      */
     public function searchProducts(
@@ -82,12 +85,12 @@ class CatalogManager
     }
 
     /**
-     * @param $locale
-     * @param $term
-     * @param $limit
-     * @param $currency
-     * @param $country
-     * @return mixed
+     * @param string $locale
+     * @param string $term
+     * @param int $limit
+     * @param string $currency
+     * @param string $country
+     * @return ProductProjectionCollection
      */
     public function suggestProducts($locale, $term, $limit, $currency, $country)
     {
@@ -95,8 +98,8 @@ class CatalogManager
     }
 
     /**
-     * @param $locale
-     * @param $id
+     * @param string $locale
+     * @param string $id
      * @return ProductProjection
      */
     public function getProductById($locale, $id)
@@ -105,9 +108,9 @@ class CatalogManager
     }
 
     /**
-     * @param $locale
+     * @param string $locale
      * @param QueryParams $params
-     * @return mixed
+     * @return ProductTypeCollection
      */
     public function getProductTypes($locale, QueryParams $params = null)
     {
@@ -115,9 +118,9 @@ class CatalogManager
     }
 
     /**
-     * @param $locale
+     * @param string $locale
      * @param QueryParams $params
-     * @return mixed
+     * @return CategoryCollection
      */
     public function getCategories($locale, QueryParams $params = null)
     {
@@ -136,7 +139,7 @@ class CatalogManager
     /**
      * @param Product $product
      * @param AbstractAction $action
-     * @param null $eventName
+     * @param string|null $eventName
      * @return AbstractAction[]
      */
     public function dispatch(Product $product, AbstractAction $action, $eventName = null)
