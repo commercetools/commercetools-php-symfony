@@ -160,6 +160,14 @@ Get variables on templates using only variable name:
 {{ attribute(product.masterVariant.attributes, 'custom-attribute').value }}
 ```
 
+## Disclaimer for ExampleBundle (alpha)
+
+There is an ExampleBundle provided in the repository which tries to demonstrate a sample
+implementation making use of the other Bundles provided. This ExampleBundle is currently 
+under development. It includes outdated js libraries, is not properly tested and right now
+is not encouraged to be used in any production environment. We intend to fix the problems
+and create a more helpful generic example.
+
 ## Testing
 
 Clone the project and navigate on the project's directory. On the command line, run
@@ -168,15 +176,16 @@ composer install
 ./vendor/bin/phpunit
 ```
 
-## Report an issue
+## Issues
 
-Open a new issue in 
-https://github.com/commercetools/commercetools-php-symfony/issues/new
+Check current [issues](https://github.com/commercetools/commercetools-php-symfony/issues/) 
+or [open](https://github.com/commercetools/commercetools-php-symfony/issues/new)
+a new one
 
 ## Contribute
 
-[TODO]
+[Contribute](CONTRIBUTING.md)
 
 ## License
 This bundle is under the MIT license. See the complete license in the bundle:
-[MIT License](https://github.com/commercetools/commercetools-php-symfony/blob/develop/LICENSE)
+[MIT License](LICENSE)
