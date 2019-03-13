@@ -11,6 +11,7 @@ use Commercetools\Core\Model\Product\ProductProjection;
 use Commercetools\Core\Model\Product\ProductProjectionCollection;
 use Commercetools\Core\Model\ProductType\ProductTypeCollection;
 use Commercetools\Core\Request\Products\Command\ProductSetKeyAction;
+use Commercetools\Core\Request\Products\ProductProjectionSearchRequest;
 use Commercetools\Symfony\CatalogBundle\Event\ProductPostUpdateEvent;
 use Commercetools\Symfony\CatalogBundle\Event\ProductUpdateEvent;
 use Commercetools\Symfony\CatalogBundle\Manager\CatalogManager;
@@ -23,6 +24,7 @@ use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
 class CatalogManagerTest extends TestCase
 {
+    /** @var CatalogRepository */
     private $repository;
     private $eventDispatcher;
 
@@ -94,16 +96,46 @@ class CatalogManagerTest extends TestCase
 
     public function testGetProducts()
     {
-        $this->repository->getProducts('en', 5, 1, null, 'EUR', 'DE', Argument::type(UriInterface::class), null, null)
-            ->willReturn([])->shouldBeCalled();
+        $searchRequest = $this->prophesize(ProductProjectionSearchRequest::class);
+
+        $this->repository->baseSearchProductsRequest(5, 1, null)
+            ->willReturn($searchRequest->reveal())->shouldBeCalledOnce();
+
+        $this->repository->searchRequestAddCountryAndCurrency(
+            Argument::type(ProductProjectionSearchRequest::class),
+            'DE',
+            'EUR'
+        )->willReturn($searchRequest->reveal())->shouldBeCalledOnce();
+
+        $this->repository->searchRequestAddSearchParameters(
+            Argument::type(ProductProjectionSearchRequest::class),
+            Argument::type('string'),
+            Argument::type(UriInterface::class),
+            Argument::is(null)
+        )->willReturn($searchRequest->reveal())->shouldBeCalledOnce();
+
+        $this->repository->searchRequestAddSearchFilters(
+            Argument::type(ProductProjectionSearchRequest::class),
+            Argument::is(null)
+        )->willReturn($searchRequest->reveal())->shouldBeCalledOnce();
+
+        $this->repository->executeSearchRequest(Argument::type(ProductProjectionSearchRequest::class), Argument::type('string'))
+            ->willReturn([])->shouldBeCalledOnce();
 
         $uri = $this->prophesize(UriInterface::class);
 
         $manager = new CatalogManager($this->repository->reveal(), $this->eventDispatcher->reveal());
-        $products = $manager->getProducts(
-            'en', 5, 1, null, 'EUR', 'DE', $uri->reveal());
+        $products = $manager->searchProducts(
+            'en',
+            5,
+            1,
+            null,
+            'EUR',
+            'DE',
+            $uri->reveal()
+        );
 
-        $this->assertInternalType('array', $products);
+        $this->assertIsArray($products);
     }
 
     public function testUpdate()
@@ -119,12 +151,16 @@ class CatalogManagerTest extends TestCase
         $product = Product::of()->setId('1');
 
         $this->repository->update($product, Argument::type('array'))
-            ->will(function ($args) { return $args[0]; })->shouldBeCalled();
+            ->will(function ($args) {
+                return $args[0];
+            })->shouldBeCalled();
 
         $this->eventDispatcher->dispatch(
             Argument::containingString(ProductPostUpdateEvent::class),
             Argument::type(ProductPostUpdateEvent::class)
-        )->will(function ($args) { return $args[1]; })->shouldBeCalled();
+        )->will(function ($args) {
+            return $args[1];
+        })->shouldBeCalled();
 
         $manager = new CatalogManager($this->repository->reveal(), $this->eventDispatcher->reveal());
         $product = $manager->apply($product, []);
@@ -141,7 +177,9 @@ class CatalogManagerTest extends TestCase
         $this->eventDispatcher->dispatch(
             Argument::containingString(ProductSetKeyAction::class),
             Argument::type(ProductUpdateEvent::class)
-        )->will(function ($args) { return $args[1]; })->shouldBeCalled();
+        )->will(function ($args) {
+            return $args[1];
+        })->shouldBeCalled();
 
         $manager = new CatalogManager($this->repository->reveal(), $this->eventDispatcher->reveal());
 
@@ -158,7 +196,9 @@ class CatalogManagerTest extends TestCase
         $this->eventDispatcher->dispatch(
             Argument::containingString(ProductPostUpdateEvent::class),
             Argument::type(ProductPostUpdateEvent::class)
-        )->will(function ($args) { return $args[1]; })->shouldBeCalled();
+        )->will(function ($args) {
+            return $args[1];
+        })->shouldBeCalled();
 
         $manager = new CatalogManager($this->repository->reveal(), $this->eventDispatcher->reveal());
 

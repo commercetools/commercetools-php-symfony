@@ -25,7 +25,6 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
 
-
 class CartController extends AbstractController
 {
     const CSRF_TOKEN_NAME = 'csrfToken';
@@ -71,7 +70,6 @@ class CartController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-
             $productId = $form->get('productId')->getData();
             $variantId = (int)$form->get('variantId')->getData();
             $quantity = (int)$form->get('quantity')->getData();
@@ -79,7 +77,7 @@ class CartController extends AbstractController
 
             $cartId = $session->get(CartRepository::CART_ID);
 
-            if(!is_null($cartId)){
+            if (!is_null($cartId)) {
                 $cart = $this->manager->getCart($request->getLocale(), $cartId, $user, $session->getId());
 
                 $cartBuilder = $this->manager->update($cart);
@@ -87,7 +85,6 @@ class CartController extends AbstractController
                     CartAddLineItemAction::ofProductIdVariantIdAndQuantity($productId, $variantId, $quantity)
                 );
                 $cartBuilder->flush();
-
             } else {
                 $lineItem = LineItemDraft::ofProductId($productId)->setVariantId($variantId)->setQuantity($quantity);
                 $lineItemDraftCollection = LineItemDraftCollection::of()->add($lineItem);
@@ -96,14 +93,13 @@ class CartController extends AbstractController
                 $currency = $this->getCurrencyFromConfig();
                 $country = Location::of()->setCountry($countryCode);
 
-                if(is_null($user)){
+                if (is_null($user)) {
                     $this->manager->createCartForUser($request->getLocale(), $currency, $country, $lineItemDraftCollection, null, $session->getId());
                 } else {
                     $this->manager->createCartForUser($request->getLocale(), $currency, $country, $lineItemDraftCollection, $user->getID());
                 }
             }
             $redirectUrl = $this->generateUrl('_ctp_example_product', ['slug' => $slug]);
-
         } else {
             $redirectUrl = $this->generateUrl('_ctp_example');
         }
@@ -160,14 +156,14 @@ class CartController extends AbstractController
         $shoppingListId = $request->get('shoppingListId');
         $shoppingList = ShoppingListReference::ofId($shoppingListId);
 
-        if(!is_null($cartId)){
+        if (!is_null($cartId)) {
             $cart = $this->manager->getCart($request->getLocale(), $cartId, $user, $session->getId());
         } else {
             $countryCode = $this->getCountryFromConfig();
             $currency = $this->getCurrencyFromConfig();
             $country = Location::of()->setCountry(strtoupper($countryCode));
 
-            if(is_null($user)){
+            if (is_null($user)) {
                 $cart = $this->manager->createCartForUser($request->getLocale(), $currency, $country, null, null, $session->getId());
             } else {
                 $cart = $this->manager->createCartForUser($request->getLocale(), $currency, $country, null, $user->getId());

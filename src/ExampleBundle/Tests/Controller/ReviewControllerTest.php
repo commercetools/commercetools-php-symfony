@@ -5,7 +5,6 @@
 
 namespace Commercetools\Symfony\ExampleBundle\Tests\Controller;
 
-
 use Commercetools\Core\Client;
 use Commercetools\Core\Model\Customer\CustomerReference;
 use Commercetools\Core\Model\Product\ProductReference;
@@ -28,6 +27,7 @@ use Symfony\Component\Routing\RouterInterface;
 use Symfony\Component\Workflow\Exception\InvalidArgumentException;
 use Symfony\Component\Workflow\Registry;
 use Symfony\Component\Workflow\Workflow;
+use Twig\Environment;
 
 class ReviewControllerTest extends WebTestCase
 {
@@ -43,7 +43,7 @@ class ReviewControllerTest extends WebTestCase
     {
         $this->request = $this->prophesize(Request::class);
         $this->myContainer = $this->prophesize(ContainerInterface::class);
-        $this->twig = $this->prophesize(\Twig_Environment::class);
+        $this->twig = $this->prophesize(Environment::class);
         $this->client = $this->prophesize(Client::class);
         $this->reviewManager = $this->prophesize(ReviewManager::class);
         $this->registry = $this->prophesize(Registry::class);
@@ -86,11 +86,17 @@ class ReviewControllerTest extends WebTestCase
 
         $form = $this->prophesize(Form::class);
         $form->handleRequest(Argument::type(Request::class))
-            ->will(function(){return $this;})->shouldBeCalled();
+            ->will(function () {
+                return $this;
+            })->shouldBeCalled();
         $form->isSubmitted()->willReturn(true)->shouldBeCalledOnce();
         $form->isValid()->willReturn(true)->shouldBeCalledOnce();
-        $form->get('text')->will(function(){return $this;})->shouldBeCalledOnce();
-        $form->get('rating')->will(function(){return $this;})->shouldBeCalledOnce();
+        $form->get('text')->will(function () {
+            return $this;
+        })->shouldBeCalledOnce();
+        $form->get('rating')->will(function () {
+            return $this;
+        })->shouldBeCalledOnce();
         $form->getData()->willReturn('foobar')->shouldBeCalledTimes(2);
 
         $formFactory = $this->prophesize(FormFactory::class);
@@ -104,7 +110,12 @@ class ReviewControllerTest extends WebTestCase
         $this->myContainer->get('form.factory')->willReturn($formFactory->reveal())->shouldBeCalled();
 
         $this->reviewManager->createForProduct(
-            'en', Argument::type(ProductReference::class), Argument::type(CustomerReference::class), Argument::type('string'), Argument::type('string'))
+            'en',
+            Argument::type(ProductReference::class),
+            Argument::type(CustomerReference::class),
+            Argument::type('string'),
+            Argument::type('string')
+        )
             ->willReturn('foo')->shouldBeCalledOnce();
 
         $controller = new ReviewController($this->client->reveal(), $this->reviewManager->reveal(), $this->registry->reveal());
@@ -121,7 +132,9 @@ class ReviewControllerTest extends WebTestCase
 
         $form = $this->prophesize(Form::class);
         $form->handleRequest(Argument::type(Request::class))
-            ->will(function(){return $this;})->shouldBeCalled();
+            ->will(function () {
+                return $this;
+            })->shouldBeCalled();
         $form->isSubmitted()->willReturn(false)->shouldBeCalledOnce();
 
         $formFactory = $this->prophesize(FormFactory::class);
@@ -244,7 +257,7 @@ class ReviewControllerTest extends WebTestCase
             Review::of()->setTarget(ProductReference::ofId('product-1'))
         );
 
-        $this->registry->get(Argument::type(Review::class))->will(function (){
+        $this->registry->get(Argument::type(Review::class))->will(function () {
             throw new InvalidArgumentException();
         })->shouldBeCalledOnce();
 
@@ -297,6 +310,4 @@ class ReviewControllerTest extends WebTestCase
 
         $this->assertTrue($response->isOk());
     }
-
-
 }

@@ -5,7 +5,6 @@
 
 namespace Commercetools\Symfony\ExampleBundle\Tests\EventListener;
 
-
 use Commercetools\Core\Model\Cart\Cart;
 use Commercetools\Core\Model\ShoppingList\ShoppingList;
 use Commercetools\Core\Model\ShoppingList\ShoppingListReference;
@@ -43,7 +42,7 @@ class CartSubscriberTest extends TestCase
     {
         $session = $this->prophesize(SessionInterface::class);
         $subscriber = new CartSubscriber($session->reveal());
-        $this->assertTrue($subscriber->onCartCreate());        
+        $this->assertTrue($subscriber->onCartCreate());
     }
 
     public function testOnCartUpdate()

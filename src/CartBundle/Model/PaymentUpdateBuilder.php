@@ -4,7 +4,6 @@
 
 namespace Commercetools\Symfony\CartBundle\Model;
 
-
 use Commercetools\Core\Builder\Update\PaymentsActionBuilder;
 use Commercetools\Core\Model\Payment\Payment;
 use Commercetools\Core\Request\AbstractAction;
@@ -33,7 +32,11 @@ class PaymentUpdateBuilder extends PaymentsActionBuilder
         $this->payment = $payment;
     }
 
-
+    /**
+     * @param AbstractAction $action
+     * @param string|null $eventName
+     * @return $this
+     */
     public function addAction(AbstractAction $action, $eventName = null)
     {
         $actions = $this->manager->dispatch($this->payment, $action, $eventName);

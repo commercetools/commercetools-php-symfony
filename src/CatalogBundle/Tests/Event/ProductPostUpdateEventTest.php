@@ -5,8 +5,6 @@
 
 namespace Commercetools\Symfony\CatalogBundle\Tests\Event;
 
-
-
 use Commercetools\Core\Model\Product\Product;
 use Commercetools\Core\Request\Products\Command\ProductSetKeyAction;
 use Commercetools\Symfony\CatalogBundle\Event\ProductPostUpdateEvent;

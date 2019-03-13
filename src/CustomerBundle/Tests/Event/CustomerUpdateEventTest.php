@@ -5,7 +5,6 @@
 
 namespace Commercetools\Symfony\CustomerBundle\Tests\Event;
 
-
 use Commercetools\Core\Model\Customer\Customer;
 use Commercetools\Core\Request\Customers\Command\CustomerSetCustomTypeAction;
 use Commercetools\Core\Request\Customers\Command\CustomerSetFirstNameAction;
@@ -31,5 +30,4 @@ class CustomerUpdateEventTest extends TestCase
         $updateEvent->setActions([$secondAction->reveal()]);
         $this->assertEquals([$secondAction->reveal()], $updateEvent->getActions());
     }
-
 }

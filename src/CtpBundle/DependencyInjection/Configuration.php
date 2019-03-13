@@ -4,7 +4,6 @@
 
 namespace Commercetools\Symfony\CtpBundle\DependencyInjection;
 
-
 use Symfony\Component\Config\Definition\Builder\TreeBuilder;
 use Symfony\Component\Config\Definition\ConfigurationInterface;
 
@@ -53,6 +52,7 @@ class Configuration implements ConfigurationInterface
                     ->end()
                 ->end()
                 ->arrayNode('cache')
+                    ->addDefaultsIfNotSet()
                     ->children()
                         ->booleanNode('setup')->defaultFalse()->end()
                         ->booleanNode('states')->defaultFalse()->end()
@@ -97,37 +97,49 @@ class Configuration implements ConfigurationInterface
                     ->end()
                 ->end()
                 ->arrayNode('project_settings')
+                    ->addDefaultsIfNotSet()
                     ->fixXmlConfig('country', 'countries')
                     ->fixXmlConfig('currency', 'currencies')
                     ->fixXmlConfig('language')
                     ->children()
                         ->arrayNode('countries')
                             ->requiresAtLeastOneElement()
+                            ->defaultValue(['DE'])
                             ->prototype('scalar')
                                 ->beforeNormalization()
                                     ->always()
-                                    ->then(function ($v) { return strtoupper($v); })
+                                    ->then(function ($v) {
+                                        return strtoupper($v);
+                                    })
                                 ->end()
                             ->end()
                         ->end()
                         ->arrayNode('currencies')
                             ->requiresAtLeastOneElement()
+                            ->defaultValue(['EUR'])
                             ->prototype('scalar')
                                 ->beforeNormalization()
                                     ->always()
-                                    ->then(function ($v) { return strtoupper($v); })
+                                    ->then(function ($v) {
+                                        return strtoupper($v);
+                                    })
                                 ->end()
                             ->end()
                         ->end()
                         ->arrayNode('languages')
                             ->requiresAtLeastOneElement()
+                            ->defaultValue(['en'])
                             ->prototype('scalar')->end()
                         ->end()
                         ->scalarNode('name')->end()
                         ->arrayNode('messages')
                             ->beforeNormalization()
-                                ->ifTrue(function ($v) { return !is_array($v); })
-                                ->then(function ($v) { return ['enabled' => $v == true ?? false]; })
+                                ->ifTrue(function ($v) {
+                                    return !is_array($v);
+                                })
+                                ->then(function ($v) {
+                                    return ['enabled' => $v == true ?? false];
+                                })
                             ->end()
                             ->children()
                                 ->booleanNode('enabled')->end()
@@ -160,7 +172,7 @@ class Configuration implements ConfigurationInterface
     private function getRootNode(TreeBuilder $treeBuilder, $name)
     {
         // BC layer for symfony/config 4.1 and older
-        if ( ! \method_exists($treeBuilder, 'getRootNode')) {
+        if (! \method_exists($treeBuilder, 'getRootNode')) {
             return $treeBuilder->root($name);
         }
         return $treeBuilder->getRootNode();

@@ -5,7 +5,6 @@
 
 namespace Commercetools\Symfony\StateBundle\Model;
 
-
 use Commercetools\Core\Model\State\State;
 use Commercetools\Core\Model\State\StateCollection;
 use Commercetools\Symfony\StateBundle\Model\CtpMarkingStore\CtpMarkingStore;
@@ -39,7 +38,10 @@ class ProcessStates
             $workflow[$state->getType()]['places'][] = $state->getKey();
 
             $workflow[$state->getType()]['transitions'] = $this->filterTransitions(
-                $type, $state, $states, $workflow[$state->getType()]['transitions']
+                $type,
+                $state,
+                $states,
+                $workflow[$state->getType()]['transitions']
             );
         }
 
@@ -66,7 +68,8 @@ class ProcessStates
     private function filterTransitions($type, $state, $states, $allTransitions)
     {
         return array_filter(array_merge(
-            $allTransitions, $this->getTransitions($type, $state, $states, $allTransitions)
+            $allTransitions,
+            $this->getTransitions($type, $state, $states, $allTransitions)
         ));
     }
 

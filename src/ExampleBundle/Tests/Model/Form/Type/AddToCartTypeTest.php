@@ -5,7 +5,6 @@
 
 namespace Commercetools\Symfony\ExampleBundle\Tests\Model\Form\Type;
 
-
 use Commercetools\Symfony\ExampleBundle\Entity\ProductEntity;
 use Commercetools\Symfony\ExampleBundle\Model\Form\Type\AddToCartType;
 use Symfony\Component\Form\Test\TypeTestCase;
@@ -43,7 +42,6 @@ class AddToCartTypeTest extends TypeTestCase
         foreach (array_keys($formData) as $key) {
             $this->assertArrayHasKey($key, $children);
         }
-
     }
 
     public function testSubmitValidDataWithoutVariant()
@@ -84,5 +82,4 @@ class AddToCartTypeTest extends TypeTestCase
             $this->assertArrayHasKey($key, $children);
         }
     }
-
 }

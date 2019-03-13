@@ -5,7 +5,6 @@
 
 namespace Commercetools\Symfony\CartBundle\Tests\Event;
 
-
 use Commercetools\Core\Model\Cart\Cart;
 use Commercetools\Core\Request\Carts\Command\CartSetCustomerEmailAction;
 use Commercetools\Symfony\CartBundle\Event\CartPostUpdateEvent;
@@ -22,7 +21,7 @@ class CartPostUpdateEventTest extends TestCase
         $postUpdateEvent = new CartPostUpdateEvent($cart->reveal(), [$action->reveal()]);
         $postUpdateEvent->setCart($secondCart->reveal());
 
-        $this->assertNotSame($cart->reveal(),$secondCart->reveal());
+        $this->assertNotSame($cart->reveal(), $secondCart->reveal());
         $this->assertSame($secondCart->reveal(), $postUpdateEvent->getCart());
         $this->assertNotSame($cart->reveal(), $postUpdateEvent->getCart());
 

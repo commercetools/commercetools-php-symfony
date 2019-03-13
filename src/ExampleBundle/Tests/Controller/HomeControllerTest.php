@@ -6,6 +6,7 @@ use Commercetools\Symfony\ExampleBundle\Controller\HomeController;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\Request;
+use Twig\Environment;
 
 class HomeControllerTest extends WebTestCase
 {
@@ -13,7 +14,7 @@ class HomeControllerTest extends WebTestCase
     {
         $request = $this->prophesize(Request::class);
         $container = $this->prophesize(ContainerInterface::class);
-        $twigMock = $this->prophesize(\Twig_Environment::class);
+        $twigMock = $this->prophesize(Environment::class);
 
         $container->has('templating')->willReturn(false)->shouldBeCalledOnce();
         $container->has('twig')->willReturn(true)->shouldBeCalledOnce();

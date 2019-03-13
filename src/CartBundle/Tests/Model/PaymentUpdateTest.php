@@ -60,7 +60,9 @@ class PaymentUpdateTest extends TestCase
             $payment,
             Argument::type($actionClass),
             Argument::is(null)
-        )->will(function ($args) { return [$args[1]]; })->shouldBeCalledTimes(1);
+        )->will(function ($args) {
+            return [$args[1]];
+        })->shouldBeCalledTimes(1);
 
         $update = new PaymentUpdateBuilder($payment->reveal(), $manager->reveal());
 
@@ -89,7 +91,9 @@ class PaymentUpdateTest extends TestCase
             $payment,
             Argument::type($actionClass),
             Argument::is(null)
-        )->will(function ($args) { return [$args[1]]; })->shouldBeCalledTimes(1);
+        )->will(function ($args) {
+            return [$args[1]];
+        })->shouldBeCalledTimes(1);
 
         $update = new PaymentUpdateBuilder($payment->reveal(), $manager->reveal());
 

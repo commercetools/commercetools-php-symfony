@@ -67,7 +67,7 @@ class Repository
     }
 
     /**
-     * @param $locale
+     * @param string $locale
      * @return MapperInterface
      */
     public function getMapper($locale)
@@ -76,9 +76,9 @@ class Repository
     }
 
     /**
-     * @param $cacheKey
+     * @param string $cacheKey
      * @param QueryAllRequestInterface $request
-     * @param $locale
+     * @param string $locale
      * @param bool $force
      * @param int $ttl
      * @return mixed
@@ -111,7 +111,7 @@ class Repository
 
     /**
      * @param QueryAllRequestInterface $request
-     * @param $locale
+     * @param string $locale
      * @return mixed
      * @throws \Commercetools\Core\Error\ApiException
      * @throws \Commercetools\Core\Error\InvalidTokenException
@@ -140,13 +140,14 @@ class Repository
     }
 
     /**
-     * @param $cacheKey
+     * @param string $cacheKey
      * @param AbstractApiRequest $request
-     * @param $locale
+     * @param string $locale
      * @param bool $force
      * @param int $ttl
-     * @return \Commercetools\Core\Model\Common\JsonDeserializeInterface|null
+     * @return \Commercetools\Core\Model\Common\JsonDeserializeInterface
      * @throws \Psr\Cache\InvalidArgumentException
+     * @throws NotFoundHttpException
      */
     protected function retrieve(
         $cacheKey,
@@ -190,7 +191,7 @@ class Repository
 
     /**
      * @param ClientRequestInterface $request
-     * @param $locale
+     * @param string $locale
      * @param QueryParams|null $params
      * @return mixed
      */

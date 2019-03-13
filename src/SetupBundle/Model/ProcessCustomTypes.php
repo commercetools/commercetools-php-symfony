@@ -5,7 +5,6 @@
 
 namespace Commercetools\Symfony\SetupBundle\Model;
 
-
 use Commercetools\Core\Model\Common\LocalizedString;
 use Commercetools\Core\Model\Type\FieldDefinition;
 use Commercetools\Core\Model\Type\Type;
@@ -268,8 +267,7 @@ class ProcessCustomTypes
                 if (!empty($recursiveDiff)) {
                     $outputDiff[$key] = $recursiveDiff;
                 }
-
-            } else if (isset($arr2[$key]) || array_key_exists($key, $arr2)) {
+            } elseif (isset($arr2[$key]) || array_key_exists($key, $arr2)) {
                 if (is_array($value) && is_array($arr2[$key])) {
                     $arr2Value = $arr2[$key];
                     $recursiveDiff = $this->arrayDiffRecursiveInternal($value, $arr2Value);
@@ -277,11 +275,10 @@ class ProcessCustomTypes
                     if (!empty($recursiveDiff)) {
                         $outputDiff[$key] = $recursiveDiff;
                     }
-                } else if ($value != $arr2[$key]) {
+                } elseif ($value != $arr2[$key]) {
                     $outputDiff[$key] = $value;
                 }
             } else {
-
                 $outputDiff[$key] = $value;
             }
         }
@@ -311,7 +308,6 @@ class ProcessCustomTypes
         $outputDiff = [];
 
         foreach ($arr1 as $key => $value) {
-
             if ($key === 'fieldDefinitions') {
                 $arr2Value = isset($arr2[$key]) ? $arr2[$key] : [];
                 $recursiveDiff = $this->arrayDiffExternalReversed($value, $arr2Value);
@@ -319,7 +315,6 @@ class ProcessCustomTypes
                 if (!empty($recursiveDiff)) {
                     $outputDiff[$key] = $recursiveDiff;
                 }
-
             } elseif (!isset($arr2[$key]) && !array_key_exists($key, $arr2)) {
                 if (in_array($key, self::VALID_TYPE_FIELDS)) {
                     $outputDiff[$key] = $value;

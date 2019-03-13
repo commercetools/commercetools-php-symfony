@@ -5,7 +5,6 @@
 
 namespace Commercetools\Symfony\ExampleBundle\Tests\EventListener;
 
-
 use Commercetools\Symfony\CartBundle\Event\OrderCreateEvent;
 use Commercetools\Symfony\CartBundle\Event\OrderPostCreateEvent;
 use Commercetools\Symfony\CartBundle\Model\Repository\CartRepository;

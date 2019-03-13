@@ -5,7 +5,6 @@
 
 namespace Commercetools\Symfony\SetupBundle\Command;
 
-
 use Commercetools\Core\Client;
 use Commercetools\Core\Model\Type\TypeCollection;
 use Commercetools\Core\Response\ErrorResponse;

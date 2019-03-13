@@ -17,7 +17,6 @@ use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Workflow\Exception\InvalidArgumentException;
 use Symfony\Component\Workflow\Registry;
 
-
 class OrderController extends AbstractController
 {
     const CSRF_TOKEN_NAME = 'csrfToken';
@@ -89,7 +88,9 @@ class OrderController extends AbstractController
         }
 
         if (!is_null($order->getPaymentInfo())) {
-            $paymentsIds = array_map(function($elem){return $elem['id'];}, $order->getPaymentInfo()->getPayments()->toArray());
+            $paymentsIds = array_map(function ($elem) {
+                return $elem['id'];
+            }, $order->getPaymentInfo()->getPayments()->toArray());
             $payments = $this->paymentManager->getMultiplePayments($request->getLocale(), $paymentsIds);
         }
 
@@ -110,7 +111,7 @@ class OrderController extends AbstractController
     {
         $order = $this->manager->getOrderForUser($request->getLocale(), $orderId, $user, $session->getId());
 
-        if ($request->get('lineItemId')){
+        if ($request->get('lineItemId')) {
             $lineItem = $order->getLineItems()->getById($request->get('lineItemId'));
         } elseif ($request->get('customLineItemId')) {
             $lineItem = $order->getCustomLineItems()->getById($request->get('customLineItemId'));

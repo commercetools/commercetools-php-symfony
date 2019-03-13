@@ -4,7 +4,6 @@
 
 namespace Commercetools\Symfony\CatalogBundle\Model;
 
-
 use Commercetools\Core\Builder\Update\ProductsActionBuilder;
 use Commercetools\Core\Model\Product\Product;
 use Commercetools\Core\Request\AbstractAction;

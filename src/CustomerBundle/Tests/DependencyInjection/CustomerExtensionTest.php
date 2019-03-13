@@ -5,7 +5,6 @@
 
 namespace Commercetools\Symfony\CustomerBundle\Tests\DependencyInjection;
 
-
 use Commercetools\Symfony\CustomerBundle\DependencyInjection\CustomerExtension;
 use Matthias\SymfonyDependencyInjectionTest\PhpUnit\AbstractExtensionTestCase;
 

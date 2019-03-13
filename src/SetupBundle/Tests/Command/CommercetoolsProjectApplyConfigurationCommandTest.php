@@ -5,7 +5,6 @@
 
 namespace Commercetools\Symfony\SetupBundle\Tests\Command;
 
-
 use Commercetools\Core\Model\Common\Collection;
 use Commercetools\Core\Model\Message\MessagesConfiguration;
 use Commercetools\Core\Model\Project\Project;

@@ -21,7 +21,6 @@ use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Security\Http\Authentication\AuthenticationUtils;
 
-
 class UserController extends AbstractController
 {
     /**
@@ -78,8 +77,7 @@ class UserController extends AbstractController
             ->add('submit', SubmitType::class);
         $form->handleRequest($request);
 
-        if ($form->isSubmitted() && $form->isValid()){
-
+        if ($form->isSubmitted() && $form->isValid()) {
             $firstName = $form->get('firstName')->getData();
             $lastName = $form->get('lastName')->getData();
             $email = $form->get('email')->getData();
@@ -95,11 +93,11 @@ class UserController extends AbstractController
 
             try {
                 $customer = $customerBuilder->flush();
-            } catch (\Exception $e){
+            } catch (\Exception $e) {
                 $this->addFlash('error', $e->getMessage());
             }
 
-            if (isset($newPassword)){
+            if (isset($newPassword)) {
                 $this->manager->changePassword($customer, $currentPassword, $newPassword);
             }
         }
@@ -131,7 +129,7 @@ class UserController extends AbstractController
             ->getForm();
         $form->handleRequest($request);
 
-        if ($form->isSubmitted() && $form->isValid()){
+        if ($form->isSubmitted() && $form->isValid()) {
             $address = Address::fromArray($form->get('address')->getData());
 
             $customerBuilder = $this->manager->update($customer)
@@ -163,5 +161,7 @@ class UserController extends AbstractController
 //        return $customer;
 //    }
 
-    public function signUpAction(){}
+    public function signUpAction()
+    {
+    }
 }

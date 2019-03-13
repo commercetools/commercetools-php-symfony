@@ -14,6 +14,7 @@ use Commercetools\Core\Model\Product\ProductProjection;
 use Commercetools\Core\Model\Product\SuggestionCollection;
 use Commercetools\Core\Model\ProductType\ProductTypeDraft;
 use Commercetools\Core\Model\ProductType\ProductTypeReference;
+use Commercetools\Core\Request\Products\ProductProjectionSearchRequest;
 use Commercetools\Symfony\CtpBundle\Model\QueryParams;
 use Commercetools\Symfony\CtpBundle\Model\Repository;
 use Commercetools\Symfony\CatalogBundle\Model\Search;
@@ -30,6 +31,14 @@ class CatalogRepository extends Repository
      */
     private $searchModel;
 
+    /**
+     * CatalogRepository constructor.
+     * @param $enableCache
+     * @param CacheItemPoolInterface $cache
+     * @param Client $client
+     * @param MapperFactory $mapperFactory
+     * @param Search $searchModel
+     */
     public function __construct(
         $enableCache,
         CacheItemPoolInterface $cache,
@@ -114,35 +123,54 @@ class CatalogRepository extends Repository
     }
 
     /**
-     * @param $locale
      * @param $itemsPerPage
      * @param $currentPage
      * @param $sort
-     * @param $currency
-     * @param $country
-     * @param UriInterface $uri
-     * @param $search
-     * @param array $filters
-     * @return array
+     * @return ProductProjectionSearchRequest
      */
-    public function getProducts(
-        $locale,
-        $itemsPerPage,
-        $currentPage,
-        $sort,
-        $currency,
-        $country,
-        UriInterface $uri,
-        $search = null,
-        $filters = null
-    ){
-
-        $searchRequest = RequestBuilder::of()->productProjections()->search()
+    public function baseSearchProductsRequest($itemsPerPage = 20, $currentPage = 1, $sort = 'id asc')
+    {
+        return RequestBuilder::of()->productProjections()->search()
             ->sort($sort)
             ->limit($itemsPerPage)
-            ->currency($currency)
-            ->country($country)
-            ->offset(min($itemsPerPage * ($currentPage - 1),100000));
+            ->offset(min($itemsPerPage * ($currentPage - 1), 100000));
+    }
+
+    /**
+     * @param ProductProjectionSearchRequest|null $searchRequest
+     * @param string|null $country
+     * @param string|null $currency
+     * @return ProductProjectionSearchRequest
+     */
+    public function searchRequestAddCountryAndCurrency(ProductProjectionSearchRequest $searchRequest = null, $country = null, $currency = null)
+    {
+        if (is_null($searchRequest)) {
+            $searchRequest = $this->baseSearchProductsRequest();
+        }
+
+        if (!is_null($country)) {
+            $searchRequest->country($country);
+        }
+
+        if (!is_null($currency)) {
+            $searchRequest->currency($currency);
+        }
+
+        return $searchRequest;
+    }
+
+    /**
+     * @param ProductProjectionSearchRequest|null $searchRequest
+     * @param $locale
+     * @param UriInterface $uri
+     * @param string|null $search
+     * @return ProductProjectionSearchRequest
+     */
+    public function searchRequestAddSearchParameters(ProductProjectionSearchRequest $searchRequest = null, $locale, UriInterface $uri, $search = null)
+    {
+        if (is_null($searchRequest)) {
+            $searchRequest = $this->baseSearchProductsRequest();
+        }
 
         if (!is_null($search)) {
             $language = \Locale::getPrimaryLanguage($locale);
@@ -152,6 +180,20 @@ class CatalogRepository extends Repository
 
         $selectedValues = $this->searchModel->getSelectedValues($uri);
         $searchRequest = $this->searchModel->addFacets($searchRequest, $selectedValues);
+
+        return $searchRequest;
+    }
+
+    /**
+     * @param ProductProjectionSearchRequest|null $searchRequest
+     * @param array|null $filters
+     * @return ProductProjectionSearchRequest
+     */
+    public function searchRequestAddSearchFilters(ProductProjectionSearchRequest $searchRequest = null, array $filters = null)
+    {
+        if (is_null($searchRequest)) {
+            $searchRequest = $this->baseSearchProductsRequest();
+        }
 
         if (!is_null($filters)) {
             foreach ($filters as $type => $typeFilters) {
@@ -173,6 +215,16 @@ class CatalogRepository extends Repository
             }
         }
 
+        return $searchRequest;
+    }
+
+    /**
+     * @param ProductProjectionSearchRequest $searchRequest
+     * @param $locale
+     * @return array
+     */
+    public function executeSearchRequest(ProductProjectionSearchRequest $searchRequest, $locale)
+    {
         $response = $searchRequest->executeWithClient($this->getClient());
         $products = $searchRequest->mapFromResponse(
             $response,
@@ -189,7 +241,7 @@ class CatalogRepository extends Repository
      */
     public function getProductTypes($locale, QueryParams $params = null)
     {
-        $productTypesRequest = $productTypes = RequestBuilder::of()->productTypes()->query();
+        $productTypesRequest = RequestBuilder::of()->productTypes()->query();
 
         return $this->executeRequest($productTypesRequest, $locale, $params);
     }
@@ -216,7 +268,7 @@ class CatalogRepository extends Repository
     {
         $request = RequestBuilder::of()->products()->update($product)->setActions($actions);
 
-        if(!is_null($params)){
+        if (!is_null($params)) {
             foreach ($params->getParams() as $param) {
                 $request->addParamObject($param);
             }

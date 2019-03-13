@@ -25,19 +25,4 @@ class SetupExtensionTest extends AbstractExtensionTestCase
         $this->assertContainerBuilderHasService('Commercetools\Symfony\SetupBundle\Command\CommercetoolsProjectInfoCommand');
         $this->assertContainerBuilderHasService('Commercetools\Symfony\SetupBundle\Command\CommercetoolsProjectApplyConfigurationCommand');
     }
-
-    public function testExtensionLoadsWithCustomTypes()
-    {
-        $config = [
-            'custom_types' => [
-                'foo' => 'bar'
-            ]
-        ];
-
-        $this->load($config, $this->getContainerExtensions());
-
-        $this->assertContainerBuilderHasParameter('commercetools.custom_types');
-        $customTypes = $this->container->getParameter('commercetools.custom_types');
-        $this->assertEquals(['foo' => 'bar'], $customTypes);
-    }
 }

@@ -5,7 +5,6 @@
 
 namespace Commercetools\Symfony\CartBundle\Tests\Manager;
 
-
 use Commercetools\Core\Error\InvalidArgumentException;
 use Commercetools\Core\Model\Cart\Cart;
 use Commercetools\Core\Model\Order\Order;
@@ -31,12 +30,16 @@ class OrderManagerTest extends TestCase
         $dispatcher = $this->prophesize(EventDispatcherInterface::class);
 
         $repository->update($order, Argument::type('array'))
-            ->will(function ($args) { return $args[0]; })->shouldBeCalled();
+            ->will(function ($args) {
+                return $args[0];
+            })->shouldBeCalled();
 
         $dispatcher->dispatch(
             Argument::containingString(OrderPostUpdateEvent::class),
             Argument::type(OrderPostUpdateEvent::class)
-        )->will(function ($args) { return $args[1]; })->shouldBeCalled();
+        )->will(function ($args) {
+            return $args[1];
+        })->shouldBeCalled();
 
         $manager = new OrderManager($repository->reveal(), $dispatcher->reveal());
         $order = $manager->apply($order->reveal(), []);
@@ -52,7 +55,9 @@ class OrderManagerTest extends TestCase
         $dispatcher->dispatch(
             Argument::containingString(AbstractAction::class),
             Argument::type(OrderUpdateEvent::class)
-        )->will(function ($args) { return $args[1]; })->shouldBeCalled();
+        )->will(function ($args) {
+            return $args[1];
+        })->shouldBeCalled();
         $action = $this->prophesize(AbstractAction::class);
 
         $manager = new OrderManager($repository->reveal(), $dispatcher->reveal());
@@ -86,7 +91,6 @@ class OrderManagerTest extends TestCase
 
         $manager = new OrderManager($repository->reveal(), $dispatcher->reveal());
         $this->assertInstanceOf(OrderUpdateBuilder::class, $manager->update($order->reveal()));
-
     }
 
     public function testGetOrderForCustomer()
@@ -133,18 +137,18 @@ class OrderManagerTest extends TestCase
         $this->assertInstanceOf(OrderCollection::class, $orders);
     }
 
-    public function testGetOrderFromPaymentForUser()
+    public function testGetOrdersFromPaymentForUser()
     {
         /** @var OrderRepository $repository */
         $repository = $this->prophesize(OrderRepository::class);
         $dispatcher = $this->prophesize(EventDispatcherInterface::class);
         $user = $this->prophesize(User::class);
 
-        $repository->getOrderFromPayment('en', 'payment-1', Argument::type(User::class), null)
-            ->willReturn(Order::of()->setId('order-1'))->shouldBeCalled();
+        $repository->getOrdersFromPayment('en', 'payment-1', Argument::type(User::class), null)
+            ->willReturn(OrderCollection::of()->add(Order::of()->setId('order-1')))->shouldBeCalled();
 
         $manager = new OrderManager($repository->reveal(), $dispatcher->reveal());
-        $order = $manager->getOrderFromPayment('en', 'payment-1', $user->reveal());
+        $order = $manager->getFirstOrderFromPayment('en', 'payment-1', $user->reveal());
 
         $this->assertInstanceOf(Order::class, $order);
         $this->assertSame('order-1', $order->getId());
@@ -159,9 +163,9 @@ class OrderManagerTest extends TestCase
         $repository = $this->prophesize(OrderRepository::class);
         $dispatcher = $this->prophesize(EventDispatcherInterface::class);
 
-        $repository->getOrderFromPayment('en', 'payment-1')->shouldNotBeCalled();
+        $repository->getOrdersFromPayment('en', 'payment-1')->shouldNotBeCalled();
 
         $manager = new OrderManager($repository->reveal(), $dispatcher->reveal());
-        $manager->getOrderFromPayment('en', 'payment-1');
+        $manager->getFirstOrderFromPayment('en', 'payment-1');
     }
 }

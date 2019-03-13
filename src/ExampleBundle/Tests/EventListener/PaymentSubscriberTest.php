@@ -5,7 +5,6 @@
 
 namespace Commercetools\Symfony\ExampleBundle\Tests\EventListener;
 
-
 use Commercetools\Core\Model\Payment\Payment;
 use Commercetools\Symfony\CartBundle\Event\PaymentPostCreateEvent;
 use Commercetools\Symfony\CartBundle\Manager\CartManager;

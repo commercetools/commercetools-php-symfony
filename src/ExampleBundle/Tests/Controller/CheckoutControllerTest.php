@@ -5,7 +5,6 @@
 
 namespace Commercetools\Symfony\ExampleBundle\Tests\Controller;
 
-
 use Commercetools\Core\Client;
 use Commercetools\Core\Model\Cart\Cart;
 use Commercetools\Core\Model\Cart\ShippingInfo;
@@ -36,6 +35,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\Routing\Router;
 use Symfony\Component\Security\Http\Authentication\AuthenticationUtils;
+use Twig\Environment;
 
 class CheckoutControllerTest extends WebTestCase
 {
@@ -54,7 +54,7 @@ class CheckoutControllerTest extends WebTestCase
     {
         $this->request = $this->prophesize(Request::class);
         $this->myContainer = $this->prophesize(ContainerInterface::class);
-        $this->twig = $this->prophesize(\Twig_Environment::class);
+        $this->twig = $this->prophesize(Environment::class);
         $this->client = $this->prophesize(Client::class);
         $this->cartManager = $this->prophesize(CartManager::class);
         $this->shippingMethodManager = $this->prophesize(ShippingMethodManager::class);
@@ -118,17 +118,25 @@ class CheckoutControllerTest extends WebTestCase
 
         $form = $this->prophesize(Form::class);
         $form->handleRequest(Argument::type(Request::class))
-            ->will(function(){return $this;})->shouldBeCalled();
+            ->will(function () {
+                return $this;
+            })->shouldBeCalled();
         $form->isSubmitted()->willReturn(true)->shouldBeCalledOnce();
         $form->isValid()->willReturn(true)->shouldBeCalledOnce();
-        $form->get('name')->will(function(){return $this;})->shouldBeCalledOnce();
+        $form->get('name')->will(function () {
+            return $this;
+        })->shouldBeCalledOnce();
         $form->getData()->willReturn('foobar')->shouldBeCalledOnce();
 
         $formBuilder = $this->prophesize(FormBuilder::class);
         $formBuilder->add(Argument::type('string'), Argument::type('string'), Argument::type('array'))
-            ->will(function(){return $this;})->shouldBeCalledTimes(1);
+            ->will(function () {
+                return $this;
+            })->shouldBeCalledTimes(1);
         $formBuilder->add(Argument::type('string'), Argument::type('string'))
-            ->will(function(){return $this;})->shouldBeCalledTimes(1);
+            ->will(function () {
+                return $this;
+            })->shouldBeCalledTimes(1);
         $formBuilder->getForm()->willReturn($form)->shouldBeCalled();
 
         $formFactory = $this->prophesize(FormFactory::class);
@@ -140,7 +148,9 @@ class CheckoutControllerTest extends WebTestCase
         $cart = Cart::of()->setId('cart-id-1')->setShippingInfo(ShippingInfo::of()->setShippingMethodName('sh-mt-name-1'));
 
         $cartUpdateBuilder = $this->prophesize(CartUpdateBuilder::class);
-        $cartUpdateBuilder->setActions(Argument::type('array'))->will(function(){return $this;})->shouldBeCalled();
+        $cartUpdateBuilder->setActions(Argument::type('array'))->will(function () {
+            return $this;
+        })->shouldBeCalled();
         $cartUpdateBuilder->flush()->willReturn($cart)->shouldBeCalled();
 
         $router = $this->prophesize(Router::class);
@@ -173,15 +183,21 @@ class CheckoutControllerTest extends WebTestCase
 
         $form = $this->prophesize(Form::class);
         $form->handleRequest(Argument::type(Request::class))
-            ->will(function(){return $this;})->shouldBeCalled();
+            ->will(function () {
+                return $this;
+            })->shouldBeCalled();
         $form->isSubmitted()->willReturn(false)->shouldBeCalledOnce();
         $form->createView()->shouldBeCalledOnce();
 
         $formBuilder = $this->prophesize(FormBuilder::class);
         $formBuilder->add(Argument::type('string'), Argument::type('string'), Argument::type('array'))
-            ->will(function(){return $this;})->shouldBeCalledTimes(1);
+            ->will(function () {
+                return $this;
+            })->shouldBeCalledTimes(1);
         $formBuilder->add(Argument::type('string'), Argument::type('string'))
-            ->will(function(){return $this;})->shouldBeCalledTimes(1);
+            ->will(function () {
+                return $this;
+            })->shouldBeCalledTimes(1);
         $formBuilder->getForm()->willReturn($form)->shouldBeCalled();
 
         $formFactory = $this->prophesize(FormFactory::class);
@@ -367,11 +383,15 @@ class CheckoutControllerTest extends WebTestCase
 
         $form = $this->prophesize(Form::class);
         $form->handleRequest(Argument::type(Request::class))
-            ->will(function(){return $this;})->shouldBeCalled();
+            ->will(function () {
+                return $this;
+            })->shouldBeCalled();
         $form->isSubmitted()->willReturn(true)->shouldBeCalledOnce();
         $form->isValid()->willReturn(true)->shouldBeCalledOnce();
-        $form->get(Argument::type('string'))->will(function(){return $this;})->shouldBeCalledTimes(3);
-        $form->get('shippingAddress')->will(function(){
+        $form->get(Argument::type('string'))->will(function () {
+            return $this;
+        })->shouldBeCalledTimes(3);
+        $form->get('shippingAddress')->will(function () {
             $this->getData()->willReturn(['country' => 'DE']);
             return $this;
         })->shouldBeCalledOnce();
@@ -379,9 +399,13 @@ class CheckoutControllerTest extends WebTestCase
 
         $formBuilder = $this->prophesize(FormBuilder::class);
         $formBuilder->add(Argument::type('string'), Argument::type('string'), Argument::type('array'))
-            ->will(function(){return $this;})->shouldBeCalledTimes(1);
+            ->will(function () {
+                return $this;
+            })->shouldBeCalledTimes(1);
         $formBuilder->add(Argument::type('string'), Argument::type('string'))
-            ->will(function(){return $this;})->shouldBeCalledTimes(3);
+            ->will(function () {
+                return $this;
+            })->shouldBeCalledTimes(3);
         $formBuilder->getForm()->willReturn($form)->shouldBeCalled();
 
         $formFactory = $this->prophesize(FormFactory::class);
@@ -391,8 +415,12 @@ class CheckoutControllerTest extends WebTestCase
         $this->myContainer->get('form.factory')->willReturn($formFactory->reveal())->shouldBeCalled();
 
         $cartUpdateBuilder = $this->prophesize(CartUpdateBuilder::class);
-        $cartUpdateBuilder->setShippingAddress(Argument::type(CartSetShippingAddressAction::class))->will(function(){return $this;})->shouldBeCalled();
-        $cartUpdateBuilder->setBillingAddress(Argument::type(CartSetBillingAddressAction::class))->will(function(){return $this;})->shouldBeCalled();
+        $cartUpdateBuilder->setShippingAddress(Argument::type(CartSetShippingAddressAction::class))->will(function () {
+            return $this;
+        })->shouldBeCalled();
+        $cartUpdateBuilder->setBillingAddress(Argument::type(CartSetBillingAddressAction::class))->will(function () {
+            return $this;
+        })->shouldBeCalled();
         $cartUpdateBuilder->flush()->willReturn($cart)->shouldBeCalled();
 
         $this->cartManager->getCart('en', 'cart-1', Argument::type(CtpUser::class), 'baz')->willReturn($cart)->shouldBeCalledOnce();
@@ -427,15 +455,21 @@ class CheckoutControllerTest extends WebTestCase
 
         $form = $this->prophesize(Form::class);
         $form->handleRequest(Argument::type(Request::class))
-            ->will(function(){return $this;})->shouldBeCalled();
+            ->will(function () {
+                return $this;
+            })->shouldBeCalled();
         $form->isSubmitted()->willReturn(false)->shouldBeCalledOnce();
         $form->createView()->shouldBeCalledOnce();
 
         $formBuilder = $this->prophesize(FormBuilder::class);
         $formBuilder->add(Argument::type('string'), Argument::type('string'), Argument::type('array'))
-            ->will(function(){return $this;})->shouldBeCalledTimes(1);
+            ->will(function () {
+                return $this;
+            })->shouldBeCalledTimes(1);
         $formBuilder->add(Argument::type('string'), Argument::type('string'))
-            ->will(function(){return $this;})->shouldBeCalledTimes(3);
+            ->will(function () {
+                return $this;
+            })->shouldBeCalledTimes(3);
         $formBuilder->getForm()->willReturn($form)->shouldBeCalled();
 
         $formFactory = $this->prophesize(FormFactory::class);
@@ -453,7 +487,6 @@ class CheckoutControllerTest extends WebTestCase
 
         $this->assertTrue($response->isOk());
     }
-
 }
 
 class MockAuthorizationChecker

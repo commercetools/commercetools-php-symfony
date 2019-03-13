@@ -28,6 +28,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Session\Flash\FlashBag;
 use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\Security\Http\Authentication\AuthenticationUtils;
+use Twig\Environment;
 
 class UserControllerTest extends WebTestCase
 {
@@ -42,7 +43,7 @@ class UserControllerTest extends WebTestCase
     {
         $this->request = $this->prophesize(Request::class);
         $this->myContainer = $this->prophesize(ContainerInterface::class);
-        $this->twig = $this->prophesize(\Twig_Environment::class);
+        $this->twig = $this->prophesize(Environment::class);
         $this->client = $this->prophesize(Client::class);
         $this->customerManager = $this->prophesize(CustomerManager::class);
 
@@ -72,13 +73,19 @@ class UserControllerTest extends WebTestCase
     {
         $form = $this->prophesize(Form::class);
         $form->handleRequest(Argument::type(Request::class))
-            ->will(function(){return $this;})->shouldBeCalled();
+            ->will(function () {
+                return $this;
+            })->shouldBeCalled();
         $form->createView()->shouldBeCalled();
         $form->add(Argument::type('string'), Argument::type('string'))
-            ->will(function(){return $this;})->shouldBeCalled();
+            ->will(function () {
+                return $this;
+            })->shouldBeCalled();
         $form->isSubmitted()->willReturn(true)->shouldBeCalledOnce();
         $form->isValid()->willReturn(true)->shouldBeCalledOnce();
-        $form->get(Argument::type('string'))->will(function(){return $this;})->shouldBeCalledTimes(5);
+        $form->get(Argument::type('string'))->will(function () {
+            return $this;
+        })->shouldBeCalledTimes(5);
         $form->getData()->willReturn('foo')->shouldBeCalledTimes(5);
         $form->createView()->shouldBeCalled();
 
@@ -91,9 +98,15 @@ class UserControllerTest extends WebTestCase
         $customer = Customer::of()->setId('id-1');
 
         $customerUpdateBuilder = $this->prophesize(CustomerUpdateBuilder::class);
-        $customerUpdateBuilder->setFirstName(Argument::type(CustomerSetFirstNameAction::class))->will(function(){return $this;})->shouldBeCalled();
-        $customerUpdateBuilder->setLastName(Argument::type(CustomerSetLastNameAction::class))->will(function(){return $this;})->shouldBeCalled();
-        $customerUpdateBuilder->changeEmail(Argument::type(CustomerChangeEmailAction::class))->will(function(){return $this;})->shouldBeCalled();
+        $customerUpdateBuilder->setFirstName(Argument::type(CustomerSetFirstNameAction::class))->will(function () {
+            return $this;
+        })->shouldBeCalled();
+        $customerUpdateBuilder->setLastName(Argument::type(CustomerSetLastNameAction::class))->will(function () {
+            return $this;
+        })->shouldBeCalled();
+        $customerUpdateBuilder->changeEmail(Argument::type(CustomerChangeEmailAction::class))->will(function () {
+            return $this;
+        })->shouldBeCalled();
         $customerUpdateBuilder->flush()->willReturn($customer)->shouldBeCalled();
 
         $this->customerManager->getById('en', 'id-1')->willReturn($customer)->shouldBeCalled();
@@ -114,13 +127,19 @@ class UserControllerTest extends WebTestCase
     {
         $form = $this->prophesize(Form::class);
         $form->handleRequest(Argument::type(Request::class))
-            ->will(function(){return $this;})->shouldBeCalled();
+            ->will(function () {
+                return $this;
+            })->shouldBeCalled();
         $form->createView()->shouldBeCalled();
         $form->add(Argument::type('string'), Argument::type('string'))
-            ->will(function(){return $this;})->shouldBeCalled();
+            ->will(function () {
+                return $this;
+            })->shouldBeCalled();
         $form->isSubmitted()->willReturn(true)->shouldBeCalledOnce();
         $form->isValid()->willReturn(true)->shouldBeCalledOnce();
-        $form->get(Argument::type('string'))->will(function(){return $this;})->shouldBeCalledTimes(5);
+        $form->get(Argument::type('string'))->will(function () {
+            return $this;
+        })->shouldBeCalledTimes(5);
         $form->getData()->willReturn('foo')->shouldBeCalledTimes(5);
         $form->createView()->shouldBeCalled();
 
@@ -140,10 +159,18 @@ class UserControllerTest extends WebTestCase
         $customer = Customer::of()->setId('id-1');
 
         $customerUpdateBuilder = $this->prophesize(CustomerUpdateBuilder::class);
-        $customerUpdateBuilder->setFirstName(Argument::type(CustomerSetFirstNameAction::class))->will(function(){return $this;})->shouldBeCalled();
-        $customerUpdateBuilder->setLastName(Argument::type(CustomerSetLastNameAction::class))->will(function(){return $this;})->shouldBeCalled();
-        $customerUpdateBuilder->changeEmail(Argument::type(CustomerChangeEmailAction::class))->will(function(){return $this;})->shouldBeCalled();
-        $customerUpdateBuilder->flush()->will(function(){throw new \Exception();})->shouldBeCalled();
+        $customerUpdateBuilder->setFirstName(Argument::type(CustomerSetFirstNameAction::class))->will(function () {
+            return $this;
+        })->shouldBeCalled();
+        $customerUpdateBuilder->setLastName(Argument::type(CustomerSetLastNameAction::class))->will(function () {
+            return $this;
+        })->shouldBeCalled();
+        $customerUpdateBuilder->changeEmail(Argument::type(CustomerChangeEmailAction::class))->will(function () {
+            return $this;
+        })->shouldBeCalled();
+        $customerUpdateBuilder->flush()->will(function () {
+            throw new \Exception();
+        })->shouldBeCalled();
 
         $this->customerManager->getById('en', 'id-1')->willReturn($customer)->shouldBeCalled();
         $this->customerManager->update(Argument::type(Customer::class))->willReturn($customerUpdateBuilder->reveal())->shouldBeCalled();
@@ -178,11 +205,12 @@ class UserControllerTest extends WebTestCase
         $customer = Customer::of()
             ->setId('id-1')
             ->setAddresses(AddressCollection::of()
-                ->add(Address::of()->setCountry('foo')->setId('bar'))
-            );
+                ->add(Address::of()->setCountry('foo')->setId('bar')));
 
         $customerUpdateBuilder = $this->prophesize(CustomerUpdateBuilder::class);
-        $customerUpdateBuilder->changeAddress(Argument::type(CustomerChangeAddressAction::class))->will(function(){return $this;})->shouldBeCalled();
+        $customerUpdateBuilder->changeAddress(Argument::type(CustomerChangeAddressAction::class))->will(function () {
+            return $this;
+        })->shouldBeCalled();
         $customerUpdateBuilder->flush()->willReturn($customer)->shouldBeCalled();
 
         $this->customerManager->getById('en', 'id-1')->willReturn($customer)->shouldBeCalled();
@@ -190,19 +218,25 @@ class UserControllerTest extends WebTestCase
 
         $form = $this->prophesize(Form::class);
         $form->handleRequest(Argument::type(Request::class))
-            ->will(function(){return $this;})->shouldBeCalled();
+            ->will(function () {
+                return $this;
+            })->shouldBeCalled();
         $form->createView()->shouldBeCalled();
         $form->isSubmitted()->willReturn(true)->shouldBeCalledOnce();
         $form->isValid()->willReturn(true)->shouldBeCalledOnce();
 
-        $form->get(Argument::is('address'))->will(function(){return $this;})->shouldBeCalledTimes(1);
+        $form->get(Argument::is('address'))->will(function () {
+            return $this;
+        })->shouldBeCalledTimes(1);
         $form->getData()->willReturn([])->shouldBeCalledTimes(1);
 
         $form->createView()->shouldBeCalled();
 
         $formBuilder = $this->prophesize(FormBuilder::class);
         $formBuilder->add(Argument::type('string'), Argument::type('string'))
-            ->will(function(){return $this;})->shouldBeCalledTimes(2);
+            ->will(function () {
+                return $this;
+            })->shouldBeCalledTimes(2);
         $formBuilder->getForm()->willReturn($form)->shouldBeCalled();
 
         $formFactory = $this->prophesize(FormFactory::class);

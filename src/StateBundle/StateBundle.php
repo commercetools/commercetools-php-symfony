@@ -5,7 +5,6 @@
 
 namespace Commercetools\Symfony\StateBundle;
 
-
 use Commercetools\Symfony\StateBundle\DependencyInjection\Compiler\CtpStateMachinePass;
 use Commercetools\Symfony\StateBundle\DependencyInjection\StateExtension;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
@@ -23,4 +22,3 @@ class StateBundle extends Bundle
         $container->addCompilerPass(new CtpStateMachinePass());
     }
 }
-

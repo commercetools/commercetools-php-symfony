@@ -5,7 +5,6 @@
 
 namespace Commercetools\Symfony\ExampleBundle\Tests\Controller;
 
-
 use Commercetools\Core\Client;
 use Commercetools\Core\Model\Cart\Cart;
 use Commercetools\Core\Model\Cart\LineItemDraftCollection;
@@ -28,6 +27,7 @@ use Symfony\Component\Form\FormFactory;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\Routing\Router;
+use Twig\Environment;
 
 class CartControllerTest extends WebTestCase
 {
@@ -42,7 +42,7 @@ class CartControllerTest extends WebTestCase
     {
         $this->request = $this->prophesize(Request::class);
         $this->myContainer = $this->prophesize(ContainerInterface::class);
-        $this->twig = $this->prophesize(\Twig_Environment::class);
+        $this->twig = $this->prophesize(Environment::class);
         $this->client = $this->prophesize(Client::class);
         $this->cartManager = $this->prophesize(CartManager::class);
 
@@ -98,10 +98,14 @@ class CartControllerTest extends WebTestCase
 
         $form = $this->prophesize(Form::class);
         $form->handleRequest(Argument::type(Request::class))
-            ->will(function(){return $this;})->shouldBeCalled();
+            ->will(function () {
+                return $this;
+            })->shouldBeCalled();
         $form->isSubmitted()->willReturn(true)->shouldBeCalledOnce();
         $form->isValid()->willReturn(true)->shouldBeCalledOnce();
-        $form->get(Argument::type('string'))->will(function(){return $this;})->shouldBeCalledTimes(4);
+        $form->get(Argument::type('string'))->will(function () {
+            return $this;
+        })->shouldBeCalledTimes(4);
         $form->getData()->willReturn('foo')->shouldBeCalledTimes(4);
 
         $formFactory = $this->prophesize(FormFactory::class);
@@ -111,7 +115,9 @@ class CartControllerTest extends WebTestCase
         $cart = Cart::of();
 
         $cartUpdateBuilder = $this->prophesize(CartUpdateBuilder::class);
-        $cartUpdateBuilder->addAction(Argument::type(CartAddLineItemAction::class))->will(function(){return $this;})->shouldBeCalled();
+        $cartUpdateBuilder->addAction(Argument::type(CartAddLineItemAction::class))->will(function () {
+            return $this;
+        })->shouldBeCalled();
         $cartUpdateBuilder->flush()->willReturn($cart)->shouldBeCalled();
 
         $this->myContainer->get('form.factory')->willReturn($formFactory->reveal())->shouldBeCalled();
@@ -141,7 +147,9 @@ class CartControllerTest extends WebTestCase
 
         $form = $this->prophesize(Form::class);
         $form->handleRequest(Argument::type(Request::class))
-            ->will(function(){return $this;})->shouldBeCalled();
+            ->will(function () {
+                return $this;
+            })->shouldBeCalled();
         $form->isSubmitted()->willReturn(false)->shouldBeCalledOnce();
 
         $formFactory = $this->prophesize(FormFactory::class);
@@ -177,10 +185,14 @@ class CartControllerTest extends WebTestCase
 
         $form = $this->prophesize(Form::class);
         $form->handleRequest(Argument::type(Request::class))
-            ->will(function(){return $this;})->shouldBeCalled();
+            ->will(function () {
+                return $this;
+            })->shouldBeCalled();
         $form->isSubmitted()->willReturn(true)->shouldBeCalledOnce();
         $form->isValid()->willReturn(true)->shouldBeCalledOnce();
-        $form->get(Argument::type('string'))->will(function(){return $this;})->shouldBeCalledTimes(4);
+        $form->get(Argument::type('string'))->will(function () {
+            return $this;
+        })->shouldBeCalledTimes(4);
         $form->getData()->willReturn('foo')->shouldBeCalledTimes(4);
 
         $formFactory = $this->prophesize(FormFactory::class);
@@ -222,10 +234,14 @@ class CartControllerTest extends WebTestCase
 
         $form = $this->prophesize(Form::class);
         $form->handleRequest(Argument::type(Request::class))
-            ->will(function(){return $this;})->shouldBeCalled();
+            ->will(function () {
+                return $this;
+            })->shouldBeCalled();
         $form->isSubmitted()->willReturn(true)->shouldBeCalledOnce();
         $form->isValid()->willReturn(true)->shouldBeCalledOnce();
-        $form->get(Argument::type('string'))->will(function(){return $this;})->shouldBeCalledTimes(4);
+        $form->get(Argument::type('string'))->will(function () {
+            return $this;
+        })->shouldBeCalledTimes(4);
         $form->getData()->willReturn('foo')->shouldBeCalledTimes(4);
 
         $formFactory = $this->prophesize(FormFactory::class);
@@ -269,7 +285,9 @@ class CartControllerTest extends WebTestCase
         $cart = Cart::of();
 
         $cartUpdateBuilder = $this->prophesize(CartUpdateBuilder::class);
-        $cartUpdateBuilder->addAction(Argument::type(CartChangeLineItemQuantityAction::class))->will(function(){return $this;})->shouldBeCalled();
+        $cartUpdateBuilder->addAction(Argument::type(CartChangeLineItemQuantityAction::class))->will(function () {
+            return $this;
+        })->shouldBeCalled();
         $cartUpdateBuilder->flush()->willReturn($cart)->shouldBeCalled();
 
         $this->cartManager->getCart('en', 'cart-id-1', $user->reveal(), 'session-1')->willReturn(Cart::of())->shouldBeCalledOnce();
@@ -304,7 +322,9 @@ class CartControllerTest extends WebTestCase
         $cart = Cart::of();
 
         $cartUpdateBuilder = $this->prophesize(CartUpdateBuilder::class);
-        $cartUpdateBuilder->addAction(Argument::type(CartRemoveLineItemAction::class))->will(function(){return $this;})->shouldBeCalled();
+        $cartUpdateBuilder->addAction(Argument::type(CartRemoveLineItemAction::class))->will(function () {
+            return $this;
+        })->shouldBeCalled();
         $cartUpdateBuilder->flush()->willReturn($cart)->shouldBeCalled();
 
         $this->cartManager->getCart('en', 'cart-id-1', $user->reveal(), 'session-1')->willReturn(Cart::of())->shouldBeCalledOnce();
@@ -338,7 +358,9 @@ class CartControllerTest extends WebTestCase
         $cart = Cart::of();
 
         $cartUpdateBuilder = $this->prophesize(CartUpdateBuilder::class);
-        $cartUpdateBuilder->addShoppingList(Argument::type(CartAddShoppingListAction::class))->will(function(){return $this;})->shouldBeCalled();
+        $cartUpdateBuilder->addShoppingList(Argument::type(CartAddShoppingListAction::class))->will(function () {
+            return $this;
+        })->shouldBeCalled();
         $cartUpdateBuilder->flush()->willReturn($cart)->shouldBeCalled();
 
         $this->cartManager->getCart('en', 'cart-id-1', $user->reveal(), 'session-1')->willReturn(Cart::of())->shouldBeCalledOnce();
@@ -372,7 +394,9 @@ class CartControllerTest extends WebTestCase
         $cart = Cart::of();
 
         $cartUpdateBuilder = $this->prophesize(CartUpdateBuilder::class);
-        $cartUpdateBuilder->addShoppingList(Argument::type(CartAddShoppingListAction::class))->will(function(){return $this;})->shouldBeCalled();
+        $cartUpdateBuilder->addShoppingList(Argument::type(CartAddShoppingListAction::class))->will(function () {
+            return $this;
+        })->shouldBeCalled();
         $cartUpdateBuilder->flush()->willReturn($cart)->shouldBeCalled();
 
         $this->cartManager->createCartForUser('en', 'EUR', Argument::type(Location::class), null, 'user-1')
@@ -411,7 +435,9 @@ class CartControllerTest extends WebTestCase
         $cart = Cart::of();
 
         $cartUpdateBuilder = $this->prophesize(CartUpdateBuilder::class);
-        $cartUpdateBuilder->addShoppingList(Argument::type(CartAddShoppingListAction::class))->will(function(){return $this;})->shouldBeCalled();
+        $cartUpdateBuilder->addShoppingList(Argument::type(CartAddShoppingListAction::class))->will(function () {
+            return $this;
+        })->shouldBeCalled();
         $cartUpdateBuilder->flush()->willReturn($cart)->shouldBeCalled();
 
         $this->cartManager->createCartForUser('en', 'EUR', Argument::type(Location::class), null, null, 'session-1')

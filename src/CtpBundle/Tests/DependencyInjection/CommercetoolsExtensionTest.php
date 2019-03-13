@@ -88,7 +88,6 @@ class CommercetoolsExtensionTest extends AbstractExtensionTestCase
         $this->assertContainerBuilderHasParameter('commercetools.cache.setup', false);
         $this->assertContainerBuilderHasParameter('commercetools.cache.shopping_list', false);
         $this->assertContainerBuilderHasParameter('commercetools.cache.states', false);
-
     }
 
     public function testLoadDefaultSecondClient()
@@ -266,5 +265,27 @@ class CommercetoolsExtensionTest extends AbstractExtensionTestCase
         $extension = new CommercetoolsExtension();
 
         $this->assertContains('/../Resources/config/schema', $extension->getXsdValidationBasePath());
+    }
+
+    public function testExtensionLoadsWithCustomTypes()
+    {
+        $config = [
+            'api' => [ 'clients' => [
+                'first' => [
+                    'client_id' => 'foo',
+                    'client_secret' => 'bar',
+                    'project' => 'other'
+                ]
+            ] ],
+            'custom_types' => [
+                'foo' => 'bar'
+            ]
+        ];
+
+        $this->load($config, $this->getContainerExtensions());
+
+        $this->assertContainerBuilderHasParameter('commercetools.custom_types');
+        $customTypes = $this->container->getParameter('commercetools.custom_types');
+        $this->assertEquals(['foo' => 'bar'], $customTypes);
     }
 }

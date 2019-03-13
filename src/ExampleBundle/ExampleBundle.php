@@ -18,5 +18,4 @@ class ExampleBundle extends Bundle
     {
         $container->addCompilerPass(new ProfilerControllerPass());
     }
-
 }

@@ -5,7 +5,6 @@
 
 namespace Commercetools\Symfony\SetupBundle\Command;
 
-
 use Commercetools\Symfony\CtpBundle\Model\QueryParams;
 use Commercetools\Symfony\SetupBundle\Model\ProcessCustomTypes;
 use Commercetools\Symfony\SetupBundle\Model\Repository\SetupRepository;

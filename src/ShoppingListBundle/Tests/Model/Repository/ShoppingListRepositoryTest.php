@@ -5,7 +5,6 @@
 
 namespace Commercetools\Symfony\ShoppingListBundle\Tests\Model\Repository;
 
-
 use Commercetools\Core\Client;
 use Commercetools\Core\Model\Common\LocalizedString;
 use Commercetools\Core\Model\Customer\CustomerReference;
@@ -43,7 +42,6 @@ class ShoppingListRepositoryTest extends TestCase
         $this->response->isError()->willReturn(false);
 
         $this->client = $this->prophesize(Client::class);
-
     }
 
     private function getShoppingListRepository()
@@ -195,7 +193,7 @@ class ShoppingListRepositoryTest extends TestCase
     public function testUpdate()
     {
         $this->client->execute(
-            Argument::that(function(ShoppingListUpdateRequest $request) {
+            Argument::that(function (ShoppingListUpdateRequest $request) {
                 $action = current($request->getActions());
 
                 static::assertSame(ShoppingList::class, $request->getResultClass());
@@ -226,7 +224,7 @@ class ShoppingListRepositoryTest extends TestCase
     public function testDelete()
     {
         $this->client->execute(
-            Argument::that(function(ShoppingListDeleteRequest $request) {
+            Argument::that(function (ShoppingListDeleteRequest $request) {
                 static::assertSame(ShoppingList::class, $request->getResultClass());
                 static::assertSame('list-1', $request->getId());
                 static::assertSame(1, $request->getVersion());

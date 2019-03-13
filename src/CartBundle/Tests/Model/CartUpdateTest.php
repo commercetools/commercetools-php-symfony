@@ -3,7 +3,6 @@ declare(strict_types=1);
 
 namespace Commercetools\Symfony\CartBundle\Tests\Model;
 
-
 use Commercetools\Core\Model\Cart\Cart;
 use Commercetools\Core\Request\Carts\Command\CartAddCustomLineItemAction;
 use Commercetools\Core\Request\Carts\Command\CartAddDiscountCodeAction;
@@ -123,7 +122,9 @@ class CartUpdateTest extends TestCase
             $cart,
             Argument::type($actionClass),
             Argument::is(null)
-        )->will(function ($args) { return [$args[1]]; })->shouldBeCalledTimes(1);
+        )->will(function ($args) {
+            return [$args[1]];
+        })->shouldBeCalledTimes(1);
 
         $update = new CartUpdateBuilder($cart->reveal(), $manager->reveal());
 
@@ -152,7 +153,9 @@ class CartUpdateTest extends TestCase
             $cart,
             Argument::type($actionClass),
             Argument::is(null)
-        )->will(function ($args) { return [$args[1]]; })->shouldBeCalledTimes(1);
+        )->will(function ($args) {
+            return [$args[1]];
+        })->shouldBeCalledTimes(1);
 
         $update = new CartUpdateBuilder($cart->reveal(), $manager->reveal());
 

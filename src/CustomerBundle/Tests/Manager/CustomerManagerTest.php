@@ -32,12 +32,16 @@ class CustomerManagerTest extends TestCase
     public function testApply()
     {
         $this->repository->update(Customer::of(), Argument::type('array'))
-            ->will(function ($args) { return $args[0]; })->shouldBeCalled();
+            ->will(function ($args) {
+                return $args[0];
+            })->shouldBeCalled();
 
         $this->dispatcher->dispatch(
             Argument::containingString(CustomerPostUpdateEvent::class),
             Argument::type(CustomerPostUpdateEvent::class)
-        )->will(function ($args) { return $args[1]; })->shouldBeCalled();
+        )->will(function ($args) {
+            return $args[1];
+        })->shouldBeCalled();
 
         $manager = new CustomerManager($this->repository->reveal(), $this->dispatcher->reveal());
         $customer = $manager->apply(Customer::of(), []);
@@ -50,7 +54,9 @@ class CustomerManagerTest extends TestCase
         $this->dispatcher->dispatch(
             Argument::containingString(CustomerSetKeyAction::class),
             Argument::type(CustomerUpdateEvent::class)
-        )->will(function ($args) { return $args[1]; })->shouldBeCalled();
+        )->will(function ($args) {
+            return $args[1];
+        })->shouldBeCalled();
 
         $action = CustomerSetKeyAction::of()->setKey('bar');
         $manager = new CustomerManager($this->repository->reveal(), $this->dispatcher->reveal());

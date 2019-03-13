@@ -5,7 +5,6 @@
 
 namespace Commercetools\Symfony\StateBundle\DependencyInjection\Compiler;
 
-
 use Commercetools\Symfony\StateBundle\Cache\StateKeyResolver;
 use Commercetools\Symfony\StateBundle\EventListener\TransitionSubscriber;
 use Commercetools\Symfony\StateBundle\Model\CtpMarkingStore\CtpMarkingStore;

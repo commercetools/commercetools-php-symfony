@@ -2,7 +2,6 @@
 
 namespace Commercetools\Symfony\CtpBundle\Tests;
 
-use phpDocumentor\Reflection\Types\Parent_;
 use Symfony\Bundle\FrameworkBundle\Kernel\MicroKernelTrait;
 use Symfony\Component\Config\Loader\LoaderInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
@@ -15,6 +14,8 @@ class TestKernel extends BaseKernel
     use MicroKernelTrait;
 
     const CONFIG_EXTS = '.{php,xml,yaml,yml}';
+
+    private $containerConfigurator;
 
     public function __construct(\Closure $containerConfigurator, $environment = 'test', $debug = false)
     {

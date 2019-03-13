@@ -4,7 +4,6 @@
 
 namespace Commercetools\Symfony\CartBundle\Model;
 
-
 use Commercetools\Core\Builder\Update\OrdersActionBuilder;
 use Commercetools\Core\Model\Order\Order;
 use Commercetools\Core\Request\AbstractAction;
@@ -33,7 +32,11 @@ class OrderUpdateBuilder extends OrdersActionBuilder
         $this->order = $order;
     }
 
-
+    /**
+     * @param AbstractAction $action
+     * @param string|null $eventName
+     * @return $this
+     */
     public function addAction(AbstractAction $action, $eventName = null)
     {
         $actions = $this->manager->dispatch($this->order, $action, $eventName);
