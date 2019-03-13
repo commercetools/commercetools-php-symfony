@@ -20,6 +20,6 @@ class SetupExtension extends Extension
 
         $configuration = new Configuration();
 
-        $config = $this->processConfiguration($configuration, $configs);
+        $this->processConfiguration($configuration, $configs);
     }
 }
