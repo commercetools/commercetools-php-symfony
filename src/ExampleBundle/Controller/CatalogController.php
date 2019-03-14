@@ -32,6 +32,9 @@ class CatalogController extends AbstractController
 
     /**
      * CatalogController constructor.
+     * @param Client $client
+     * @param CatalogManager|null $catalogManager
+     * @param ShoppingListManager|null $shoppingListManager
      */
     public function __construct(Client $client, CatalogManager $catalogManager = null, ShoppingListManager $shoppingListManager = null)
     {

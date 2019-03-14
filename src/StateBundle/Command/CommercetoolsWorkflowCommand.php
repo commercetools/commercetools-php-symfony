@@ -16,12 +16,6 @@ class CommercetoolsWorkflowCommand extends Command
      */
     private $repository;
 
-    /**
-     * @var Container
-     */
-    private $container;
-
-
     public function __construct(StateRepository $repository)
     {
         parent::__construct();

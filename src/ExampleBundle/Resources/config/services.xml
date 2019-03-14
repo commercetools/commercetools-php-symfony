@@ -26,6 +26,7 @@
             <argument id="Commercetools\Symfony\CartBundle\Manager\OrderManager" type="service" />
             <argument id="Commercetools\Symfony\CartBundle\Manager\CartManager" type="service" />
             <argument id="workflow.registry" type="service"/>
+            <argument id="session" type="service" />
         </service>
     </services>
 </container>

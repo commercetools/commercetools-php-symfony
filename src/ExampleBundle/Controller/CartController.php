@@ -19,7 +19,6 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Commercetools\Core\Model\Cart\Cart;
 use Commercetools\Core\Client;
 use Commercetools\Symfony\CartBundle\Manager\CartManager;
-use Symfony\Component\Form\FormBuilder;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
@@ -41,6 +40,8 @@ class CartController extends AbstractController
 
     /**
      * CartController constructor.
+     * @param Client $client
+     * @param CartManager $manager
      */
     public function __construct(Client $client, CartManager $manager)
     {
@@ -91,12 +92,12 @@ class CartController extends AbstractController
 
                 $countryCode = $this->getCountryFromConfig();
                 $currency = $this->getCurrencyFromConfig();
-                $country = Location::of()->setCountry($countryCode);
+                $location = Location::of()->setCountry($countryCode);
 
                 if (is_null($user)) {
-                    $this->manager->createCartForUser($request->getLocale(), $currency, $country, $lineItemDraftCollection, null, $session->getId());
+                    $this->manager->createCartForUser($request->getLocale(), $currency, $location, $lineItemDraftCollection, null, $session->getId());
                 } else {
-                    $this->manager->createCartForUser($request->getLocale(), $currency, $country, $lineItemDraftCollection, $user->getID());
+                    $this->manager->createCartForUser($request->getLocale(), $currency, $location, $lineItemDraftCollection, $user->getID());
                 }
             }
             $redirectUrl = $this->generateUrl('_ctp_example_product', ['slug' => $slug]);
@@ -161,12 +162,12 @@ class CartController extends AbstractController
         } else {
             $countryCode = $this->getCountryFromConfig();
             $currency = $this->getCurrencyFromConfig();
-            $country = Location::of()->setCountry(strtoupper($countryCode));
+            $location = Location::of()->setCountry(strtoupper($countryCode));
 
             if (is_null($user)) {
-                $cart = $this->manager->createCartForUser($request->getLocale(), $currency, $country, null, null, $session->getId());
+                $cart = $this->manager->createCartForUser($request->getLocale(), $currency, $location, null, null, $session->getId());
             } else {
-                $cart = $this->manager->createCartForUser($request->getLocale(), $currency, $country, null, $user->getId());
+                $cart = $this->manager->createCartForUser($request->getLocale(), $currency, $location, null, $user->getId());
             }
         }
 
@@ -188,15 +189,15 @@ class CartController extends AbstractController
 //        return $count;
 //    }
 
-    /**
-     * Creates and returns a form builder instance.
-     *
-     * @param $name
-     * @param mixed $data The initial data for the form
-     * @param array $options Options for the form
-     *
-     * @return FormBuilder
-     */
+//    /**
+//     * Creates and returns a form builder instance.
+//     *
+//     * @param $name
+//     * @param mixed $data The initial data for the form
+//     * @param array $options Options for the form
+//     *
+//     * @return FormBuilder
+//     */
 //    protected function createNamedFormBuilder($name, $data = null, array $options = array())
 //    {
 //        return $this->container->get('form.factory')->createNamedBuilder($name, FormType::class, $data, $options);
