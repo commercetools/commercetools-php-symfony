@@ -11,7 +11,7 @@ To install the composer go to https://getcomposer.org/doc/00-intro.md
 ## Installation
 Create a new Symfony project 
 ```sh
-composer create-project symfony/skeleton
+composer create-project symfony/skeleton <project-name>
 ```
 or use an existing one (symfony >= 3.4)
 
@@ -19,21 +19,21 @@ Navigate to the project's directory and run
 ```sh
 composer config extra.symfony.allow-contrib true
 ```
-This will allow symfony to use the recipes (via Symfony Flex) that will automate most of the 
-configuration.
+This will allow symfony to use the recipes-contrib (via Symfony Flex) that will automate
+most of the configuration.
 
-To install the commercetools symfony-bundle open composer.json and add to the attribute `require` 
-the package `"commercetools/symfony-bundle"`
+To install the commercetools symfony-bundle open composer.json and add to the attribute 
+`require` the package `"commercetools/symfony-bundle"`
 and run `composer install` or directly run the following on the command line
 ```sh
 composer require commercetools/symfony-bundle
 ```
 
-Open `.env.local` file from root directory and edit the following lines to add your credentials. 
-The credentials can be retrieved through 
-`Commercetools Merchant Center > Settings > Developer Settings`, while you create a new API Client. 
-Note that for security reasons you cannot retrieve the `CTP_CLIENT_SECRET` for clients created in
-the past.
+Open `.env` or create a `.env.local` [1] file on root directory and edit the following 
+lines to add  your credentials. The credentials can be retrieved through 
+`Commercetools Merchant Center > Settings > Developer Settings`, while you create a new 
+API Client. Note that for security reasons you cannot retrieve the `CTP_CLIENT_SECRET` 
+for clients created in the past.
 
 ```dotenv
 CTP_CLIENT_ID=<your client id>
@@ -43,6 +43,30 @@ CTP_AUTH_URL=https://auth.commercetools.com or https://auth.commercetools.co
 CTP_API_URL=https://api.commercetools.com or https://api.commercetools.co
 CTP_SCOPES=<your desired scopes>
 ```
+
+[1] To read more about the differences between the usage of .env and .env.local you can
+continue [here](https://symfony.com/doc/current/configuration/dot-env-changes.html) and/or
+[here](https://symfony.com/blog/new-in-symfony-4-2-define-env-vars-per-environment)
+
+### Verify everything works
+
+To verify that your configuration works, after adding your client credentials on the .env file
+as explained above, you may run on the command line:
+`bin/console commercetools:project-info`. If everything is set up correctly, this should return
+the details regarding your project like:
+
+```
+Project's key: super-cool-project-4
+Project's name: my eshop at commercetools
+Countries: DE, US
+Currencies: EUR
+Languages: en
+Created at: 2019-02-04T11:28:49+00:00
+Messages: disabled
+```
+
+if so, it means that your project can now communicate with commercetools platform via the client
+you just configured.
 
 ## Usage
 
@@ -60,6 +84,11 @@ only the additional ones, required for bundle-specific functionalities)
 - ShoppingListBundle
 - StateBundle
     - depends: `symfony/console`, `symfony/workflow`, `twig/extensions`
+    
+
+By default, the enabled bundles are `CtpBundle` & `CustomerBundle` for all environments, and
+additionally `SetupBundle` & `StateBundle` only for dev environment. To overview, 
+enable or disable  them, you need to edit the file `config/bundles.php` 
 
 
 ### Usage of available services 
@@ -90,7 +119,13 @@ class MyController
 }
 ```
 
-#### Available services
+The main idea behind is that in each Bundle there are some reusable services that you
+may inject directly in your app. As a generic pattern there are a 
+couple of `*Manager` services, that provide related actions. So, for example in `CartManager`
+you will find helpers like `getCart`, `createCartForUser` and `update` which returns a 
+`CartUpdateBuilder` where you can dynamically set your update actions.
+
+#### All available services
 
 - CartBundle
     - CartManager
@@ -121,7 +156,7 @@ class MyController
     - CtpMarkingStoreProductState
     - CtpMarkingStoreReviewState
     
-### Available console commands
+### Console Commands
 
 To use the console commands navigate to your project's directory and run
 
@@ -160,13 +195,14 @@ Get variables on templates using only variable name:
 {{ attribute(product.masterVariant.attributes, 'custom-attribute').value }}
 ```
 
-## Disclaimer for ExampleBundle (alpha)
+## Disclaimer for ExampleBundle (dev)
 
 There is an ExampleBundle provided in the repository which tries to demonstrate a sample
-implementation making use of the other Bundles provided. This ExampleBundle is currently 
-under development. It includes outdated js libraries, is not properly tested and right now
-is not encouraged to be used in any production environment. We intend to fix the problems
-and create a more helpful generic example.
+eshop implementation making use of the other Bundles provided. This ExampleBundle is currently 
+under development. It may includes outdated code, is not properly tested and right now
+is not encouraged to be used in any production environment. For now, we don't guarantee any
+non breaking changes. We intend to fix the problems, improve it and create a more helpful 
+generic example.
 
 ## Testing
 
