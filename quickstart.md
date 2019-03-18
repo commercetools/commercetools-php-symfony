@@ -9,6 +9,11 @@ to bother configuring a full-featured web server such as Apache or Nginx, by run
 for local (development) setups.
 * You can also add the symfony debug bar that displays useful debuging and profiling information: 
 `composer require symfony/web-profiler-bundle --dev`
+* add twig templating engine service in file `config/packages/framework.yaml`
+```yaml
+    templating:
+        engines: ['twig']
+```
 
 ## Create a basic page
 
@@ -32,24 +37,19 @@ index:
 namespace App\Controller;
 
 use Commercetools\Symfony\CatalogBundle\Manager\CatalogManager;
-use GuzzleHttp\Psr7\Uri;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\HttpFoundation\Request;
 
 class DefaultController extends AbstractController
 {
-    public function indexAction(Request $request, CatalogManager $catalogManager)
+    public function indexAction(CatalogManager $catalogManager)
     {
-        $uri = new Uri($request->getRequestUri());
-
-        list($products, $facets, $offset) = $catalogManager->searchProducts('en', null, null, null, null, null, $uri);
+        list($products, $facets, $offset) = $catalogManager->searchProducts('en');
 
         return $this->render('index.html.twig', [
             'products' => $products
         ]);
     }
 }
-
 ```
 * create file `templates/index.html.twig`:
 
@@ -58,19 +58,22 @@ class DefaultController extends AbstractController
 
 {% block body %}
     <div class="container">
-        asffadsf
+        <ul class="products">
+            {% for product in products %}
+                <li class="product">
+                    <h3>{{ product.name }}</h3>
+                    <img src="{{ product.masterVariant.images.current.url | default('') }}" width="100">
+                    <p>{{ product.description }}</p>
+                    <p>{{ product.masterVariant.prices.0.value | default('0') }}</p>
+                </li>
+            {% endfor %}
+        </ul>
     </div>
 {% endblock %}
-
 ```
 
-* add twig templating engine service in file `config/packages/framework.yaml`
-```yaml
-    templating:
-        engines: ['twig']
-```
 
-## preview in browser
+## Preview in browser
 
 * run `php bin/console server:run`. This will start a local webserver listening at port 8000. 
 (If you are already running an instance in port 8000 it will automatically start in the

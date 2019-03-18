@@ -1,5 +1,21 @@
 # commercetools Symfony bundle
 
+  * [Requirements](#requirements)
+  * [Installation](#installation)
+    + [Verify everything works](#verify-everything-works)
+  * [Usage](#usage)
+    + [Usage of available services](#usage-of-available-services)
+      - [All available services](#all-available-services)
+    + [Console Commands](#console-commands)
+      - [Available console commands](#available-console-commands)
+    + [Usage of SDK Models in templates](#usage-of-sdk-models-in-templates)
+  * [Quick-start](#quick-start)
+  * [Disclaimer for ExampleBundle (dev)](#disclaimer-for-examplebundle--dev-)
+  * [Testing](#testing)
+  * [Issues](#issues)
+  * [Contribute](#contribute)
+  * [License](#license)
+
 commercetools Symfony Bundle is collection of symfony bundles that ease the usage of 
 [commercetools PHP-SDK](https://github.com/commercetools/commercetools-php-sdk) when implementing
 a Symfony project.
@@ -195,6 +211,10 @@ Get variables on templates using only variable name:
 {{ attribute(product.masterVariant.attributes, 'custom-attribute').value }}
 ```
 
+## Quick-start
+
+For a more detailed quick start guide you can continue [here](quickstart.md)
+
 ## Disclaimer for ExampleBundle (dev)
 
 There is an ExampleBundle provided in the repository which tries to demonstrate a sample
@@ -208,7 +228,7 @@ generic example.
 
 Clone the project and navigate on the project's directory. On the command line, run
 ```sh
-composer install
+composer install --dev
 ./vendor/bin/phpunit
 ```
 
