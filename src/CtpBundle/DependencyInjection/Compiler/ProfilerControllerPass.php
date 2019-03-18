@@ -20,7 +20,7 @@ class ProfilerControllerPass implements CompilerPassInterface
      */
     public function process(ContainerBuilder $container)
     {
-        if (!$container->hasDefinition('profiler')) {
+        if (!$container->hasDefinition('profiler') || !$container->hasDefinition('twig')) {
             return;
         }
         $loader = new XmlFileLoader($container, new FileLocator(__DIR__ . '/../../Resources/config'));

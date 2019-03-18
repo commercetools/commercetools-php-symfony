@@ -28,6 +28,7 @@ class ProfilerControllerPassTest extends TestCase
     {
         $container = $this->getContainer();
         $container->setDefinition('profiler', new Definition());
+        $container->setDefinition('twig', new Definition());
         $compilerPass = new ProfilerControllerPass;
 
         $container->addCompilerPass($compilerPass);
