@@ -3,17 +3,19 @@
 ### Prerequisites
 
 * You have successfully completed the Installation step and verified that everything works fine.
+* Add twig templating engine service in file `config/packages/framework.yaml`
+```yaml
+    templating:
+        engines: ['twig']
+```
 * Optionally, you may want to install the symfony's built-in Web Server if you don't want
 to bother configuring a full-featured web server such as Apache or Nginx, by running
 `composer require symfony/web-server-bundle --dev`. Note, that this is only recommended
 for local (development) setups.
 * You can also add the symfony debug bar that displays useful debuging and profiling information: 
 `composer require symfony/web-profiler-bundle --dev`
-* add twig templating engine service in file `config/packages/framework.yaml`
-```yaml
-    templating:
-        engines: ['twig']
-```
+
+
 
 ## Create a basic page
 

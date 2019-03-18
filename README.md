@@ -1,11 +1,17 @@
 # commercetools Symfony bundle
 
+commercetools Symfony Bundle is collection of symfony bundles that ease the usage of 
+[commercetools PHP-SDK](https://github.com/commercetools/commercetools-php-sdk) when implementing
+a Symfony project.
+
+##### Table of contents
+
   * [Requirements](#requirements)
   * [Installation](#installation)
     + [Verify everything works](#verify-everything-works)
   * [Usage](#usage)
     + [Usage of available services](#usage-of-available-services)
-      - [All available services](#all-available-services)
+      - [Available services](#available-services)
     + [Console Commands](#console-commands)
       - [Available console commands](#available-console-commands)
     + [Usage of SDK Models in templates](#usage-of-sdk-models-in-templates)
@@ -16,9 +22,6 @@
   * [Contribute](#contribute)
   * [License](#license)
 
-commercetools Symfony Bundle is collection of symfony bundles that ease the usage of 
-[commercetools PHP-SDK](https://github.com/commercetools/commercetools-php-sdk) when implementing
-a Symfony project.
 
 ## Requirements
 Composer :
@@ -141,7 +144,7 @@ couple of `*Manager` services, that provide related actions. So, for example in 
 you will find helpers like `getCart`, `createCartForUser` and `update` which returns a 
 `CartUpdateBuilder` where you can dynamically set your update actions.
 
-#### All available services
+#### Available services
 
 - CartBundle
     - CartManager
