@@ -80,7 +80,7 @@ class CatalogController extends AbstractController
         $country = $this->getCountryFromConfig();
         $currency = $this->getCurrencyFromConfig();
 
-        list($products, $offset) = $this->catalogManager->searchProducts(
+        list($products, $facets, $offset) = $this->catalogManager->searchProducts(
             $request->getLocale(),
             12,
             1,

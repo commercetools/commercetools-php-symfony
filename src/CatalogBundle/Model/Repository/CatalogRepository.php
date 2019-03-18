@@ -163,11 +163,11 @@ class CatalogRepository extends Repository
     /**
      * @param ProductProjectionSearchRequest|null $searchRequest
      * @param string $locale
-     * @param UriInterface $uri
+     * @param UriInterface|null $uri
      * @param string|null $search
      * @return ProductProjectionSearchRequest
      */
-    public function searchRequestAddSearchParameters(ProductProjectionSearchRequest $searchRequest = null, $locale, UriInterface $uri, $search = null)
+    public function searchRequestAddSearchParameters(ProductProjectionSearchRequest $searchRequest = null, $locale, UriInterface $uri = null, $search = null)
     {
         if (is_null($searchRequest)) {
             $searchRequest = $this->baseSearchProductsRequest();
@@ -179,8 +179,10 @@ class CatalogRepository extends Repository
             $searchRequest->fuzzy(true);
         }
 
-        $selectedValues = $this->searchModel->getSelectedValues($uri);
-        $searchRequest = $this->searchModel->addFacets($searchRequest, $selectedValues);
+        if (!is_null($uri)) {
+            $selectedValues = $this->searchModel->getSelectedValues($uri);
+            $searchRequest = $this->searchModel->addFacets($searchRequest, $selectedValues);
+        }
 
         return $searchRequest;
     }

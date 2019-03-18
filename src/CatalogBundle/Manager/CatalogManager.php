@@ -48,19 +48,19 @@ class CatalogManager
      * @param string|null $sort
      * @param string|null $currency
      * @param string|null $country
-     * @param UriInterface $uri
+     * @param UriInterface|null $uri
      * @param string|null $search
      * @param array|null $filters
      * @return array
      */
     public function searchProducts(
         $locale,
-        $itemsPerPage,
-        $currentPage,
-        $sort,
-        $currency,
-        $country,
-        UriInterface $uri,
+        $itemsPerPage = null,
+        $currentPage = null,
+        $sort = null,
+        $currency = null,
+        $country = null,
+        UriInterface $uri = null,
         $search = null,
         $filters = null
     ) {
