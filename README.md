@@ -1,6 +1,6 @@
 # commercetools Symfony bundle
 
-commercetools Symfony Bundle is collection of symfony bundles that ease the usage of 
+The commercetools Symfony Bundle is a collection of Symfony bundles that ease the use of the
 [commercetools PHP-SDK](https://github.com/commercetools/commercetools-php-sdk) when implementing
 a Symfony project.
 
@@ -23,34 +23,36 @@ a Symfony project.
   * [License](#license)
 
 
-## Requirements
+## Pre-requisites
 Composer :
 To install the composer go to https://getcomposer.org/doc/00-intro.md
 
 ## Installation
-Create a new Symfony project 
+You can either create a new Symfony project or use an existing Symfony project (ver. 3.4 and above)
+
+Create a new Symfony project using the following command: 
+
 ```sh
 composer create-project symfony/skeleton <project-name>
 ```
-or use an existing one (symfony >= 3.4)
 
-Navigate to the project's directory and run
+Next, navigate to the project's directory and run the following command: 
+
 ```sh
 composer config extra.symfony.allow-contrib true
 ```
-This will allow symfony to use the recipes-contrib (via Symfony Flex) that will automate
-most of the configuration.
+This automates most of the configuration using the `recipes-contrib` bundle from Symfony Flex.
 
-To install the commercetools symfony-bundle open composer.json and add to the attribute 
+Next, install the commercetools Symfony bundle. To do this, open the **composer.json** file and add `"commercetools/symfony-bundle"` to the `require` attribute.
 `require` the package `"commercetools/symfony-bundle"`
 and run `composer install` or directly run the following on the command line
 ```sh
 composer require commercetools/symfony-bundle
 ```
 
-Open `.env` or create a `.env.local` [1] file on root directory and edit the following 
-lines to add  your credentials. The credentials can be retrieved through 
-`Commercetools Merchant Center > Settings > Developer Settings`, while you create a new 
+Open the`.env` file or create a `.env.local` file on root directory and edit the following 
+lines to add your credentials. You can retrieve your API client credentials from the Merchant Center under
+`Commercetools Merchant Center > Settings > Developer Settings`, when you create a new 
 API Client. Note that for security reasons you cannot retrieve the `CTP_CLIENT_SECRET` 
 for clients created in the past.
 
@@ -63,16 +65,16 @@ CTP_API_URL=https://api.commercetools.com or https://api.commercetools.co
 CTP_SCOPES=<your desired scopes>
 ```
 
-[1] To read more about the differences between the usage of .env and .env.local you can
-continue [here](https://symfony.com/doc/current/configuration/dot-env-changes.html) and/or
+For more information about using `.env` and `.env.local`, see
+[here](https://symfony.com/doc/current/configuration/dot-env-changes.html) and
 [here](https://symfony.com/blog/new-in-symfony-4-2-define-env-vars-per-environment)
 
-### Verify everything works
+### Verify configuration
 
-To verify that your configuration works, after adding your client credentials on the .env file
+To verify that your configuration works, after adding your client credentials on the `.env` file
 as explained above, you may run on the command line:
-`bin/console commercetools:project-info`. If everything is set up correctly, this should return
-the details regarding your project like:
+If everything is set up correctly, this should return
+the details of your project. For example:
 
 ```
 Project's key: super-cool-project-4
@@ -84,36 +86,34 @@ Created at: 2019-02-04T11:28:49+00:00
 Messages: disabled
 ```
 
-if so, it means that your project can now communicate with commercetools platform via the client
-you just configured.
 
 ## Usage
 
-commercetools symfony bundle consists of 8 smaller bundles (The dependencies mentioned are
+The commercetools Symfony bundle consists of 8 smaller bundles (The dependencies mentioned are
 only the additional ones, required for bundle-specific functionalities)
 
 - CartBundle
 - CatalogBundle
 - CtpBundle
 - CustomerBundle
-    - depends: `symfony/security-bundle`
+    - Dependency: `symfony/security-bundle`
 - ReviewBundle
 - SetupBundle
-    - depends: `symfony/console`
+    - Dependency: `symfony/console`
 - ShoppingListBundle
 - StateBundle
-    - depends: `symfony/console`, `symfony/workflow`, `twig/extensions`
+    - Dependency: `symfony/console`, `symfony/workflow`, `twig/extensions`
     
 
-By default, the enabled bundles are `CtpBundle` & `CustomerBundle` for all environments, and
+By default, `CtpBundle` & `CustomerBundle` are enabled for all environments.
 additionally `SetupBundle` & `StateBundle` only for dev environment. To overview, 
-enable or disable  them, you need to edit the file `config/bundles.php` 
+enable or disable them, edit the `config/bundles.php` file.
 
 
-### Usage of available services 
+### Available services
 
 In every bundle there are services that can be autowired directly in your application. For example
-to autowire `CatalogManager` in a controller action: 
+to autowire the `CatalogManager` service in a controller action, do the following: 
 
 ```php
 <?php
@@ -203,8 +203,7 @@ bin/console commercetools:<command-name>
     - `set-workflow-config` // Fetches States from commercetools platform and creates a Symfony
     `workflow` type configuration file at `<PROJECT_DIR>/config/packages/<ENV>/workflow.yaml`
     
-      More info on working with Symfony Workflows can be found on Symfony's documentation:
-      https://symfony.com/doc/current/workflow/usage.html
+      More info on working with Symfony Workflows can be found in Symfony's [documentation](https://symfony.com/doc/current/workflow/usage.html):
 
 ### Usage of SDK Models in templates
 
