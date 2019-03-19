@@ -152,29 +152,35 @@ class MyController
 
 #### Available services
 
-- CartBundle
+- CartBundle: Provides helpers for carts, orders, payments and shipping-methods
     - CartManager
     - OrderManager
     - PaymentManager
     - ShippingMethodManager
-- CatalogBundle
+- CatalogBundle: Provides helpers for products, product-types, product-projections,
+      categories, product search and facets
     - CatalogManager
     - Search
-- CtpBundle
+- CtpBundle: Provides the core helpers required by the rest bundles. Includes the HTTP client
+      factory, the custom-type-provider for handling custom-types, the locale converter,
+      the mapper factory and the context factory
     - ClientFactory
     - ContextFactory
     - MapperFactory
     - LocaleConverter
     - CustomTypeProvider
-- CustomerBundle
+- CustomerBundle: Provides user and customer related features including an integrated
+      authentication provider
     - CustomerManager
     - AuthenticationProvider
     - UserProvider
-- ReviewBundle
+- ReviewBundle: Provides helpers for reviews
     - ReviewManager
-- ShoppingListBundle
+- ShoppingListBundle: Provides helpers for shopping-lists
     - ShoppingListManager
-- StateBundle
+- StateBundle: Provides helpers for handling the state of LineItems, Orders, Payments, Products
+      and Reviews. It can be configured as a `workflow` or as a `state_machine` and takes care of the
+      transition between the states.
     - CtpMarkingStoreLineItemState
     - CtpMarkingStoreOrderState
     - CtpMarkingStorePaymentState
