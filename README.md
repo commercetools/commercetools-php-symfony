@@ -41,16 +41,20 @@ Next, navigate to the project's directory and run the following command:
 ```sh
 composer config extra.symfony.allow-contrib true
 ```
+
 This automates most of the configuration using the `recipes-contrib` bundle from Symfony Flex.
 
-Next, install the commercetools Symfony bundle. To do this, open the **composer.json** file and add `"commercetools/symfony-bundle"` to the `require` attribute.
-`require` the package `"commercetools/symfony-bundle"`
-and run `composer install` or directly run the following on the command line
+Next, install the commercetools Symfony bundle. To do this, run the following from the command line
 ```sh
 composer require commercetools/symfony-bundle
 ```
 
-Open the`.env` file or create a `.env.local` file on root directory and edit the following 
+Alternatively, open the **composer.json** file, add `"commercetools/symfony-bundle"` to the `require` attribute, and run
+```sh
+composer install
+```
+
+Next, open the`.env` file or create a `.env.local` file on root directory and edit the following 
 lines to add your credentials. You can retrieve your API client credentials from the Merchant Center under
 `Commercetools Merchant Center > Settings > Developer Settings`, when you create a new 
 API Client. Note that for security reasons you cannot retrieve the `CTP_CLIENT_SECRET` 
@@ -72,7 +76,10 @@ For more information about using `.env` and `.env.local`, see
 ### Verify configuration
 
 To verify that your configuration works, after adding your client credentials on the `.env` file
-as explained above, you may run on the command line:
+run the following on the command line:
+```sh
+bin/console commercetools:project-info
+```
 If everything is set up correctly, this should return
 the details of your project. For example:
 
@@ -106,14 +113,19 @@ only the additional ones, required for bundle-specific functionalities)
     
 
 By default, `CtpBundle` & `CustomerBundle` are enabled for all environments.
-additionally `SetupBundle` & `StateBundle` only for dev environment. To overview, 
-enable or disable them, edit the `config/bundles.php` file.
+`SetupBundle` & `StateBundle` are only enabled for for development environments. To
+see which bundles are enabled and optionally enable or disable them, edit
+the `config/bundles.php` file.
 
 
 ### Available services
 
-In every bundle there are services that can be autowired directly in your application. For example
-to autowire the `CatalogManager` service in a controller action, do the following: 
+The main idea is that in each Bundle there are some reusable services that you
+may inject directly in your app. As a generic pattern there are a 
+couple of `*Manager` services, that provide related actions. So, for example in `CartManager`
+you will find helpers like `getCart`, `createCartForUser` and `update`. The `update` service
+returns a  `CartUpdateBuilder` where you can dynamically build update actions. To autowire
+a service, for example `CatalogManager`, in a controller action, do the following: 
 
 ```php
 <?php
@@ -137,12 +149,6 @@ class MyController
     }
 }
 ```
-
-The main idea behind is that in each Bundle there are some reusable services that you
-may inject directly in your app. As a generic pattern there are a 
-couple of `*Manager` services, that provide related actions. So, for example in `CartManager`
-you will find helpers like `getCart`, `createCartForUser` and `update` which returns a 
-`CartUpdateBuilder` where you can dynamically set your update actions.
 
 #### Available services
 
@@ -177,7 +183,9 @@ you will find helpers like `getCart`, `createCartForUser` and `update` which ret
     
 ### Console Commands
 
-To use the console commands navigate to your project's directory and run
+`SetupBundle` and `StateBundle` come together with a few handy console commands. These commands
+automate tasks during development and allow a 2-way sync between an online project and a local configuration.
+To use a console command navigate to your project's directory and run
 
 ```sh
 bin/console commercetools:<command-name>
@@ -186,28 +194,30 @@ bin/console commercetools:<command-name>
 #### Available console commands
 
 - SetupBundle
-    - `project-info` // Fetches and displays information from commercetoools platform
-    about the configured project
-    - `project-apply-configuration` // Save the local project configuration that resides under
-    `commercetools` key on the commercetools platform
-    - `create-custom-type` // Interactive CLI to create CustomTypes on your project
-    - `sync-custom-types-from-server` // Saves the CustomTypes currently present on the project
-    in `<PROJECT_DIR>/config/packages/<ENV>/custom_types.yaml`
-    - `sync-custom-types-from-local` // Saves or updates the CustomTypes present in 
-    `<PROJECT_DIR>/config/packages/<ENV>/custom_types.yaml` on your commercetools project
+    - `bin/console commercetools:project-info`: Fetches and displays information from commercetools platform
+    about the selected project
+    - `bin/console commercetools:project-apply-configuration`: Save the local project configuration that resides under
+    `commercetools` key, on the online commercetools platform
+    - `bin/console commercetools:create-custom-type`: Interactive CLI to create CustomTypes on your project
+    - `bin/console commercetools:sync-custom-types-from-server`: Saves locally the CustomTypes currently present on the online project,
+    in the `<PROJECT_DIR>/config/packages/<ENV>/custom_types.yaml` file
+    - `bin/console commercetools:sync-custom-types-from-local`: Saves or updates the CustomTypes present locally in 
+    the `<PROJECT_DIR>/config/packages/<ENV>/custom_types.yaml` file, on your online commercetools project
     
 - StateBundle
-    - `set-state-machine-config` // Fetches States from commercetools platform and creates a 
+    - `bin/console commercetools:set-state-machine-config`: Fetches States from commercetools platform and creates a 
     Symfony `state_machine` type configuration file at 
     `<PROJECT_DIR>/config/packages/<ENV>/workflow.yaml`
-    - `set-workflow-config` // Fetches States from commercetools platform and creates a Symfony
+    - `bin/console commercetools:set-workflow-config`: Fetches States from commercetools platform and creates a Symfony
     `workflow` type configuration file at `<PROJECT_DIR>/config/packages/<ENV>/workflow.yaml`
     
       More info on working with Symfony Workflows can be found in Symfony's [documentation](https://symfony.com/doc/current/workflow/usage.html):
 
-### Usage of SDK Models in templates
+### Using SDK Models in twig templates
 
-Get variables on templates using only variable name:
+If you are using Twig for your templating engine you can print the value of a nested attribute of any 
+[SDK Model](https://commercetools.github.io/commercetools-php-sdk/docs/master/namespace-Commercetools.Core.Model.html)
+just by referring the attribute's path and name. For example the following two are valid representations:
 ```
 {{ product.masterVariant.attributes.test.value }}
 {{ attribute(product.masterVariant.attributes, 'custom-attribute').value }}
