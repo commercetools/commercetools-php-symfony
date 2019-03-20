@@ -6,12 +6,12 @@ a Symfony project.
 
 ##### Table of contents
 
-  * [Requirements](#requirements)
+  * [Pre-requisites](#pre-requisites)
   * [Installation](#installation)
-    + [Verify everything works](#verify-everything-works)
+    + [Verify configuration](#verify-configuration)
   * [Usage](#usage)
-    + [Usage of available services](#usage-of-available-services)
-      - [Available services](#available-services)
+    + [Available services](#available-services)
+      - [Available services list](#available-services-list)
     + [Console Commands](#console-commands)
       - [Available console commands](#available-console-commands)
     + [Usage of SDK Models in templates](#usage-of-sdk-models-in-templates)
@@ -150,7 +150,7 @@ class MyController
 }
 ```
 
-#### Available services
+#### Available services list
 
 - CartBundle: Provides helpers for carts, orders, payments and shipping-methods
     - CartManager
