@@ -6,6 +6,7 @@
 namespace Commercetools\Symfony\CustomerBundle\Tests\Event;
 
 use Commercetools\Core\Model\Customer\Customer;
+use Commercetools\Core\Request\Customers\Command\CustomerSetFirstNameAction;
 use Commercetools\Symfony\CustomerBundle\Event\CustomerPostUpdateEvent;
 use PHPUnit\Framework\TestCase;
 
@@ -25,5 +26,6 @@ class CustomerPostUpdateEventTest extends TestCase
         $this->assertNotSame($customer->reveal(), $postUpdateEvent->getCustomer());
 
         $this->assertEquals([$action->reveal()], $postUpdateEvent->getActions());
+        $this->assertInstanceOf(CustomerSetFirstNameAction::class, current($postUpdateEvent->getActions()));
     }
 }

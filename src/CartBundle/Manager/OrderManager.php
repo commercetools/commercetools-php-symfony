@@ -69,7 +69,7 @@ class OrderManager
 
     /**
      * @param string $locale
-     * @param string orderId
+     * @param string $orderId
      * @param UserInterface|null $user
      * @param string|null $anonymousId
      * @return Order

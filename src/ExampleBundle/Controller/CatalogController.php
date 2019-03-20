@@ -32,6 +32,9 @@ class CatalogController extends AbstractController
 
     /**
      * CatalogController constructor.
+     * @param Client $client
+     * @param CatalogManager|null $catalogManager
+     * @param ShoppingListManager|null $shoppingListManager
      */
     public function __construct(Client $client, CatalogManager $catalogManager = null, ShoppingListManager $shoppingListManager = null)
     {
@@ -77,7 +80,7 @@ class CatalogController extends AbstractController
         $country = $this->getCountryFromConfig();
         $currency = $this->getCurrencyFromConfig();
 
-        list($products, $offset) = $this->catalogManager->searchProducts(
+        list($products, $facets, $offset) = $this->catalogManager->searchProducts(
             $request->getLocale(),
             12,
             1,

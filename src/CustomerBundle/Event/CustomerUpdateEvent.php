@@ -20,6 +20,11 @@ class CustomerUpdateEvent extends Event
      */
     private $actions;
 
+    /**
+     * CustomerUpdateEvent constructor.
+     * @param Customer $customer
+     * @param AbstractAction $action
+     */
     public function __construct(Customer $customer, AbstractAction $action)
     {
         $this->customer = $customer;

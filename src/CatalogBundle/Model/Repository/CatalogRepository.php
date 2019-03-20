@@ -11,6 +11,7 @@ use Commercetools\Core\Model\Common\LocalizedString;
 use Commercetools\Core\Model\Product\Product;
 use Commercetools\Core\Model\Product\ProductDraft;
 use Commercetools\Core\Model\Product\ProductProjection;
+use Commercetools\Core\Model\Product\ProductProjectionCollection;
 use Commercetools\Core\Model\Product\SuggestionCollection;
 use Commercetools\Core\Model\ProductType\ProductTypeDraft;
 use Commercetools\Core\Model\ProductType\ProductTypeReference;
@@ -33,7 +34,7 @@ class CatalogRepository extends Repository
 
     /**
      * CatalogRepository constructor.
-     * @param $enableCache
+     * @param string|bool $enableCache
      * @param CacheItemPoolInterface $cache
      * @param Client $client
      * @param MapperFactory $mapperFactory
@@ -52,10 +53,10 @@ class CatalogRepository extends Repository
 
 
     /**
-     * @param $locale
-     * @param $slug
-     * @param $currency
-     * @param $country
+     * @param string $locale
+     * @param string $slug
+     * @param string $currency
+     * @param string $country
      * @return ProductProjection|null
      */
     public function getProductBySlug($locale, $slug, $currency, $country)
@@ -73,8 +74,8 @@ class CatalogRepository extends Repository
     }
 
     /**
-     * @param $locale
-     * @param $id
+     * @param string $locale
+     * @param string $id
      * @return ProductProjection
      */
     public function getProductById($locale, $id)
@@ -89,12 +90,12 @@ class CatalogRepository extends Repository
     }
 
     /**
-     * @param $locale
-     * @param $term
-     * @param $limit
-     * @param $currency
-     * @param $country
-     * @return mixed
+     * @param string $locale
+     * @param string $term
+     * @param int $limit
+     * @param string $currency
+     * @param string $country
+     * @return ProductProjectionCollection
      */
     public function suggestProducts($locale, $term, $limit, $currency, $country)
     {
@@ -123,9 +124,9 @@ class CatalogRepository extends Repository
     }
 
     /**
-     * @param $itemsPerPage
-     * @param $currentPage
-     * @param $sort
+     * @param int|null $itemsPerPage
+     * @param int|null $currentPage
+     * @param string|null $sort
      * @return ProductProjectionSearchRequest
      */
     public function baseSearchProductsRequest($itemsPerPage = 20, $currentPage = 1, $sort = 'id asc')
@@ -161,12 +162,12 @@ class CatalogRepository extends Repository
 
     /**
      * @param ProductProjectionSearchRequest|null $searchRequest
-     * @param $locale
-     * @param UriInterface $uri
+     * @param string $locale
+     * @param UriInterface|null $uri
      * @param string|null $search
      * @return ProductProjectionSearchRequest
      */
-    public function searchRequestAddSearchParameters(ProductProjectionSearchRequest $searchRequest = null, $locale, UriInterface $uri, $search = null)
+    public function searchRequestAddSearchParameters(ProductProjectionSearchRequest $searchRequest = null, $locale, UriInterface $uri = null, $search = null)
     {
         if (is_null($searchRequest)) {
             $searchRequest = $this->baseSearchProductsRequest();
@@ -178,8 +179,10 @@ class CatalogRepository extends Repository
             $searchRequest->fuzzy(true);
         }
 
-        $selectedValues = $this->searchModel->getSelectedValues($uri);
-        $searchRequest = $this->searchModel->addFacets($searchRequest, $selectedValues);
+        if (!is_null($uri)) {
+            $selectedValues = $this->searchModel->getSelectedValues($uri);
+            $searchRequest = $this->searchModel->addFacets($searchRequest, $selectedValues);
+        }
 
         return $searchRequest;
     }

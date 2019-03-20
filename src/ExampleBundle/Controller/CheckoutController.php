@@ -96,7 +96,7 @@ class CheckoutController extends AbstractController
     public function shippingMethodAction(Request $request, SessionInterface $session, UserInterface $user = null)
     {
         $cartId = $session->get(CartRepository::CART_ID);
-        $shippingMethods = $this->shippingMethodManager->getShippingMethodByCart($request->getLocale(), $cartId);
+        $shippingMethods = $this->shippingMethodManager->getShippingMethodsByCart($request->getLocale(), $cartId);
 
         $cart = $this->cartManager->getCart($request->getLocale(), $cartId, $user, $session->getId());
 
