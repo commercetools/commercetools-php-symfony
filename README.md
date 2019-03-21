@@ -1,4 +1,4 @@
-# commercetools Symfony bundle
+# commercetools Symfony bundle Beta
 
 The commercetools Symfony Bundle is a collection of Symfony bundles that ease the use of the
 [commercetools PHP-SDK](https://github.com/commercetools/commercetools-php-sdk) when implementing
@@ -11,10 +11,10 @@ a Symfony project.
     + [Verify configuration](#verify-configuration)
   * [Usage](#usage)
     + [Available services](#available-services)
-      - [Available services list](#available-services-list)
+      - [Services list](#services-list)
     + [Console Commands](#console-commands)
       - [Available console commands](#available-console-commands)
-    + [Usage of SDK Models in templates](#usage-of-sdk-models-in-templates)
+    + [Using SDK Models in twig templates](#using-sdk-models-in-twig-templates)
   * [Quick-start](#quick-start)
   * [Disclaimer for ExampleBundle (dev)](#disclaimer-for-examplebundle--dev-)
   * [Testing](#testing)
@@ -150,7 +150,7 @@ class MyController
 }
 ```
 
-#### Available services list
+#### Services list
 
 - CartBundle: Provides helpers for carts, orders, payments and shipping-methods
     - CartManager

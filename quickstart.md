@@ -3,7 +3,7 @@
 ### Pre-requisites
 
 * You have successfully completed the Installation step and verified that everything works fine.
-* Add twig templating engine service in file `config/packages/framework.yaml`
+* Add twig templating engine service in file `config/packages/framework.yaml` under `framework` parameter:
 ```yaml
     templating:
         engines: ['twig']
