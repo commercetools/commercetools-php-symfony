@@ -7,6 +7,7 @@ namespace Commercetools\Symfony\CustomerBundle\Model\Repository;
 use Commercetools\Core\Builder\Request\RequestBuilder;
 use Commercetools\Core\Model\Customer\Customer;
 use Commercetools\Core\Model\Customer\CustomerDraft;
+use Commercetools\Core\Model\Customer\CustomerSigninResult;
 use Commercetools\Symfony\CtpBundle\Model\QueryParams;
 use Commercetools\Symfony\CtpBundle\Model\Repository;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
@@ -65,7 +66,7 @@ class CustomerRepository extends Repository
      * @param string $email
      * @param string $password
      * @param SessionInterface|null $session
-     * @return Customer
+     * @return CustomerSigninResult
      */
     public function createCustomer($locale, $email, $password, SessionInterface $session = null)
     {

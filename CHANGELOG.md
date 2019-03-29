@@ -1,3 +1,51 @@
+## Unreleased
+
+### Changed
+
+* **CatalogBundle**: Uri is optional in product search
+* **ExampleBundle**: jQuery is fetched from CDN
+
+### Fixed
+
+* **Logger**: remove return void value
+* **CustomerBundle**: change password returns CustomerSignInResult
+* **CartBundle**: getShippingMethodsByCart returns Collection
+
+
+<a name="0.4.7"></a>
+## [0.4.7] - (2019-03-22)
+
+### Changed
+
+* **CtpBundle**: Add default values in Configuration class
+* **CtpBundle**: Move custom types configuration to CtpBundle
+
+### Fixed
+
+* **ExampleBundle**: use namespace for Twig Environment
+* **StateBundle**: add exception handling for State cache warmer
+
+
+<a name="0.4.0"></a>
+## [0.4.0] - (2019-03-22)
+
+### Changed
+
+We rewrote the project into different structure. Backward campatibility is broken at this point.
+
+### Features
+
+* CartBundle
+* CatalogBundle
+* CtpBundle
+* CustomerBundle
+* ReviewBundle
+* SetupBundle
+* ShoppingListBundle
+* StateBundle
+* ExampleBundle
+
+
 <a name="0.2.1"></a>
 ## [0.2.1](https://github.com/commercetools/commercetools-php-symfony/compare/0.2.0...v0.2.1) (2016-12-06)
 

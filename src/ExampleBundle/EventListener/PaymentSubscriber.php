@@ -13,6 +13,7 @@ use Commercetools\Symfony\CartBundle\Event\PaymentPostCreateEvent;
 use Commercetools\Symfony\CartBundle\Manager\CartManager;
 use Commercetools\Symfony\CartBundle\Manager\OrderManager;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
+use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\Workflow\Event\Event;
 use Symfony\Component\Workflow\Exception\InvalidArgumentException;
 use Symfony\Component\Workflow\Registry;
@@ -34,11 +35,24 @@ class PaymentSubscriber implements EventSubscriberInterface
      */
     private $workflows;
 
-    public function __construct(OrderManager $orderManager, CartManager $cartManager, Registry $workflows)
+    /**
+     * @var Session
+     */
+    private $session;
+
+    /**
+     * PaymentSubscriber constructor.
+     * @param OrderManager $orderManager
+     * @param CartManager $cartManager
+     * @param Registry $workflows
+     * @param Session $session
+     */
+    public function __construct(OrderManager $orderManager, CartManager $cartManager, Registry $workflows, Session $session)
     {
         $this->orderManager = $orderManager;
         $this->cartManager = $cartManager;
         $this->workflows = $workflows;
+        $this->session = $session;
     }
 
     public static function getSubscribedEvents()
@@ -89,14 +103,14 @@ class PaymentSubscriber implements EventSubscriberInterface
                 try {
                     $workflow = $this->workflows->get($order);
                 } catch (InvalidArgumentException $e) {
-                    $this->addFlash('error', 'Related Order could not be updated');
+                    $this->session->getFlashBag()->add('error', 'Related Order could not be updated');
                     return false;
                 }
 
                 if ($workflow->can($order, 'toPaid')) {
                     $workflow->apply($order, 'toPaid');
                 } else {
-                    $this->addFlash('error', 'Related Order could not be updated');
+                    $this->session->getFlashBag()->add('error', 'Related Order could not be updated');
                 }
             }
         }

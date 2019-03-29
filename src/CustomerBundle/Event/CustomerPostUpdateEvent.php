@@ -20,6 +20,11 @@ class CustomerPostUpdateEvent extends Event
      */
     private $actions;
 
+    /**
+     * CustomerPostUpdateEvent constructor.
+     * @param Customer $customer
+     * @param array $actions
+     */
     public function __construct(Customer $customer, array $actions)
     {
         $this->customer = $customer;

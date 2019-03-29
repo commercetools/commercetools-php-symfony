@@ -97,10 +97,10 @@ class Profile implements \IteratorAggregate, \Serializable
     {
         $info = [];
 
-        if ($this->request) {
+        if (!empty($this->request)) {
             $info['request'] = $this->request;
         }
-        if ($this->response) {
+        if (!empty($this->response)) {
             $info['response'] = $this->response;
             $info['duration'] = $this->getDuration();
         }

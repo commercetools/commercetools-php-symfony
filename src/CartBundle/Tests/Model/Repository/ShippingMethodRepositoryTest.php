@@ -100,7 +100,7 @@ class ShippingMethodRepositoryTest extends TestCase
         )->willReturn($this->response->reveal())->shouldBeCalledOnce();
 
         $shippingMethodRepo = $this->getShippingMethodRepository();
-        $shippingMethodRepo->getShippingMethodByCart('en', 'cart-1');
+        $shippingMethodRepo->getShippingMethodsByCart('en', 'cart-1');
     }
 
     public function testGetShippingMethodById()
