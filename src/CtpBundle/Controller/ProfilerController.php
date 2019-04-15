@@ -2,8 +2,9 @@
 namespace Commercetools\Symfony\CtpBundle\Controller;
 
 use Commercetools\Symfony\CtpBundle\DataCollector\CommercetoolsDataCollector;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Profiler\Profiler;
-use Symfony\Bundle\FrameworkBundle\Templating\EngineInterface;
+use Twig\Environment;
 
 class ProfilerController
 {
@@ -12,11 +13,11 @@ class ProfilerController
      */
     private $profiler;
     /**
-     * @var EngineInterface
+     * @var Environment
      */
     private $templating;
 
-    public function __construct(Profiler $profiler, EngineInterface $templating)
+    public function __construct(Profiler $profiler, Environment $templating)
     {
         $this->profiler = $profiler;
         $this->templating = $templating;
@@ -39,9 +40,9 @@ class ProfilerController
         if (isset($entry['response']['body']) && strpos($entry['response']['body'], '{') === 0) {
             $entry['response']['body'] = json_encode(json_decode($entry['response']['body'], true), JSON_PRETTY_PRINT);
         }
-        return $this->templating->renderResponse('@Ctp/Collector/details.html.twig', [
+        return new Response($this->templating->render('@Ctp/Collector/details.html.twig', [
             'requestIndex' => $requestIndex,
             'entry' => $entry
-        ]);
+        ]));
     }
 }

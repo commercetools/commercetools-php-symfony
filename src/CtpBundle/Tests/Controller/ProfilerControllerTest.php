@@ -12,6 +12,7 @@ use Prophecy\Argument;
 use Symfony\Bundle\FrameworkBundle\Templating\EngineInterface;
 use Symfony\Component\HttpKernel\Profiler\Profile;
 use Symfony\Component\HttpKernel\Profiler\Profiler;
+use Twig\Environment;
 
 class ProfilerControllerTest extends TestCase
 {
@@ -31,23 +32,23 @@ class ProfilerControllerTest extends TestCase
         $profiler->disable()->shouldBeCalledOnce();
         $profiler->loadProfile('foo')->willReturn($profile)->shouldBeCalledOnce();
 
-        $templating = $this->prophesize(EngineInterface::class);
-        $templating->renderResponse(Argument::containingString('details.html.twig'), Argument::type('array'))
+        $templating = $this->prophesize(Environment::class);
+        $templating->render(Argument::containingString('details.html.twig'), Argument::type('array'))
             ->will(function ($args) {
-                return $args;
+                return json_encode($args);
             })->shouldBeCalledOnce();
 
         $profilerController = new ProfilerController($profiler->reveal(), $templating->reveal());
         $response = $profilerController->details('foo', 'bar');
 
-        $expected = [
+        $expected = json_encode([
             '@Ctp/Collector/details.html.twig', [
                 'requestIndex' => 'bar',
                 'entry' => 'baz'
             ]
-        ];
+        ]);
 
-        $this->assertEquals($expected, $response);
+        $this->assertEquals($expected, $response->getContent());
     }
 
     public function testDetailsWithJson()
@@ -69,16 +70,16 @@ class ProfilerControllerTest extends TestCase
         $profiler->disable()->shouldBeCalledOnce();
         $profiler->loadProfile('foo')->willReturn($profile)->shouldBeCalledOnce();
 
-        $templating = $this->prophesize(EngineInterface::class);
-        $templating->renderResponse(Argument::containingString('details.html.twig'), Argument::type('array'))
+        $templating = $this->prophesize(Environment::class);
+        $templating->render(Argument::containingString('details.html.twig'), Argument::type('array'))
             ->will(function ($args) {
-                return $args;
+                return json_encode($args);
             })->shouldBeCalledOnce();
 
         $profilerController = new ProfilerController($profiler->reveal(), $templating->reveal());
         $response = $profilerController->details('foo', 'baz');
 
-        $expected = [
+        $expected = json_encode([
             '@Ctp/Collector/details.html.twig', [
                 'requestIndex' => 'baz',
                 'entry' => [
@@ -86,8 +87,8 @@ class ProfilerControllerTest extends TestCase
                     'response' => ['body' => json_encode(json_decode('{"barfoo":"false"}', true), JSON_PRETTY_PRINT)]
                 ]
             ]
-        ];
+        ]);
 
-        $this->assertEquals($expected, $response);
+        $this->assertEquals($expected, $response->getContent());
     }
 }

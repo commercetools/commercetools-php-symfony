@@ -5,7 +5,7 @@
     <services>
         <service id="commercetools.profiler_controller" class="Commercetools\Symfony\CtpBundle\Controller\ProfilerController" public="true">
             <argument type="service" id="profiler" />
-            <argument type="service" id="templating" />
+            <argument type="service" id="twig" />
         </service>
         <service id="commercetools.profiler.extension" class="Commercetools\Symfony\CtpBundle\Profiler\CommercetoolsProfilerExtension" public="false">
             <argument type="service" id="commercetools.profile" />

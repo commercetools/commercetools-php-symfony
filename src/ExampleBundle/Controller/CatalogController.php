@@ -70,11 +70,11 @@ class CatalogController extends AbstractController
 
         $filter = null;
         if (!is_null($categoryId)) {
-            $filter['filter'][] = Filter::ofName('categories.id')->setValue($categoryId);
+            $filter['filter.query'][] = Filter::ofName('categories.id')->setValue($categoryId);
         }
 
         if (!is_null($productTypeId)) {
-            $filter['filter'][] = Filter::ofName('productType.id')->setValue($productTypeId);
+            $filter['filter.query'][] = Filter::ofName('productType.id')->setValue($productTypeId);
         }
 
         $country = $this->getCountryFromConfig();
