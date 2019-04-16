@@ -3,7 +3,7 @@
     <input type="hidden" name="lineItemId" value="{{ lineItemId }}">
     <button type="submit" id="cart-delete-button-{{ loop.index0 }}">
     <span>
-        <img class="cart-action-icon" src="{{ root.meta.assetsPath }}img/delete-1.png" alt="delete">
+        <img class="cart-action-icon" src="{{ asset('bundles/example/img/delete-1.png') }}" alt="delete">
         {{ 'form.delete'|trans([], 'main') }}
     </span>
     </button>

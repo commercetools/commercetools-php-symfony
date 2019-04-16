@@ -2,7 +2,7 @@
 <li class="dropdown menu-large">
   <a href="{{ root.meta._links.new.href }}" class="dropdown-toggle" data-toggle="dropdown">
     {{ 'header.new'|trans([], 'main') }}
-    <img class="mobile-plus-content visible-xs" src="{{ root.meta.assetsPath }}img/plus79.png" alt="{{ 'more'|trans([], 'main') }}">
+    <img class="mobile-plus-content visible-xs" src="{{ asset('bundles/example/img/plus79.png') }}" alt="{{ 'more'|trans([], 'main') }}">
   </a>
   {% include '@Example/partials/common/nav-menu-category.html.twig' with {'category':new} %}
 </li>
@@ -12,7 +12,7 @@
   <li class="dropdown menu-large">
     <a href="{{ categories_i.url }}" class="dropdown-toggle {% if categories_i.sale %}sale icon-ribbon{% endif %}" data-toggle="dropdown">
       {{ categories_i.text }}
-      <img class="mobile-plus-content visible-xs" src="{{ categories_i.root.meta.assetsPath }}img/plus79.png" alt="{{ categories_i.i18n }}">
+      <img class="mobile-plus-content visible-xs" src="{{ asset('bundles/example/img/plus79.png') }}" alt="{{ categories_i.i18n }}">
     </a>
     {% include '@Example/partials/common/nav-menu-category.html.twig' with {'category':categories_i} %}
   </li>
@@ -22,7 +22,7 @@
 <li class="dropdown menu-large">
   <a href="{{ root.meta._links.brands.href }}" class="dropdown-toggle" data-toggle="dropdown">
     {{ 'header.brands'|trans([], 'main') }}
-    <img class="mobile-plus-content visible-xs" src="{{ root.meta.assetsPath }}img/plus79.png" alt="{{ 'more'|trans([], 'main') }}">
+    <img class="mobile-plus-content visible-xs" src="{{ asset('bundles/example/img/plus79.png') }}" alt="{{ 'more'|trans([], 'main') }}">
   </a>
   {% include '@Example/partials/common/nav-menu-category.html.twig' with {'category':brands} %}
 </li>
@@ -32,7 +32,7 @@
   <li class="dropdown menu-large">
     <a href="{{ root.meta._links.sale.href }}" class="dropdown-toggle sale icon-ribbon" data-toggle="dropdown">
       {{ 'header.sale'|trans([], 'main') }}
-      <img class="mobile-plus-content visible-xs" src="{{ root.meta.assetsPath }}img/plus79.png" alt="{{ 'more'|trans([], 'main') }}">
+      <img class="mobile-plus-content visible-xs" src="{{ asset('bundles/example/img/plus79.png') }}" alt="{{ 'more'|trans([], 'main') }}">
     </a>
     {% include '@Example/partials/common/nav-menu-category.html.twig' with {'category':sale} %}
   </li>

@@ -1,6 +1,6 @@
 <a href="#" id="pdp-size-guide{{ index }}" data-toggle="modal" data-target="#size-guide">
   <span class="size-guide">
-    <img class="size-guide-thumb" src="{{ root.meta.assetsPath }}img/ruler-1.png" alt="{{ 'sizeGuide.title'|trans([], 'catalog') }}">
+    <img class="size-guide-thumb" src="{{ asset('bundles/example/img/ruler-1.png') }}" alt="{{ 'sizeGuide.title'|trans([], 'catalog') }}">
     {{ 'sizeGuide.title'|trans([], 'catalog') }}
   </span>
 </a>
@@ -11,7 +11,7 @@
       <div class="modal-header">
         <button type="button" class="close" data-dismiss="modal" aria-label="{{ 'undefined'|trans([], 'content.general.closeModal') }}">
           <span aria-hidden="true">
-            <img src="{{ root.meta.assetsPath }}img/close.png" alt="{{ 'undefined'|trans([], 'content.general.closeModal') }}" />
+            <img src="{{ asset('bundles/example/img/close.png') }}" alt="{{ 'undefined'|trans([], 'content.general.closeModal') }}" />
           </span>
 
         </button>

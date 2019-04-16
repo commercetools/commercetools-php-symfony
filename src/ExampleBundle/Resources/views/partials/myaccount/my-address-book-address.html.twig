@@ -7,7 +7,7 @@
 <div class="address-book-edit-delete">
     <div>
         <a href="{{ addressInfo.addressEditUrl }}">
-            <img src="{{ root.meta.assetsPath }}img/edit-1.png" alt="edit icon">
+            <img src="{{ asset('bundles/example/img/edit-1.png') }}" alt="edit icon">
             {{ 'addressBook.buttons.edit'|trans([], 'my-account') }}
         </a>
     </div>
@@ -15,7 +15,7 @@
         <form action="{{ addressInfo.addressDeleteUrl }}" method="POST">
             <input type="hidden" name="csrfToken" value="{{ root.meta.csrfToken }}"/>
             <button type="submit">
-                <img src="{{ root.meta.assetsPath }}img/delete-60px.png" alt="delete icon">
+                <img src="{{ asset('bundles/example/img/delete-60px.png') }}" alt="delete icon">
                 {{ 'addressBook.buttons.delete'|trans([], 'my-account') }}
             </button>
         </form>
