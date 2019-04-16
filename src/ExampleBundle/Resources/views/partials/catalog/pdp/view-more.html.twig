@@ -1,0 +1,8 @@
+<div class="mix-match-view-more {% if hiddenXs %}hidden-xs{% endif %}">
+  <div class="mix-match-view-more-title">{{ 'viewMore.title'|trans([], 'catalog') }}</div>
+  <ul class="mix-match-view-more-list list-inline">
+    {% for list_i in content.viewMore.list %}
+      <li><a href="{{ list_i.url }}">{{ list_i.name }}</a></li>
+    {% endfor %}
+  </ul>
+</div>

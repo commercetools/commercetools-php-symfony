@@ -1,0 +1,26 @@
+{% for list_i in facets.list %}
+  {% if list_i.facet.available %}
+    <hr class="hr">
+    <div id="filter-{{ list_i.facet.key }}" class="row facet-block {{ list_i.facet.key }}-box">
+      <div class="col-xs-8 text-left">
+        {{ list_i.facet.label }}
+      </div>
+      <div class="col-xs-4">
+        <a class="text-right clear-btn facet-clear-btn" href="#" data-target="{{ list_i.facet.key }}">{{ list_i.i18n }}</a>
+      </div>
+    </div>
+
+    {% if list_i.hierarchicalSelectFacet %}
+      {% include '@Example/partials/catalog/pop/facet-hierarchical-select.html.twig' %}
+    {% endif %}
+
+    {% if list_i.selectFacet %}
+      {% include '@Example/partials/catalog/pop/facet-select.html.twig' %}
+    {% endif %}
+
+    {% if list_i.sliderRangeFacet %}
+      {% include '@Example/partials/catalog/pop/facet-slider-range.html.twig' %}
+    {% endif %}
+
+  {% endif %}
+{% endfor %}

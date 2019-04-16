@@ -1,0 +1,14 @@
+<div class="checkout-steps text-right">
+    <div>
+        <span class="step-number{% if content.stepWidget.shippingStepActive %} step-number-active{% endif %}">1</span>
+        <span class="text-uppercase step-title{% if content.stepWidget.shippingStepActive %} step-title-active{% endif %}">{{ 'shipping'|trans([], 'checkout') }}</span>
+    </div>
+    <div>
+        <span class="step-number{% if content.stepWidget.paymentStepActive %} step-number-active{% endif %}">2</span>
+        <span class="text-uppercase step-title{% if content.stepWidget.paymentStepActive %} step-title-active{% endif %}">{{ 'payment'|trans([], 'checkout') }}</span>
+    </div>
+    <div>
+        <span class="step-number{% if content.stepWidget.confirmationStepActive %} step-number-active{% endif %}">3</span>
+        <span class="text-uppercase step-title{% if content.stepWidget.confirmationStepActive %} step-title-active{% endif %}">{{ 'confirmation'|trans([], 'checkout') }}</span>
+    </div>
+</div>

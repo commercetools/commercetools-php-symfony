@@ -1,0 +1,40 @@
+{% if miniCart.lineItems.list %}
+  <button class="not-empty link-your-bag icon-hand-bag">
+    <span class="hidden-xs hidden-sm">{{ 'header.miniCart'|trans([], 'main') }}</span>
+    <span class="cart-item-number">{{ miniCart.totalItems }}</span>
+  </button>
+  <div class="col-xs-12">
+    <div class="nav-minicart">
+      <ul>
+        {% for list_i in miniCart.lineItems.list %}
+        <li>
+          <form action="{{ list_i.root.meta._links.deleteLineItem.href }}" method="post">
+            <input type="hidden" name="csrfToken" value="{{ list_i.root.meta.csrfToken }}"/>
+            <a class="img" href="{{ list_i.variant.url }}"><img src="{{ list_i.variant.image }}" alt="{{ list_i.variant.name }}" /></a>
+            <p class="product-title"><a href="{{ list_i.variant.url }}">{{ list_i.variant.name }}</a></p>
+            <div class="details">
+              <p class="product-quantity">{{ list_i.i18n }}<span>{{ list_i.quantity }}x</span></p>
+              <p class="product-price">{{ list_i.i18n }}<span>{{ list_i.totalPrice }}</span></p>
+                <input type="hidden" name="lineItemId" value="{{ list_i.lineItemId }}">
+                <button type="submit" id="minicart-delete-button-{{ loop.index0 }}" class="delete">
+                  <span>
+                    <img class="cart-action-icon" src="{{ list_i.root.meta.assetsPath }}img/delete-1.png" alt="{{ list_i.i18n }}">
+                  </span>
+                </button>
+            </div>
+          </form>
+        </li>
+        {% endfor %}
+      </ul>
+      <div class="gradient"></div>
+      <p class="total-price">{{ 'common.totalPrice'|trans([], 'main') }}</p>
+      <a href="{{ root.meta._links.cart.href }}" class="btn-grey">{{ 'header.viewBag'|trans([], 'main') }}</a>
+      <a href="{{ root.meta._links.checkout.href }}" class="btn-yellow">{{ 'header.checkout'|trans([], 'main') }}</a>
+    </div>
+  </div>
+{% else %}
+<a href="{{ root.meta._links.cart.href }}" class="not-empty link-your-bag icon-hand-bag">
+  <span class="hidden-xs hidden-sm">{{ 'header.miniCart'|trans([], 'main') }}</span>
+  <span class="cart-item-number">{{ miniCart.totalItems }}</span>
+</a>
+{% endif %}

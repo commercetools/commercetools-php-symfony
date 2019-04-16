@@ -1,0 +1,5 @@
+{% for list_i in products.list %}
+<div class="col-xs-12 col-sm-6 col-md-4">
+{% include '@Example/partials/catalog/product-thumbnail.html.twig' with {'thumbnail':list_i, 'index':list_i.index} %}
+</div>
+{% endfor %}

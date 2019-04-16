@@ -1,0 +1,15 @@
+<div class="aspect-ratio aspect-ratio--4to3">
+  <picture>
+    <source srcset="{{ 'bannerTopLeft.imageLarge' | trans([], 'cms') }}" media="(min-width: 1200px)">
+    <source srcset="{{ 'bannerTopLeft.imageMedium' | trans([], 'cms') }}" media="(min-width: 768px)">
+    <img src="{{ 'bannerTopLeft.imageSmall' | trans([], 'cms') }}" class="img-responsive">
+  </picture>
+</div>
+
+<div class="banner-text">
+  <h4 class="banner-title">{{ 'bannerTopLeft.title' | trans([], 'cms') }}</h4>
+  <p class="banner-paragraph">{{ 'bannerTopLeft.subtitle' | trans([], 'cms') }}</p>
+  <a href="{{ 'bannerTopLeft.linkHref' | trans([], 'cms') }}" class="btn banner-btn">
+    {{ 'bannerTopLeft.linkText' | trans([], 'cms') }}
+  </a>
+</div>

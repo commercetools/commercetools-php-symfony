@@ -1,0 +1,10 @@
+<ol class="breadcrumb">
+	<li>
+		<a href="/" {% if not breadcrumb.links %}class="active"{% endif %}>{{ 'home'|trans([], 'main') }}</a>
+	</li>
+	{% for links_i in breadcrumb.links %}
+		<li>
+			<a href="{{ links_i.url }}" {% if links_i.last %}class="active"{% endif %}>{{ links_i.text }}</a>
+		</li>
+	{% endfor %}
+</ol>

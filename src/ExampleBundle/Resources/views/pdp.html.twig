@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  {% include '@Example/partials/common/htmlhead.html.twig' %}
+</head>
+
+<body>
+  <div class="darkbg hidden"></div>
+  {% include '@Example/partials/common/header.html.twig' %}
+  <div class="pdp-page">
+    <div class="container">
+      {% include '@Example/partials/common/messages.html.twig' %}
+      <div class="row">
+        <div class="col-xs-12 breadcrumb-col">
+          {% include '@Example/partials/catalog/breadcrumb.html.twig' with {'breadcrumb':content.breadcrumb} %}
+        </div>
+      </div>
+      <div class="row product-info-row-pdp">
+        {% include '@Example/partials/catalog/pdp/product-info.html.twig' with {'product':content.product, 'deliveryRates':content.deliveryRates} %}
+      </div>
+    </div>
+  </div>
+  <div class="pdp-page-review">
+    <div class="container">
+      <div class="row">
+        <div class="col-sm-12">
+          <p class="text-center text-uppercase may-like">{{ 'suggestions.title'|trans([], 'catalog') }}</p>
+        </div>
+      </div>
+      <div class="row">
+        {% include '@Example/partials/catalog/suggestions.html.twig' %}
+      </div>
+      <hr class="hr">
+      {% include '@Example/partials/catalog/pdp/reviews.html.twig' %}
+    </div>
+  </div>
+  {% include '@Example/partials/common/wishlist.html.twig' with {'wishlist':content.wishlist} %}
+
+  {% include '@Example/partials/common/footer.html.twig' %}
+  {% include '@Example/partials/common/htmlscripts.html.twig' %}
+</body>
+</html>

@@ -1,0 +1,83 @@
+<div class="{{ mainClass }}">
+  {% include '@Example/partials/checkout/order-summary/header.html.twig' %}
+
+  {% for list_i in cart.lineItems.list %}
+      <div class="row single-cart-item">
+          <div class="col-sm-1 col-xs-4 product-img-col">
+              <img class="img-responsive cart-item-img" src="{{ list_i.variant.image }}" alt="{{ list_i.variant.name }}">
+          </div>
+          <div class="col-sm-3 col-xs-8 product-info-text">
+              <p class="cart-item-name">
+                <a href="{{ list_i.variant.url }}">{{ list_i.variant.name }}</a>
+              </p>
+              <p class="grey-p">{{ list_i.variant.sku }}</p>
+              <p class="cart-attributes">
+              {% for attributes_i in list_i.attributes %}
+                  {{ attributes_i.name }}
+                  <span class="black-p" data-model="cartItem.{{ attributes_i.key }}">{{ attributes_i.value }}</span>
+                  {% if not loop.last %}<br>{% endif %}
+              {% endfor %}
+              </p>
+              {% if not ordered %}
+                <p class="cart-item-availability grey-p">
+                    <span class="glyphicon glyphicon-ok-sign"></span>{{ list_i.i18n }}
+                </p>
+              {% endif %}
+          </div>
+
+
+
+
+      {% if editable %}
+          <div class="col-sm-2 col-xs-12 cart-edit-delete">
+              <div class="edit-section-options">
+                  <div class="edit-delete-section">
+                      {% include '@Example/partials/checkout/remove-line-item-form.html.twig' with list_i %}
+                  </div>
+              </div>
+          </div>
+          <div class="col-sm-2 col-xs-12 clearfix">
+              {% include '@Example/partials/checkout/change-line-item-quantity-form.html.twig' with list_i %}
+          </div>
+      {% else %}
+          <div class="col-sm-2 col-sm-offset-2 col-xs-12 text-center quantity-counter">
+              <span class="visible-xs">{{ list_i.i18n }}:</span>
+              <span class="quantity-number">{{ list_i.quantity }}</span>
+          </div>
+      {% endif %}
+
+
+
+
+
+
+          <div class="col-sm-2 {% if list_i.editable %}col-xs-12 sm-pull-right{% else %}col-xs-7{% endif %}">
+              <div class="text-right cart-item-price">
+                  <span class="visible-xs xs-price-title">{{ list_i.i18n }}</span>
+                {% if list_i.variant.priceOld %}
+                    <span class="discounted-price">{{ list_i.variant.priceOld }}</span>
+                {% endif %}
+                  <span>{{ list_i.variant.price }}</span>
+              </div>
+          </div>
+          <div class="col-sm-2 {% if list_i.editable %}col-xs-12 sm-pull-right{% else %}col-xs-5{% endif %}">
+              <div class="text-right cart-item-price">
+                  <span class="visible-xs xs-price-title">{{ list_i.i18n }}</span>
+                  <span>{{ list_i.totalPrice }}</span>
+              </div>
+          </div>
+      </div>
+  {% endfor %}
+  {% include '@Example/partials/checkout/order-summary/discount-code-input.html.twig' %}
+  {% include '@Example/partials/checkout/order-summary/discount-summary.html.twig' %}
+  {% if checkoutConfirmation %}
+    {% include '@Example/partials/checkout/order-summary/confirmation-checkboxes.html.twig' %}
+  {% endif %}
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="total-price-calc">
+                {% include '@Example/partials/checkout/order-summary/totals.html.twig' %}
+            </div>
+        </div>
+    </div>
+</div>

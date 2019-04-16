@@ -1,0 +1,7 @@
+framework:
+    default_locale: '%locale%'
+    translator:
+        paths:
+            - '@ExampleBundle/Resources/translations'
+        fallbacks:
+            - '%locale%'

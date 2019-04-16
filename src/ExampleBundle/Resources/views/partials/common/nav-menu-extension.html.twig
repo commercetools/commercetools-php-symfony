@@ -1,0 +1,14 @@
+<ul class="nav navbar-nav categories-group-button">
+  <li class="dropdown menu-large">
+    <a href="" class="dropdown-toggle " data-toggle="dropdown">{{ 'header.allCategories'|trans([], 'main') }}</a>
+    <ul class="dropdown-menu megamenu row dropdown-submenu">
+      <li class="col-sm-12">
+        <div class="nav-accordion">
+          {% for categories_i in navMenu.categories %}
+          <h3><a href="{{ categories_i.url }}">{{ categories_i.text }}</a></h3>
+          {% endfor %}
+        </div>
+      </li>
+    </ul>
+  </li>
+</ul>

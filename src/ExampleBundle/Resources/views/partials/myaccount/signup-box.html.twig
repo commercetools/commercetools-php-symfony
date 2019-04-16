@@ -1,0 +1,68 @@
+<div class="signup-box-wrapper">
+  <form id="form-sign-up" method="post" action="{{ root.meta._links.signUpSubmit.href }}">
+    <input type="hidden" name="csrfToken" value="{{ root.meta.csrfToken }}"/>
+    <div class="clearfix">
+      <div class="pull-left">
+        <div class="signup-box-title">{{ 'signupBox.title'|trans([], 'my-account-login') }}</div>
+      </div>
+      <div class="pull-right">
+        <div class="signup-box-required">{{ 'signupBox.required'|trans([], 'my-account-login') }}*</div>
+      </div>
+    </div>
+    <hr class="signup-box-hr">
+    <div class="signup-box-description">{{ 'signupBox.description'|trans([], 'my-account-login') }}</div>
+      <div class="row">
+        {% include '@Example/partials/form/global-messages.html.twig' with {'messages':form.messages} %}
+        {% include '@Example/partials/form/global-errors.html.twig' with {'errors':form.errors} %}
+      </div>
+      <div class="row">
+        <div class="col-sm-6">
+       {% include '@Example/partials/form/choose-title.html.twig' with {'containerClass':"signup-box-input", 'selectId':"title", 'selectName':"title", 'options':settings.title} %}
+     </div>
+     </div>
+      <div class="row">
+        <div class="col-sm-6">
+          <div class="signup-box-input">
+            <span>{{ 'signupBox.firstName'|trans([], 'my-account-login') }}*</span><br>
+            <input type="text" name="firstName" value="{{ form.firstName }}">
+          </div>
+        </div>
+        <div class="col-sm-6">
+          <div class="signup-box-input">
+            <span>{{ 'signupBox.secondName'|trans([], 'my-account-login') }}*</span><br>
+            <input type="text" name="lastName" value="{{ form.lastName }}">
+          </div>
+        </div>
+      </div>
+      <hr class="signup-box-hr">
+      <div class="signup-box-input">
+        <span>{{ 'signupBox.email'|trans([], 'my-account-login') }}*</span><br>
+        <input type="email" name="email" value="{{ form.email }}">
+      </div>
+      <div class="row">
+        <div class="col-sm-6">
+          <div class="signup-box-input">
+            <span>{{ 'signupBox.password'|trans([], 'my-account-login') }}*</span><br>
+            <input type="password" name="password">
+          </div>
+        </div>
+        <div class="col-sm-6">
+          <div class="signup-box-input">
+            <span>{{ 'signupBox.confirmPassword'|trans([], 'my-account-login') }}*</span><br>
+            <input type="password" name="confirmPassword">
+          </div>
+        </div>
+      </div>
+      <hr class="signup-box-hr">
+      <div class="signup-box-newsletter">
+        <input type="checkbox" name="joinNewsletter" value="true" {% if form.subscribeToNewsletter %}checked{% endif %}>
+        <span>{{ 'signupBox.pleaseAddMe'|trans([], 'my-account-login') }} <a href="">{{ 'signupBox.newsletter'|trans([], 'my-account-login') }}</a></span>
+      </div>
+      <div class="signup-box-terms">
+        <input type="checkbox" name="agreeToTerms" value="true" {% if form.agreeToTerms %}checked{% endif %}>
+        <span>{{ 'signupBox.agreeTo'|trans([], 'my-account-login') }} <a href="#">{{ 'signupBox.termsAndConditions'|trans([], 'my-account-login') }}</a></span>
+      </div>
+      <div class="signup-box-policy">{{ 'signupBox.personalInfo'|trans([], 'my-account-login') }} <a href="#">{{ 'signupBox.privacyPolicy'|trans([], 'my-account-login') }}</a></div>
+      <button class="signup-register-btn">{{ 'signupBox.registerNow'|trans([], 'my-account-login') }}</button>
+    </form>
+</div>

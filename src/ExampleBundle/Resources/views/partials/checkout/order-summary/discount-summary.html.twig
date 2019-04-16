@@ -1,0 +1,30 @@
+{% for discountCodes_i in content.cart.discountCodes %}
+<div class="row">
+  <div class="col-sm-12">
+     <div class="col-sm-10 col-xs-7">
+        <div class="text-right payment-code-applied">
+            {% if discountCodes_i.first %}
+            <span class="text-uppercase payment-code-title" title="Promotion code applied">
+                {{ discountCodes_i.i18n }}
+            </span>
+            {% endif %}
+        </div>
+     </div>
+     <div class="col-sm-2 col-xs-5 text-right">
+        <form action="{{ discountCodes_i.root.meta._links.removeDiscountCode.href }}" method="post">
+            <span class="payment-code">{{ discountCodes_i.name }}</span>
+            <input type="hidden" name="csrfToken" value="{{ discountCodes_i.root.meta.csrfToken }}"/>
+            <input type="hidden" name="discountCodeId" value="{{ discountCodes_i.id }}">
+            {% if discountCodes_i.editable %}
+            <button id="cart-apply-promocode-btn">
+                <span>
+                    <img class="cart-action-icon" src="{{ discountCodes_i.root.meta.assetsPath }}/img/delete-1-421d04c332afe6d751d51e28934399fd.png"
+                        alt="{{ discountCodes_i.i18n }}">
+                </span>
+            </button>
+            {% endif %}
+        </form>
+    </div>
+  </div>
+</div>
+{% endfor %}

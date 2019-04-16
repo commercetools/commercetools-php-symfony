@@ -1,0 +1,9 @@
+<div class="row">
+  <div class="col-sm-12">
+    <ul class="dropdown-parent-category">
+      {% for limitedOptions_i in facet.limitedOptions %}
+        {% include '@Example/partials/catalog/pop/facet-option-link.html.twig' with {'facet':facet, 'option':limitedOptions_i} %}
+      {% endfor %}
+    </ul>
+  </div>
+</div>

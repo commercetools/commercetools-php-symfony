@@ -1,0 +1,155 @@
+close: Schließen
+choose: Auswählen
+home: Home
+more: Mehr
+messages:
+  pleaseWait: Bitte warten...
+  viewYourBagAlert: Warenkorb ansehen
+  addToWishlistAlert: Auf den Wunschzettel
+  requiredField: Pflichtfeld
+common:
+  color: Farbe
+  checkout: Checkout
+  description: Beschreibung
+  price: Price
+  totalPrice: Gesamtpreis __totalPrice__
+  quantity: Menge
+  size: Größe
+  salesTax: MwSt.
+  viewDetails: Details ansehen
+header:
+  title: Sunrise
+  stores: Filiale
+  help: Hilfe
+  callUs: Rufen Sie uns auf __phoneNumber__ an
+  miniCart: Warenkorb
+  viewBag: Warenkorb ansehen
+  checkout: Checkout
+  search: Suche
+  signIn: Log In
+  signOut: Log Out
+  language: Sprache
+  country: Land
+  location: Ort
+  allCategories: Alle Kategorien
+  teaser: Sommer 2015 – Was ist Ihre Inspiration?
+  new: Neu
+  sale: Sale
+  brands: Marken
+footer:
+  paySecure: Sicher zahlen
+  followUs: Follow us
+  joinNewsletter: Newsletter abonnieren
+  subscribe: Anmelden
+  yourEmail: Ihre E-Mail-Adresse...
+  customerCare: Kundenservice
+  contactUs: Kontaktieren Sie uns
+  help: Hilfe
+  shipping: Versand
+  returns: Retoure
+  sizeGuide: Größentabelle
+  aboutUs: Über uns
+  ourStory: Unsere Geschichte
+  careers: Karriere
+  shortcuts: Shortcuts
+  myAccount: Mein Konto
+  storeLocator: Filiale suchen
+  giftCards: Geschenkkarten
+  payment: Zahlung
+  legalInfo: © 2015 Sunrise
+  imprint: Impressum
+  privacyPolicy: Datenschutz
+  termsOfUse: AGB
+order:
+  paymentStatus:
+    title: Payment Status
+    balanceDue: Balance due
+    failed: Failed
+    pending: Pending
+    creditOwed: Credit owed
+    paid: Paid
+  shippingStatus:
+    title: Shipping Status
+    shipped: Shipped
+    ready: Ready
+    pending: Pending
+    partial: Partial
+    backorder: Backorder
+    delayed: Delayed
+form:
+  addressOne: Adresse 1
+  addressTwo: Adresse 2
+  apply: Weiter
+  city: Stadt
+  cancel: Abbrechen
+  choose: Auswählen
+  country: Land
+  edit: Bearbeiten
+  email: E-Mail-Adresse
+  emailRequired: Wir benötigen Ihre E-Mail-Adresse, um Ihnen die Bestell- und Versand-Bestätigungs-E-Mails zu senden.
+  delete: Löschen
+  firstName: Vorname
+  formHasErrorsFlash: Es ist ein Fehler aufgetreten
+  lastName: Nachname
+  month: Monat
+  personTitles:
+    mr: Herr
+    mrs: Frau
+    ms: Frau
+    dr: Dr.
+  phone: Telefon
+  phoneRequired: Bitte geben Sie Ihre Telefonnummer an, damit der Lieferant Sie bei der Zustellung kontaktieren kann.
+  postCode: PLZ
+  region: Region
+  required: Pflichtfeld
+  submit: Weiter
+  title: Titel
+  year: Jahr
+contactForm:
+  pleaseFill: Kontaktformular ausfüllen
+  customerSupport: Unser Kundenservice ist rund um die Uhr für Sie bei allen Fragen zur Bestellung oder Styling Beratung erreichbar.
+  callUsOn: Rufen Sie uns an +49 (89) 222 435 1234
+  responseTime: Wir bemühen uns Ihnen innerhalb von 24 Stunden zu antworten.
+  message: Nachricht
+forgotPasswordModal:
+  title: Passwort vergessen
+  description: Geben Sie Ihre Emailadresse ein und klicken Sie auf "Passwort zurücksetzen" und wir senden Ihnen einen Link, um ein neues Passwort zu setzen.
+storeFinder:
+  title: Filiale suchen
+  description: Bitte geben Sie eine Region oder PLZ ein
+  postcode: PLZ
+  lookUp: Suchen
+  orRegion: oder Region
+  city: Stadt
+  selectRegion: Region auswählen
+  selectCity: Stadt auswählen
+  address: Adresse
+  workingHours: Öffungszeit
+  addressLineOne: Sunrise Street 10
+  addressLineTwo: Sunrise, 10116
+  addressLineThree: Sunrise
+  addressLineFour: "123456789123"
+  standartHours:
+    title: Öffungszeit
+    monFri: "Montag-Freitag: 09.00 - 20.00"
+    weekend: "Samstag: 09.00 - 20.00"
+  holidayHours:
+    title: Öffungszeit über die Feiertage
+    monFri: "Montag-Freitag: 09.00 - 20.00"
+    weekend: "Samstag: 09.00 - 20.00"
+storeLocation:
+  title: Store location
+  address: Addresse
+  openingTimes: Öffungszeit
+  calculatingTxt: Berechnung...
+  availability:
+    available: "verfügbar"
+    notAvailable: "nicht verfügbar"
+    fewItemsLeft: "wenige Artikel"
+  reserve: Reservieren
+faq:
+  title: FAQS
+  delivery: Versand
+  returns: Retoure
+imprint:
+  title: Impressum

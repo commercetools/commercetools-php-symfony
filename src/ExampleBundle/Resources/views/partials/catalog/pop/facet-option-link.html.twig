@@ -1,0 +1,13 @@
+<li {% if selected %}class="category-active"{% endif %}>
+  <a href="{{ value }}">
+    {{ label }}
+    {% if not facet.countHidden %}
+      <span class="facet-count">({{ option.count }})</span>
+    {%  endif %}
+  </a>
+  <ul class="dropdown-subcategory">
+    {% for children_i in children %}
+      {% include '@Example/partials/catalog/pop/facet-option-link.html.twig' with {'facet':facet, 'option':children_i} %}
+    {% endfor %}
+  </ul>
+</li>

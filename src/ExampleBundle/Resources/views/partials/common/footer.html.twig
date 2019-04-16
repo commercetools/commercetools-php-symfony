@@ -1,0 +1,71 @@
+{% include '@Example/partials/components/components-include.html.twig' %}
+<div class="footer">
+  <div id="footer" class="container">
+    <div class="row text-uppercase">
+      <div class="col-sm-2">
+        <div class="footer-col">
+          <ul>
+            <li class="footer-title hidden-xs">{{ 'footer.customerCare'|trans([], 'main') }}</li>
+            <li><a href="{{ root.meta._links.contactUs.href }}">{{ 'footer.contactUs'|trans([], 'main') }}</a></li>
+            <li><a href="{{ root.meta._links.help.href }}">{{ 'footer.help'|trans([], 'main') }}</a></li>
+            <li><a href="{{ root.meta._links.shipping.href }}">{{ 'footer.shipping'|trans([], 'main') }}</a></li>
+            <li><a href="{{ root.meta._links.returns.href }}">{{ 'footer.returns'|trans([], 'main') }}</a></li>
+            <li><a href="{{ root.meta._links.sizeGuide.href }}">{{ 'footer.sizeGuide'|trans([], 'main') }}</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="col-sm-2 hidden-xs">
+        <div class="footer-col">
+          <ul>
+            <li class="footer-title hidden-xs">{{ 'footer.aboutUs'|trans([], 'main') }}</li>
+            <li><a href="{{ root.meta._links.ourStory.href }}">{{ 'footer.ourStory'|trans([], 'main') }}</a></li>
+            <li><a href="{{ root.meta._links.careers.href }}">{{ 'footer.careers'|trans([], 'main') }}</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="col-sm-2 hidden-xs">
+        <div class="footer-col">
+          <ul>
+            <li class="footer-title hidden-xs">{{ 'footer.shortcuts'|trans([], 'main') }}</li>
+            <li><a href="{{ root.meta._links.myAccount.href }}">{{ 'footer.myAccount'|trans([], 'main') }}</a></li>
+            <li><a href="{{ root.meta._links.storeLocator.href }}">{{ 'footer.storeLocator'|trans([], 'main') }}</a></li>
+            <li><a href="{{ root.meta._links.giftCards.href }}">{{ 'footer.giftCards'|trans([], 'main') }}</a></li>
+            <li><a href="{{ root.meta._links.payment.href }}">{{ 'footer.payment'|trans([], 'main') }}</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="col-sm-6 text-center newsletter-box">
+        <div class="row">
+          <div class="col-sm-5 text-left footer-title-yellow">
+            <p>{{ 'footer.joinNewsletter'|trans([], 'main') }}</p>
+          </div>
+          <div class="col-sm-7">
+            <form action="{{ root.meta._links.newsletter.href }}" method="POST" id="form-newsletter" class="email-submit">
+              <input type="hidden" name="csrfToken" value="{{ root.meta.csrfToken }}"/>
+              <input name="email" id="newsletter-input" class="email-box" type="email" placeholder="{{ 'footer.yourEmail'|trans([], 'main') }}" required>
+              <button id="newsletter-button" type="submit" class="search-button">
+                <span class="icon-font icon-next"></span>
+                <span class="sr-only">{{ 'footer.subscribe'|trans([], 'main') }}</span>
+              </button>
+            </form>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-sm-8 text-left card-info footer-title">
+            <p>{{ 'footer.paySecure'|trans([], 'main') }}</p>
+            <img src="{{ root.meta.assetsPath }}img/cards.png" alt="payment types" class="img-responsive payment-cards">
+          </div>
+          <div class="col-sm-4 text-left card-info footer-title">
+            <p>{{ 'footer.followUs'|trans([], 'main') }}</p>
+            <ul class="social-icons">
+              <a href=""><li><img class="social-icon" src="{{ root.meta.assetsPath }}img/Facebook.png" alt="Facebook"></li></a>
+              <a href=""><li><img class="social-icon" src="{{ root.meta.assetsPath }}img/Pinterest.png" alt="Pinterest"></li></a>
+              <a href=""><li><img class="social-icon" src="{{ root.meta.assetsPath }}img/Google.png" alt="Google+"></li></a>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% include '@Example/partials/common/sub-footer.html.twig' %}

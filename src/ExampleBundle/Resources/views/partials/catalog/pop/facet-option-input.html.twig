@@ -1,0 +1,8 @@
+<label for="filter-{{ facet.key }}-{{ option.value }}">
+  <input id="filter-{{ facet.key }}-{{ option.value }}"
+         type="{% if facet.multiSelect %}checkbox{% else %}radio{% endif %}"
+         name="{{ facet.key }}"
+         value="{{ option.value }}"
+         {% if selected %}checked{% endif %} />
+    {{ option.label }} {% if not facet.countHidden %}<span class="facet-count">({{ option.count }})</span>{% endif %}
+</label>

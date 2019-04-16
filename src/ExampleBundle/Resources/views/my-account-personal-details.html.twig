@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  {% include '@Example/partials/common/htmlhead.html.twig' %}
+</head>
+
+<body>
+  <div class="darkbg hidden"></div>
+  {% include '@Example/partials/common/header.html.twig' %}
+  <div class="my-account">
+    <div class="container">
+      {% include '@Example/partials/common/messages.html.twig' %}
+      <div class="my-account-title">
+        <span class="my-account-title-text icon-user">{{ 'myAccount.title'|trans([], 'my-account') }}</span>
+      </div>
+      <div class="row">
+        <div class="col-sm-9">
+          <div class="my-account-content">
+            <div class="row">
+              <div class="col-sm-3">
+                {% include '@Example/partials/myaccount/my-account-sidebar.html.twig' with {'myPersonalDetailsTab':true} %}
+              </div>
+              <div id="my-account-desktop-content" class="col-sm-9">
+                <div class="personal-details">
+                  <div class="personal-details-text-one">
+                    <span>{{ 'personalDetails.welcomeBack'|trans([], 'my-account') }}</span>
+                    <span>{{ content.customerInfo.customer.firstName }}</span>
+                  </div>
+                  <div class="personal-details-text-two">
+                    {{ 'personalDetails.welcomeDescription'|trans([], 'my-account') }}<br>
+                    <span class="customer-number">{{ content.customerInfo.customer.customerNumber }}</span>
+                  </div>
+                    <div class="personal-details-title">
+                        <span>{{ 'personalDetails.title'|trans([], 'my-account') }}</span>
+                        <span class="pull-right required-text personal-details-edit-show">{{ 'form.required'|trans([], 'main') }}*</span>
+                    </div>
+
+                    <div class="personal-details-edit-hide">
+                        <div class="personal-details-box">
+                          <div>
+                              {{ content.customerInfo.customer.title }}
+                              {{ content.customerInfo.customer.firstName }}
+                              {{ content.customerInfo.customer.lastName }}
+                          </div>
+                          <div>{{ content.customerInfo.customer.email }}</div><br>
+                            {% if content.customerInfo.subscribed %}
+                            <div>{{ 'personalDetails.subscribedToNewsletter'|trans([], 'my-account') }}</div>
+                            {% endif %}
+                          <div class="personal-details-box-edit">
+                            <button class="personal-details-edit-show-btn"><img src="{{ root.meta.assetsPath }}img/edit-1.png" alt="edit icon">{{ 'form.edit'|trans([], 'main') }}</button>
+                          </div>
+                        </div>
+                  </div>
+
+                  <div class="personal-details-edit personal-details-edit-show {% if content.personalDetailsForm.errors %}in{% endif %}">
+                      <form id="form-edit-personal-details" action="{{ root.meta._links.editMyPersonalDetails.href }}" method="POST">
+                          <input type="hidden" name="csrfToken" value="{{ root.meta.csrfToken }}"/>
+                          <div class="row">
+                            {% include '@Example/partials/form/global-messages.html.twig' with {'messages':content.personalDetailsForm.messages} %}
+                            {% include '@Example/partials/form/global-errors.html.twig' with {'errors':content.personalDetailsForm.errors} %}
+                          </div>
+                          <div class="row">
+                            <div class="col-sm-12">
+                              {% include '@Example/partials/form/choose-title.html.twig' with {'containerClass':"form-sections", 'selectId':"personal-details-title-select", 'selectName':"title", 'options':content.personalDetailsFormSettings.title} %}
+                            </div>
+                          </div>
+                          <div class="row">
+                            <div class="col-sm-6">
+                              <div class="form-sections">
+                                <span class="form-labels">{{ 'personalDetails.personalDetailsForm.firstName'|trans([], 'my-account') }}*</span><br>
+                                <input class="form-inputs" name="firstName" value="{{ content.personalDetailsForm.firstName }}" type="text">
+                              </div>
+                              <div class="form-sections">
+                                <span class="form-labels">{{ 'personalDetails.personalDetailsForm.email'|trans([], 'my-account') }}*</span><br>
+                                <input class="form-inputs" name="email" value="{{ content.personalDetailsForm.email }}" type="email"><br>
+                                <span class="form-notes"></span>
+                              </div>
+                            </div>
+                            <div class="col-sm-6">
+                              <div class="form-sections">
+                                <span class="form-labels">{{ 'personalDetails.personalDetailsForm.lastName'|trans([], 'my-account') }}*</span><br>
+                                <input class="form-inputs" name="lastName" value="{{ content.personalDetailsForm.lastName }}" type="text">
+                              </div>
+                            </div>
+                          </div>
+                        <hr class="light-grey-hr">
+                        <div class="personal-details-newsletter">
+                          <span>
+                            <input name="subscribeToNewsletter" type="checkbox" {% if personalDetails.personalDetailsForm.subscribeToNewsletter %}checked{% endif %}/>
+                            {{ 'personalDetails.personalDetailsForm.subscribeToNewsletter'|trans([], 'my-account') }}
+                          </span>
+                        </div>
+                        <div class="personal-details-edit-btn">
+                          <span>
+                            <button type="submit" class="update-btn">{{ 'personalDetails.updateBtn'|trans([], 'my-account') }}</button>
+                            <button type="button" class="cancel-btn personal-details-edit-hide-btn">{{ 'personalDetails.cancelBtn'|trans([], 'my-account') }}</button>
+                          </span>
+                        </div>
+                      </form>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="col-sm-3">
+          <div class="my-account-banners">
+            <div class="banner-one-wrapper hidden-xs">
+              <div class="my-account-banner">
+                <div class="banner-title">
+                  {{ 'personalDetails.bannerOne.title'|trans([], 'my-account') }}
+                </div>
+                <hr class="banner-hr">
+                <div class="banner-subtitle">
+                  {{ 'personalDetails.bannerOne.subtitle'|trans([], 'my-account') }}
+                </div>
+                <div class="banner-btn-wrapper">
+                  <a class="banner-btn" href="{{ content.bannerOne.url }}">{{ 'personalDetails.shopAllBtn'|trans([], 'my-account') }}</a>
+                </div>
+              </div>
+            </div>
+            <div class="banner-two-wrapper">
+              <div class="my-account-banner image-banner">
+                <div class="banner-title">
+                  {{ 'personalDetails.bannerTwo.title'|trans([], 'my-account') }}
+                </div>
+                <hr class="banner-hr">
+                <div class="banner-subtitle">
+                  {{ 'personalDetails.bannerTwo.subtitle'|trans([], 'my-account') }}
+                </div>
+                <div class="banner-btn-wrapper">
+                  <a class="banner-btn" href="{{ content.bannerTwo.url }}">{{ 'personalDetails.shopAllBtn'|trans([], 'my-account') }}</a>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  {# {{> common/wishlist}} #}
+  {% include '@Example/partials/common/footer.html.twig' %}
+  {% include '@Example/partials/common/htmlscripts.html.twig' %}
+</body>
+
+</html>

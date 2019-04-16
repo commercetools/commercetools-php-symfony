@@ -92,7 +92,7 @@ class CatalogController extends AbstractController
             $filter
         );
 
-        return $this->render('ExampleBundle:catalog:index.html.twig', [
+        return $this->render('@Example/pdp.html.twig', [
             'products' => $products,
             'offset' => $offset,
             'form' => $form->createView(),

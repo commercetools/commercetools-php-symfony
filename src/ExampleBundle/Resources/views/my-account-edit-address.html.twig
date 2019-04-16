@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  {% include '@Example/partials/common/htmlhead.html.twig' %}
+</head>
+
+<body>
+  <div class="darkbg hidden"></div>
+  {% include '@Example/partials/common/header.html.twig' %}
+  <div class="address-book">
+    <div class="container">
+      {% include '@Example/partials/common/messages.html.twig' %}
+      <div class="my-account-title">
+        <span class="my-account-title-text icon-user">{{ 'myAccount.title'|trans([], 'my-account') }}</span>
+      </div>
+      <div class="row">
+        <div class="col-sm-12">
+          <div class="address-book-wrapper">
+            <div class="row">
+              <div class="col-sm-3">
+                {% include '@Example/partials/myaccount/my-account-sidebar.html.twig' with {'myAddressBookTab':true} %}
+              </div>
+              <div id="my-account-desktop-content" class="col-sm-9">
+                <div class="address-book-content edit-address-book-content">
+                  <div class="row">
+                    <div class="col-sm-12">
+                      <div class="address-book-title hidden-xs">
+                        {{ 'addressBook.title'|trans([], 'my-account') }}
+                      </div>
+                    </div>
+                  </div>
+                  <form id="form-edit-my-address-book" action="{{ root.meta._links.myAddressBookEditAddressSubmit.href }}" method="POST">
+                    <input type="hidden" name="csrfToken" value="{{ root.meta.csrfToken }}"/>
+                    <input type="hidden" name="id" value="{{ content.editAddressForm.id }}"/>
+                    <div class="row">
+                      {% include '@Example/partials/form/global-messages.html.twig' with {'messages':content.editAddressForm.messages} %}
+                      {% include '@Example/partials/form/global-errors.html.twig' with {'errors':content.editAddressForm.errors} %}
+                    </div>
+                    <div class="row">
+                      <div class="col-sm-12">
+                        {% include '@Example/partials/myaccount/my-address-book-address-form.html.twig' with {'form':content.editAddressForm, 'settings':content.editAddressFormSettings} %}
+                      </div>
+                    </div>
+                    <div class="row">
+                      <div class="col-sm-12">
+                        <div class="edit-address-book-footer">
+                          <div class="btn-grey push-left">
+                            <a href="{{ root.meta._links.myAddressBook.href }}">{{ 'addressBook.buttons.cancelAddressBtn'|trans([], 'my-account') }}</a>
+                          </div>
+                          <div class="add-new-address-btn push-right">
+                            <button type="submit">{{ 'addressBook.buttons.saveAddressBtn'|trans([], 'my-account') }}</button>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </form>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  {# {{> common/wishlist}} #}
+  {% include '@Example/partials/common/footer.html.twig' %}
+  {% include '@Example/partials/common/htmlscripts.html.twig' %}
+</body>
+
+</html>
