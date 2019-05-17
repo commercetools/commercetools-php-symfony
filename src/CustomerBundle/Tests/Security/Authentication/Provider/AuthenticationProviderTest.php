@@ -155,7 +155,7 @@ class AuthenticationProviderTest extends TestCase
     public function testCheckAuthenticationSuccessResponse()
     {
         $token = $this->prophesize(UsernamePasswordToken::class);
-        $token->getUser()->willReturn('user@localhost')->shouldBeCalled();
+        $token->getUser()->willReturn('USER@localhost')->shouldBeCalled();
         $token->getCredentials()->willReturn('foo')->shouldBeCalled();
 
         $response = $this->prophesize(ResourceResponse::class);
@@ -163,7 +163,7 @@ class AuthenticationProviderTest extends TestCase
         $response->toArray()->willReturn([
             'customer' => Customer::of()
                 ->setId('id-1')
-                ->setEmail('user@localhost')
+                ->setEmail('user@LOCALHOST')
                 ->setPassword('foo')
                 ->setAddresses(AddressCollection::of()->add(Address::of()->setId('address-1')->setCountry('DE')))
                 ->setDefaultShippingAddressId('address-1')
