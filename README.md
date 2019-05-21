@@ -64,9 +64,16 @@ for clients created in the past.
 CTP_CLIENT_ID=<your client id>
 CTP_CLIENT_SECRET=<your client secret>
 CTP_PROJECT_KEY=<your project id>
-CTP_AUTH_URL=https://auth.commercetools.com or https://auth.commercetools.co
-CTP_API_URL=https://api.commercetools.com or https://api.commercetools.co
+CTP_AUTH_URL=https://auth.commercetools.com
+CTP_API_URL=https://api.commercetools.com
 CTP_SCOPES=<your desired scopes>
+```
+
+or for US region change URLs to
+
+```dotenv
+CTP_AUTH_URL=https://auth.commercetools.co
+CTP_API_URL=https://api.commercetools.co
 ```
 
 For more information about using `.env` and `.env.local`, see
