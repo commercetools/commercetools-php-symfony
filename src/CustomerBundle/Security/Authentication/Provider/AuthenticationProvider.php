@@ -17,6 +17,7 @@ use Symfony\Component\Security\Core\Exception\UsernameNotFoundException;
 use Symfony\Component\Security\Core\User\UserCheckerInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Security\Core\User\UserProviderInterface;
+use function strtolower;
 
 class AuthenticationProvider extends UserAuthenticationProvider
 {
@@ -90,7 +91,7 @@ class AuthenticationProvider extends UserAuthenticationProvider
 
             $customer = $result->getCustomer();
 
-            if ($currentUser !== $customer->getEmail()) {
+            if (strtolower($currentUser) !== strtolower($customer->getEmail())) {
                 throw new BadCredentialsException('The presented password is invalid.');
             }
 

@@ -3,11 +3,6 @@
 ### Pre-requisites
 
 * You have successfully completed the Installation step and verified that everything works fine.
-* Add twig templating engine service in file `config/packages/framework.yaml` under `framework` parameter:
-```yaml
-    templating:
-        engines: ['twig']
-```
 * Optionally, you may want to install the Symfony's built-in Web Server if you don't want
 to bother configuring a full-featured web server such as Nginx or Apache, by running
 `composer require symfony/web-server-bundle --dev`. Note, that this is only recommended
