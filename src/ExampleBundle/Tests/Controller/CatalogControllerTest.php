@@ -46,7 +46,7 @@ class CatalogControllerTest extends WebTestCase
     private $request;
     private $myContainer;
     private $twig;
-    private $client;
+    private $ctpClient;
     /** @var CatalogManager */
     private $catalogManager;
 
@@ -55,7 +55,7 @@ class CatalogControllerTest extends WebTestCase
         $this->request = $this->prophesize(Request::class);
         $this->myContainer = $this->prophesize(ContainerInterface::class);
         $this->twig = $this->prophesize(Environment::class);
-        $this->client = $this->prophesize(Client::class);
+        $this->ctpClient = $this->prophesize(Client::class);
         $this->catalogManager = $this->prophesize(CatalogManager::class);
 
         $this->request->getLocale()->willReturn('en')->shouldBeCalledOnce();
@@ -102,7 +102,7 @@ class CatalogControllerTest extends WebTestCase
         $this->myContainer->has('parameter_bag')->willReturn(true)->shouldBeCalledTimes(2);
         $this->myContainer->get('parameter_bag')->willReturn($parameterBag->reveal())->shouldBeCalledTimes(2);
 
-        $controller = new CatalogController($this->client->reveal(), $this->catalogManager->reveal());
+        $controller = new CatalogController($this->ctpClient->reveal(), $this->catalogManager->reveal());
         $controller->setContainer($this->myContainer->reveal());
         $response = $controller->indexAction($this->request->reveal(), 'category', 'type');
 
@@ -160,7 +160,7 @@ class CatalogControllerTest extends WebTestCase
         $this->catalogManager->getProductBySlug('en', 'prod-1', 'EUR', 'DE')
             ->willReturn($productProjection)->shouldBeCalledOnce();
 
-        $controller = new CatalogController($this->client->reveal(), $this->catalogManager->reveal(), $shoppingListManager->reveal());
+        $controller = new CatalogController($this->ctpClient->reveal(), $this->catalogManager->reveal(), $shoppingListManager->reveal());
         $controller->setContainer($this->myContainer->reveal());
         $controller->detailBySlugAction($this->request->reveal(), 'prod-1', $session->reveal());
     }
@@ -194,7 +194,7 @@ class CatalogControllerTest extends WebTestCase
                 throw new NotFoundHttpException();
             })->shouldBeCalledOnce();
 
-        $controller = new CatalogController($this->client->reveal(), $this->catalogManager->reveal(), $shoppingListManager->reveal());
+        $controller = new CatalogController($this->ctpClient->reveal(), $this->catalogManager->reveal(), $shoppingListManager->reveal());
         $controller->setContainer($this->myContainer->reveal());
         $response = $controller->detailBySlugAction($this->request->reveal(), 'prod-1', $session->reveal());
 
@@ -232,7 +232,7 @@ class CatalogControllerTest extends WebTestCase
 
         $this->catalogManager->getProductById('en', 'prod-1')->willReturn(ProductProjection::of())->shouldBeCalledOnce();
 
-        $controller = new CatalogController($this->client->reveal(), $this->catalogManager->reveal(), $shoppingListManager->reveal());
+        $controller = new CatalogController($this->ctpClient->reveal(), $this->catalogManager->reveal(), $shoppingListManager->reveal());
         $controller->setContainer($this->myContainer->reveal());
         $response = $controller->detailByIdAction($this->request->reveal(), 'prod-1', $session->reveal(), $user->reveal());
 
@@ -271,7 +271,7 @@ class CatalogControllerTest extends WebTestCase
 
         $this->catalogManager->suggestProducts('en', 'foo', 5, 'EUR', 'DE')->willReturn($productProjectionCollection)->shouldBeCalledOnce();
 
-        $controller = new CatalogController($this->client->reveal(), $this->catalogManager->reveal());
+        $controller = new CatalogController($this->ctpClient->reveal(), $this->catalogManager->reveal());
         $controller->setContainer($this->myContainer->reveal());
         $suggest = $controller->suggestAction($this->request->reveal(), 'foo');
 
@@ -296,7 +296,7 @@ class CatalogControllerTest extends WebTestCase
 
         $this->twig->render('ExampleBundle:catalog:productTypesList.html.twig', ['productTypes' => ''])->shouldBeCalledOnce();
 
-        $controller = new CatalogController($this->client->reveal(), $this->catalogManager->reveal());
+        $controller = new CatalogController($this->ctpClient->reveal(), $this->catalogManager->reveal());
         $controller->setContainer($this->myContainer->reveal());
         $response = $controller->getProductTypesAction($this->request->reveal());
 
@@ -309,7 +309,7 @@ class CatalogControllerTest extends WebTestCase
 
         $this->twig->render('ExampleBundle:catalog:categoriesList.html.twig', ['categories' => ''])->shouldBeCalledOnce();
 
-        $controller = new CatalogController($this->client->reveal(), $this->catalogManager->reveal());
+        $controller = new CatalogController($this->ctpClient->reveal(), $this->catalogManager->reveal());
         $controller->setContainer($this->myContainer->reveal());
         $response = $controller->getCategoriesAction($this->request->reveal());
 

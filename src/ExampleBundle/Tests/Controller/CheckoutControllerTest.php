@@ -42,7 +42,7 @@ class CheckoutControllerTest extends WebTestCase
     private $request;
     private $myContainer;
     private $twig;
-    private $client;
+    private $ctpClient;
     /** @var CartManager */
     private $cartManager;
     /** @var ShippingMethodManager */
@@ -55,7 +55,7 @@ class CheckoutControllerTest extends WebTestCase
         $this->request = $this->prophesize(Request::class);
         $this->myContainer = $this->prophesize(ContainerInterface::class);
         $this->twig = $this->prophesize(Environment::class);
-        $this->client = $this->prophesize(Client::class);
+        $this->ctpClient = $this->prophesize(Client::class);
         $this->cartManager = $this->prophesize(CartManager::class);
         $this->shippingMethodManager = $this->prophesize(ShippingMethodManager::class);
         $this->orderManager = $this->prophesize(OrderManager::class);
@@ -79,7 +79,7 @@ class CheckoutControllerTest extends WebTestCase
         $this->myContainer->get('twig')->willReturn($this->twig)->shouldBeCalledOnce();
         $this->request->getLocale()->willReturn('en')->shouldNotBeCalled();
 
-        $controller = new CheckoutController($this->client->reveal(), $this->cartManager->reveal(), $this->shippingMethodManager->reveal(), $this->orderManager->reveal());
+        $controller = new CheckoutController($this->ctpClient->reveal(), $this->cartManager->reveal(), $this->shippingMethodManager->reveal(), $this->orderManager->reveal());
         $controller->setContainer($this->myContainer->reveal());
         $response = $controller->signinAction($authenticationUtils->reveal());
 
@@ -101,7 +101,7 @@ class CheckoutControllerTest extends WebTestCase
 
         $authenticationUtils = $this->prophesize(AuthenticationUtils::class);
 
-        $controller = new CheckoutController($this->client->reveal(), $this->cartManager->reveal(), $this->shippingMethodManager->reveal(), $this->orderManager->reveal());
+        $controller = new CheckoutController($this->ctpClient->reveal(), $this->cartManager->reveal(), $this->shippingMethodManager->reveal(), $this->orderManager->reveal());
         $controller->setContainer($this->myContainer->reveal());
         $response = $controller->signinAction($authenticationUtils->reveal());
 
@@ -166,7 +166,7 @@ class CheckoutControllerTest extends WebTestCase
         $this->cartManager->getCart('en', 'cart-id-1', Argument::type(CtpUser::class), 'baz')->willReturn($cart)->shouldBeCalledOnce();
         $this->cartManager->update(Argument::type(Cart::class))->willReturn($cartUpdateBuilder->reveal())->shouldBeCalledOnce();
 
-        $controller = new CheckoutController($this->client->reveal(), $this->cartManager->reveal(), $this->shippingMethodManager->reveal(), $this->orderManager->reveal());
+        $controller = new CheckoutController($this->ctpClient->reveal(), $this->cartManager->reveal(), $this->shippingMethodManager->reveal(), $this->orderManager->reveal());
         $controller->setContainer($this->myContainer->reveal());
         $response = $controller->shippingMethodAction($this->request->reveal(), $session->reveal(), $user->reveal());
 
@@ -219,7 +219,7 @@ class CheckoutControllerTest extends WebTestCase
         $this->shippingMethodManager->getShippingMethodsByCart('en', 'cart-id-1')->willReturn($shippingMethod)->shouldBeCalledOnce();
         $this->cartManager->getCart('en', 'cart-id-1', Argument::type(CtpUser::class), 'baz')->willReturn($cart)->shouldBeCalledOnce();
 
-        $controller = new CheckoutController($this->client->reveal(), $this->cartManager->reveal(), $this->shippingMethodManager->reveal(), $this->orderManager->reveal());
+        $controller = new CheckoutController($this->ctpClient->reveal(), $this->cartManager->reveal(), $this->shippingMethodManager->reveal(), $this->orderManager->reveal());
         $controller->setContainer($this->myContainer->reveal());
         $response = $controller->shippingMethodAction($this->request->reveal(), $session->reveal(), $user->reveal());
 
@@ -248,7 +248,7 @@ class CheckoutControllerTest extends WebTestCase
         $this->shippingMethodManager->getShippingMethodsByCart('en', 'cart-id-1')->willReturn($shippingMethod)->shouldBeCalledOnce();
         $this->cartManager->getCart('en', 'cart-id-1', Argument::type(CtpUser::class), 'baz')->willReturn($cart)->shouldBeCalledOnce();
 
-        $controller = new CheckoutController($this->client->reveal(), $this->cartManager->reveal(), $this->shippingMethodManager->reveal(), $this->orderManager->reveal());
+        $controller = new CheckoutController($this->ctpClient->reveal(), $this->cartManager->reveal(), $this->shippingMethodManager->reveal(), $this->orderManager->reveal());
         $controller->setContainer($this->myContainer->reveal());
         $response = $controller->shippingMethodAction($this->request->reveal(), $session->reveal(), $user->reveal());
 
@@ -264,7 +264,7 @@ class CheckoutControllerTest extends WebTestCase
 
         $this->myContainer->get('router')->willReturn($router)->shouldBeCalledOnce();
 
-        $controller = new CheckoutController($this->client->reveal(), $this->cartManager->reveal(), $this->shippingMethodManager->reveal(), $this->orderManager->reveal());
+        $controller = new CheckoutController($this->ctpClient->reveal(), $this->cartManager->reveal(), $this->shippingMethodManager->reveal(), $this->orderManager->reveal());
         $controller->setContainer($this->myContainer->reveal());
         $response = $controller->reviewOrderDetailsAction($this->request->reveal(), $session->reveal());
 
@@ -286,7 +286,7 @@ class CheckoutControllerTest extends WebTestCase
 
         $this->cartManager->getCart('en', 'cart-1', Argument::type(CtpUser::class), 'baz')->willReturn($cart)->shouldBeCalledOnce();
 
-        $controller = new CheckoutController($this->client->reveal(), $this->cartManager->reveal(), $this->shippingMethodManager->reveal(), $this->orderManager->reveal());
+        $controller = new CheckoutController($this->ctpClient->reveal(), $this->cartManager->reveal(), $this->shippingMethodManager->reveal(), $this->orderManager->reveal());
         $controller->setContainer($this->myContainer->reveal());
         $response = $controller->reviewOrderDetailsAction($this->request->reveal(), $session->reveal(), $user->reveal());
 
@@ -309,7 +309,7 @@ class CheckoutControllerTest extends WebTestCase
         $this->myContainer->get('router')->willReturn($router)->shouldBeCalledOnce();
         $this->cartManager->getCart('en', 'cart-1', null, 'baz')->willReturn($cart)->shouldBeCalledOnce();
 
-        $controller = new CheckoutController($this->client->reveal(), $this->cartManager->reveal(), $this->shippingMethodManager->reveal(), $this->orderManager->reveal());
+        $controller = new CheckoutController($this->ctpClient->reveal(), $this->cartManager->reveal(), $this->shippingMethodManager->reveal(), $this->orderManager->reveal());
         $controller->setContainer($this->myContainer->reveal());
         $response = $controller->placeCartToOrderAction($this->request->reveal(), $session->reveal(), $markingStoreOrderState->reveal());
 
@@ -340,7 +340,7 @@ class CheckoutControllerTest extends WebTestCase
         $this->cartManager->getCart('en', 'cart-1', Argument::type(CtpUser::class), 'baz')->willReturn($cart)->shouldBeCalledOnce();
         $this->orderManager->createOrderFromCart('en', Argument::type(Cart::class), Argument::type(StateReference::class))->willReturn($order)->shouldBeCalledOnce();
 
-        $controller = new CheckoutController($this->client->reveal(), $this->cartManager->reveal(), $this->shippingMethodManager->reveal(), $this->orderManager->reveal());
+        $controller = new CheckoutController($this->ctpClient->reveal(), $this->cartManager->reveal(), $this->shippingMethodManager->reveal(), $this->orderManager->reveal());
         $controller->setContainer($this->myContainer->reveal());
         $response = $controller->placeCartToOrderAction($this->request->reveal(), $session->reveal(), $markingStoreOrderState->reveal(), $user->reveal());
 
@@ -360,7 +360,7 @@ class CheckoutControllerTest extends WebTestCase
 
         $this->myContainer->get('router')->willReturn($router)->shouldBeCalledOnce();
 
-        $controller = new CheckoutController($this->client->reveal(), $this->cartManager->reveal(), $this->shippingMethodManager->reveal(), $this->orderManager->reveal());
+        $controller = new CheckoutController($this->ctpClient->reveal(), $this->cartManager->reveal(), $this->shippingMethodManager->reveal(), $this->orderManager->reveal());
         $controller->setContainer($this->myContainer->reveal());
         $response = $controller->setAddressAction($this->request->reveal(), $session->reveal());
 
@@ -431,7 +431,7 @@ class CheckoutControllerTest extends WebTestCase
 
         $this->myContainer->get('router')->willReturn($router)->shouldBeCalledOnce();
 
-        $controller = new CheckoutController($this->client->reveal(), $this->cartManager->reveal(), $this->shippingMethodManager->reveal(), $this->orderManager->reveal());
+        $controller = new CheckoutController($this->ctpClient->reveal(), $this->cartManager->reveal(), $this->shippingMethodManager->reveal(), $this->orderManager->reveal());
         $controller->setContainer($this->myContainer->reveal());
         $response = $controller->setAddressAction($this->request->reveal(), $session->reveal(), $user->reveal());
 
@@ -481,7 +481,7 @@ class CheckoutControllerTest extends WebTestCase
         $this->myContainer->has('twig')->willReturn(true)->shouldBeCalledOnce();
         $this->myContainer->get('twig')->willReturn($this->twig)->shouldBeCalledOnce();
 
-        $controller = new CheckoutController($this->client->reveal(), $this->cartManager->reveal(), $this->shippingMethodManager->reveal(), $this->orderManager->reveal());
+        $controller = new CheckoutController($this->ctpClient->reveal(), $this->cartManager->reveal(), $this->shippingMethodManager->reveal(), $this->orderManager->reveal());
         $controller->setContainer($this->myContainer->reveal());
         $response = $controller->setAddressAction($this->request->reveal(), $session->reveal(), $user->reveal());
 

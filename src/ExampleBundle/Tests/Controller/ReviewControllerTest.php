@@ -34,7 +34,7 @@ class ReviewControllerTest extends WebTestCase
     private $request;
     private $myContainer;
     private $twig;
-    private $client;
+    private $ctpClient;
     /** @var ReviewManager */
     private $reviewManager;
     private $registry;
@@ -44,7 +44,7 @@ class ReviewControllerTest extends WebTestCase
         $this->request = $this->prophesize(Request::class);
         $this->myContainer = $this->prophesize(ContainerInterface::class);
         $this->twig = $this->prophesize(Environment::class);
-        $this->client = $this->prophesize(Client::class);
+        $this->ctpClient = $this->prophesize(Client::class);
         $this->reviewManager = $this->prophesize(ReviewManager::class);
         $this->registry = $this->prophesize(Registry::class);
 
@@ -72,7 +72,7 @@ class ReviewControllerTest extends WebTestCase
         $this->reviewManager->getByProductId('en', 'product-1', Argument::type(QueryParams::class))
             ->willReturn('foo')->shouldBeCalledOnce();
 
-        $controller = new ReviewController($this->client->reveal(), $this->reviewManager->reveal(), $this->registry->reveal());
+        $controller = new ReviewController($this->ctpClient->reveal(), $this->reviewManager->reveal(), $this->registry->reveal());
         $controller->setContainer($this->myContainer->reveal());
         $response = $controller->showReviewsForProductAction($this->request->reveal(), 'product-1');
 
@@ -118,7 +118,7 @@ class ReviewControllerTest extends WebTestCase
         )
             ->willReturn('foo')->shouldBeCalledOnce();
 
-        $controller = new ReviewController($this->client->reveal(), $this->reviewManager->reveal(), $this->registry->reveal());
+        $controller = new ReviewController($this->ctpClient->reveal(), $this->reviewManager->reveal(), $this->registry->reveal());
         $controller->setContainer($this->myContainer->reveal());
         $response = $controller->createReviewForProductAction($this->request->reveal(), 'product-1', $user->reveal());
 
@@ -145,7 +145,7 @@ class ReviewControllerTest extends WebTestCase
 
         $this->request->getLocale()->willReturn('en')->shouldNotBeCalled();
 
-        $controller = new ReviewController($this->client->reveal(), $this->reviewManager->reveal(), $this->registry->reveal());
+        $controller = new ReviewController($this->ctpClient->reveal(), $this->reviewManager->reveal(), $this->registry->reveal());
         $controller->setContainer($this->myContainer->reveal());
         $response = $controller->createReviewForProductAction($this->request->reveal(), 'product-1', $user->reveal());
 
@@ -169,7 +169,7 @@ class ReviewControllerTest extends WebTestCase
         $this->myContainer->has('twig')->willReturn(true)->shouldBeCalledOnce();
         $this->myContainer->get('twig')->willReturn($this->twig)->shouldBeCalledOnce();
 
-        $controller = new ReviewController($this->client->reveal(), $this->reviewManager->reveal(), $this->registry->reveal());
+        $controller = new ReviewController($this->ctpClient->reveal(), $this->reviewManager->reveal(), $this->registry->reveal());
         $controller->setContainer($this->myContainer->reveal());
         $response = $controller->updateReviewAction($this->request->reveal(), 'review-1');
 
@@ -202,7 +202,7 @@ class ReviewControllerTest extends WebTestCase
         $this->reviewManager->getReviewForUser('en', 'user-1', 'review-1')
             ->willReturn($reviewCollection)->shouldBeCalledOnce();
 
-        $controller = new ReviewController($this->client->reveal(), $this->reviewManager->reveal(), $this->registry->reveal());
+        $controller = new ReviewController($this->ctpClient->reveal(), $this->reviewManager->reveal(), $this->registry->reveal());
         $controller->setContainer($this->myContainer->reveal());
         $response = $controller->updateReviewAction($this->request->reveal(), 'review-1', $user->reveal());
 
@@ -229,7 +229,7 @@ class ReviewControllerTest extends WebTestCase
         $this->reviewManager->getReviewForUser('en', 'user-1', 'review-1')
             ->willReturn(ReviewCollection::of())->shouldBeCalledOnce();
 
-        $controller = new ReviewController($this->client->reveal(), $this->reviewManager->reveal(), $this->registry->reveal());
+        $controller = new ReviewController($this->ctpClient->reveal(), $this->reviewManager->reveal(), $this->registry->reveal());
         $controller->setContainer($this->myContainer->reveal());
         $response = $controller->updateReviewAction($this->request->reveal(), 'review-1', $user->reveal());
 
@@ -264,7 +264,7 @@ class ReviewControllerTest extends WebTestCase
         $this->reviewManager->getReviewForUser('en', 'user-1', 'review-1')
             ->willReturn($reviewCollection)->shouldBeCalledOnce();
 
-        $controller = new ReviewController($this->client->reveal(), $this->reviewManager->reveal(), $this->registry->reveal());
+        $controller = new ReviewController($this->ctpClient->reveal(), $this->reviewManager->reveal(), $this->registry->reveal());
         $controller->setContainer($this->myContainer->reveal());
         $response = $controller->updateReviewAction($this->request->reveal(), 'review-1', $user->reveal());
 
@@ -304,7 +304,7 @@ class ReviewControllerTest extends WebTestCase
         $this->reviewManager->getReviewForUser('en', 'user-1', 'review-1')
             ->willReturn($reviewCollection)->shouldBeCalledOnce();
 
-        $controller = new ReviewController($this->client->reveal(), $this->reviewManager->reveal(), $this->registry->reveal());
+        $controller = new ReviewController($this->ctpClient->reveal(), $this->reviewManager->reveal(), $this->registry->reveal());
         $controller->setContainer($this->myContainer->reveal());
         $response = $controller->updateReviewAction($this->request->reveal(), 'review-1', $user->reveal());
 
