@@ -9,6 +9,8 @@ use Symfony\Component\HttpKernel\Bundle\Bundle;
 
 class CtpBundle extends Bundle
 {
+    const VERSION = '0.4.8-dev';
+
     public function getContainerExtension()
     {
         return new CommercetoolsExtension();
