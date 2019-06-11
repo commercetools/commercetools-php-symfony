@@ -38,7 +38,7 @@ class PaymentControllerTest extends WebTestCase
     private $request;
     private $myContainer;
     private $twig;
-    private $client;
+    private $ctpClient;
     /** @var PaymentManager */
     private $paymentManager;
     private $registry;
@@ -48,7 +48,7 @@ class PaymentControllerTest extends WebTestCase
         $this->request = $this->prophesize(Request::class);
         $this->myContainer = $this->prophesize(ContainerInterface::class);
         $this->twig = $this->prophesize(Environment::class);
-        $this->client = $this->prophesize(Client::class);
+        $this->ctpClient = $this->prophesize(Client::class);
         $this->paymentManager = $this->prophesize(PaymentManager::class);
         $this->registry = $this->prophesize(Registry::class);
 
@@ -67,7 +67,7 @@ class PaymentControllerTest extends WebTestCase
         $this->paymentManager->getPaymentForUser('en', 'payment-1', null, 'baz')
             ->willReturn(Payment::of())->shouldBeCalledOnce();
 
-        $controller = new PaymentController($this->client->reveal(), $this->paymentManager->reveal(), $this->registry->reveal());
+        $controller = new PaymentController($this->ctpClient->reveal(), $this->paymentManager->reveal(), $this->registry->reveal());
         $controller->setContainer($this->myContainer->reveal());
         $response = $controller->getPaymentAction($this->request->reveal(), $session->reveal(), 'payment-1', 'order-2');
 
@@ -89,7 +89,7 @@ class PaymentControllerTest extends WebTestCase
         $this->paymentManager->getPaymentForUser('en', 'payment-1', null, 'baz')
             ->willReturn(null)->shouldBeCalledOnce();
 
-        $controller = new PaymentController($this->client->reveal(), $this->paymentManager->reveal(), $this->registry->reveal());
+        $controller = new PaymentController($this->ctpClient->reveal(), $this->paymentManager->reveal(), $this->registry->reveal());
         $controller->setContainer($this->myContainer->reveal());
         $response = $controller->getPaymentAction($this->request->reveal(), $session->reveal(), 'payment-1', 'order-2');
 
@@ -117,7 +117,7 @@ class PaymentControllerTest extends WebTestCase
         $markingStorePaymentState = $this->prophesize(CtpMarkingStorePaymentState::class);
         $customType = $this->prophesize(CustomTypeProvider::class);
 
-        $controller = new PaymentController($this->client->reveal(), $this->paymentManager->reveal(), $this->registry->reveal());
+        $controller = new PaymentController($this->ctpClient->reveal(), $this->paymentManager->reveal(), $this->registry->reveal());
         $controller->setContainer($this->myContainer->reveal());
         $response = $controller->createPaymentForOrderAction(
             $this->request->reveal(),
@@ -173,7 +173,7 @@ class PaymentControllerTest extends WebTestCase
             null
         )->willReturn($payment)->shouldBeCalledOnce();
 
-        $controller = new PaymentController($this->client->reveal(), $this->paymentManager->reveal(), $this->registry->reveal());
+        $controller = new PaymentController($this->ctpClient->reveal(), $this->paymentManager->reveal(), $this->registry->reveal());
         $controller->setContainer($this->myContainer->reveal());
         $response = $controller->createPaymentForOrderAction(
             $this->request->reveal(),
@@ -223,7 +223,7 @@ class PaymentControllerTest extends WebTestCase
             null
         )->willReturn($payment)->shouldBeCalledOnce();
 
-        $controller = new PaymentController($this->client->reveal(), $this->paymentManager->reveal(), $this->registry->reveal());
+        $controller = new PaymentController($this->ctpClient->reveal(), $this->paymentManager->reveal(), $this->registry->reveal());
         $controller->setContainer($this->myContainer->reveal());
         $response = $controller->createPaymentForOrderAction(
             $this->request->reveal(),
@@ -259,7 +259,7 @@ class PaymentControllerTest extends WebTestCase
         $markingStorePaymentState = $this->prophesize(CtpMarkingStorePaymentState::class);
         $customType = $this->prophesize(CustomTypeProvider::class);
 
-        $controller = new PaymentController($this->client->reveal(), $this->paymentManager->reveal(), $this->registry->reveal());
+        $controller = new PaymentController($this->ctpClient->reveal(), $this->paymentManager->reveal(), $this->registry->reveal());
         $controller->setContainer($this->myContainer->reveal());
         $response = $controller->createPaymentForCartAction(
             $this->request->reveal(),
@@ -316,7 +316,7 @@ class PaymentControllerTest extends WebTestCase
             null
         )->willReturn($payment)->shouldBeCalledOnce();
 
-        $controller = new PaymentController($this->client->reveal(), $this->paymentManager->reveal(), $this->registry->reveal());
+        $controller = new PaymentController($this->ctpClient->reveal(), $this->paymentManager->reveal(), $this->registry->reveal());
         $controller->setContainer($this->myContainer->reveal());
         $response = $controller->createPaymentForCartAction(
             $this->request->reveal(),
@@ -366,7 +366,7 @@ class PaymentControllerTest extends WebTestCase
             null
         )->willReturn($payment)->shouldBeCalledOnce();
 
-        $controller = new PaymentController($this->client->reveal(), $this->paymentManager->reveal(), $this->registry->reveal());
+        $controller = new PaymentController($this->ctpClient->reveal(), $this->paymentManager->reveal(), $this->registry->reveal());
         $controller->setContainer($this->myContainer->reveal());
         $response = $controller->createPaymentForCartAction(
             $this->request->reveal(),
@@ -397,7 +397,7 @@ class PaymentControllerTest extends WebTestCase
         $this->paymentManager->getPaymentForUser('en', 'payment-1', null, 'baz')
             ->willReturn(null)->shouldBeCalledOnce();
 
-        $controller = new PaymentController($this->client->reveal(), $this->paymentManager->reveal(), $this->registry->reveal());
+        $controller = new PaymentController($this->ctpClient->reveal(), $this->paymentManager->reveal(), $this->registry->reveal());
         $controller->setContainer($this->myContainer->reveal());
         $response = $controller->updatePaymentAction($this->request->reveal(), $session->reveal(), 'state-2', 'payment-1');
 
@@ -426,7 +426,7 @@ class PaymentControllerTest extends WebTestCase
         $this->paymentManager->getPaymentForUser('en', 'payment-1', null, 'baz')
             ->willReturn(Payment::of())->shouldBeCalledOnce();
 
-        $controller = new PaymentController($this->client->reveal(), $this->paymentManager->reveal(), $this->registry->reveal());
+        $controller = new PaymentController($this->ctpClient->reveal(), $this->paymentManager->reveal(), $this->registry->reveal());
         $controller->setContainer($this->myContainer->reveal());
         $response = $controller->updatePaymentAction($this->request->reveal(), $session->reveal(), 'state-2', 'payment-1');
 
@@ -454,7 +454,7 @@ class PaymentControllerTest extends WebTestCase
         $this->paymentManager->getPaymentForUser('en', 'payment-1', null, 'baz')
             ->willReturn(Payment::of())->shouldBeCalledOnce();
 
-        $controller = new PaymentController($this->client->reveal(), $this->paymentManager->reveal(), $this->registry->reveal());
+        $controller = new PaymentController($this->ctpClient->reveal(), $this->paymentManager->reveal(), $this->registry->reveal());
         $controller->setContainer($this->myContainer->reveal());
         $response = $controller->updatePaymentAction($this->request->reveal(), $session->reveal(), 'state-2', 'payment-1');
 
@@ -482,7 +482,7 @@ class PaymentControllerTest extends WebTestCase
         $this->paymentManager->getPaymentForUser('en', 'payment-1', null, 'baz')
             ->willReturn(Payment::of())->shouldBeCalledOnce();
 
-        $controller = new PaymentController($this->client->reveal(), $this->paymentManager->reveal(), $this->registry->reveal());
+        $controller = new PaymentController($this->ctpClient->reveal(), $this->paymentManager->reveal(), $this->registry->reveal());
         $controller->setContainer($this->myContainer->reveal());
         $response = $controller->updatePaymentAction($this->request->reveal(), $session->reveal(), 'state-2', 'payment-1');
 
@@ -512,7 +512,7 @@ class PaymentControllerTest extends WebTestCase
         $this->paymentManager->getPaymentForUser('en', 'payment-1', null, 'baz')
             ->willReturn(Payment::of())->shouldBeCalledOnce();
 
-        $controller = new PaymentController($this->client->reveal(), $this->paymentManager->reveal(), $this->registry->reveal());
+        $controller = new PaymentController($this->ctpClient->reveal(), $this->paymentManager->reveal(), $this->registry->reveal());
         $controller->setContainer($this->myContainer->reveal());
         $response = $controller->updatePaymentAction($this->request->reveal(), $session->reveal(), 'state-2', 'payment-1');
 
@@ -541,7 +541,7 @@ class PaymentControllerTest extends WebTestCase
         $this->paymentManager->getPaymentForUser('en', 'payment-1', null, 'baz')
             ->willReturn(Payment::of()->setId('payment-1'))->shouldBeCalledOnce();
 
-        $controller = new PaymentController($this->client->reveal(), $this->paymentManager->reveal(), $this->registry->reveal());
+        $controller = new PaymentController($this->ctpClient->reveal(), $this->paymentManager->reveal(), $this->registry->reveal());
         $controller->setContainer($this->myContainer->reveal());
         $response = $controller->updatePaymentAction($this->request->reveal(), $session->reveal(), 'toCompleted', 'payment-1');
 

@@ -5,11 +5,16 @@ php:
 - 7.1
 - 7.2
 - 7.3
+- 7.4snapshot
 - nightly
 matrix:
   allow_failures:
   - php: nightly
+  - php: 7.4snapshot
 before_script:
 - composer install
 script:
 - vendor/bin/phpunit
+notifications:
+  slack:
+    secure: Qew+cRfQvLF5rTExtIYtSvNzr8/bSo4pzcZz15f8QeCrAF9Fm9ywTNQLUGZq5i49NFFT+szmr/HDtDvzTZghhBUYCxtaY6CMGWYJQOFQMGBVOi8OYY/j+EjUBzqjlDiFMcQE+CPMSwxJQb42MrodYIiJSikeLtYKQbQLN+FIyL+JoCQRjMARIzNNChkktRoVp7FVxThbid+EYmA3820aMFunFsBpV21peeC7W11T0DPwNU7+rah1dVBQnq8zMGnvWshXbNMZUr3Q1X+tSXuPYfh7zwUdqa4hYulcwHOHWqd4Fc9UJgmMB2DrWAYK8Iyi7Hk54PcUC+WDiwON+imXG04bbtuNAJrQUJ4/qTIdZxz3DOg85MuaFfmYuNCj3k6RhcotMgzVVr9aOPOz0Yw4q0qUaMWYm8NApqWy2ekFUMd0n2Ke1S1Jk3VUIgNgOT0NSdZnjfAmx2Ada725VnR/yZnGG8gP61Ft5zjzhQaxg4ZjvrdhkQ6dRsok4YwnxTP8q7NUCnFZoQIL0pD2txQjUX3Gou0ZOnC3pqh4Og3iG2KrShVaozq03FGYiIVlRMalluYzhfiddJUlNyC5WjqURxKscMyGZOWTG+VppZzrRbqN3Qa0VZQNFuNaXxKlwUCapZP/iH3Yw4Qr9mSQv2b/CLAqZuCaYVxxeblauobij7o=

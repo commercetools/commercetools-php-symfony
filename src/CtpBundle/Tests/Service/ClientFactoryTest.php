@@ -37,7 +37,11 @@ class ClientFactoryTest extends TestCase
     public function testBuild()
     {
         $factory = new ClientFactory(
-            $this->config->reveal(),
+            Config::fromArray([
+                'client_id' => 'foo',
+                'client_secret' => 'bar',
+                'project' => 'baz',
+            ]),
             $this->contextFactory->reveal(),
             $this->cache,
             $this->converter->reveal()
