@@ -92,7 +92,7 @@ class CatalogController extends AbstractController
             $filter
         );
 
-        return $this->render('@Example/pdp.html.twig', [
+        return $this->render('@Example/pop.html.twig', [
             'products' => $products,
             'offset' => $offset,
             'form' => $form->createView(),
@@ -108,7 +108,7 @@ class CatalogController extends AbstractController
             $product = $this->catalogManager->getProductBySlug($request->getLocale(), $slug, $currency, $country);
         } catch (NotFoundHttpException $e) {
             $this->addFlash('error', sprintf('Cannot find product: %s', $slug));
-            return $this->render('@Example/index.html.twig');
+            return $this->render('@Example/no-search-result.html.twig');
         }
 
         return $this->productDetails($request, $product, $session, $user);
@@ -152,12 +152,12 @@ class CatalogController extends AbstractController
         $productToShoppingList->setProductId($product->getId())
             ->setSlug((string)$product->getSlug())
             ->setAllVariants($variantIds)
-            ->setAvailableShoppingLists($shoppingListsIds);
+            ->setAvailableShoppingLists($shoppingListsIds); // TODO fix
 
         $addToShoppingListForm = $this->createForm(AddToShoppingListType::class, $productToShoppingList, ['action' => $this->generateUrl('_ctp_example_shoppingList_add_lineItem')]);
         $addToShoppingListForm->handleRequest($request);
 
-        return $this->render('ExampleBundle:catalog:product.html.twig', [
+        return $this->render('@Example/pdp.html.twig', [
             'product' =>  $product,
             'addToCartForm' => $addToCartForm->createView(),
             'addToShoppingListForm' => $addToShoppingListForm->createView()
