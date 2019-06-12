@@ -9,7 +9,11 @@ discountApply: Anwenden
 discountTooltip: Weitere Rabatt Informationen...
 discountPromoInfo: Rabatte
 editMyCart: Warenkorb bearbeiten
-itemsTotal: __count__ Artikel im Warenkorb
+itemsTotal: >
+  {items, plural,
+    =0 {Keine Artikel in der Tasche}
+    other {# Artikel in der Tasche}
+  }
 needHelpCustomerService: Brauchen Sie Hilfe? Kundenservice
 orderDate: Bestelldatum
 orderDiscount: Bestelldiscount

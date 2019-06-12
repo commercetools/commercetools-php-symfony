@@ -81,8 +81,11 @@ myOrder:
 myWishlist:
   title: Meine Wunschliste
   clear: Alle löschen
-  itemsTotal: __count__ Artikel
-  itemsTotal_plural: __count__ Artikel
+  itemsTotal: >
+    {items, plural,
+      =0 {Keine Artikel in der Tasche}
+      other {# Artikel in der Tasche}
+    }
 changePassword:
   oldPasswordLabelTxt: Aktuelles Passwort
   newPasswordLabelTxt: Neues Passwort

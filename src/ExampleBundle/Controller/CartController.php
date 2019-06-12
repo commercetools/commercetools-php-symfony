@@ -58,7 +58,7 @@ class CartController extends AbstractController
             $cart = Cart::of();
         }
 
-        return $this->render('ExampleBundle:cart:index.html.twig', [
+        return $this->render('@Example/cart.html.twig', [
             'cart' => $cart
         ]);
     }

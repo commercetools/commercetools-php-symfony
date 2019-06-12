@@ -4,7 +4,7 @@
 <div class="location-dropdown">
   {% if location.language %}
   <form id="form-select-language" action="{{ root.meta._links.selectLanguage.href }}" method="POST">
-    <input type="hidden" name="csrfToken" value="{{ root.meta.csrfToken }}"/>
+    <input type="hidden" name="csrfToken" value="{{ csrf_token('csrfToken') }}"/>
     <span class="location-dropdown-label">{{ 'header.language'|trans([], 'main') }}</span>
     <select name="language" id="language-select" class="select location-select">
       {% for language_i in location.language %}
@@ -15,7 +15,7 @@
   {% endif %}
   {% if location.country %}
   <form id="form-select-country" action="{{ root.meta._links.selectCountry.href }}" method="POST">
-    <input type="hidden" name="csrfToken" value="{{ root.meta.csrfToken }}"/>
+    <input type="hidden" name="csrfToken" value="{{ csrf_token('csrfToken') }}"/>
     <span class="location-dropdown-label">{{ 'header.country'|trans([], 'main') }}</span>
     <select name="country" id="country-select" class="select location-select">
       {% for country_i in location.country %}

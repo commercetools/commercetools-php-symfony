@@ -66,3 +66,7 @@ suggestions:
 viewProducts:
   linkText: View all new products
   linkHref: /en/new
+
+header:
+  shopName: Sunrise
+  shopLogo: ./bundles/example/img/cms/logo.svg

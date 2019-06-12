@@ -142,13 +142,13 @@
                                     </p>
                                 </div>
                                 <div class="col-sm-2 col-sm-offset-2 col-xs-12 text-center quantity-counter">
-                                    <span class="visible-xs">{{ list_i.i18n }}:</span>
+                                    <span class="visible-xs">{{ 'common.quantity'|trans({}, 'main') }}:</span>
                                     <span class="quantity-number">{{ list_i.quantity }}</span>
                                 </div>
 
                                 <div class="col-sm-2 col-xs-7">
                                     <div class="text-right cart-item-price">q
-                                        <span class="visible-xs xs-price-title">{{ list_i.i18n }}</span>
+                                        <span class="visible-xs xs-price-title">{{ 'common.price'|trans({}, 'main') }}</span>
                                         {% if list_i.variant.priceOld %}
                                             <span class="discounted-price">{{ list_i.variant.priceOld }}</span>
                                         {% endif %}
@@ -157,7 +157,7 @@
                                 </div>
                                 <div class="col-sm-2 col-xs-5">
                                     <div class="text-right cart-item-price">
-                                        <span class="visible-xs xs-price-title">{{ list_i.i18n }}</span>
+                                        <span class="visible-xs xs-price-title">{{ 'total'|trans({}, 'checkout') }}</span>
                                         <span>{{ list_i.totalPrice }}</span>
                                     </div>
                                 </div>

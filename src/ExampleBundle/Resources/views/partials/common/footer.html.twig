@@ -7,7 +7,7 @@
           <ul>
             <li class="footer-title hidden-xs">{{ 'footer.customerCare'|trans([], 'main') }}</li>
             <li><a href="{{ root.meta._links.contactUs.href }}">{{ 'footer.contactUs'|trans([], 'main') }}</a></li>
-            <li><a href="{{ root.meta._links.help.href }}">{{ 'footer.help'|trans([], 'main') }}</a></li>
+            <li><a href="{{ path('_ctp_example_help') }}">{{ 'footer.help'|trans([], 'main') }}</a></li>
             <li><a href="{{ root.meta._links.shipping.href }}">{{ 'footer.shipping'|trans([], 'main') }}</a></li>
             <li><a href="{{ root.meta._links.returns.href }}">{{ 'footer.returns'|trans([], 'main') }}</a></li>
             <li><a href="{{ root.meta._links.sizeGuide.href }}">{{ 'footer.sizeGuide'|trans([], 'main') }}</a></li>
@@ -41,7 +41,7 @@
           </div>
           <div class="col-sm-7">
             <form action="{{ root.meta._links.newsletter.href }}" method="POST" id="form-newsletter" class="email-submit">
-              <input type="hidden" name="csrfToken" value="{{ root.meta.csrfToken }}"/>
+              <input type="hidden" name="csrfToken" value="{{ csrf_token('csrfToken') }}"/>
               <input name="email" id="newsletter-input" class="email-box" type="email" placeholder="{{ 'footer.yourEmail'|trans([], 'main') }}" required>
               <button id="newsletter-button" type="submit" class="search-button">
                 <span class="icon-font icon-next"></span>

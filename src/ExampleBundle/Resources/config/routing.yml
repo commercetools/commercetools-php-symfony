@@ -2,7 +2,7 @@ _ctp_example_index:
     path:     /
     defaults: { _controller: Commercetools\Symfony\ExampleBundle\Controller\HomeController::indexAction }
 
-_ctp_example:
+_ctp_example_catalog:
     path:     /product
     defaults: { _controller: Commercetools\Symfony\ExampleBundle\Controller\CatalogController::indexAction }
 
@@ -182,3 +182,15 @@ _ctp_example_review_create:
     path: /product/{productId}/reviews/create
     defaults: { _controller: Commercetools\Symfony\ExampleBundle\Controller\ReviewController::createReviewForProductAction }
     methods: [POST]
+
+_ctp_example_help:
+    path: /help
+    defaults: { _controller: ExampleBundle:Help:index}
+
+_ctp_example_discount_code_add:
+    path: /
+    defaults: { _controller: Commercetools\Symfony\ExampleBundle\Controller\HomeController::indexAction }
+
+_ctp_example_discount_code_remove:
+    path: /
+    defaults: { _controller: Commercetools\Symfony\ExampleBundle\Controller\HomeController::indexAction }

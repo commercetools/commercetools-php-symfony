@@ -84,7 +84,7 @@
                         </div>
                         <div class="col-sm-2 col-xs-4 text-right">
                         <form id="form-view-my-order{{ loop.index0 }}" name="view-my-order" method="GET" action="{{ orders_i.showOrderUrl }}">
-                            <button type="submit" class="my-orders-view-order-btn">{{ orders_i.i18n }}</button>
+                            <button type="submit" class="my-orders-view-order-btn">{{ 'myOrders.view'|trans({}, 'my-account') }}</button>
                         </form>
                         </div>
                       </div>

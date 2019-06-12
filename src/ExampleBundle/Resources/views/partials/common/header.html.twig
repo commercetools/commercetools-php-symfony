@@ -31,7 +31,7 @@
             </li>
 
             <li class="list-item-help">
-              <a href="{{ root.meta._links.help.href }}" class="link-help">{{ 'header.help'|trans([], 'main') }}</a>
+              <a href="{{ path('_ctp_example_help') }}" class="link-help">{{ 'header.help'|trans([], 'main') }}</a>
             </li>
 
             <li class="list-item-call">
@@ -44,7 +44,7 @@
 
             {% if root.meta.user.loggedIn %}
                 <li class="list-item-user">
-                    <a href="{{ root.meta._links.logOut.href }}" class="link-user">
+                    <a href="{{ logout_url() }}" class="link-user">
                         <span>{{ 'header.signOut'|trans([], 'main') }}</span>
                     </a>
                 </li>
@@ -55,7 +55,7 @@
                 </li>
             {% else %}
                 <li class="list-item-user">
-                    <a href="{{ root.meta._links.signIn.href }}" class="link-user icon-user">
+                    <a href="{{ path('login') }}" class="link-user icon-user">
                         <span class="hidden-xs hidden-sm">{{ 'header.signIn'|trans([], 'main') }}</span>
                     </a>
                 </li>

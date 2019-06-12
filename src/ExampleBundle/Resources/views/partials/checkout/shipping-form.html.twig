@@ -1,5 +1,5 @@
 <form id="form-edit-shipping" method="post" action="{{ root.meta._links.checkoutShippingSubmit.href }}">
-  <input type="hidden" name="csrfToken" value="{{ root.meta.csrfToken }}"/>
+  <input type="hidden" name="csrfToken" value="{{ csrf_token('csrfToken') }}"/>
   <div class="shipping-method input-block" id="shipping-methods-setting">
     <div class="text-uppercase shipping-method-title">{{ 'shippingForm'|trans([], 'checkout') }}</div>
       <div class="row">
@@ -18,7 +18,6 @@
           </span>
           <span class="text-uppercase delivery-time">{{ list_i.description }}</span>
         </label>
-        {#<a href="{{url}}"><span class="pull-right text-uppercase delivery-details">{{i18n "main:common.viewDetails"}}</span></a>#}
           <span class="pull-right">{{ list_i.price }}</span>
       </div>
     {% endfor %}

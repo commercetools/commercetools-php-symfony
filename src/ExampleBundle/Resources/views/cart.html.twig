@@ -18,7 +18,7 @@
               <img class="bag-icon-lg" src="{{ asset('bundles/example/img/hand-bag-2-black.png') }}" alt="bag icon">
             </span>
             <span class="text-uppercase your-bag-txt">{{ 'yourBag'|trans([], 'checkout') }}: </span>
-            <span class="items-total-txt">{{ 'itemsTotal'|trans([], 'checkout') }}</span>
+            <span class="items-total-txt">{{ 'itemsTotal'|trans({'items': app.session.get('cart.itemCount')}, 'checkout') }}</span>
           </div>
         </div>
         <div class="col-sm-4">
@@ -27,7 +27,7 @@
       </div>
       <div class="row">
         <div class="col-sm-12">
-          {% include '@Example/partials/checkout/order-summary.html.twig' with {'cart':content.cart, 'mainClass':"cart-content", 'editable':true} %}
+          {% include '@Example/partials/checkout/order-summary.html.twig' with {'cart':cart, 'mainClass':"cart-content", 'editable':true} %}
         </div>
       </div>
       <div class="row bottom-cart-btns">

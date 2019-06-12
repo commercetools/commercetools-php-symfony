@@ -66,7 +66,7 @@ class OrderController extends AbstractController
     {
         $orders = $this->manager->getOrdersForUser($request->getLocale(), $user, $session->getId());
 
-        return $this->render('ExampleBundle:user:orders.html.twig', [
+        return $this->render('@Example/my-account-my-orders.html.twig', [
             'orders' => $orders
         ]);
     }

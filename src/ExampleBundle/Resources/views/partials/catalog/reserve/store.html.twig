@@ -4,7 +4,7 @@
             <span class="distance">
               <i class="icon icon-marker"></i>
               <span class="gm-computed-distance" data-coord-lat="{{ stores_i.storeInfo.location.lat }}" data-coord-lng="{{ stores_i.storeInfo.location.lng }}">
-                {{ stores_i.i18n }}
+                {{ 'storeLocation.calculatingTxt'|trans({}, 'main') }}
               </span> km
             </span>
 
@@ -28,7 +28,7 @@
 
             <div class="info">
                 <div class="info-title">
-                  {{ stores_i.i18n }}:
+                  {{ 'storeLocation.address'|trans({}, 'main') }}:
                 </div>
                 <div class="info-content">
                   {{ stores_i.storeInfo.address.streetName }} {{ stores_i.storeInfo.address.streetNumber }}<br/>
@@ -38,7 +38,7 @@
                 </div>
 
                 <div class="info-title">
-                  {{ stores_i.i18n }}:
+                  {{ 'storeLocation.openingTimes'|trans({}, 'main') }}:
                 </div>
                 <div class="info-content">
                   {{ stores_i.storeInfo.openingTimes|raw }}
@@ -50,9 +50,9 @@
 
                 <div class="action">
                     <form id="form-reserve-in-store{{ loop.index0 }}" name="reserve-in-store" method="post" action="{{ stores_i.root.meta._links.reserveInStore.href }}">
-                        <input type="hidden" name="csrfToken" value="{{ stores_i.root.meta.csrfToken }}"/>
+                        <input type="hidden" name="csrfToken" value="{{ stores_i.csrf_token('csrfToken') }}"/>
                         <input type="hidden" name="storeId" value="{{ stores_i.storeInfo.id }}">
-                        <button type="submit" class="btn btn-standard">{{ stores_i.i18n }}</button>
+                        <button type="submit" class="btn btn-standard">{{ 'storeLocation.reserve'|trans({}, 'main') }}</button>
                     </form>
                 </div>
             </div>

@@ -13,7 +13,7 @@
     </div>
     <div>
         <form action="{{ addressInfo.addressDeleteUrl }}" method="POST">
-            <input type="hidden" name="csrfToken" value="{{ root.meta.csrfToken }}"/>
+            <input type="hidden" name="csrfToken" value="{{ csrf_token('csrfToken') }}"/>
             <button type="submit">
                 <img src="{{ asset('bundles/example/img/delete-60px.png') }}" alt="delete icon">
                 {{ 'addressBook.buttons.delete'|trans([], 'my-account') }}

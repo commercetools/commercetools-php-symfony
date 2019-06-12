@@ -33,20 +33,20 @@
           <div class="row">
             <div class="col-xs-4">
               <div class="text-right">
-                <span class="text-uppercase pricing-titles">{{ list_i.i18n }}</span><br>
+                <span class="text-uppercase pricing-titles">{{ 'common.quantity'|trans({}, 'main') }}</span><br>
                 <span>{{ list_i.quantity }} x</span>
               </div>
             </div>
             <div class="col-xs-4">
               <div class="text-right order-item-value">
-                <span class="text-uppercase pricing-titles">{{ list_i.i18n }}</span><br>
+                <span class="text-uppercase pricing-titles">{{ 'common.price'|trans({}, 'main') }}</span><br>
                 {% if list_i.variant.priceOld %}<span class="checkout-discounted-price">{{ list_i.variant.priceOld }}</span><br>{% endif %}
                 <span>{{ list_i.variant.price }}</span>
               </div>
             </div>
             <div class="col-xs-4">
               <div class="text-right order-item-value">
-                <span class="text-uppercase pricing-titles">{{ list_i.i18n }}</span><br>
+                <span class="text-uppercase pricing-titles">{{ 'total'|trans({}, 'checkout') }}</span><br>
                 <span>{{ list_i.totalPrice }}</span>
               </div>
             </div>
@@ -104,7 +104,7 @@
     <div class="col-sm-12">
       <div>
         <span class="text-uppercase pull-right edit-quantity-order">
-            <a href="{{ root.meta._links.cart.href }}">{{ 'editMyCart'|trans([], 'checkout') }}</a>
+            <a href="{{ path('_ctp_example_cart') }}">{{ 'editMyCart'|trans([], 'checkout') }}</a>
         </span>
       </div>
     </div>

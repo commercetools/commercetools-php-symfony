@@ -1,5 +1,5 @@
 <form method="post" action="{{ root.meta._links.checkoutAddressesSubmit.href }}">
-  <input type="hidden" name="csrfToken" value="{{ root.meta.csrfToken }}"/>
+  <input type="hidden" name="csrfToken" value="{{ csrf_token('csrfToken') }}"/>
   <div class="shipping-info">
     <span class="text-uppercase shipping-info-title">{{ 'shippingInformation'|trans([], 'checkout') }}</span>
     <span class="pull-right required-fields">{{ 'form.required'|trans([], 'main') }}*</span>

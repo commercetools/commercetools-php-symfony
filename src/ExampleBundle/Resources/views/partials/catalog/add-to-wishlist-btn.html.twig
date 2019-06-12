@@ -1,5 +1,5 @@
 <form id="form-add-to-wishlist{{ index }}" method="post" name="add-to-wishlist" action="{{ root.meta._links.addToWishlist.href }}">
-    <input type="hidden" name="csrfToken" value="{{ root.meta.csrfToken }}"/>
+    <input type="hidden" name="csrfToken" value="{{ csrf_token('csrfToken') }}"/>
     <input type="hidden" name="productId" value="{{ product.productId }}">
     <input type="hidden" name="variantId" value="{{ product.variantId }}">
 

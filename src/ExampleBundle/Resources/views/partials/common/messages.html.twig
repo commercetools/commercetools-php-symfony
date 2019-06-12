@@ -1,7 +1,7 @@
 {% if content.messages %}
 <div class="row">
 	{% for messages_i in content.messages %}
-   		<div class="alert alert-{{ messages_i.type }}">{{ messages_i.i18n }}</div>
+   		<div class="alert alert-{{ messages_i.type }}">{{ messages_i.message }}</div>
 	{% endfor %}
 </div>
 {% endif %}

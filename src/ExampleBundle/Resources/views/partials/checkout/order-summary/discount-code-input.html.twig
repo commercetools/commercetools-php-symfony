@@ -5,13 +5,13 @@
             {% include '@Example/partials/form/global-errors.html.twig' with {'errors':content.cart.addDiscountCodeForm.errors} %}
         </div>
         <div class="col-sm-12">
-            <form id="form-add-discount-code" class="text-right promotion-info" action="{{ root.meta._links.addDiscountCode.href }}" method="post">
+            <form id="form-add-discount-code" class="text-right promotion-info" action="{{ path('_ctp_example_discount_code_add') }}" method="post">
                 <span class="text-uppercase promo-info-text" title="{{ 'discountTooltip'|trans([], 'checkout') }}">
                     {{ 'discountPromoInfo'|trans([], 'checkout') }}
                     <img class="info-icon" src="{{ asset('bundles/example/img/information-3787f70287d781184eef270161383e9f.png') }}" alt="information icon">
                 </span>
-                <input type="hidden" name="csrfToken" value="{{ root.meta.csrfToken }}"/>
-                <input id="promo-code" type="text" name="code" value="{{ content.cart.addDiscountCodeForm.code }}">
+                <input type="hidden" name="csrfToken" value="{{ csrf_token('csrfToken') }}"/>
+                <input id="promo-code" type="text" name="promo-code">
                 <button id="cart-apply-promocode-btn" class="text-uppercase promo-apply-btn">
                     {{ 'discountApply'|trans([], 'checkout') }}
                 </button>

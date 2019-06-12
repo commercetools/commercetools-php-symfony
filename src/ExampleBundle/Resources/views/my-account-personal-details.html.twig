@@ -55,7 +55,7 @@
 
                   <div class="personal-details-edit personal-details-edit-show {% if content.personalDetailsForm.errors %}in{% endif %}">
                       <form id="form-edit-personal-details" action="{{ root.meta._links.editMyPersonalDetails.href }}" method="POST">
-                          <input type="hidden" name="csrfToken" value="{{ root.meta.csrfToken }}"/>
+                          <input type="hidden" name="csrfToken" value="{{ csrf_token('csrfToken') }}"/>
                           <div class="row">
                             {% include '@Example/partials/form/global-messages.html.twig' with {'messages':content.personalDetailsForm.messages} %}
                             {% include '@Example/partials/form/global-errors.html.twig' with {'errors':content.personalDetailsForm.errors} %}

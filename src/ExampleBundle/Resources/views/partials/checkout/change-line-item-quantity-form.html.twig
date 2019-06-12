@@ -1,15 +1,15 @@
-<form action="{{ root.meta._links.changeLineItem.href }}" method="post">
-    <input type="hidden" name="csrfToken" value="{{ root.meta.csrfToken }}"/>
-    <input type="hidden" name="lineItemId" value="{{ lineItemId }}">
+<form action="{{ path('_ctp_example_change_lineItem') }}" method="post">
+    <input type="hidden" name="csrfToken" value="{{ csrf_token('csrfToken') }}"/>
+    <input type="hidden" name="lineItemId" value="{{ lineItem.id }}">
     <div class="sm-pull-right visible-xs">
-        <button type="submit" id="cart-quantity-submit-btn-{{ loop.index0 }}" class="quantity-submit-btn"><span class="glyphicon glyphicon-refresh"></span></button>
+        <button type="submit" class="quantity-submit-btn"><span class="glyphicon glyphicon-refresh"></span></button>
     </div>
     <div class="sm-pull-right quantity-spinner">
-        <span id="cart-quantity-decrement-{{ loop.index0 }}" class="input-number-decrement">–</span>
-        <input id="cart-quantity-value-{{ loop.index0 }}" name="quantity" class="input-number" type="text" value="{{ quantity }}" min="1" max="10">
-        <span id="cart-quantity-increment-{{ loop.index0 }}" class="input-number-increment">+</span>
+        <span class="input-number-decrement">–</span>
+        <input name="quantity" class="input-number" type="text" value="{{ lineItem.quantity }}" min="1" max="10">
+        <span class="input-number-increment">+</span>
     </div>
     <div class="sm-pull-right hidden-xs">
-        <button type="submit" id="cart-quantity-submit-btn-{{ loop.index0 }}" class="quantity-submit-btn"><span class="glyphicon glyphicon-refresh"></span></button>
+        <button type="submit" class="quantity-submit-btn"><span class="glyphicon glyphicon-refresh"></span></button>
     </div>
 </form>

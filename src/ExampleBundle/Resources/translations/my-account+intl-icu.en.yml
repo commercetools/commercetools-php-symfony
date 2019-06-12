@@ -82,8 +82,12 @@ myOrder:
 myWishlist:
   title: My Wishlist
   clear: Delete all
-  itemsTotal: __count__ item in total
-  itemsTotal_plural: __count__ items in total
+  itemsTotal: >
+    {items, plural,
+      =0 {There are no items in your cart}
+      =1 {There is one item in your cart}
+      other {There are # items in your cart}
+    }
 changePassword:
   oldPasswordLabelTxt: Current password
   newPasswordLabelTxt: New password

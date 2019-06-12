@@ -1,6 +1,6 @@
 <div class="signup-box-wrapper">
   <form id="form-sign-up" method="post" action="{{ root.meta._links.signUpSubmit.href }}">
-    <input type="hidden" name="csrfToken" value="{{ root.meta.csrfToken }}"/>
+    <input type="hidden" name="csrfToken" value="{{ csrf_token('csrfToken') }}"/>
     <div class="clearfix">
       <div class="pull-left">
         <div class="signup-box-title">{{ 'signupBox.title'|trans([], 'my-account-login') }}</div>

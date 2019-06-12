@@ -8,11 +8,15 @@
 </li>
 {% endif %}
 
+{#    {{ render(controller(#}
+{#      'ExampleBundle:Catalog:getCategories'#}
+{#    )) }}#}
+
 {% for categories_i in navMenu.categories %}
   <li class="dropdown menu-large">
     <a href="{{ categories_i.url }}" class="dropdown-toggle {% if categories_i.sale %}sale icon-ribbon{% endif %}" data-toggle="dropdown">
       {{ categories_i.text }}
-      <img class="mobile-plus-content visible-xs" src="{{ asset('bundles/example/img/plus79.png') }}" alt="{{ categories_i.i18n }}">
+      <img class="mobile-plus-content visible-xs" src="{{ asset('bundles/example/img/plus79.png') }}" alt="{{ 'more'|trans([], 'main') }}">
     </a>
     {% include '@Example/partials/common/nav-menu-category.html.twig' with {'category':categories_i} %}
   </li>

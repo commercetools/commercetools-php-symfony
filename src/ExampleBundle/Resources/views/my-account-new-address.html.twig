@@ -31,7 +31,7 @@
                     </div>
                   </div>
                   <form id="form-add-my-address-book" action="{{ root.meta._links.myAddressBookAddAddressSubmit.href }}" method="POST">
-                    <input type="hidden" name="csrfToken" value="{{ root.meta.csrfToken }}"/>
+                    <input type="hidden" name="csrfToken" value="{{ csrf_token('csrfToken') }}"/>
                     <div class="row">
                       {% include '@Example/partials/form/global-messages.html.twig' with {'messages':content.newAddressForm.messages} %}
                       {% include '@Example/partials/form/global-errors.html.twig' with {'errors':content.newAddressForm.errors} %}

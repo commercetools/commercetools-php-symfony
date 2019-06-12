@@ -7,7 +7,7 @@
       <div class="new-flag">{{ 'thumbnail.new'|trans([], 'catalog') }}</div>
     {% endif %}
     <form id="form-add-to-wishlist-mobile{{ index }}" method="post" {% if wishlist %}class="hidden"{% endif %} name="add-to-wishlist-mobile" action="{{ root.meta._links.addToWishlist.href }}">
-        <input type="hidden" name="csrfToken" value="{{ root.meta.csrfToken }}"/>
+        <input type="hidden" name="csrfToken" value="{{ csrf_token('csrfToken') }}"/>
         <input type="hidden" name="productId" value="{{ product.productId }}">
         <input type="hidden" name="variantId" value="{{ product.variantId }}">
 
@@ -31,7 +31,6 @@
       {% endif %}
     </div>
     <div class="pop-product-more-colors">
-      {# {{#if thumbnail.moreColors}}{{i18n "catalog:thumbnail.moreColors"}}{{/if}}&nbsp; #}
       <ul class="list-inline">
         <li>
           <div class="product-thumbnail-swatch-red"></div>
@@ -49,7 +48,7 @@
         {{ 'thumbnail.quickView'|trans([], 'catalog') }}
       </button>
       <form id="form-add-to-wishlist{{ index }}" method="post" {% if wishlist %}class="hidden"{% endif %} name="add-to-wishlist" action="{{ root.meta._links.addToWishlist.href }}">
-          <input type="hidden" name="csrfToken" value="{{ root.meta.csrfToken }}"/>
+          <input type="hidden" name="csrfToken" value="{{ csrf_token('csrfToken') }}"/>
           <input type="hidden" name="productId" value="{{ product.productId }}">
           <input type="hidden" name="variantId" value="{{ product.variantId }}">
 

@@ -62,7 +62,7 @@ class UserController extends AbstractController
 
         $lastUsername = $authenticationUtils->getLastUsername();
 
-        return $this->render('ExampleBundle:user:login.html.twig', [
+        return $this->render('@Example/my-account-login.html.twig', [
             'last_username' => $lastUsername,
             'error' => $error
         ]);
@@ -102,7 +102,7 @@ class UserController extends AbstractController
             }
         }
 
-        return $this->render('ExampleBundle:User:user.html.twig', [
+        return $this->render('@Example/my-account-personal-details.html.twig', [
             'formDetails' => $form->createView()
         ]);
     }
@@ -111,7 +111,7 @@ class UserController extends AbstractController
     {
         $customer = $this->manager->getById($request->getLocale(), $user->getId());
 
-        return $this->render('ExampleBundle:User:addressBook.html.twig', [
+        return $this->render('@Example/my-account-address-book.html.twig', [
             'customer' => $customer
         ]);
     }

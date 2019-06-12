@@ -2,7 +2,7 @@
 <div class="location-dropdown-xs">
   {% if location.language %}
   <form id="form-select-language-mobile" action="{{ root.meta._links.selectLanguage.href }}" method="POST">
-    <input type="hidden" name="csrfToken" value="{{ root.meta.csrfToken }}"/>
+    <input type="hidden" name="csrfToken" value="{{ csrf_token('csrfToken') }}"/>
     <ul>
       <li>
         <select name="language" id="language-select-mobile" class="select location-select">
@@ -16,7 +16,7 @@
   {% endif %}
   {% if location.country %}
   <form id="form-select-country-mobile" action="{{ root.meta._links.selectCountry.href }}" method="POST">
-    <input type="hidden" name="csrfToken" value="{{ root.meta.csrfToken }}"/>
+    <input type="hidden" name="csrfToken" value="{{ csrf_token('csrfToken') }}"/>
     <ul>
       <li>
         <select name="country" id="country-select-mobile" class="select location-select">

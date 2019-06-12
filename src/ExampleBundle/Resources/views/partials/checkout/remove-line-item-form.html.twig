@@ -1,7 +1,7 @@
-<form action="{{ root.meta._links.deleteLineItem.href }}" method="post">
-    <input type="hidden" name="csrfToken" value="{{ root.meta.csrfToken }}"/>
-    <input type="hidden" name="lineItemId" value="{{ lineItemId }}">
-    <button type="submit" id="cart-delete-button-{{ loop.index0 }}">
+<form action="{{ path('_ctp_example_delete_lineItem') }}" method="post">
+    <input type="hidden" name="csrfToken" value="{{ csrf_token('csrfToken') }}"/>
+    <input type="hidden" name="lineItemId" value="{{ lineItem.id }}">
+    <button type="submit">
     <span>
         <img class="cart-action-icon" src="{{ asset('bundles/example/img/delete-1.png') }}" alt="delete">
         {{ 'form.delete'|trans([], 'main') }}

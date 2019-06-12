@@ -28,13 +28,13 @@
                                             <div class="col-sm-6 col-md-3">
                                                 {% include '@Example/partials/catalog/product-thumbnail.html.twig' with {'thumbnail':list_i, 'index':list_i.index, 'wishlist':true} %}
                                                 <form id="form-remove-from-wishlist{{ list_i.index }}" name="remove-from-wishlist"
-                                                      action="{{ list_i.root.meta._links.removeFromWishlist.href }}" method="post">
+                                                      action="{{ path('_ctp_example_shoppingList_remove_lineItem') }}" method="post">
                                                     <input type="hidden" name="csrfToken"
-                                                           value="{{ list_i.root.meta.csrfToken }}"/>
+                                                           value="{{ list_i.csrf_token('csrfToken') }}"/>
                                                     <input type="hidden" name="lineItemId" value="{{ list_i.product.lineItemId }}">
 
                                                     <div class="my-account-wishlist-remove-btn">
-                                                        <button type="submit">{{ list_i.i18n }}</button>
+                                                        <button type="submit">{{ 'removeBtn.title'|trans({},'catalog') }}</button>
                                                     </div>
                                                 </form>
                                             </div>
@@ -45,9 +45,9 @@
                                 </div>
                                 <div class="my-account-wishlist-clear-btn">
                                     <form id="form-clear-wishlist" name="clear-wishlist"
-                                          action="{{ root.meta._links.clearWishlist.href }}" method="post">
+                                          action="{{ path('_ctp_example_shoppingList_delete') }}" method="post">
                                         <input type="hidden" name="csrfToken"
-                                               value="{{ root.meta.csrfToken }}"/>
+                                               value="{{ csrf_token('csrfToken') }}"/>
 
                                         <button type="submit">{{ 'myWishlist.clear'|trans([], 'my-account') }}</button>
                                     </form>

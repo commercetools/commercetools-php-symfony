@@ -152,7 +152,7 @@ class CatalogController extends AbstractController
         $productToShoppingList->setProductId($product->getId())
             ->setSlug((string)$product->getSlug())
             ->setAllVariants($variantIds)
-            ->setAvailableShoppingLists($shoppingListsIds); // TODO fix
+            ->setAvailableShoppingLists($shoppingListsIds);
 
         $addToShoppingListForm = $this->createForm(AddToShoppingListType::class, $productToShoppingList, ['action' => $this->generateUrl('_ctp_example_shoppingList_add_lineItem')]);
         $addToShoppingListForm->handleRequest($request);

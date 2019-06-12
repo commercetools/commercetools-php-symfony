@@ -1,5 +1,5 @@
 <form id="form-add-to-cart{{ index }}" name="add-to-cart" method="post" action="{{ root.meta._links.addToCart.href }}">
-  <input type="hidden" name="csrfToken" value="{{ root.meta.csrfToken }}"/>
+  <input type="hidden" name="csrfToken" value="{{ csrf_token('csrfToken') }}"/>
   <input type="hidden" name="productId" value="{{ product.productId }}">
   <input type="hidden" name="variantId" value="{{ product.variantId }}">
   <input type="hidden" name="productSku" value="{{ product.variant.sku }}">

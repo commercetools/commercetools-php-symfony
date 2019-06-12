@@ -10,19 +10,19 @@
   <hr class="login-box-hr">
   <div class="login-box-description">{{ 'loginBox.description'|trans([], 'my-account-login') }}</div>
   <div class="login-box-input-wrapper">
-    <form id="form-sign-in" method="POST" action="{{ root.meta._links.logInSubmit.href }}">
-      <input type="hidden" name="csrfToken" value="{{ root.meta.csrfToken }}"/>
+    <form id="form-sign-in" method="POST" action="{{ path('login_check') }}">
+      <input type="hidden" name="csrfToken" value="{{ csrf_token('csrfToken') }}"/>
       <div class="row">
         {% include '@Example/partials/form/global-messages.html.twig' with {'messages':form.messages} %}
         {% include '@Example/partials/form/global-errors.html.twig' with {'errors':form.errors} %}
       </div>
       <div class="login-box-input">
         <span>{{ 'loginBox.email'|trans([], 'my-account-login') }}*</span><br>
-        <input type="email" name="username" value="{{ form.username }}">
+        <input type="email" name="_username" value="{{ form.username }}">
       </div>
       <div class="login-box-input">
         <span>{{ 'loginBox.password'|trans([], 'my-account-login') }}*</span><br>
-        <input type="password" name="password">
+        <input type="password" name="_password">
       </div>
       <div class="clearfix">
         <div class="pull-left">
