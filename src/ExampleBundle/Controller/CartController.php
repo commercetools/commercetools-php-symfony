@@ -102,7 +102,7 @@ class CartController extends AbstractController
             }
             $redirectUrl = $this->generateUrl('_ctp_example_product', ['slug' => $slug]);
         } else {
-            $redirectUrl = $this->generateUrl('_ctp_example');
+            $redirectUrl = $this->generateUrl('_ctp_example_index');
         }
 
         return new RedirectResponse($redirectUrl);

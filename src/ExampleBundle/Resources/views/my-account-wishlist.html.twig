@@ -14,7 +14,7 @@
         <div class="my-account-title">
             <span class="my-account-title-text icon-user">{{ 'myWishlist.title'|trans([], 'my-account') }}</span>
             &nbsp;&nbsp;&nbsp;
-            <span class="items-total-txt">{{ 'myWishlist.itemsTotal'|trans([], 'my-account') }}</span>
+            <span class="items-total-txt">{{ 'myWishlist.itemsTotal'|trans({'items': lists.current.lineItems.count}, 'my-account') }}</span>
         </div>
         <div class="row">
             <div class="col-sm-12">
@@ -24,9 +24,9 @@
                             <div class="my-orders-order-content">
                                 <div class="my-account-wishlist-items-wrapper">
                                     <div class="row">
-                                        {% for list_i in content.products.list %}
+                                        {% for lineItem in lists.current.lineItems %}
                                             <div class="col-sm-6 col-md-3">
-                                                {% include '@Example/partials/catalog/product-thumbnail.html.twig' with {'thumbnail':list_i, 'index':list_i.index, 'wishlist':true} %}
+                                                {% include '@Example/partials/catalog/product-thumbnail.html.twig' with {'product':lineItem, 'index':list_i.index0, 'wishlist':true} %}
                                                 <form id="form-remove-from-wishlist{{ list_i.index }}" name="remove-from-wishlist"
                                                       action="{{ path('_ctp_example_shoppingList_remove_lineItem') }}" method="post">
                                                     <input type="hidden" name="csrfToken"
@@ -45,7 +45,7 @@
                                 </div>
                                 <div class="my-account-wishlist-clear-btn">
                                     <form id="form-clear-wishlist" name="clear-wishlist"
-                                          action="{{ path('_ctp_example_shoppingList_delete') }}" method="post">
+                                          action="{{ path('_ctp_example_shoppingList_delete', {'shoppingListId': lists.current.id}) }}" method="post">
                                         <input type="hidden" name="csrfToken"
                                                value="{{ csrf_token('csrfToken') }}"/>
 

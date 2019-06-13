@@ -161,7 +161,7 @@ class CartControllerTest extends WebTestCase
         $this->request->getLocale()->shouldNotBeCalled();
 
         $router = $this->prophesize(Router::class);
-        $router->generate('_ctp_example', [], 1)->willReturn('bar')->shouldBeCalledOnce();
+        $router->generate('_ctp_example_index', [], 1)->willReturn('bar')->shouldBeCalledOnce();
 
         $this->myContainer->get('router')->willReturn($router)->shouldBeCalledOnce();
         $this->myContainer->has('templating')->shouldNotBeCalled();

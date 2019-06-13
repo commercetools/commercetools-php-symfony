@@ -1,10 +1,10 @@
 <div class="{{ mainClass }}">
   {% include '@Example/partials/checkout/order-summary/header.html.twig' %}
 
-  {% for lineItem in cart.getLineItems %}
+  {% for lineItem in cart.lineItems %}
       <div class="row single-cart-item">
           <div class="col-sm-1 col-xs-4 product-img-col">
-              <img class="img-responsive cart-item-img" src="{{ lineItem.variant.images[0].url }}" alt="{{ lineItem.variant.name.en }}">
+              <img class="img-responsive cart-item-img" src="{{ lineItem.variant.images.current.url }}" alt="{{ lineItem.variant.name.en }}">
           </div>
           <div class="col-sm-3 col-xs-8 product-info-text">
               <p class="cart-item-name">

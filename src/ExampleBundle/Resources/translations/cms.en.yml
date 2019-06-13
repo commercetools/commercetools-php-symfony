@@ -69,4 +69,4 @@ viewProducts:
 
 header:
   shopName: Sunrise
-  shopLogo: ./bundles/example/img/cms/logo.svg
+  shopLogo: /bundles/example/img/cms/logo.svg

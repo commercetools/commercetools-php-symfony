@@ -1,7 +1,7 @@
 <li>
   <p class="text-uppercase">{{ attribute.name }}</p>
   <div>
-    <select name="attribute-{{ attribute.key }}" class="select-product-detail" data-reload="{{ attribute.reload }}" data-cross-select="{{ json }}" data-variants="{{ json }}" data-identifiers="{{ json }}" required>
+    <select name="attribute-{{ attribute.key }}" class="select-product-detail" data-reload="{{ attribute.reload }}" data-cross-select="{{ attribute.selectData }}" data-variants="{{ product.variants|json_encode }}" data-identifiers="{{ product.referenceIdentifier }}" required>
       <!--option value="">{{ 'choose'|trans([], 'main') }} {{ attribute.name }}</option-->
       {% for list_i in attribute.list %}
         <option value="{{ list_i.value }}" {% if list_i.selected %}selected{% endif %}>{{ list_i.label }}</option>

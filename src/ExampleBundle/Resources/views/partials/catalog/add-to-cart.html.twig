@@ -1,14 +1,14 @@
-<form id="form-add-to-cart{{ index }}" name="add-to-cart" method="post" action="{{ root.meta._links.addToCart.href }}">
+<form id="form-add-to-cart{{ index }}" name="add_to_cart" method="post" action="{{ path('_ctp_example_add_lineItem') }}">
   <input type="hidden" name="csrfToken" value="{{ csrf_token('csrfToken') }}"/>
-  <input type="hidden" name="productId" value="{{ product.productId }}">
-  <input type="hidden" name="variantId" value="{{ product.variantId }}">
-  <input type="hidden" name="productSku" value="{{ product.variant.sku }}">
+  <input type="hidden" name="productId" value="{{ product.id }}">
+  <input type="hidden" name="variantId" value="{{ product.masterVariant.id }}">
+  <input type="hidden" name="productSku" value="{{ product.masterVariant.sku }}">
   <input type="hidden" name="productSlug" value="{{ product.slug }}">
 
   <div class="row select-row">
     <ul class="list-inline">
-      {% for attributes_i in product.attributes %}
-        {% include '@Example/partials/catalog/product-attribute.html.twig' with {'attribute':attributes_i, 'variants':product.variants, 'identifiers':product.variantIdentifiers} %}
+      {% for attribute in product.masterVariant.attributes %}
+        {% include '@Example/partials/catalog/product-attribute.html.twig' %}
       {% endfor %}
       <li class="size-guide-li">
         {% include '@Example/partials/catalog/size-guide.html.twig' %}
@@ -19,8 +19,8 @@
     <ul class="product-actions-list list-inline">
       <li class="bag-items-li">
         <select value="" name="quantity" class="bag-items" required>
-          {% for bagQuantityOptions_i in root.meta.bagQuantityOptions %}
-          <option value="{{ bagQuantityOptions_i }}">{{ bagQuantityOptions_i }}</option>
+          {% for i in 1..10 %}
+          <option value="{{ i }}">{{ i }}</option>
           {% endfor %}
         </select>
       </li>
@@ -33,3 +33,17 @@
     </ul>
   </div>
 </form>
+
+{% if addToCartForm %}
+  {{ form_start(addToCartForm) }}
+  {% form_theme addToCartForm 'bootstrap_3_layout.html.twig' %}
+  {{ form_widget(addToCartForm) }}
+  {{ form_end(addToCartForm) }}
+{% endif %}
+
+{% if addToShoppingListForm %}
+  {{ form_start(addToShoppingListForm) }}
+  {% form_theme addToShoppingListForm 'bootstrap_3_layout.html.twig' %}
+  {{ form_widget(addToShoppingListForm) }}
+  {{ form_end(addToShoppingListForm) }}
+{% endif %}

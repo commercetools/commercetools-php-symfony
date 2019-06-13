@@ -84,9 +84,9 @@ myWishlist:
   clear: Delete all
   itemsTotal: >
     {items, plural,
-      =0 {There are no items in your cart}
-      =1 {There is one item in your cart}
-      other {There are # items in your cart}
+      =0 {There are no items in your wishlist}
+      =1 {There is one item in your wishlist}
+      other {There are # items in your wishlist}
     }
 changePassword:
   oldPasswordLabelTxt: Current password

@@ -1,33 +1,33 @@
-<a id="link-product-thumbnail{{ index }}" href="{{ thumbnail.product.variant.url }}">
+<a id="link-product-thumbnail-{{ index }}" href="{{ path('_ctp_example_product', {'slug': product.slug}) }}">
   <div class="shop-item">
-    {% if thumbnail.sale %}
+    {% if product.sale %}
       <div class="sale-flag">{{ 'thumbnail.sale'|trans([], 'catalog') }}</div>
     {% endif %}
-    {% if thumbnail.new %}
+    {% if product.new %}
       <div class="new-flag">{{ 'thumbnail.new'|trans([], 'catalog') }}</div>
     {% endif %}
-    <form id="form-add-to-wishlist-mobile{{ index }}" method="post" {% if wishlist %}class="hidden"{% endif %} name="add-to-wishlist-mobile" action="{{ root.meta._links.addToWishlist.href }}">
+    <form id="form-add-to-wishlist-mobile{{ index }}" method="post" {% if wishlist %}class="hidden"{% endif %} name="add-to-wishlist-mobile" action="{{ path('_ctp_example_shoppingList_add_lineItem') }}">
         <input type="hidden" name="csrfToken" value="{{ csrf_token('csrfToken') }}"/>
-        <input type="hidden" name="productId" value="{{ product.productId }}">
-        <input type="hidden" name="variantId" value="{{ product.variantId }}">
+        <input type="hidden" name="productId" value="{{ product.id }}">
+        <input type="hidden" name="variantId" value="{{ product.masterVariant.id }}">
 
         <button type="submit" class="heart-xs visible-xs">
         <span class="sr-only">{{ 'wishlist.add'|trans([], 'catalog') }}</span>
       </button>
     </form>
     <div class="pop-product-image">
-      <img class="img-lazy" data-original="{{ thumbnail.product.variant.image }}" alt="{{ thumbnail.product.variant.name }}" />
+      <img class="img-lazy" data-original="{{ product.masterVariant.images.current.url }}" alt="{{ product.name }}" />
     </div>
     <div class="pop-product-name">
-      <span class="name-headline">{{ thumbnail.product.variant.name }}</span>
-      <span class="name-subline">{{ thumbnail.product.variant.description }}</span>
+      <span class="name-headline">{{ product.name }}</span>
+      <span class="name-subline">{{ product.description }}</span>
     </div>
     <div class="pop-item-price">
-      {% if thumbnail.product.variant.priceOld %}
-        <span class="strikethrough">{{ thumbnail.product.variant.priceOld }}</span>
-        <span class="pop-item-price-old">{{ thumbnail.product.variant.price }}</span>
+      {% if product.masterVariant.price.discounted %}
+        <span class="strikethrough">{{ product.masterVariant.price }}</span>
+        <span class="pop-item-price-old">{{ product.masterVariant.price.discounted }}</span>
       {% else %}
-        <span>{{ thumbnail.product.variant.price }}</span>
+        <span>{{ product.masterVariant.price }}</span>
       {% endif %}
     </div>
     <div class="pop-product-more-colors">
@@ -47,10 +47,10 @@
       <button type="button" class="quickview" data-modal="quickview-modal{{ index }}">
         {{ 'thumbnail.quickView'|trans([], 'catalog') }}
       </button>
-      <form id="form-add-to-wishlist{{ index }}" method="post" {% if wishlist %}class="hidden"{% endif %} name="add-to-wishlist" action="{{ root.meta._links.addToWishlist.href }}">
+      <form id="form-add-to-wishlist{{ index }}" method="post" {% if wishlist %}class="hidden"{% endif %} name="add-to-wishlist" action="{{ path('_ctp_example_shoppingList_add_lineItem') }}">
           <input type="hidden" name="csrfToken" value="{{ csrf_token('csrfToken') }}"/>
-          <input type="hidden" name="productId" value="{{ product.productId }}">
-          <input type="hidden" name="variantId" value="{{ product.variantId }}">
+          <input type="hidden" name="productId" value="{{ product.id }}">
+          <input type="hidden" name="variantId" value="{{ product.masterVariant.id }}">
 
           <button type="submit" class="heart">
           <span class="sr-only">{{ 'wishlist.add'|trans([], 'catalog') }}</span>

@@ -19,7 +19,7 @@
     <a href="{{ root.meta._links.myReturnsAndExchanges.href }}">{{ 'myAccountSidebar.returnsExchange'|trans([], 'my-account') }}</a>
   </div>
   <div {% if myWishlistTab %}id="my-account-mobile-content"{% endif %}class="my-account-sidebar-items clearfix {% if myWishlistTab %}active{% endif %}">
-    <a href="{{ root.meta._links.myWishlist.href }}">
+    <a href="{{ path('_ctp_example_shoppingList') }}">
       <span><img class="sidebar-wishlist-heart hidden-sm" src="{{ asset('bundles/example/img/heart-1.png') }}" alt="heart icon"></span>{{ 'myAccountSidebar.wishlist'|trans([], 'my-account') }}<span class="sidebar-wishlist-quantity hidden-sm">{{ content.sidebarItemSix.wishlistItems }}</span>
     </a>
   </div>

@@ -52,7 +52,7 @@ class ShoppingListController extends AbstractController
             $shoppingLists = $this->manager->getAllOfCustomer($request->getLocale(), CustomerReference::ofId($user->getId()), $params);
         }
 
-        return $this->render('ExampleBundle:shoppinglist:index.html.twig', ['lists' => $shoppingLists]);
+        return $this->render('@Example/my-account-wishlist.html.twig', ['lists' => $shoppingLists]);
     }
 
     public function createAction(Request $request, SessionInterface $session, UserInterface $user = null)
