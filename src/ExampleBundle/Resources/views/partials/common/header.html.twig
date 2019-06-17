@@ -42,15 +42,15 @@
               {% include '@Example/partials/common/mini-cart.html.twig' with {'miniCart':header.miniCart} %}
             </li>
 
-            {% if root.meta.user.loggedIn %}
+            {% if app.user %}
                 <li class="list-item-user">
                     <a href="{{ logout_url() }}" class="link-user">
                         <span>{{ 'header.signOut'|trans([], 'main') }}</span>
                     </a>
                 </li>
                 <li class="list-item-user">
-                    <a href="{{ root.meta._links.myAccount.href }}" class="link-user icon-user">
-                        <span class="hidden-xs hidden-sm">{{ root.meta.user.name }}</span>
+                    <a href="{{ path('_ctp_example_user_details') }}" class="link-user icon-user">
+                        <span class="hidden-xs hidden-sm">{{ 'header.myAccount'|trans([], 'main') }}</span>
                     </a>
                 </li>
             {% else %}

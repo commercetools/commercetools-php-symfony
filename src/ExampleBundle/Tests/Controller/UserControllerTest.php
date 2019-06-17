@@ -12,6 +12,7 @@ use Commercetools\Core\Request\Customers\Command\CustomerChangeAddressAction;
 use Commercetools\Core\Request\Customers\Command\CustomerChangeEmailAction;
 use Commercetools\Core\Request\Customers\Command\CustomerSetFirstNameAction;
 use Commercetools\Core\Request\Customers\Command\CustomerSetLastNameAction;
+use Commercetools\Core\Request\Customers\Command\CustomerSetTitleAction;
 use Commercetools\Symfony\CustomerBundle\Manager\CustomerManager;
 use Commercetools\Symfony\CustomerBundle\Model\CustomerUpdateBuilder;
 use Commercetools\Symfony\CustomerBundle\Security\User\CtpUser;
@@ -85,8 +86,8 @@ class UserControllerTest extends WebTestCase
         $form->isValid()->willReturn(true)->shouldBeCalledOnce();
         $form->get(Argument::type('string'))->will(function () {
             return $this;
-        })->shouldBeCalledTimes(5);
-        $form->getData()->willReturn('foo')->shouldBeCalledTimes(5);
+        })->shouldBeCalledTimes(6);
+        $form->getData()->willReturn('foo')->shouldBeCalledTimes(6);
         $form->createView()->shouldBeCalled();
 
         $formFactory = $this->prophesize(FormFactory::class);
@@ -105,6 +106,9 @@ class UserControllerTest extends WebTestCase
             return $this;
         })->shouldBeCalled();
         $customerUpdateBuilder->changeEmail(Argument::type(CustomerChangeEmailAction::class))->will(function () {
+            return $this;
+        })->shouldBeCalled();
+        $customerUpdateBuilder->setTitle(Argument::type(CustomerSetTitleAction::class))->will(function () {
             return $this;
         })->shouldBeCalled();
         $customerUpdateBuilder->flush()->willReturn($customer)->shouldBeCalled();
@@ -139,8 +143,8 @@ class UserControllerTest extends WebTestCase
         $form->isValid()->willReturn(true)->shouldBeCalledOnce();
         $form->get(Argument::type('string'))->will(function () {
             return $this;
-        })->shouldBeCalledTimes(5);
-        $form->getData()->willReturn('foo')->shouldBeCalledTimes(5);
+        })->shouldBeCalledTimes(6);
+        $form->getData()->willReturn('foo')->shouldBeCalledTimes(6);
         $form->createView()->shouldBeCalled();
 
         $flashBag = $this->prophesize(FlashBag::class);
@@ -166,6 +170,9 @@ class UserControllerTest extends WebTestCase
             return $this;
         })->shouldBeCalled();
         $customerUpdateBuilder->changeEmail(Argument::type(CustomerChangeEmailAction::class))->will(function () {
+            return $this;
+        })->shouldBeCalled();
+        $customerUpdateBuilder->setTitle(Argument::type(CustomerSetTitleAction::class))->will(function () {
             return $this;
         })->shouldBeCalled();
         $customerUpdateBuilder->flush()->will(function () {

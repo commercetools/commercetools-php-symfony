@@ -64,29 +64,53 @@
                       </div>
                     </div>
                   </div>
-                  {% for orders_i in content.orders %}
+                  {% for order in orders %}
                     <div class="my-orders-table-order">
                       <div class="row">
-                        <div class="col-sm-2 col-xs-4">
-                          <span>{{ orders_i.orderNumber }}</span>
-                        </div>
-                        <div class="col-sm-2 hidden-xs">
-                          <span>{{ orders_i.orderDate }}</span>
-                        </div>
-                        <div class="col-sm-2 col-xs-4">
-                          <span>{{ orders_i.total }}</span>
-                        </div>
-                        <div class="col-sm-2 hidden-xs">
-                          <span>{{ orders_i.paymentStatus }}</span>
-                        </div>
-                        <div class="col-sm-2 hidden-xs">
-                          <span>{{ orders_i.shipping }}</span>
-                        </div>
-                        <div class="col-sm-2 col-xs-4 text-right">
-                        <form id="form-view-my-order{{ loop.index0 }}" name="view-my-order" method="GET" action="{{ orders_i.showOrderUrl }}">
-                            <button type="submit" class="my-orders-view-order-btn">{{ 'myOrders.view'|trans({}, 'my-account') }}</button>
-                        </form>
-                        </div>
+                        {% if order is not empty %}
+
+
+                          <div class="col-sm-2 col-xs-4">
+                            <span>{{ order.orderNumber }}</span>
+                          </div>
+                          <div class="col-sm-2 hidden-xs">
+                            <span>{{ order.getCreatedAt.getDateTime|date("m/d/Y H:i") }}</span>
+                          </div>
+                          <div class="col-sm-2 col-xs-4">
+                            <span>{{ order.getTotalPrice }}</span>
+                          </div>
+                          <div class="col-sm-2 hidden-xs">
+                            <span>{{ order.paymentStatus }}</span>
+                          </div>
+                          <div class="col-sm-2 hidden-xs">
+                            <span>{{ order.shipping }}</span>
+                          </div>
+                          <div class="col-sm-2 col-xs-4 text-right">
+                            <form id="form-view-my-order{{ loop.index0 }}" name="view-my-order" method="GET" action="{{ path('_ctp_example_order', {'orderId': order.id}) }}">
+                              <button type="submit" class="my-orders-view-order-btn">{{ 'myOrders.view'|trans({}, 'my-account') }}</button>
+                            </form>
+                          </div>
+
+
+{#                          <tr>#}
+{#                            <td><a href="{{ path('_ctp_example_order', {'orderId': order.getId}) }}">{{ order.id }} </a> </td>#}
+{#                            <td>{{ order.getCreatedAt.getDateTime|date("m/d/Y H:i") }}</td>#}
+{#                            <td>{{ order.getTotalPrice }} </td>#}
+{#                            <td>#}
+{#                              {% for transition in workflow_transitions(order) %}#}
+{#                                <a href="{{ path('_ctp_example_order_' ~ transition.name, {'orderId': order.getId}) }}">{{ transition.name }}</a>#}
+{#                              {% else %}#}
+{#                                No actions available.#}
+{#                              {% endfor %}#}
+{#                            </td>#}
+{#                          </tr>#}
+
+                        {% else %}
+                          <div class="col-sm-12 text-center">
+                            <span>There are no orders yet, go ahead and buy something!</span>
+                          </div>
+                        {% endif %}
+
                       </div>
                     </div>
                   {% endfor %}

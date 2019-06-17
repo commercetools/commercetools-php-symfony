@@ -35,7 +35,7 @@
                     <div class="your-order-details-title">{{ 'myOrder.title'|trans([], 'my-account') }}</div>
                     <div class="your-order-details">
                       <span class="your-order-details-titles">{{ 'myOrder.orderNumber'|trans([], 'my-account') }}<br>{{ 'myOrder.creationDate'|trans([], 'my-account') }}</span>
-                      <span class="your-order-details-info">{{ content.order.orderNumber }}<br>{{ content.order.orderDate }}</span>
+                      <span class="your-order-details-info">{{ order.orderNumber }}<br>{{ order.getCreatedAt.getDateTime|date("m/d/Y H:i") }}</span>
                     </div>
                     <button onclick="window.print()" class="my-orders-print-receipt-btn hidden-xs">{{ 'myOrder.print'|trans([], 'my-account') }}</button>
                   </div>
@@ -43,27 +43,27 @@
                     <div class="col-sm-6">
                       <div class="my-orders-order-dark-box">
                         <div class="my-orders-order-dark-box-title">{{ 'myOrder.shippingAddress'|trans([], 'my-account') }}</div>
-                        <div>{{ content.order.shippingAddress.title }} {{ content.order.shippingAddress.firstName }} {{ content.order.shippingAddress.lastName }}</div>
-                        <div>{{ content.order.shippingAddress.streetName }}</div>
-                        <div>{{ content.order.shippingAddress.additionalStreetInfo }}</div>
-                        <div>{{ content.order.shippingAddress.city }}</div>
-                        <div>{{ content.order.shippingAddress.postalCode }} {{ content.order.shippingAddress.region }}</div>
-                        <div>{{ content.order.shippingAddress.country }}</div><br>
-                        <div>{{ content.order.shippingAddress.phone }}</div>
-                        <div>{{ content.order.shippingAddress.email }}</div>
+                        <div>{{ order.shippingAddress.title }} {{ order.shippingAddress.firstName }} {{ order.shippingAddress.lastName }}</div>
+                        <div>{{ order.shippingAddress.streetName }}</div>
+                        <div>{{ order.shippingAddress.additionalStreetInfo }}</div>
+                        <div>{{ order.shippingAddress.city }}</div>
+                        <div>{{ order.shippingAddress.postalCode }} {{ order.shippingAddress.region }}</div>
+                        <div>{{ order.shippingAddress.country }}</div><br>
+                        <div>{{ order.shippingAddress.phone }}</div>
+                        <div>{{ order.shippingAddress.email }}</div>
                       </div>
                     </div>
                     <div class="col-sm-6">
                       <div class="my-orders-order-dark-box">
                         <div class="my-orders-order-dark-box-title">{{ 'myOrder.billingAddress'|trans([], 'my-account') }}</div>
-                        <div>{{ content.order.billingAddress.title }} {{ content.order.billingAddress.firstName }} {{ content.order.billingAddress.lastName }}</div>
-                        <div>{{ content.order.billingAddress.streetName }}</div>
-                        <div>{{ content.order.billingAddress.additionalStreetInfo }}</div>
-                        <div>{{ content.order.billingAddress.city }}</div>
-                        <div>{{ content.order.billingAddress.postalCode }} {{ content.order.billingAddress.region }}</div>
-                        <div>{{ content.order.billingAddress.country }}</div><br>
-                        <div>{{ content.order.billingAddress.phone }}</div>
-                        <div>{{ content.order.billingAddress.email }}</div>
+                        <div>{{ order.billingAddress.title }} {{ order.billingAddress.firstName }} {{ order.billingAddress.lastName }}</div>
+                        <div>{{ order.billingAddress.streetName }}</div>
+                        <div>{{ order.billingAddress.additionalStreetInfo }}</div>
+                        <div>{{ order.billingAddress.city }}</div>
+                        <div>{{ order.billingAddress.postalCode }} {{ order.billingAddress.region }}</div>
+                        <div>{{ order.billingAddress.country }}</div><br>
+                        <div>{{ order.billingAddress.phone }}</div>
+                        <div>{{ order.billingAddress.email }}</div>
                       </div>
                     </div>
                   </div>
@@ -72,31 +72,40 @@
                       <div class="my-orders-order-dark-box">
                         <div class="my-orders-order-dark-box-title">{{ 'myOrder.shippingMethod'|trans([], 'my-account') }}</div>
                           <div>
-                              {{ content.order.shippingMethod.label }}
-                              {% if content.order.shippingMethod.description %}- {{ content.order.shippingMethod.description }}{% endif %}
+                              {{ order.shippingInfo.shippingMethodName }}
+{#                              {% if content.order.shippingMethod.description %}- {{ content.order.shippingMethod.description }}{% endif %}#}
                           </div>
                       </div>
                     </div>
                     <div class="col-sm-6">
                       <div class="my-orders-order-dark-box">
                         <div class="my-orders-order-dark-box-title">{{ 'myOrder.paymentDetails'|trans([], 'my-account') }}</div>
-                        <div>{{ content.order.paymentDetails.payment }}</div>
-                        <div>{{ content.order.paymentDetails.name }}</div>
-                        <div>{{ content.order.paymentDetails.type }}</div>
-                        <div>{{ content.order.paymentDetails.number }}</div>
-                        <div>{{ content.order.paymentDetails.date }}</div>
+{#                        <div>{{ order.paymentDetails.type }}</div>#}
+{#                        <div>{{ order.paymentDetails.number }}</div>#}
+{#                        <div>{{ order.paymentDetails.date }}</div>#}
+                        <div>Gross Price: {{ order.getTaxedPrice.getTotalGross }}</div>
+                        <div>Net Price: {{ order.getTaxedPrice.getTotalNet }}</div>
+                        <div>Taxes:</div>
+                          {%  for taxPortion in order.getTaxedPrice.getTaxPortions %}
+                              <div>{{ taxPortion.getName }}: {{ taxPortion.getAmount }}</div>
+                          {% endfor %}
+                        <div>Total Price: {{ order.getTotalPrice }}</div>
+
+                          {% if order.paymentInfo.payments.count %}
+                              <div>Payment Id: {{ order.paymentInfo.payments.current.id }}</div>
+                          {% endif %}
                       </div>
                     </div>
                   </div>
                   <div class="my-orders-order-price-summary-wrapper">
-                      {% if content.order.discountCode %}
+                      {% if order.discountCodes.count %}
                           <div class="text-right">
                               <span class="my-orders-order-promocode-title">{{ 'myOrder.price.discountCode'|trans([], 'my-account') }}</span>
-                              <span class="my-orders-order-promocode">{{ content.order.discountCode }}</span>
+                              <span class="my-orders-order-promocode">{{ order.discountCodes.current }}</span>
                           </div>
                       {% endif %}
                     <div class="text-right">
-                        {% include '@Example/partials/checkout/order-summary/totals.html.twig' with {'cart':content.order} %}
+                        {% include '@Example/partials/checkout/order-summary/totals.html.twig' with {'cart':order} %}
                     </div>
                   </div>
                   <div class="order-list-summary-titles-wrapper">
@@ -123,7 +132,7 @@
                       </div>
                     </div>
                   </div>
-                    {% for list_i in content.order.lineItems.list %}
+                    {% for list_i in order.lineItems.list %}
                         <div class="order-detail-wrapper">
                             <div class="row">
                                 <div class="col-sm-1 col-xs-4 product-img-col">

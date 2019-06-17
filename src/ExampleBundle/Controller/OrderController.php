@@ -94,7 +94,7 @@ class OrderController extends AbstractController
             $payments = $this->paymentManager->getMultiplePayments($request->getLocale(), $paymentsIds);
         }
 
-        return $this->render('ExampleBundle:user:order.html.twig', [
+        return $this->render('@Example/my-account-my-orders-order.html.twig', [
             'order' => $order,
             'payments' => $payments ?? []
         ]);

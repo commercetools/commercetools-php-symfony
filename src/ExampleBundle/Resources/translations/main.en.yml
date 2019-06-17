@@ -36,6 +36,7 @@ header:
   new: New
   sale: Sale
   brands: Brands
+  myAccount: My Account
 footer:
   paySecure: Pay securely with these payment methods
   followUs: Follow us

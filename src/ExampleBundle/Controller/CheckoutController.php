@@ -254,7 +254,7 @@ class CheckoutController extends AbstractController
             }
         }
 
-        return $this->render('ExampleBundle:checkout:checkout.html.twig', [
+        return $this->render('@Example/checkout-address.html.twig', [
             'form' => $form->createView(),
         ]);
     }

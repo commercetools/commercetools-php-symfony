@@ -40,6 +40,13 @@
                     <div class="row">
                       <div class="col-sm-12">
                         {% include '@Example/partials/myaccount/my-address-book-address-form.html.twig' with {'form':content.editAddressForm, 'settings':content.editAddressFormSettings} %}
+
+                        {{ form_start(form_address) }}
+                        <div id="form_address">
+                          {% form_theme form_address 'bootstrap_3_layout.html.twig' %}
+                          {{ form_widget(form_address) }}
+                        </div>
+                        {{ form_end(form_address) }}
                       </div>
                     </div>
                     <div class="row">

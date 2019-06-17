@@ -12,6 +12,23 @@ class UserDetails
     private $password;
     private $currentPassword;
     private $newPassword;
+    private $title;
+
+    /**
+     * @return mixed
+     */
+    public function getTitle()
+    {
+        return $this->title;
+    }
+
+    /**
+     * @param mixed $title
+     */
+    public function setTitle($title)
+    {
+        $this->title = $title;
+    }
 
     /**
      * @return mixed
@@ -137,7 +154,8 @@ class UserDetails
         $userDetails
             ->setFirstName($customer->getFirstName())
             ->setLastName($customer->getLastName())
-            ->setEmail($customer->getEmail());
+            ->setEmail($customer->getEmail())
+            ->setTitle($customer->getTitle());
 
         return $userDetails;
     }
