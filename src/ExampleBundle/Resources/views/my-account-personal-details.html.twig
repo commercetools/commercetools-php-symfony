@@ -48,14 +48,14 @@
                   </div>
 
                   <div class="personal-details-edit personal-details-edit-show">
-                          <input type="hidden" name="csrfToken" value="{{ csrf_token('csrfToken') }}"/>
                           <div class="row">
                             {% include '@Example/partials/form/global-messages.html.twig' with {'messages':content.personalDetailsForm.messages} %}
                             {{ form_errors(formDetails) }}
                           </div>
                           <div class="row">
                             <div class="col-sm-12">
-                              {% include '@Example/partials/form/choose-title.html.twig' with {'containerClass':"form-sections", 'selectId':"personal-details-title-select", 'selectName':"title", 'options':formDetails.title.options} %}
+                              {% set formObject = formDetails %}
+                              {% include '@Example/partials/form/choose-title.html.twig' with {'containerClass':"form-sections", 'formFieldName': 'title'} %}
                             </div>
                           </div>
                           <div class="row">
@@ -109,6 +109,7 @@
                           <span>
                             <input name="subscribeToNewsletter" type="checkbox" {% if personalDetails.personalDetailsForm.subscribeToNewsletter %}checked{% endif %}/>
                             {{ 'personalDetails.personalDetailsForm.subscribeToNewsletter' | trans([], 'my-account') | raw }}
+
                           </span>
                         </div>
                         <div class="personal-details-edit-btn">

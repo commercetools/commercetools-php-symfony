@@ -6,5 +6,5 @@
 {#    <option value="{{ list_i.value }}" {% if list_i.selected %}selected{% endif %}>{{ list_i.label }}</option>#}
 {#    {% endfor %}#}
 {#  </select>#}
-  {{ form_widget(formDetails.title, {'attr': {'class': 'checkout-dropdown'}}) }}
+  {{ form_widget(formObject[formFieldName], {'attr': {'class': 'checkout-dropdown'}}) }}
 </div>

@@ -16,9 +16,9 @@ class AddressType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
-        $builder->add('title', TextType::class, ['required' => false]);
-        $builder->add('salutation', ChoiceType::class, [
-            'choices' => ['Mr' => 'Mr', 'Mrs' => 'Mrs']
+        $builder->add('salutation', TextType::class, ['required' => false]);
+        $builder->add('title', ChoiceType::class, [
+            'choices' => ['Mr' => 'Mr', 'Mrs' => 'Mrs', 'Other' => 'Other']
         ]);
         $builder->add('firstName', TextType::class, ['attr' => ['data-required' => 'true']]);
         $builder->add('lastName', TextType::class, ['attr' => ['data-required' => 'true']]);

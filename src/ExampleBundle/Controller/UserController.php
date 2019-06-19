@@ -76,6 +76,7 @@ class UserController extends AbstractController
 
         $form = $this->createForm(UserType::class, $entity)
             ->add('submit', SubmitType::class);
+
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
@@ -126,14 +127,16 @@ class UserController extends AbstractController
 
         $entity = UserAddress::ofAddress($address);
 
-        $form = $this->createFormBuilder(['address' => $entity->toArray()])
-            ->add('address', AddressType::class)
-            ->add('Submit', SubmitType::class)
-            ->getForm();
+        $form = $this->createForm(AddressType::class, $entity)
+            ->add('submit', SubmitType::class);
+
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $address = Address::fromArray($form->get('address')->getData());
+
+            /** @var UserAddress $userAddress */
+            $userAddress = $form->getData();
+            $address = Address::fromArray($userAddress->toArray());
 
             $customerBuilder = $this->manager->update($customer)
                 ->changeAddress(CustomerChangeAddressAction::ofAddressIdAndAddress($addressId, $address));
@@ -141,7 +144,8 @@ class UserController extends AbstractController
         }
 
         return $this->render('@Example/my-account-edit-address.html.twig', [
-            'form_address' => $form->createView()
+            'formAddress' => $form->createView(),
+            'addressId' => $addressId
         ]);
     }
 

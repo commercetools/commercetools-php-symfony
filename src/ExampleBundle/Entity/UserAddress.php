@@ -462,14 +462,14 @@ class UserAddress
         $metadata->addPropertyConstraint('city', new NotBlank());
         $metadata->addPropertyConstraint('city', new Length(['min' => 3, 'max' => 255]));
 
-        $metadata->addPropertyConstraint('region', new NotBlank());
-        $metadata->addPropertyConstraint('region', new Length(['min' => 3, 'max' => 255]));
+//        $metadata->addPropertyConstraint('region', new NotBlank());
+//        $metadata->addPropertyConstraint('region', new Length(['min' => 3, 'max' => 255]));
 
         $metadata->addPropertyConstraint('country', new NotBlank());
         $metadata->addPropertyConstraint('country', new Length(['min' => 2, 'max' => 2]));
 
-        $metadata->addPropertyConstraint('phone', new NotBlank());
-        $metadata->addPropertyConstraint('phone', new Length(['min' => 3, 'max' => 255]));
+//        $metadata->addPropertyConstraint('phone', new NotBlank());
+//        $metadata->addPropertyConstraint('phone', new Length(['min' => 3, 'max' => 255]));
 
         $metadata->addPropertyConstraint('email', new NotBlank());
         $metadata->addPropertyConstraint('email', new Email());
