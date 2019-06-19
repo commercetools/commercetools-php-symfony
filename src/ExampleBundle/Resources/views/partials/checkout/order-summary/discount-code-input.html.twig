@@ -2,7 +2,8 @@
     <div class="row">
         <div class="col-sm-offset-6 col-sm-6">
             {% include '@Example/partials/form/global-messages.html.twig' with {'messages':content.cart.addDiscountCodeForm.messages} %}
-            {% include '@Example/partials/form/global-errors.html.twig' with {'errors':content.cart.addDiscountCodeForm.errors} %}
+{#   TODO create the discount code form         #}
+{#            {% include '@Example/partials/form/global-errors.html.twig' with {'errors':content.cart.addDiscountCodeForm.errors} %}#}
         </div>
         <div class="col-sm-12">
             <form id="form-add-discount-code" class="text-right promotion-info" action="{{ path('_ctp_example_discount_code_add') }}" method="post">

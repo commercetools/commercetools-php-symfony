@@ -14,7 +14,7 @@ class AddressTypeTest extends TypeTestCase
     public function testSubmitValidData()
     {
         $formData = [
-            'title' => 'mr',
+            'title' => 'Mr',
             'salutation' => 'mr',
             'firstName' => 'foo',
             'lastName' => 'bar',
@@ -42,7 +42,7 @@ class AddressTypeTest extends TypeTestCase
 
         $expectedUserAddress = new UserAddress();
         $expectedUserAddress
-            ->setTitle('mr')
+            ->setTitle('Mr')
             ->setFirstName('foo')
             ->setLastName('bar')
             ->setEmail('user@localhost')
@@ -61,6 +61,7 @@ class AddressTypeTest extends TypeTestCase
             ->setPhone('0546659948')
             ->setMobile('0620923399')
             ->setDepartment('1')
+            ->setSalutation('mr')
         ;
 
         $form->submit($formData);

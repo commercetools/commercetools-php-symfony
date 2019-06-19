@@ -17,11 +17,14 @@ use Commercetools\Symfony\CustomerBundle\Manager\CustomerManager;
 use Commercetools\Symfony\CustomerBundle\Model\CustomerUpdateBuilder;
 use Commercetools\Symfony\CustomerBundle\Security\User\CtpUser;
 use Commercetools\Symfony\ExampleBundle\Controller\UserController;
+use Commercetools\Symfony\ExampleBundle\Entity\UserAddress;
 use Commercetools\Symfony\ExampleBundle\Entity\UserDetails;
+use Commercetools\Symfony\ExampleBundle\Model\Form\Type\AddressType;
 use Prophecy\Argument;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\Form\Extension\Core\Type\FormType;
+use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\Form;
 use Symfony\Component\Form\FormBuilder;
 use Symfony\Component\Form\FormFactory;
@@ -223,6 +226,9 @@ class UserControllerTest extends WebTestCase
         $this->customerManager->getById('en', 'id-1')->willReturn($customer)->shouldBeCalled();
         $this->customerManager->update(Argument::type(Customer::class))->willReturn($customerUpdateBuilder->reveal())->shouldBeCalled();
 
+        $userAddress = $this->prophesize(UserAddress::class);
+        $userAddress->toArray()->willReturn([])->shouldBeCalledOnce();
+
         $form = $this->prophesize(Form::class);
         $form->handleRequest(Argument::type(Request::class))
             ->will(function () {
@@ -232,23 +238,17 @@ class UserControllerTest extends WebTestCase
         $form->isSubmitted()->willReturn(true)->shouldBeCalledOnce();
         $form->isValid()->willReturn(true)->shouldBeCalledOnce();
 
-        $form->get(Argument::is('address'))->will(function () {
+
+        $form->getData()->willReturn($userAddress->reveal())->shouldBeCalledTimes(1);
+        $form->add(Argument::is('submit'), Argument::is(SubmitType::class))->will(function () {
             return $this;
         })->shouldBeCalledTimes(1);
-        $form->getData()->willReturn([])->shouldBeCalledTimes(1);
 
         $form->createView()->shouldBeCalled();
 
-        $formBuilder = $this->prophesize(FormBuilder::class);
-        $formBuilder->add(Argument::type('string'), Argument::type('string'))
-            ->will(function () {
-                return $this;
-            })->shouldBeCalledTimes(2);
-        $formBuilder->getForm()->willReturn($form)->shouldBeCalled();
-
         $formFactory = $this->prophesize(FormFactory::class);
-        $formFactory->createBuilder(Argument::is(FormType::class), Argument::type('array'), [])
-            ->willReturn($formBuilder->reveal())->shouldBeCalled();
+        $formFactory->create(Argument::is(AddressType::class), Argument::type(UserAddress::class), [])
+            ->willReturn($form->reveal())->shouldBeCalled();
 
         $this->myContainer->get('form.factory')->willReturn($formFactory->reveal())->shouldBeCalled();
 
