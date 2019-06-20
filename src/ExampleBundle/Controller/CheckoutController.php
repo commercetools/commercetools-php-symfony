@@ -127,19 +127,18 @@ class CheckoutController extends AbstractController
 
         if ($form->isSubmitted() && $form->isValid()) {
             $cartBuilder = $this->cartManager->update($cart);
-            $cartBuilder->setActions([
+            $cartBuilder->addAction(
                 CartSetShippingMethodAction::of()->setShippingMethod(
                     ShippingMethodReference::ofId($form->get('name')->getData())
                 )
-            ]);
-
+            );
             $cartBuilder->flush();
 
             return $this->redirect($this->generateUrl('_ctp_example_checkout_confirm'));
         }
 
-        return $this->render('ExampleBundle:checkout:checkoutShipping.html.twig', [
-            'shipping_methods' => $shippingMethods,
+        return $this->render('@Example/checkout-shipping.html.twig', [
+//            'shipping_methods' => $shippingMethods,
             'form' => $form->createView()
         ]);
     }
@@ -159,7 +158,7 @@ class CheckoutController extends AbstractController
             return $this->redirect($this->generateUrl('_ctp_example_cart'));
         }
 
-        return $this->render('ExampleBundle:cart:cartConfirm.html.twig', [
+        return $this->render('@Example/checkout-confirmation.html.twig', [
             'cart' => $cart,
             'customer' => $user,
         ]);
@@ -191,7 +190,7 @@ class CheckoutController extends AbstractController
             $markingStoreOrderState->getStateReferenceOfInitial()
         );
 
-        return $this->render('ExampleBundle:cart:cartSuccess.html.twig', [
+        return $this->render('@Example/checkout-thankyou.html.twig', [
             'orderId' => $order->getId()
         ]);
     }
@@ -218,7 +217,7 @@ class CheckoutController extends AbstractController
 
         $form = $this->createFormBuilder($entity)
             ->add(
-                'check',
+                'differentAddresses',
                 CheckboxType::class,
                 [
                     'required' => false,
@@ -234,14 +233,11 @@ class CheckoutController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $check = $form->get('check')->getData();
+            $differentAddresses = $form->get('differentAddresses')->getData();
             $shippingAddress = Address::fromArray($form->get('shippingAddress')->getData());
 
-            $billingAddress = $shippingAddress;
-
-            if ($check !== true) {
-                $billingAddress = Address::fromArray($form->get('billingAddress')->getData());
-            }
+            $billingAddress = $differentAddresses ?
+                Address::fromArray($form->get('billingAddress')->getData()) : $shippingAddress;
 
             $cartBuilder = $this->cartManager->update($cart);
             $cartBuilder

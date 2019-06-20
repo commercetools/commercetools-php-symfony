@@ -21,9 +21,9 @@
         <div class="row">
             <div class="col-sm-12">
                 <div class="checkout">
-                    <form method="post" action="{{ root.meta._links.checkoutConfirmationSubmit.href }}">
-                        <input type="hidden" name="csrfToken" value="{{ csrf_token('csrfToken') }}"/>
-                        {% include '@Example/partials/form/global-errors.html.twig' with {'errors':content.checkoutForm.errors} %}
+{#                    {{ form_start(form, {'action': path('_ctp_example_checkout_confirm')}) }}#}
+{#                        {{ form_row(form._token) }}#}
+{#                        {% include '@Example/partials/form/global-errors.html.twig' with {'errors':content.checkoutForm.errors} %}#}
                         <div class="row">
                             <div class="col-sm-4 checkout-first-col">
                               {% include '@Example/partials/checkout/address-confirmation.html.twig' with {'address':content.cart.shippingAddress, 'titleKey':"checkout:shippingAddress", 'editable':true, 'editUrl':meta._links.editShippingAddress.href} %}

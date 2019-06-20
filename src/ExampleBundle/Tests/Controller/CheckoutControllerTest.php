@@ -15,6 +15,7 @@ use Commercetools\Core\Model\ShippingMethod\ShippingMethodCollection;
 use Commercetools\Core\Model\State\StateReference;
 use Commercetools\Core\Request\Carts\Command\CartSetBillingAddressAction;
 use Commercetools\Core\Request\Carts\Command\CartSetShippingAddressAction;
+use Commercetools\Core\Request\Carts\Command\CartSetShippingMethodAction;
 use Commercetools\Symfony\CartBundle\Manager\CartManager;
 use Commercetools\Symfony\CartBundle\Manager\OrderManager;
 use Commercetools\Symfony\CartBundle\Manager\ShippingMethodManager;
@@ -148,7 +149,7 @@ class CheckoutControllerTest extends WebTestCase
         $cart = Cart::of()->setId('cart-id-1')->setShippingInfo(ShippingInfo::of()->setShippingMethodName('sh-mt-name-1'));
 
         $cartUpdateBuilder = $this->prophesize(CartUpdateBuilder::class);
-        $cartUpdateBuilder->setActions(Argument::type('array'))->will(function () {
+        $cartUpdateBuilder->addAction(Argument::type(CartSetShippingMethodAction::class))->will(function () {
             return $this;
         })->shouldBeCalled();
         $cartUpdateBuilder->flush()->willReturn($cart)->shouldBeCalled();

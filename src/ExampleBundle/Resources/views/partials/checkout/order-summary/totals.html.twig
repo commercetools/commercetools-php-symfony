@@ -42,8 +42,8 @@
 
   {% if checkoutConfirmation %}
       <div class="complete-order">
-          <button id="confirmation-completeorder-btn"
-                  class="btn complete-order-btn">{{ 'completeMyOrder'|trans([], 'checkout') }}</button>
+          <a href="{{ path('_ctp_example_checkout_place_order') }}"><button id="confirmation-completeorder-btn"
+                  class="btn complete-order-btn">{{ 'completeMyOrder'|trans([], 'checkout') }}</button></a>
           <br>
       </div>
   {% endif %}

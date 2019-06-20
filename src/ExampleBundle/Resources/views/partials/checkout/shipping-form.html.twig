@@ -1,26 +1,30 @@
-<form id="form-edit-shipping" method="post" action="{{ root.meta._links.checkoutShippingSubmit.href }}">
-  <input type="hidden" name="csrfToken" value="{{ csrf_token('csrfToken') }}"/>
+{{ form_start(form, {'action': path('_ctp_example_checkout_confirm')}) }}
+  {{ form_row(form._token) }}
   <div class="shipping-method input-block" id="shipping-methods-setting">
     <div class="text-uppercase shipping-method-title">{{ 'shippingForm'|trans([], 'checkout') }}</div>
       <div class="row">
+          {% set formObject = form %}
           {% include '@Example/partials/form/global-messages.html.twig' with {'messages':content.shippingForm.messages} %}
-          {% include '@Example/partials/form/global-errors.html.twig' with {'errors':content.shippingForm.errors} %}
+          {% include '@Example/partials/form/global-errors.html.twig' %}
       </div>
-    {% for list_i in content.shippingFormSettings.shippingMethod.list %}
+{#    {% for shippingMethod in form.name.vars.choices %}#}
       <div class="shipping-method-option">
         <label for="shipping-method-{{ loop.index0 }}">
           <span class="shipping-method-span">
-            <input id="shipping-method-{{ loop.index0 }}" class="shipping-method-radio" type="radio" name="{{ list_i.shippingFormSettings.shippingMethods.formFieldName }}
-              {% if not list_i.shippingFormSettings.shippingMethods.formFieldName %}shippingMethodId{% endif %}" value="{{ list_i.value }}" {% if list_i.selected %}checked{% endif %}" value="{{ list_i.value }}" {% if list_i.selected %}checked{% endif %}
-                {# if it is only one element #}
-              {% if not list_i.selected %}{% if list_i.first %}{% if list_i.last %}checked{% endif %}{% endif %}{% endif %}>
-              {{ list_i.label }}
+            {{ form_row(form.name) }}
+{#            <input id="shipping-method-{{ loop.index0 }}" class="shipping-method-radio" type="radio" name="{{ list_i.shippingFormSettings.shippingMethods.formFieldName }}#}
+{#              {% if not list_i.shippingFormSettings.shippingMethods.formFieldName %}shippingMethodId{% endif %}" value="{{ list_i.value }}" {% if list_i.selected %}checked{% endif %}" value="{{ list_i.value }}" {% if list_i.selected %}checked{% endif %}#}
+{#                #}{# if it is only one element #}
+{#              {% if not list_i.selected %}{% if list_i.first %}{% if list_i.last %}checked{% endif %}{% endif %}{% endif %}>#}
+{#              {{ list_i.label }}#}
+{#            {{ form_row(form) }}#}
+
           </span>
           <span class="text-uppercase delivery-time">{{ list_i.description }}</span>
         </label>
           <span class="pull-right">{{ list_i.price }}</span>
       </div>
-    {% endfor %}
+{#    {% endfor %}#}
   </div>
   {% include '@Example/partials/checkout/continue-checkout-button.html.twig' %}
-</form>
+{{ form_end(form) }}

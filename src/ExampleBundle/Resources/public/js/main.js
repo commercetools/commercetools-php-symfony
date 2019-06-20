@@ -446,6 +446,9 @@ $(".promo-info-text, .delivery-est, .security-code-info").tooltip();
  /*
  /*****************************************************************************/
 
+var requireBillingAddressForm = false;
+$("#different-billing-address input[data-required='true']").attr('required',requireBillingAddressForm);
+
 // Slide toggle different shipping address on click
 $(function() {
   var cacheInput = $("#different-billing-checkbox"),
@@ -453,6 +456,9 @@ $(function() {
     setupListener = function() {
       cacheInput.click(function() {
         cacheAddress.slideToggle("slow");
+
+        requireBillingAddressForm = !requireBillingAddressForm;
+        $("#different-billing-address input[data-required='true']").attr('required',requireBillingAddressForm);
       });
     };
 

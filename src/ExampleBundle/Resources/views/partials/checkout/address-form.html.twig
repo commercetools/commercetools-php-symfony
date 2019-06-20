@@ -1,5 +1,5 @@
 {{ form_start(form, {'action' : path('_ctp_example_checkout_address'), 'method': 'POST'}) }}
-  <input type="hidden" name="csrfToken" value="{{ csrf_token('csrfToken') }}"/>
+  {{ form_row(form._token) }}
   <div class="shipping-info">
     <span class="text-uppercase shipping-info-title">{{ 'shippingInformation'|trans([], 'checkout') }}</span>
     <span class="pull-right required-fields">{{ 'form.required'|trans([], 'main') }}*</span>
@@ -34,7 +34,7 @@
       <div class="different-for-billing input-block">
         <label for="different-billing-checkbox">
           <span>
-            <input id="different-billing-checkbox" type="checkbox" value="true" name="billingAddressDifferentToBillingAddress"{% if addressForm.billingAddressDifferentToBillingAddress %} checked{% endif %}>
+              {{ form_widget(form.differentAddresses, {'id': 'different-billing-checkbox'}) }}
           </span>
           <span>{{ 'shippingPage.differentBillingAddressCheckboxLabel'|trans([], 'checkout') }}</span>
         </label>
