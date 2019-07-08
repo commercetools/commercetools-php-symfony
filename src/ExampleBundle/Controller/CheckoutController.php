@@ -180,9 +180,14 @@ class CheckoutController extends AbstractController
         $cartId = $session->get(CartRepository::CART_ID);
         $cart = $this->cartManager->getCart($request->getLocale(), $cartId, $user, $session->getId());
 
-        if (is_null($cart->getId())) {
+        if (is_null($cart)) {
             return $this->redirect($this->generateUrl('_ctp_example_cart'));
         }
+
+//        $markingStoreOrderState = $this->container->get('Commercetools\Symfony\StateBundle\Model\CtpMarkingStore\CtpMarkingStoreOrderState');
+//        if ($this->container->has('state_machine.OrderState')) {
+//            $markingStoreOrderState = $this->container->has('state_machine.OrderState');
+//        }
 
         $order = $this->orderManager->createOrderFromCart(
             $request->getLocale(),
@@ -191,7 +196,7 @@ class CheckoutController extends AbstractController
         );
 
         return $this->render('@Example/checkout-thankyou.html.twig', [
-            'orderId' => $order->getId()
+            'order' => $order
         ]);
     }
 
@@ -206,12 +211,13 @@ class CheckoutController extends AbstractController
         $cartId = $session->get(CartRepository::CART_ID);
         $cart = $this->cartManager->getCart($request->getLocale(), $cartId, $user, $session->getId());
 
-        if (is_null($cart->getId())) {
+        if (is_null($cart) || is_null($cart->getId())) {
+            // add error message
             return $this->redirect($this->generateUrl('_ctp_example_cart'));
         }
 
         $entity = CartEntity::ofCart($cart);
-        if (!is_null($user) && count(array_diff_key($cart->getShippingAddress()->toArray(), ['country' => true])) == 0) {
+        if (!is_null($user) && !is_null($user->getDefaultShippingAddress()) && count(array_diff_key($cart->getShippingAddress()->toArray(), ['country' => true])) == 0) {
             $entity->setShippingAddress($user->getDefaultShippingAddress()->toArray());
         }
 
@@ -227,7 +233,7 @@ class CheckoutController extends AbstractController
             )
             ->add('shippingAddress', AddressType::class)
             ->add('billingAddress', AddressType::class)
-            ->add('Submit', SubmitType::class)
+            ->add('submit', SubmitType::class)
             ->getForm();
 
         $form->handleRequest($request);

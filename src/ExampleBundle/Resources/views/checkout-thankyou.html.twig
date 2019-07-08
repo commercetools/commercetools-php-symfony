@@ -14,7 +14,7 @@
       <div class="thankyou-page-content">
         <div class="row">
           <div class="col-md-6">
-            <span class="thankyou-confirmation">{{ 'thankYouPage.emailSentToStart'|trans([], 'checkout') }} <span class="thankyou-email">{{ content.order.customerEmail }}</span><br>{{ 'thankYouPage.emailSentToEnd'|trans([], 'checkout') }}</span>
+            <span class="thankyou-confirmation">{{ 'thankYouPage.emailSentToStart'|trans([], 'checkout') }} <span class="thankyou-email">{{ order.customerEmail }}</span><br>{{ 'thankYouPage.emailSentToEnd'|trans([], 'checkout') }}</span>
           </div>
           <div class="col-md-6">
             {% include '@Example/partials/checkout/continue-shopping-link.html.twig' %}
@@ -24,23 +24,23 @@
           <div class="order-details-title">{{ 'thankYouPage.yourOrderDetails'|trans([], 'checkout') }}</div>
           <div class="order-number-date">
             <span class="number-date-title">{{ 'orderNumber'|trans([], 'checkout') }}<br>{{ 'orderDate'|trans([], 'checkout') }}</span>
-            <span class="black-p">{{ content.order.orderNumber }}<br>{{ content.order.orderDate }}</span>
+            <span class="black-p">{{ order.orderNumber }}<br>{{ order.createdAt }}</span>
           </div>
         </div>
         <div class="thankyou-order-summary">
           <div class="row">
             <div class="col-sm-4 checkout-first-col">
-              {% include '@Example/partials/checkout/address-confirmation.html.twig' with {'address':content.order.shippingAddress, 'titleKey':"checkout:shippingAddress", 'editable':false} %}
+              {% include '@Example/partials/checkout/address-confirmation.html.twig' with {'address':order.shippingAddress, 'titleKey':"checkout:shippingAddress", 'editable':false} %}
             </div>
-            <div class="col-sm-4 checkout-second-col">
-              {% include '@Example/partials/checkout/address-confirmation.html.twig' with {'address':content.order.billingAddress, 'titleKey':"checkout:billingAddress", 'editable':false} %}
+            <div class="col-sm-4 checkout-second-col">q
+              {% include '@Example/partials/checkout/address-confirmation.html.twig' with {'address':order.billingAddress, 'titleKey':"checkout:billingAddress", 'editable':false} %}
             </div>
             <div class="col-sm-4 checkout-third-col">
-              {% include '@Example/partials/checkout/shipping-method-confirmation.html.twig' with {'shippingMethod':content.order.shippingMethod, 'editable':false} %}
-              {% include '@Example/partials/checkout/payment-confirmation.html.twig' with {'paymentDetails':content.order.paymentDetails, 'editable':false} %}
+              {% include '@Example/partials/checkout/shipping-method-confirmation.html.twig' with {'shippingInfo':order.shippingInfo, 'editable':false} %}
+              {% include '@Example/partials/checkout/payment-confirmation.html.twig' with {'paymentDetails':order.paymentDetails, 'editable':false} %}
             </div>
           </div>
-          {% include '@Example/partials/checkout/order-summary.html.twig' with {'cart':content.order, 'mainClass':"confirmation-products-title", 'editable':false, 'ordered':true} %}
+          {% include '@Example/partials/checkout/order-summary.html.twig' with {'cart':order, 'mainClass':"confirmation-products-title", 'editable':false, 'ordered':true} %}
         </div>
         <div>
           {% include '@Example/partials/checkout/continue-shopping-link.html.twig' %}

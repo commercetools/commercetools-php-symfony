@@ -305,10 +305,8 @@ class CheckoutControllerTest extends WebTestCase
         $router = $this->prophesize(Router::class);
         $router->generate('_ctp_example_cart', [], 1)->willReturn('bar')->shouldBeCalledOnce();
 
-        $cart = Cart::of();
-
         $this->myContainer->get('router')->willReturn($router)->shouldBeCalledOnce();
-        $this->cartManager->getCart('en', 'cart-1', null, 'baz')->willReturn($cart)->shouldBeCalledOnce();
+        $this->cartManager->getCart('en', 'cart-1', null, 'baz')->willReturn(null)->shouldBeCalledOnce();
 
         $controller = new CheckoutController($this->ctpClient->reveal(), $this->cartManager->reveal(), $this->shippingMethodManager->reveal(), $this->orderManager->reveal());
         $controller->setContainer($this->myContainer->reveal());

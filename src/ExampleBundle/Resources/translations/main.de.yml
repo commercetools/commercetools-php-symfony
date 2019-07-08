@@ -12,7 +12,7 @@ common:
   checkout: Checkout
   description: Beschreibung
   price: Price
-  totalPrice: Gesamtpreis __totalPrice__
+  totalPrice: Gesamtpreis
   quantity: Menge
   size: Größe
   salesTax: MwSt.

@@ -14,7 +14,7 @@
       <input type="hidden" name="csrfToken" value="{{ csrf_token('csrfToken') }}"/>
       <div class="row">
         {% include '@Example/partials/form/global-messages.html.twig' with {'messages':form.messages} %}
-        {% include '@Example/partials/form/global-errors.html.twig' with {'errors':form.errors} %}
+{#        {% include '@Example/partials/form/global-errors.html.twig' with {'errors':form.errors} %}#}
       </div>
       <div class="login-box-input">
         <span>{{ 'loginBox.email'|trans([], 'my-account-login') }}*</span><br>

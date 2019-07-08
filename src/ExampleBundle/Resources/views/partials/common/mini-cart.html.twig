@@ -1,40 +1,14 @@
-{% if miniCart.lineItems.list %}
+{% if app.session.get('cart.itemCount') %}
   <button class="not-empty link-your-bag icon-hand-bag">
     <span class="hidden-xs hidden-sm">{{ 'header.miniCart'|trans([], 'main') }}</span>
     <span class="cart-item-number">{{ app.session.get('cart.itemCount') }}</span>
   </button>
   <div class="col-xs-12">
-    <div class="nav-minicart">
-      <ul>
-        {% for list_i in miniCart.lineItems.list %}
-        <li>
-          <form action="{{ list_i.root.meta._links.deleteLineItem.href }}" method="post">
-            <input type="hidden" name="csrfToken" value="{{ list_i.csrf_token('csrfToken') }}"/>
-            <a class="img" href="{{ list_i.variant.url }}"><img src="{{ list_i.variant.image }}" alt="{{ list_i.variant.name }}" /></a>
-            <p class="product-title"><a href="{{ list_i.variant.url }}">{{ list_i.variant.name }}</a></p>
-            <div class="details">
-              <p class="product-quantity">{{ 'common.quantity'|trans({}, 'main') }}<span>{{ list_i.quantity }}x</span></p>
-              <p class="product-price">{{ 'common.price'|trans({}, 'main') }}<span>{{ list_i.totalPrice }}</span></p>
-                <input type="hidden" name="lineItemId" value="{{ list_i.lineItemId }}">
-                <button type="submit" id="minicart-delete-button-{{ loop.index0 }}" class="delete">
-                  <span>
-                    <img class="cart-action-icon" src="{{ asset('bundles/example/img/delete-1.png') }}" alt="{{ 'form.delete'|trans({}, 'main') }}">
-                  </span>
-                </button>
-            </div>
-          </form>
-        </li>
-        {% endfor %}
-      </ul>
-      <div class="gradient"></div>
-      <p class="total-price">{{ 'common.totalPrice'|trans([], 'main') }}</p>
-      <a href="{{ path('_ctp_example_cart') }}" class="btn-grey">{{ 'header.viewBag'|trans([], 'main') }}</a>
-      <a href="{{ path('_ctp_example_checkout_address') }}" class="btn-yellow">{{ 'header.checkout'|trans([], 'main') }}</a>
-    </div>
+    {{ render(controller('ExampleBundle:Sunrise:getMiniCart')) }}
   </div>
 {% else %}
 <a href="{{ path('_ctp_example_cart') }}" class="not-empty link-your-bag icon-hand-bag">
   <span class="hidden-xs hidden-sm">{{ 'header.miniCart'|trans([], 'main') }}</span>
-  <span class="cart-item-number">{{ app.session.get('cart.itemCount') }}</span>
+  <span class="cart-item-number">{{ app.session.get('cart.itemCount') | default('0') }}</span>
 </a>
 {% endif %}

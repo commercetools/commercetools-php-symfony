@@ -26,17 +26,17 @@
 {#                        {% include '@Example/partials/form/global-errors.html.twig' with {'errors':content.checkoutForm.errors} %}#}
                         <div class="row">
                             <div class="col-sm-4 checkout-first-col">
-                              {% include '@Example/partials/checkout/address-confirmation.html.twig' with {'address':content.cart.shippingAddress, 'titleKey':"checkout:shippingAddress", 'editable':true, 'editUrl':meta._links.editShippingAddress.href} %}
+                              {% include '@Example/partials/checkout/address-confirmation.html.twig' with {'address':cart.shippingAddress, 'titleKey':"checkout:shippingAddress", 'editable':true, 'editUrl':meta._links.editShippingAddress.href} %}
                             </div>
                             <div class="col-sm-4 checkout-second-col">
-                              {% include '@Example/partials/checkout/address-confirmation.html.twig' with {'address':content.cart.billingAddress, 'titleKey':"checkout:billingAddress", 'editable':true, 'editUrl':meta._links.editBillingAddress.href} %}
+                              {% include '@Example/partials/checkout/address-confirmation.html.twig' with {'address':cart.billingAddress, 'titleKey':"checkout:billingAddress", 'editable':true, 'editUrl':meta._links.editBillingAddress.href} %}
                             </div>
                             <div class="col-sm-4 checkout-third-col">
-                              {% include '@Example/partials/checkout/shipping-method-confirmation.html.twig' with {'shippingMethod':content.cart.shippingMethod, 'editable':true} %}
+                              {% include '@Example/partials/checkout/shipping-method-confirmation.html.twig' with {'shippingInfo':cart.shippingInfo, 'editable':true} %}
                               {% include '@Example/partials/checkout/payment-confirmation.html.twig' with {'paymentDetails':content.cart.paymentDetails, 'editable':true} %}
                             </div>
                         </div>
-                      {% include '@Example/partials/checkout/order-summary.html.twig' with {'cart':content.cart, 'mainClass':"confirmation-products-title", 'editable':false, 'checkoutConfirmation':true} %}
+                      {% include '@Example/partials/checkout/order-summary.html.twig' with {'mainClass':"confirmation-products-title", 'editable':false, 'checkoutConfirmation':true} %}
                     </form>
                 </div>
             </div>

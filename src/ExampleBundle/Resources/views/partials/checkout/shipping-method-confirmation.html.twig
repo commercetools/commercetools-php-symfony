@@ -4,8 +4,8 @@
         {% include '@Example/partials/checkout/edit-link.html.twig' with {'id':"confirmation-edit-method-btn", 'url':meta._links.editShippingMethod.href, 'enabled':editable} %}
     </div>
     <div class="checkout-summary-text">
-        <span>{{ shippingMethod.label }}</span>
+        <span>{{ shippingInfo.shippingMethodName }}</span>
         <br>
-        <span>{{ shippingMethod.description }}</span>
+        <span>{{ shippingInfo.description }}</span>
     </div>
 </div>

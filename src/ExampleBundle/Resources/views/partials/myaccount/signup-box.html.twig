@@ -13,11 +13,11 @@
     <div class="signup-box-description">{{ 'signupBox.description'|trans([], 'my-account-login') }}</div>
       <div class="row">
         {% include '@Example/partials/form/global-messages.html.twig' with {'messages':form.messages} %}
-        {% include '@Example/partials/form/global-errors.html.twig' with {'errors':form.errors} %}
+{#        {% include '@Example/partials/form/global-errors.html.twig' with {'errors':form.errors} %}#}
       </div>
       <div class="row">
         <div class="col-sm-6">
-       {% include '@Example/partials/form/choose-title.html.twig' with {'containerClass':"signup-box-input", 'selectId':"title", 'selectName':"title", 'options':settings.title} %}
+{#       {% include '@Example/partials/form/choose-title.html.twig' with {'containerClass':"signup-box-input", 'selectId':"title", 'selectName':"title", 'options':settings.title} %}#}
      </div>
      </div>
       <div class="row">

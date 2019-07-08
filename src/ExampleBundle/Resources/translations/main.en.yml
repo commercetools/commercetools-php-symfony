@@ -12,7 +12,7 @@ common:
   checkout: Checkout
   description: Description
   price: Price
-  totalPrice: Total __totalPrice__
+  totalPrice: Total
   quantity: quantity
   size: Size
   salesTax: Sales Tax

@@ -21,7 +21,7 @@
     </div>
     <div class="col-sm-2 col-xs-5 text-right">
         <div>
-            <span>{{ cart.subtotalPrice }}</span>
+            <span>{{ cart.taxedPrice.totalNet }}</span>
         </div>
       {% if meta.features.cartDiscounts.active %}
           <div>
@@ -29,11 +29,11 @@
           </div>
       {% endif %}
         <div>
-            <span>{{ cart.shippingMethod.price }}</span>
+            <span>{{ cart.shippingInfo.price }}</span>
         </div>
         <hr>
         <div>
-            <span>{{ cart.salesTax }}</span>
+            <span>{{ cart.taxedPrice.taxPortions.current.amount }}</span>
         </div>
         <div>
             <span class="order-total">{{ cart.totalPrice }}</span>
