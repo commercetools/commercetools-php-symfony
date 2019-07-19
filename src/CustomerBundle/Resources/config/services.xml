@@ -17,17 +17,43 @@
         <service id="Commercetools\Symfony\CustomerBundle\Security\User\UserProvider">
             <argument type="service" id="session" />
         </service>
+        <service id="commercetools.http.clientfactory" class="Commercetools\Core\Client\ClientFactory">
+            <factory class="Commercetools\Core\Client\ClientFactory" method="of"/>
+        </service>
+        <service id="Commercetools\Symfony\CustomerBundle\Security\Authentication\Provider\RefreshFlowTokenProvider">
+            <argument type="service" id="session"/>
+            <argument type="service" id="commercetools.client.config"/>
+        </service>
+        <service id="commeretoools.client.me" class="GuzzleHttp\Client">
+            <factory service="commercetools.http.clientfactory" method="createClient"/>
+            <argument type="service" id="commercetools.client.config" />
+            <argument type="service" id="commercetools.logger" />
+            <argument type="service" id="commercetools.cache" />
+            <argument type="service" id="Commercetools\Symfony\CustomerBundle\Security\Authentication\Provider\RefreshFlowTokenProvider" />
+        </service>
+
+        <service id="commercetools.client.handlerstack" class="GuzzleHttp\HandlerStack">
+            <factory service="Commercetools\Symfony\CtpBundle\Service\HandlerStackFactory" method="create"/>
+            <argument type="service" id="Guzzle\HandlerStack"  on-invalid="null"/>
+            <argument type="service" id="commercetools.profiler.extension" on-invalid="null"/>
+        </service>
+
+        <service id="Commercetools\Symfony\CtpBundle\Service\HandlerStackFactory" />
+
         <service id="security.authentication_provider.commercetools"
                  class="Commercetools\Symfony\CustomerBundle\Security\Authentication\Provider\AuthenticationProvider"
                  abstract="true"
                  public="false"
         >
-            <argument type="service" id="commercetools.client" />
+<!--            <argument type="service" id="commercetools.client" />-->
+            <argument type="service" id="commeretoools.client.me" />
+            <argument type="service" id="commercetools.client.config" />
             <argument /> <!-- User Provider -->
             <argument type="service" id="security.user_checker" />
             <argument /> <!-- Provider-shared Key -->
             <argument>%security.authentication.hide_user_not_found%</argument>
             <argument type="service" id="logger" />
+            <argument type="service" id="session" />
         </service>
     </services>
 </container>

@@ -92,10 +92,11 @@ class CatalogController extends AbstractController
             $filter
         );
 
-        return $this->render('ExampleBundle:catalog:index.html.twig', [
+        return $this->render('@Example/catalog/index.html.twig', [
             'products' => $products,
+            'facets' => $facets,
             'offset' => $offset,
-            'form' => $form->createView(),
+            'form' => $form->createView()
         ]);
     }
 
@@ -157,7 +158,7 @@ class CatalogController extends AbstractController
         $addToShoppingListForm = $this->createForm(AddToShoppingListType::class, $productToShoppingList, ['action' => $this->generateUrl('_ctp_example_shoppingList_add_lineItem')]);
         $addToShoppingListForm->handleRequest($request);
 
-        return $this->render('ExampleBundle:catalog:product.html.twig', [
+        return $this->render('@Example/catalog/product.html.twig', [
             'product' =>  $product,
             'addToCartForm' => $addToCartForm->createView(),
             'addToShoppingListForm' => $addToShoppingListForm->createView()
@@ -197,7 +198,7 @@ class CatalogController extends AbstractController
 
         $categories = $this->catalogManager->getCategories($request->getLocale(), $params);
 
-        return $this->render('ExampleBundle:catalog:categoriesList.html.twig', [
+        return $this->render('@Example/catalog/categoriesList.html.twig', [
             'categories' => $categories
         ]);
     }
@@ -208,7 +209,7 @@ class CatalogController extends AbstractController
 
         $productTypes = $this->catalogManager->getProductTypes($request->getLocale(), $params);
 
-        return $this->render('ExampleBundle:catalog:productTypesList.html.twig', [
+        return $this->render('@Example/catalog/productTypesList.html.twig', [
             'productTypes' => $productTypes
         ]);
     }

@@ -6,12 +6,15 @@ namespace Commercetools\Symfony\ExampleBundle\Controller;
 
 use Commercetools\Core\Model\Cart\LineItemDraft;
 use Commercetools\Core\Model\Cart\LineItemDraftCollection;
+use Commercetools\Core\Model\Cart\MyLineItemDraft;
+use Commercetools\Core\Model\Cart\MyLineItemDraftCollection;
 use Commercetools\Core\Model\ShoppingList\ShoppingListReference;
 use Commercetools\Core\Model\Zone\Location;
 use Commercetools\Core\Request\Carts\Command\CartAddLineItemAction;
 use Commercetools\Core\Request\Carts\Command\CartAddShoppingListAction;
 use Commercetools\Core\Request\Carts\Command\CartChangeLineItemQuantityAction;
 use Commercetools\Core\Request\Carts\Command\CartRemoveLineItemAction;
+use Commercetools\Symfony\CartBundle\Manager\MeCartManager;
 use Commercetools\Symfony\ExampleBundle\Entity\ProductEntity;
 use Commercetools\Symfony\ExampleBundle\Model\Form\Type\AddToCartType;
 use Commercetools\Symfony\CartBundle\Model\Repository\CartRepository;
@@ -39,26 +42,35 @@ class CartController extends AbstractController
     private $manager;
 
     /**
+     * @var MeCartManager $meCartManager
+     */
+    private $meCartManager;
+
+    /**
      * CartController constructor.
      * @param Client $client
      * @param CartManager $manager
+     * @param MeCartManager $meCartManager
      */
-    public function __construct(Client $client, CartManager $manager)
+    public function __construct(Client $client, CartManager $manager, MeCartManager $meCartManager)
     {
         $this->client = $client;
         $this->manager = $manager;
+        $this->meCartManager = $meCartManager;
     }
 
-    public function indexAction(Request $request, SessionInterface $session, UserInterface $user = null)
+    public function indexAction(Request $request)
     {
-        $cartId = $session->get(CartRepository::CART_ID);
-        $cart = $this->manager->getCart($request->getLocale(), $cartId, $user, $session->getId());
+//        $cartId = $session->get(CartRepository::CART_ID);
+//        $cart = $this->manager->getCart($request->getLocale(), $cartId, $user, $session->getId());
+
+        $cart = $this->meCartManager->getCart($request->getLocale());
 
         if (is_null($cart)) {
             $cart = Cart::of();
         }
 
-        return $this->render('ExampleBundle:cart:index.html.twig', [
+        return $this->render('@Example/cart/index.html.twig', [
             'cart' => $cart
         ]);
     }
@@ -76,29 +88,47 @@ class CartController extends AbstractController
             $quantity = (int)$form->get('quantity')->getData();
             $slug = $form->get('slug')->getData();
 
-            $cartId = $session->get(CartRepository::CART_ID);
+//            $cartId = $session->get(CartRepository::CART_ID);
+            $cart = $this->meCartManager->getCart($request->getLocale());
 
-            if (!is_null($cartId)) {
-                $cart = $this->manager->getCart($request->getLocale(), $cartId, $user, $session->getId());
+//            if (!is_null($cartId)) {
+//                $cart = $this->manager->getCart($request->getLocale(), $cartId, $user, $session->getId());
+//
+//                $cartBuilder = $this->manager->update($cart);
+//                $cartBuilder->addAction(
+//                    CartAddLineItemAction::ofProductIdVariantIdAndQuantity($productId, $variantId, $quantity)
+//                );
+//                $cartBuilder->flush();
+//            } else {
+//                $lineItem = LineItemDraft::ofProductId($productId)->setVariantId($variantId)->setQuantity($quantity);
+//                $lineItemDraftCollection = LineItemDraftCollection::of()->add($lineItem);
+//
+//                $countryCode = $this->getCountryFromConfig();
+//                $currency = $this->getCurrencyFromConfig();
+//                $location = Location::of()->setCountry($countryCode);
+//
+//                if (is_null($user)) {
+//                    $this->manager->createCartForUser($request->getLocale(), $currency, $location, $lineItemDraftCollection, null, $session->getId());
+//                } else {
+//                    $this->manager->createCartForUser($request->getLocale(), $currency, $location, $lineItemDraftCollection, $user->getID());
+//                }
+//            }
 
-                $cartBuilder = $this->manager->update($cart);
+            if ($cart instanceof Cart) {
+                $cartBuilder = $this->meCartManager->update($cart);
                 $cartBuilder->addAction(
                     CartAddLineItemAction::ofProductIdVariantIdAndQuantity($productId, $variantId, $quantity)
                 );
                 $cartBuilder->flush();
             } else {
-                $lineItem = LineItemDraft::ofProductId($productId)->setVariantId($variantId)->setQuantity($quantity);
-                $lineItemDraftCollection = LineItemDraftCollection::of()->add($lineItem);
+                $lineItem = MyLineItemDraft::of()->setProductId($productId)->setVariantId($variantId)->setQuantity($quantity);
+                $lineItemDraftCollection = MyLineItemDraftCollection::of()->add($lineItem);
 
                 $countryCode = $this->getCountryFromConfig();
                 $currency = $this->getCurrencyFromConfig();
                 $location = Location::of()->setCountry($countryCode);
 
-                if (is_null($user)) {
-                    $this->manager->createCartForUser($request->getLocale(), $currency, $location, $lineItemDraftCollection, null, $session->getId());
-                } else {
-                    $this->manager->createCartForUser($request->getLocale(), $currency, $location, $lineItemDraftCollection, $user->getID());
-                }
+                $this->meCartManager->createCart($request->getLocale(), $currency, $location, $lineItemDraftCollection);
             }
             $redirectUrl = $this->generateUrl('_ctp_example_product', ['slug' => $slug]);
         } else {

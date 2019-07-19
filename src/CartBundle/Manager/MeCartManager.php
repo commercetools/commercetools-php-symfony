@@ -4,9 +4,8 @@
 
 namespace Commercetools\Symfony\CartBundle\Manager;
 
-use Commercetools\Core\Error\InvalidArgumentException;
 use Commercetools\Core\Model\Cart\Cart;
-use Commercetools\Core\Model\Cart\LineItemDraftCollection;
+use Commercetools\Core\Model\Cart\MyLineItemDraftCollection;
 use Commercetools\Core\Model\Zone\Location;
 use Commercetools\Core\Request\AbstractAction;
 use Commercetools\Symfony\CartBundle\Event\CartCreateEvent;
@@ -15,15 +14,14 @@ use Commercetools\Symfony\CartBundle\Event\CartPostCreateEvent;
 use Commercetools\Symfony\CartBundle\Event\CartPostUpdateEvent;
 use Commercetools\Symfony\CartBundle\Event\CartNotFoundEvent;
 use Commercetools\Symfony\CartBundle\Event\CartUpdateEvent;
+use Commercetools\Symfony\CartBundle\Model\Repository\MeCartRepository;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
-use Commercetools\Symfony\CartBundle\Model\Repository\CartRepository;
 use Commercetools\Symfony\CartBundle\Model\CartUpdateBuilder;
-use Symfony\Component\Security\Core\User\UserInterface;
 
-class CartManager implements CartManagerInterface
+class MeCartManager implements CartManagerInterface
 {
     /**
-     * @var CartRepository
+     * @var MeCartRepository
      */
     private $repository;
 
@@ -34,10 +32,10 @@ class CartManager implements CartManagerInterface
 
     /**
      * CartManager constructor.
-     * @param CartRepository $repository
+     * @param MeCartRepository $repository
      * @param EventDispatcherInterface $dispatcher
      */
-    public function __construct(CartRepository $repository, EventDispatcherInterface $dispatcher)
+    public function __construct(MeCartRepository $repository, EventDispatcherInterface $dispatcher)
     {
         $this->repository = $repository;
         $this->dispatcher = $dispatcher;
@@ -45,14 +43,11 @@ class CartManager implements CartManagerInterface
 
     /**
      * @param string $locale
-     * @param string|null $cartId
-     * @param UserInterface|null $user
-     * @param string|null $anonymousId
      * @return Cart|null
      */
-    public function getCart($locale, $cartId = null, UserInterface $user = null, $anonymousId = null)
+    public function getCart($locale)
     {
-        $cart = $this->repository->getCart($locale, $cartId, $user, $anonymousId);
+        $cart = $this->repository->getActiveCart($locale);
 
         $this->dispatchPostGet($cart);
 
@@ -63,21 +58,15 @@ class CartManager implements CartManagerInterface
      * @param string $locale
      * @param string $currency
      * @param Location $location
-     * @param LineItemDraftCollection|null $lineItemDraftCollection
-     * @param string|null $customerId
-     * @param string|null $anonymousId
+     * @param MyLineItemDraftCollection|null $lineItemDraftCollection
      * @return Cart|null
      */
-    public function createCartForUser($locale, $currency, Location $location, LineItemDraftCollection $lineItemDraftCollection = null, $customerId = null, $anonymousId = null)
+    public function createCart($locale, $currency, Location $location, MyLineItemDraftCollection $lineItemDraftCollection = null)
     {
-        if (is_null($customerId) && is_null($anonymousId)) {
-            throw new InvalidArgumentException('At least one of `customerId` or `anonymousId` should be present');
-        }
-
         $event = new CartCreateEvent();
         $this->dispatcher->dispatch(CartCreateEvent::class, $event);
 
-        $cart = $this->repository->createCart($locale, $currency, $location, $lineItemDraftCollection, $customerId, $anonymousId);
+        $cart = $this->repository->createCart($locale, $currency, $location, $lineItemDraftCollection);
 
         $eventPost = new CartPostCreateEvent($cart);
         $this->dispatcher->dispatch(CartPostCreateEvent::class, $eventPost);

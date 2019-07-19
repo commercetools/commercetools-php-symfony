@@ -6,13 +6,12 @@ namespace Commercetools\Symfony\CustomerBundle\Model\Repository;
 
 use Commercetools\Core\Builder\Request\RequestBuilder;
 use Commercetools\Core\Model\Customer\Customer;
-use Commercetools\Core\Model\Customer\CustomerDraft;
 use Commercetools\Core\Model\Customer\CustomerSigninResult;
+use Commercetools\Core\Model\Customer\MyCustomerDraft;
+use Commercetools\Symfony\CtpBundle\Model\MeRepository;
 use Commercetools\Symfony\CtpBundle\Model\QueryParams;
-use Commercetools\Symfony\CtpBundle\Model\Repository;
-use Symfony\Component\HttpFoundation\Session\SessionInterface;
 
-class CustomerRepository extends Repository
+class MeCustomerRepository extends MeRepository
 {
     const CUSTOMER_ID = 'customer.id';
     const CUSTOMER_ACCESS_TOKEN = 'customer.access_token';
@@ -20,13 +19,12 @@ class CustomerRepository extends Repository
 
     /**
      * @param string $locale
-     * @param string $customerId
      * @param QueryParams|null $params
      * @return Customer
      */
-    public function getCustomerById($locale, $customerId, QueryParams $params = null)
+    public function getMeInfo($locale, QueryParams $params = null)
     {
-        $request = RequestBuilder::of()->customers()->getById($customerId);
+        $request = RequestBuilder::of()->me()->get();
 
         return $this->executeRequest($request, $locale, $params);
     }
@@ -39,7 +37,7 @@ class CustomerRepository extends Repository
      */
     public function update(Customer $customer, array $actions, QueryParams $params = null)
     {
-        $request = RequestBuilder::of()->customers()->update($customer)->setActions($actions);
+        $request = RequestBuilder::of()->me()->update($customer)->setActions($actions);
 
         if (!is_null($params)) {
             foreach ($params->getParams() as $param) {
@@ -58,7 +56,7 @@ class CustomerRepository extends Repository
      */
     public function changePassword(Customer $customer, $currentPassword, $newPassword)
     {
-        $request = RequestBuilder::of()->customers()->changePassword($customer, $currentPassword, $newPassword);
+        $request = RequestBuilder::of()->me()->changePassword($customer, $currentPassword, $newPassword);
 
         return $this->executeRequest($request);
     }
@@ -67,20 +65,15 @@ class CustomerRepository extends Repository
      * @param string $locale
      * @param string $email
      * @param string $password
-     * @param SessionInterface|null $session
      * @return CustomerSigninResult
      */
-    public function createCustomer($locale, $email, $password, SessionInterface $session = null)
+    public function createCustomer($locale, $email, $password)
     {
-        $customerDraft = CustomerDraft::of()
+        $customerDraft = MyCustomerDraft::of()
             ->setEmail($email)
             ->setPassword($password);
 
-        if (!is_null($session)) {
-            $customerDraft->setAnonymousId($session->getId());
-        }
-
-        $request = RequestBuilder::of()->customers()->create($customerDraft);
+        $request = RequestBuilder::of()->me()->signUp($customerDraft);
 
         return $this->executeRequest($request, $locale);
     }
@@ -91,7 +84,7 @@ class CustomerRepository extends Repository
      */
     public function delete(Customer $customer)
     {
-        $request = RequestBuilder::of()->customers()->delete($customer);
+        $request = RequestBuilder::of()->me()->delete($customer);
 
         return $this->executeRequest($request);
     }

@@ -8,12 +8,8 @@ namespace Commercetools\Symfony\CtpBundle\Service;
 use Commercetools\Core\Client;
 use Commercetools\Core\Config;
 use Commercetools\Core\Model\Common\Context;
-use Commercetools\Symfony\CtpBundle\CtpBundle;
 use Commercetools\Symfony\CtpBundle\Profiler\CommercetoolsProfilerExtension;
-use GuzzleHttp\Middleware;
-use Psr\Http\Message\RequestInterface;
 use Psr\Log\LoggerInterface;
-use Symfony\Component\HttpKernel\Kernel;
 
 class ClientFactory
 {
@@ -66,16 +62,6 @@ class ClientFactory
             $client = Client::ofConfigAndCache($config, $this->cache);
         } else {
             $client = Client::ofConfigCacheAndLogger($config, $this->cache, $this->logger);
-        }
-
-        $client->getHttpClient()->addHandler(
-            Middleware::mapRequest(function (RequestInterface $request) {
-                return $request->withHeader('User-Agent', $request->getHeaderLine('User-Agent') . " ctp-bundle/" . CtpBundle::VERSION . " (symfony/" . Kernel::VERSION . ")");
-            })
-        );
-
-        if ($this->profiler instanceof CommercetoolsProfilerExtension) {
-            $client->getHttpClient()->addHandler($this->profiler->getProfileMiddleWare());
         }
 
         return $client;

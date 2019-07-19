@@ -6,6 +6,7 @@ namespace Commercetools\Symfony\ExampleBundle\Controller;
 
 use Commercetools\Core\Model\Order\Order;
 use Commercetools\Core\Model\State\StateReference;
+use Commercetools\Symfony\CartBundle\Manager\MeOrderManager;
 use Commercetools\Symfony\CartBundle\Manager\PaymentManager;
 use Commercetools\Symfony\StateBundle\Model\ItemStateWrapper;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -41,19 +42,23 @@ class OrderController extends AbstractController
      */
     private $paymentManager;
 
+    private $meOrderManager;
+
     /**
      * OrderController constructor.
      * @param Client $client
      * @param OrderManager $manager
      * @param Registry $workflows
      * @param PaymentManager $paymentManager
+     * @param MeOrderManager $meOrderManager
      */
-    public function __construct(Client $client, OrderManager $manager, Registry $workflows, PaymentManager $paymentManager)
+    public function __construct(Client $client, OrderManager $manager, Registry $workflows, PaymentManager $paymentManager, MeOrderManager $meOrderManager)
     {
         $this->client = $client;
         $this->manager = $manager;
         $this->workflows = $workflows;
         $this->paymentManager = $paymentManager;
+        $this->meOrderManager = $meOrderManager;
     }
 
     /**
@@ -64,9 +69,10 @@ class OrderController extends AbstractController
      */
     public function indexAction(Request $request, SessionInterface $session, UserInterface $user = null)
     {
-        $orders = $this->manager->getOrdersForUser($request->getLocale(), $user, $session->getId());
+//        $orders = $this->manager->getOrdersForUser($request->getLocale(), $user, $session->getId());
+        $orders = $this->meOrderManager->getOrdersForUser($request->getLocale());
 
-        return $this->render('ExampleBundle:user:orders.html.twig', [
+        return $this->render('@Example/user/orders.html.twig', [
             'orders' => $orders
         ]);
     }
@@ -94,7 +100,7 @@ class OrderController extends AbstractController
             $payments = $this->paymentManager->getMultiplePayments($request->getLocale(), $paymentsIds);
         }
 
-        return $this->render('ExampleBundle:user:order.html.twig', [
+        return $this->render('@Example/user/order.html.twig', [
             'order' => $order,
             'payments' => $payments ?? []
         ]);

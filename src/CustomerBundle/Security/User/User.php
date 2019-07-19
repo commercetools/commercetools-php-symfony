@@ -16,6 +16,8 @@ class User implements CtpUser
     private $cartItemCount;
     private $shippingAddresses;
     private $defaultShippingAddress;
+    private $accessToken;
+    private $refreshToken;
 
     public function __construct($username, $password, array $roles, $id, $cartId, $cartItemCount)
     {
@@ -159,5 +161,37 @@ class User implements CtpUser
     public static function create($username, $password, array $roles, $id, $cartId, $cartItemCount)
     {
         return new static($username, $password, $roles, $id, $cartId, $cartItemCount);
+    }
+
+    /**
+     * @param string $token
+     */
+    public function setAccessToken($token)
+    {
+        $this->accessToken = $token;
+    }
+
+    /**
+     * @return string
+     */
+    public function getAccessToken()
+    {
+        return $this->accessToken;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getRefreshToken()
+    {
+        return $this->refreshToken;
+    }
+
+    /**
+     * @param mixed $refreshToken
+     */
+    public function setRefreshToken($refreshToken)
+    {
+        $this->refreshToken = $refreshToken;
     }
 }

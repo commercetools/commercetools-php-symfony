@@ -3,7 +3,6 @@
 <container xmlns="http://symfony.com/schema/dic/services"
            xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
            xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
-
     <services>
 
         <service id="Commercetools\Symfony\CartBundle\Model\Repository\CartRepository"
@@ -15,12 +14,30 @@
             <argument id="event_dispatcher" type="service"/>
         </service>
 
+        <service id="Commercetools\Symfony\CartBundle\Model\Repository\MeCartRepository"
+                 parent="Commercetools\Symfony\CtpBundle\Model\MeRepository" public="true">
+            <argument key="$enableCache">%commercetools.cache.cart%</argument>
+        </service>
+        <service id="Commercetools\Symfony\CartBundle\Manager\MeCartManager" public="true">
+            <argument id="Commercetools\Symfony\CartBundle\Model\Repository\MeCartRepository" type="service"/>
+            <argument id="event_dispatcher" type="service"/>
+        </service>
+
         <service id="Commercetools\Symfony\CartBundle\Model\Repository\OrderRepository"
                  parent="Commercetools\Symfony\CtpBundle\Model\Repository" public="true">
             <argument key="$enableCache">%commercetools.cache.order%</argument>
         </service>
         <service id="Commercetools\Symfony\CartBundle\Manager\OrderManager" public="true">
             <argument id="Commercetools\Symfony\CartBundle\Model\Repository\OrderRepository" type="service"/>
+            <argument id="event_dispatcher" type="service"/>
+        </service>
+
+        <service id="Commercetools\Symfony\CartBundle\Model\Repository\MeOrderRepository"
+                 parent="Commercetools\Symfony\CtpBundle\Model\MeRepository" public="true">
+            <argument key="$enableCache">%commercetools.cache.order%</argument>
+        </service>
+        <service id="Commercetools\Symfony\CartBundle\Manager\MeOrderManager" public="true">
+            <argument id="Commercetools\Symfony\CartBundle\Model\Repository\MeOrderRepository" type="service"/>
             <argument id="event_dispatcher" type="service"/>
         </service>
 

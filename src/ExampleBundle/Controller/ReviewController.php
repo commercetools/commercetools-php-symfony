@@ -63,7 +63,7 @@ class ReviewController extends AbstractController
 
         $reviewForm = $this->createForm(AddReviewType::class);
 
-        return $this->render('ExampleBundle:review:index.html.twig', [
+        return $this->render('@Example/review/index.html.twig', [
             'reviews' => $reviews,
             'reviewForm' => $reviewForm->createView(),
             'submitUrl' => $this->generateUrl('_ctp_example_review_create', ['productId' => $productId])

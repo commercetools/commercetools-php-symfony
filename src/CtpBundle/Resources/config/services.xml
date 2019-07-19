@@ -26,8 +26,10 @@
             <argument type="service" id="commercetools.context.factory"/>
         </service>
         <service id="commercetools.client.config" class="Commercetools\Core\Config">
-            <factory class="Commercetools\Core\Config" method="fromArray"/>
+            <factory class="Commercetools\Symfony\CtpBundle\Service\ConfigFactory" method="create"/>
             <argument>%commercetools.client.config%</argument>
+            <argument type="service" id="commercetools.client.handlerstack" />
+            <argument type="service" id="commercetools.logger" />
         </service>
         <service id="commercetools.cache" parent="cache.app">
             <tag name="cache.pool" />
@@ -50,10 +52,13 @@
             <argument key="$client" type="service" id="Commercetools\Core\Client"/>
             <argument key="$mapperFactory" type="service" id="commmercetools.mapper.factory" />
         </service>
+        <service id="Commercetools\Symfony\CtpBundle\Model\MeRepository" public="true">
+            <argument key="$enableCache">false</argument>
+            <argument key="$cache" type="service" id="commercetools.cache" />
+            <argument key="$client" type="service" id="commeretoools.client.me"/>
+            <argument key="$mapperFactory" type="service" id="commmercetools.mapper.factory" />
+        </service>
 
-
-        <!--<service class="Commercetools\Symfony\CtpBundle\Service\CustomTypeFactory">-->
-        <!--</service>-->
         <service id="commercetools.custom_types" class="Commercetools\Symfony\CtpBundle\Service\CustomTypeProvider" public="true">
             <factory method="build" class="Commercetools\Symfony\CtpBundle\Service\CustomTypeProviderFactory"/>
             <argument>%commercetools.custom_types%</argument>

@@ -5,10 +5,12 @@
 namespace Commercetools\Symfony\CustomerBundle\Security\Authentication\Provider;
 
 use Commercetools\Core\Builder\Request\RequestBuilder;
-use Commercetools\Core\Client;
-use Commercetools\Core\Request\Customers\CustomerLoginRequest;
+use Commercetools\Core\Config;
 use Commercetools\Symfony\CustomerBundle\Security\User\CtpUser;
+use GuzzleHttp\Client;
+use GuzzleHttp\Exception\ClientException;
 use Psr\Log\LoggerInterface;
+use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\Security\Core\Authentication\Provider\UserAuthenticationProvider;
 use Symfony\Component\Security\Core\Authentication\Token\UsernamePasswordToken;
 use Symfony\Component\Security\Core\Exception\AuthenticationServiceException;
@@ -36,60 +38,76 @@ class AuthenticationProvider extends UserAuthenticationProvider
      */
     private $logger;
 
+    private $config;
+
+    /**
+     * @var Session
+     */
+    private $session;
+
     /**
      * AuthenticationProvider constructor.
      * @param Client $client
+     * @param Config $config
      * @param UserProviderInterface $userProvider
      * @param UserCheckerInterface $userChecker
      * @param $providerKey
      * @param bool $hideUserNotFoundExceptions
      * @param LoggerInterface $logger
+     * @param Session $session
      */
     public function __construct(
         Client $client,
+        Config $config,
         UserProviderInterface $userProvider,
         UserCheckerInterface $userChecker,
         $providerKey,
         $hideUserNotFoundExceptions = true,
-        LoggerInterface $logger
+        // phpcs:ignore
+        LoggerInterface $logger,
+        // phpcs:ignore
+        Session $session
     ) {
         parent::__construct($userChecker, $providerKey, $hideUserNotFoundExceptions);
         $this->userProvider = $userProvider;
+        $this->config = $config;
         $this->client = $client;
         $this->logger = $logger;
+        $this->session = $session;
     }
 
     /**
      * {@inheritdoc}
      */
-    protected function checkAuthentication(UserInterface $user, UsernamePasswordToken $token)
+    protected function checkAuthentication(UserInterface $user, UsernamePasswordToken $access_token)
     {
-        $currentUser = $token->getUser();
+        $currentUser = $access_token->getUser();
 
         if ($currentUser instanceof UserInterface) {
             if ($currentUser->getPassword() !== $user->getPassword()) {
                 throw new BadCredentialsException('The credentials were changed from another session.');
             }
         } else {
-            if (!$presentedPassword = $token->getCredentials()) {
+            if (!$presentedPassword = $access_token->getCredentials()) {
                 throw new BadCredentialsException('The presented password cannot be empty.');
             }
 
-            $client = $this->client;
-            $cartId = null;
-            if ($user instanceof CtpUser) {
-                $cartId = $user->getCartId();
-            }
+            $provider = new PasswordFlowTokenProvider(
+                $this->session,
+                $this->config,
+                $currentUser,
+                $presentedPassword
+            );
 
-            $request = RequestBuilder::of()->customers()->login($token->getUser(), $presentedPassword, true, $cartId);
-            $response = $request->executeWithClient($client);
-
-            if ($response->isError()) {
+            try {
+                $token = $provider->getToken();
+            } catch (ClientException $e) {
                 throw new BadCredentialsException('The presented password is invalid.');
             }
-            $result = $request->mapResponse($response);
 
-            $customer = $result->getCustomer();
+            $request = RequestBuilder::of()->me()->get();
+            $psrResponse = $this->client->send($request->httpRequest());
+            $customer = $request->mapFromResponse($psrResponse);
 
             if (strtolower($currentUser) !== strtolower($customer->getEmail())) {
                 throw new BadCredentialsException('The presented password is invalid.');
@@ -97,7 +115,13 @@ class AuthenticationProvider extends UserAuthenticationProvider
 
             if ($user instanceof CtpUser) {
                 $user->setId($customer->getId());
-                $cart = $result->getCart();
+                $user->setAccessToken($token->getToken());
+                $user->setRefreshToken($token->getRefreshToken());
+
+                $request = RequestBuilder::of()->me()->carts()->getActiveCart();
+                $psrResponse = $this->client->send($request->httpRequest());
+                $cart = $request->mapFromResponse($psrResponse);
+
                 if (!is_null($cart)) {
                     $user->setCartId($cart->getId());
                     $user->setCartItemCount($cart->getLineItemCount());
