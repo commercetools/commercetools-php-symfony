@@ -1,6 +1,6 @@
 <p class="product-price">
-  {% if product.variant.priceOld %}
-  <span class="discounted-price">{{ product.variant.priceOld }}</span>
+  {% if product.masterVariant.price.discounted %}
+  <span class="discounted-price">{{ product.masterVariant.price.discounted }}</span>
   {% endif %}
-  <span>{{ product.variant.price }}</span>
+  <span>{{ product.masterVariant.price }}</span>
 </p>

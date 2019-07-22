@@ -11,7 +11,10 @@ use Commercetools\Symfony\ExampleBundle\Entity\ProductEntity;
 use Commercetools\Symfony\ExampleBundle\Entity\ProductToShoppingList;
 use Commercetools\Symfony\ExampleBundle\Model\Form\Type\AddToCartType;
 use Commercetools\Symfony\ExampleBundle\Model\Form\Type\AddToShoppingListType;
+use Commercetools\Symfony\ExampleBundle\Model\View\ProductModel;
+use Commercetools\Symfony\ExampleBundle\Model\ViewData;
 use GuzzleHttp\Psr7\Uri;
+use Psr\Cache\CacheItemPoolInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
@@ -99,7 +102,7 @@ class CatalogController extends AbstractController
         ]);
     }
 
-    public function detailBySlugAction(Request $request, $slug, SessionInterface $session, UserInterface $user = null)
+    public function detailBySlugAction(Request $request, $slug, SessionInterface $session, UserInterface $user = null, CacheItemPoolInterface $cache = null)
     {
         $country = $this->getCountryFromConfig();
         $currency = $this->getCurrencyFromConfig();
@@ -111,7 +114,7 @@ class CatalogController extends AbstractController
             return $this->render('@Example/no-search-result.html.twig');
         }
 
-        return $this->productDetails($request, $product, $session, $user);
+        return $this->productDetails($request, $product, $session, $user, $cache);
     }
 
     public function detailByIdAction(Request $request, $id, SessionInterface $session, UserInterface $user = null)
@@ -121,8 +124,9 @@ class CatalogController extends AbstractController
         return $this->productDetails($request, $product, $session, $user);
     }
 
-    private function productDetails(Request $request, ProductProjection $product, SessionInterface $session, UserInterface $user = null)
+    private function productDetails(Request $request, ProductProjection $product, SessionInterface $session, UserInterface $user = null, CacheItemPoolInterface $cache = null)
     {
+        // o-s
         $variantIds = [];
         foreach ($product->getAllVariants() as $variant) {
             $variantIds[$variant->getSku()] = $variant->getId();
@@ -156,6 +160,30 @@ class CatalogController extends AbstractController
 
         $addToShoppingListForm = $this->createForm(AddToShoppingListType::class, $productToShoppingList, ['action' => $this->generateUrl('_ctp_example_shoppingList_add_lineItem')]);
         $addToShoppingListForm->handleRequest($request);
+
+        // o-e
+
+        // n-s
+
+        $locale = $request->getLocale();
+        $country = $this->getCountryFromConfig();
+        $currency = $this->getCurrencyFromConfig();
+
+        $slug = $request->get('slug');
+        $sku = $request->get('sku');
+
+//        $viewData = $this->getViewData('Sunrise - ProductRepository Detail Page', $request);
+        $viewData = new ViewData();
+
+//        dump($locale, $slug, $currency, $country);
+        $product = $this->catalogManager->getProductBySlug($locale, $slug, $currency, $country);
+        $productData = $this->getProductModel($cache)->getProductDetailData($product, $sku, $locale);
+        $viewData->content = new ViewData();
+        $viewData->content->product = $productData;
+
+        dump($viewData);
+
+        // n-e
 
         return $this->render('@Example/pdp.html.twig', [
             'product' =>  $product,
@@ -224,5 +252,17 @@ class CatalogController extends AbstractController
     {
         $currencies = $this->getParameter('commercetools.project_settings.currencies');
         return current($currencies);
+    }
+
+    protected function getProductModel($cache)
+    {
+        $model = new ProductModel(
+            $cache,
+            $this->catalogManager,
+            $this->getCountryFromConfig(),
+            $this->getCurrencyFromConfig()
+        );
+
+        return $model;
     }
 }
