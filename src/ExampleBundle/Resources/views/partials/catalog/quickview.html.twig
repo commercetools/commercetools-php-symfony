@@ -13,10 +13,10 @@
           <div class="col-sm-4">
             <div class="bzoom_wrap">
               <ul class="bzoom">
-                {% for list_i in thumbnail.product.gallery.list %}
+                {% for variant in product.allVariants %}
                 <li class="gallery-image">
-                  <img class="bzoom_thumb_image" src="{{ list_i.thumbImage }}"/>
-                  <img class="bzoom_big_image" src="{{ list_i.bigImage }}"/>
+                  <img class="bzoom_thumb_image" src="{{ variant.images.current.url }}"/>
+                  <img class="bzoom_big_image" src="{{ variant.images.current.url }}"/>
                 </li>
                 {% endfor %}
               </ul>

@@ -528,3 +528,37 @@ $(function() {
     $("#my-account-desktop-content").insertAfter("#my-account-mobile-content");
   }
 });
+
+
+jQuery(document).on('submit', '.add-review-form', function(e){
+  e.preventDefault();
+  let data = $(this).serialize();
+  let ajaxUrl = $(this).data('submit-url');
+
+  $.ajax({
+    url: ajaxUrl,
+    type: 'POST',
+    dataType: 'json',
+    data: data,
+    success:function(data){
+
+      if(data.success === true){
+        $.ajax({
+          url: data.fetchReviewsUrl,
+          type: 'GET',
+          dataType: 'html',
+          success: function(response){
+            $('.reviews-container').parent().html(response);
+          }
+        });
+      }
+
+      if(data.success === false){
+        console.log("probably need to handle errors");
+      }
+
+      // $('#loadingSpinner').hide();
+      // $('#mySubmitButton').attr("disabled",false);
+    }
+  });
+});

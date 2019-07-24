@@ -46,9 +46,9 @@ class ProductModel
         $selectSku = null
     ) {
         $cacheKey = $cachePrefix . '-' . $productVariant->getSku() . $selectSku . '-' . $locale;
-        if ($this->cache->hasItem($cacheKey)) {
+        if (!$this->cache->hasItem($cacheKey)) {
             $unserialize = unserialize($this->cache->getItem($cacheKey)->get());
-            dump($unserialize);
+//            dump($unserialize);
             return $unserialize;
         }
 
@@ -142,7 +142,8 @@ class ProductModel
         $item = $this->cache->getItem($cacheKey)->set(serialize($productModel));
         $this->cache->save($item);
 
-        dump($productModel);
+//        dump($product->getAllVariants());
+//        dump($productModel);
 
         return $productModel;
     }

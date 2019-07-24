@@ -7,9 +7,10 @@
 
   <div class="row select-row">
     <ul class="list-inline">
-      {% for attribute in product.masterVariant.attributes %}
-        {% include '@Example/partials/catalog/product-attribute.html.twig' %}
-      {% endfor %}
+{#      {{ dump(product.masterVariant.attributes) }}#}
+{#      {% for attribute in product.masterVariant.attributes %}#}
+{#        {% include '@Example/partials/catalog/product-attribute.html.twig' %}#}
+{#      {% endfor %}#}
       <li class="size-guide-li">
         {% include '@Example/partials/catalog/size-guide.html.twig' %}
       </li>

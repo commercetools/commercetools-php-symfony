@@ -132,6 +132,8 @@ class CatalogController extends AbstractController
             $variantIds[$variant->getSku()] = $variant->getId();
         }
 
+//        dump($variantIds);
+
         $shoppingListsIds = [];
         if (is_null($user)) {
             $shoppingLists = $this->shoppingListManager->getAllOfAnonymous($request->getLocale(), $session->getId());
@@ -172,16 +174,14 @@ class CatalogController extends AbstractController
         $slug = $request->get('slug');
         $sku = $request->get('sku');
 
-//        $viewData = $this->getViewData('Sunrise - ProductRepository Detail Page', $request);
-        $viewData = new ViewData();
+//        $viewData = new ViewData();
+//
+//        $product = $this->catalogManager->getProductBySlug($locale, $slug, $currency, $country);
+//        $productData = $this->getProductModel($cache)->getProductDetailData($product, $sku, $locale);
+//        $viewData->content = new ViewData();
+//        $viewData->content->product = $productData;
 
-//        dump($locale, $slug, $currency, $country);
-        $product = $this->catalogManager->getProductBySlug($locale, $slug, $currency, $country);
-        $productData = $this->getProductModel($cache)->getProductDetailData($product, $sku, $locale);
-        $viewData->content = new ViewData();
-        $viewData->content->product = $productData;
-
-        dump($viewData);
+//        dump($viewData);
 
         // n-e
 

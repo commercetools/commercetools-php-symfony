@@ -33,7 +33,10 @@
         {% include '@Example/partials/catalog/suggestions.html.twig' %}
       </div>
       <hr class="hr">
-      {% include '@Example/partials/catalog/pdp/reviews.html.twig' %}
+{#      {% include '@Example/partials/catalog/pdp/reviews.html.twig' %}#}
+      {{ render(controller(
+        'ExampleBundle:Review:showReviewsForProduct', { 'productId' : product.id }
+      )) }}
     </div>
   </div>
   {% include '@Example/partials/common/wishlist.html.twig' with {'wishlist':content.wishlist} %}
