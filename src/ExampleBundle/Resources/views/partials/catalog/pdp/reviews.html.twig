@@ -1,197 +1,94 @@
+
+<div class="row">
+  <div class="col-sm-12">
+    <p class="text-uppercase text-center reviews-title">{{ 'reviews.title'|trans([], 'catalog') }}</p>
+  </div>
+</div>
+
 <div class="row">
 
-    <div class="reviews-container">
-        <div class="col-md-6">
-            {% for review in reviews %}
-                <div class="row review-item">
-                    <div class="review-message col-md-10">{{ review.text }}</div>
-                    <div class="review-rating col-md-2">{{ review.rating }} of 5 stars</div>
-                    <div class="review-status col-md-6 col-md-offset-6 text-right">
-{#                        {% for place in workflow_marked_places(review) %}#}
-{#                            state: {{ place }} <br/>#}
-{#                        {% endfor %}#}
-{#                        {% for transition in workflow_transitions(review) %}#}
-{#                            <a href="{{ path('_ctp_example_review_update',#}
-{#                                {'reviewId': review.getId, 'toState': transition.name}#}
-{#                            ) }}">{{ transition.name }}</a>#}
-{#                        {% else %}#}
-                            No actions available.
-{#                        {% endfor %}#}
-                    </div>
-                    <div class="review-author col-md-6 col-md-offset-6 text-right">written by {{ review.customer.obj.firstName | default('anonymous') }}</div>
-                </div>
-            {% endfor %}
+  <div class="add-review-container col-md-6">
+    <h4>write a review</h4>
+    {{ form_start(reviewForm, {attr: {
+      class: 'add-review-form',
+      id: 'add-review-form',
+      'data-submit-url': submitUrl
+    } }) }}
+    {% form_theme reviewForm 'bootstrap_3_layout.html.twig' %}
+    {{ form_widget(reviewForm) }}
+    {{ form_end(reviewForm) }}
+  </div>
+
+
+</div>
+
+<div class="row">
+  <div class="col-sm-12 reviews-col">
+    <div class="row">
+      <div class="col-sm-12">
+        <div>{{ reviews.count }} Reviews</div>
+      </div>
+    </div>
+      {% for review in reviews %}
+    <div class="single-comment hidden-xs">
+      <div class="row">
+        <div class="col-sm-12">
+          <div class="review-rating">
+            <fieldset class="rating rated-stars">
+                {% for i in 1..review.rating %}
+                    <input type="radio" id="star{{ i }}" name="rating" value="{{ i }}" /><label for="star{{ i }}" title="{{ i }} star(s)">{{ i }} star(s)</label>
+                {% endfor %}
+            </fieldset>
+            <p class="text-uppercase comment-user">{{ review.customer.obj.firstName | default('anonymous') }}<span class="grey-p comment-date"> {{ review.createdAt.getDateTime|date("m/d/Y H:i") }}</span></p>
+          </div>
         </div>
+      </div>
+      <div class="row">
+        <div class="col-sm-12">
+          <p class="h4 review-top-comment">{{ review.text }}</p>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-sm-12">
+          <p class="review-comment">{{ review.text }}</p>
+        </div>
+      </div>
     </div>
-</div>
+      {% endfor %}
 
-<div class="row">
+    <div class="reviews-mobile visible-xs">
 
-    <div class="add-review-container col-md-6">
-        <h4>write a review</h4>
-        {{ form_start(reviewForm, {attr: {
-            class: 'add-review-form',
-            id: 'add-review-form',
-            'data-submit-url': submitUrl
-        } }) }}
-        {% form_theme reviewForm 'bootstrap_3_layout.html.twig' %}
-        {{ form_widget(reviewForm) }}
-        {{ form_end(reviewForm) }}
+      {% for review in reviews %}
+      <div class="single-comment">
+        <div class="row">
+          <div class="col-sm-12">
+            <div class="review-rating">
+              <fieldset class="rating rated-stars">
+                {% for i in 1..review.rating %}
+                  <input type="radio" id="star{{ i }}" name="rating" value="{{ i }}" /><label for="star{{ i }}" title="{{ i }} star(s)">{{ i }} star(s)</label>
+                {% endfor %}
+              </fieldset>
+              <p class="text-uppercase comment-user">{{ review.customer.obj.firstName | default('anonymous') }}<span class="grey-p comment-date"> {{ review.createdAt.getDateTime|date("m/d/Y H:i") }}</span></p>
+            </div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-sm-12">
+            <p class="h4 review-top-comment">{{ review.text }}</p>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-sm-12">
+            <p class="review-comment">{{ review.text }}</p>
+          </div>
+        </div>
+      </div>
+      {% endfor %}
+
     </div>
-
-
+  </div>
 </div>
-
-
-
-
-{#<div class="row">#}
-{#  <div class="col-sm-12">#}
-{#    <p class="text-uppercase text-center reviews-title">{{ 'reviews.title'|trans([], 'catalog') }}</p>#}
-{#  </div>#}
-{#</div>#}
-{#<div class="row">#}
-{#  <div class="col-sm-12 reviews-col">#}
-{#    <div class="row">#}
-{#      <div class="col-sm-12">#}
-{#        <div>1 - 5 of 51 Reviews</div>#}
-{#      </div>#}
-{#    </div>#}
-{#    <div class="single-comment hidden-xs">#}
-{#      <div class="row">#}
-{#        <div class="col-sm-12">#}
-{#          <div class="review-rating">#}
-{#            <fieldset class="rating rated-stars">#}
-{#              <input type="radio" id="star5" name="rating" value="5" /><label for="star5" title="Rocks!">5 stars</label>#}
-{#              <input type="radio" id="star4" name="rating" value="4" /><label for="star4" title="Pretty good">4 stars</label>#}
-{#              <input type="radio" id="star3" name="rating" value="3" /><label for="star3" title="Meh">3 stars</label>#}
-{#              <input type="radio" id="star2" name="rating" value="2" /><label for="star2" title="Kinda bad">2 stars</label>#}
-{#              <input type="radio" id="star1" name="rating" value="1" /><label for="star1" title="Sucks big time">1 star</label>#}
-{#            </fieldset>#}
-{#            <p class="text-uppercase comment-user">John Smith<span class="grey-p comment-date"> 2 days ago</span></p>#}
-{#          </div>#}
-{#        </div>#}
-{#      </div>#}
-{#      <div class="row">#}
-{#        <div class="col-sm-12">#}
-{#          <p class="h4 review-top-comment">Lorem borem forem dorem morem</p>#}
-{#        </div>#}
-{#      </div>#}
-{#      <div class="row">#}
-{#        <div class="col-sm-12">#}
-{#          <p class="review-comment">Boom boom boom Boom boom boom Boom boom boom Boom boom boom Boom boom boom Boom boom boom, Boom boom boom Boom boom boom Boom boom boom Boom boom boom Boom boom boom Boom boom boom.</p>#}
-{#        </div>#}
-{#      </div>#}
-{#    </div>#}
-{#    <div class="single-comment hidden-xs">#}
-{#      <div class="row">#}
-{#        <div class="col-sm-12">#}
-{#          <div class="review-rating">#}
-{#            <fieldset class="rating rated-stars">#}
-{#              <input type="radio" id="star5" name="rating" value="5" /><label for="star5" title="Rocks!">5 stars</label>#}
-{#              <input type="radio" id="star4" name="rating" value="4" /><label for="star4" title="Pretty good">4 stars</label>#}
-{#              <input type="radio" id="star3" name="rating" value="3" /><label for="star3" title="Meh">3 stars</label>#}
-{#              <input type="radio" id="star2" name="rating" value="2" /><label for="star2" title="Kinda bad">2 stars</label>#}
-{#              <input type="radio" id="star1" name="rating" value="1" /><label for="star1" title="Sucks big time">1 star</label>#}
-{#            </fieldset>#}
-{#            <p class="text-uppercase comment-user">John Smith<span class="grey-p comment-date"> 2 days ago</span></p>#}
-{#          </div>#}
-{#        </div>#}
-{#      </div>#}
-{#      <div class="row">#}
-{#        <div class="col-sm-12">#}
-{#          <p class="h4 review-top-comment">Lorem borem forem dorem morem</p>#}
-{#        </div>#}
-{#      </div>#}
-{#      <div class="row">#}
-{#        <div class="col-sm-12">#}
-{#          <p class="review-comment">Boom boom boom Boom boom boom Boom boom boom Boom boom boom Boom boom boom Boom boom boom, Boom boom boom Boom boom boom Boom boom boom Boom boom boom Boom boom boom Boom boom boom.</p>#}
-{#        </div>#}
-{#      </div>#}
-{#    </div>#}
-{#    <div class="single-comment hidden-xs">#}
-{#      <div class="row">#}
-{#        <div class="col-sm-12">#}
-{#          <div class="review-rating">#}
-{#            <fieldset class="rating rated-stars">#}
-{#              <input type="radio" id="star5" name="rating" value="5" /><label for="star5" title="Rocks!">5 stars</label>#}
-{#              <input type="radio" id="star4" name="rating" value="4" /><label for="star4" title="Pretty good">4 stars</label>#}
-{#              <input type="radio" id="star3" name="rating" value="3" /><label for="star3" title="Meh">3 stars</label>#}
-{#              <input type="radio" id="star2" name="rating" value="2" /><label for="star2" title="Kinda bad">2 stars</label>#}
-{#              <input type="radio" id="star1" name="rating" value="1" /><label for="star1" title="Sucks big time">1 star</label>#}
-{#            </fieldset>#}
-{#            <p class="text-uppercase comment-user">John Smith<span class="grey-p comment-date"> 2 days ago</span></p>#}
-{#          </div>#}
-{#        </div>#}
-{#      </div>#}
-{#      <div class="row">#}
-{#        <div class="col-sm-12">#}
-{#          <p class="h4 review-top-comment">Lorem borem forem dorem morem</p>#}
-{#        </div>#}
-{#      </div>#}
-{#      <div class="row">#}
-{#        <div class="col-sm-12">#}
-{#          <p class="review-comment">Boom boom boom Boom boom boom Boom boom boom Boom boom boom Boom boom boom Boom boom boom, Boom boom boom Boom boom boom Boom boom boom Boom boom boom Boom boom boom Boom boom boom.</p>#}
-{#        </div>#}
-{#      </div>#}
-{#    </div>#}
-{#    <div class="reviews-mobile visible-xs">#}
-{#      <div class="single-comment">#}
-{#        <div class="row">#}
-{#          <div class="col-sm-12">#}
-{#            <div class="review-rating">#}
-{#              <fieldset class="rating rated-stars">#}
-{#                <input type="radio" id="star5" name="rating" value="5" /><label for="star5" title="Rocks!">5 stars</label>#}
-{#                <input type="radio" id="star4" name="rating" value="4" /><label for="star4" title="Pretty good">4 stars</label>#}
-{#                <input type="radio" id="star3" name="rating" value="3" /><label for="star3" title="Meh">3 stars</label>#}
-{#                <input type="radio" id="star2" name="rating" value="2" /><label for="star2" title="Kinda bad">2 stars</label>#}
-{#                <input type="radio" id="star1" name="rating" value="1" /><label for="star1" title="Sucks big time">1 star</label>#}
-{#              </fieldset>#}
-{#              <p class="text-uppercase comment-user">John Smith<span class="grey-p comment-date"> 2 days ago</span></p>#}
-{#            </div>#}
-{#          </div>#}
-{#        </div>#}
-{#        <div class="row">#}
-{#          <div class="col-sm-12">#}
-{#            <p class="h4 review-top-comment">Lorem borem forem dorem morem</p>#}
-{#          </div>#}
-{#        </div>#}
-{#        <div class="row">#}
-{#          <div class="col-sm-12">#}
-{#            <p class="review-comment">Boom boom boom Boom boom boom Boom boom boom Boom boom boom Boom boom boom Boom boom boom, Boom boom boom Boom boom boom Boom boom boom Boom boom boom Boom boom boom Boom boom boom.</p>#}
-{#          </div>#}
-{#        </div>#}
-{#      </div>#}
-{#      <div class="single-comment">#}
-{#        <div class="row">#}
-{#          <div class="col-sm-12">#}
-{#            <div class="review-rating">#}
-{#              <fieldset class="rating rated-stars">#}
-{#                <input type="radio" id="star5" name="rating" value="5" /><label for="star5" title="Rocks!">5 stars</label>#}
-{#                <input type="radio" id="star4" name="rating" value="4" /><label for="star4" title="Pretty good">4 stars</label>#}
-{#                <input type="radio" id="star3" name="rating" value="3" /><label for="star3" title="Meh">3 stars</label>#}
-{#                <input type="radio" id="star2" name="rating" value="2" /><label for="star2" title="Kinda bad">2 stars</label>#}
-{#                <input type="radio" id="star1" name="rating" value="1" /><label for="star1" title="Sucks big time">1 star</label>#}
-{#              </fieldset>#}
-{#              <p class="text-uppercase comment-user">John Smith<span class="grey-p comment-date"> 2 days ago</span></p>#}
-{#            </div>#}
-{#          </div>#}
-{#        </div>#}
-{#        <div class="row">#}
-{#          <div class="col-sm-12">#}
-{#            <p class="h4 review-top-comment">Lorem borem forem dorem morem</p>#}
-{#          </div>#}
-{#        </div>#}
-{#        <div class="row">#}
-{#          <div class="col-sm-12">#}
-{#            <p class="review-comment">Boom boom boom Boom boom boom Boom boom boom Boom boom boom Boom boom boom Boom boom boom, Boom boom boom Boom boom boom Boom boom boom Boom boom boom Boom boom boom Boom boom boom.</p>#}
-{#          </div>#}
-{#        </div>#}
-{#      </div>#}
-{#    </div>#}
-{#  </div>#}
-{#</div>#}
-{#<div>#}
+<div>
 {#  <button type="button" class="btn write-review-btn">Write Review</button>#}
 {#  <button type="button" class="btn hidden-xs showmore-reviews-btn">Show More Reviews</button>#}
-{#</div>#}
+</div>
