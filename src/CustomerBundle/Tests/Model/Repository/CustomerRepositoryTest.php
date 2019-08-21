@@ -5,7 +5,7 @@
 
 namespace Commercetools\Symfony\CustomerBundle\Tests\Model\Repository;
 
-use Commercetools\Core\Client;
+use Commercetools\Core\Client\HttpClient;
 use Commercetools\Core\Model\Customer\Customer;
 use Commercetools\Core\Model\Customer\CustomerDraft;
 use Commercetools\Core\Request\Customers\Command\CustomerSetKeyAction;
@@ -40,7 +40,7 @@ class CustomerRepositoryTest extends TestCase
         $this->response->getContext()->willReturn(null);
         $this->response->isError()->willReturn(false);
 
-        $this->client = $this->prophesize(Client::class);
+        $this->client = $this->prophesize(HttpClient::class);
     }
 
     private function getCustomerRepository()

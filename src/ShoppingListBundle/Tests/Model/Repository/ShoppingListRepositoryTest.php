@@ -5,7 +5,7 @@
 
 namespace Commercetools\Symfony\ShoppingListBundle\Tests\Model\Repository;
 
-use Commercetools\Core\Client;
+use Commercetools\Core\Client\HttpClient;
 use Commercetools\Core\Model\Common\LocalizedString;
 use Commercetools\Core\Model\Customer\CustomerReference;
 use Commercetools\Core\Model\ShoppingList\ShoppingList;
@@ -41,7 +41,7 @@ class ShoppingListRepositoryTest extends TestCase
         $this->response->getContext()->willReturn(null);
         $this->response->isError()->willReturn(false);
 
-        $this->client = $this->prophesize(Client::class);
+        $this->client = $this->prophesize(HttpClient::class);
     }
 
     private function getShoppingListRepository()

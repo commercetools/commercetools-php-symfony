@@ -5,7 +5,7 @@
 
 namespace Commercetools\Symfony\StateBundle\Tests\Model\Repository;
 
-use Commercetools\Core\Client;
+use Commercetools\Core\Client\HttpClient;
 use Commercetools\Core\Request\States\StateByIdGetRequest;
 use Commercetools\Core\Request\States\StateQueryRequest;
 use Commercetools\Core\Response\ResourceResponse;
@@ -35,7 +35,7 @@ class StateRepositoryTest extends TestCase
         $this->response->getContext()->willReturn(null);
         $this->response->isError()->willReturn(false);
 
-        $this->client = $this->prophesize(Client::class);
+        $this->client = $this->prophesize(HttpClient::class);
     }
 
     private function getStateRepository()

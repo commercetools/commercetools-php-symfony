@@ -117,7 +117,7 @@ class ShoppingListRepository extends Repository
             }
         }
 
-        $response = $request->executeWithClient($client);
+        $response = $client->execute($request);
         $list = $request->mapFromResponse($response);
 
         return $list;

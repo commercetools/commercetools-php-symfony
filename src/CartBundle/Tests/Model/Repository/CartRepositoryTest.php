@@ -5,7 +5,7 @@
 
 namespace Commercetools\Symfony\CartBundle\Tests\Model\Repository;
 
-use Commercetools\Core\Client;
+use Commercetools\Core\Client\HttpClient;
 use Commercetools\Core\Error\InvalidArgumentException;
 use Commercetools\Core\Model\Cart\Cart;
 use Commercetools\Core\Model\Cart\CartDraft;
@@ -43,7 +43,7 @@ class CartRepositoryTest extends TestCase
         $this->response->getContext()->willReturn(null);
         $this->response->isError()->willReturn(false);
 
-        $this->client = $this->prophesize(Client::class);
+        $this->client = $this->prophesize(HttpClient::class);
     }
 
     private function getCartRepository()
