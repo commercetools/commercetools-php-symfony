@@ -25,6 +25,11 @@
         <service id="commmercetools.mapper.factory" class="Commercetools\Symfony\CtpBundle\Service\MapperFactory">
             <argument type="service" id="commercetools.context.factory"/>
         </service>
+        <service id="commercetools.client.handlerstack" class="GuzzleHttp\HandlerStack">
+            <factory service="Commercetools\Symfony\CtpBundle\Service\HandlerStackFactory" method="create"/>
+            <argument type="service" id="Guzzle\HandlerStack"  on-invalid="null"/>
+            <argument type="service" id="commercetools.profiler.extension" on-invalid="null"/>
+        </service>
         <service id="commercetools.client.config" class="Commercetools\Core\Config">
             <factory class="Commercetools\Symfony\CtpBundle\Service\ConfigFactory" method="create"/>
             <argument>%commercetools.client.config%</argument>

@@ -7,6 +7,7 @@ namespace Commercetools\Symfony\ExampleBundle\Controller;
 use Commercetools\Core\Client;
 use Commercetools\Core\Model\Cart\Cart;
 use Commercetools\Symfony\CartBundle\Manager\CartManager;
+use Commercetools\Symfony\CartBundle\Manager\MeCartManager;
 use Commercetools\Symfony\CartBundle\Model\Repository\CartRepository;
 use Commercetools\Symfony\CatalogBundle\Manager\CatalogManager;
 use Commercetools\Symfony\CtpBundle\Model\QueryParams;
@@ -30,7 +31,7 @@ class SunriseController extends AbstractController
     private $catalogManager;
 
     /**
-     * @var CartManager
+     * @var MeCartManager
      */
     private $cartManager;
 
@@ -39,7 +40,7 @@ class SunriseController extends AbstractController
      * @param Client $client
      * @param CatalogManager $catalogManager
      */
-    public function __construct(Client $client, CatalogManager $catalogManager, CartManager $cartManager)
+    public function __construct(Client $client, CatalogManager $catalogManager, MeCartManager $cartManager)
     {
         $this->client = $client;
         $this->catalogManager = $catalogManager;
@@ -60,10 +61,9 @@ class SunriseController extends AbstractController
         ]);
     }
 
-    public function getMiniCartAction(Request $request, SessionInterface $session, UserInterface $user = null)
+    public function getMiniCartAction(Request $request)
     {
-        $cartId = $session->get(CartRepository::CART_ID);
-        $cart = $this->cartManager->getCart($request->getLocale(), $cartId, $user, $session->getId());
+        $cart = $this->cartManager->getCart($request->getLocale());
 
         if (is_null($cart)) {
             $cart = Cart::of();

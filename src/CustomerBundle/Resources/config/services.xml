@@ -24,15 +24,21 @@
             <argument type="service" id="session"/>
             <argument type="service" id="commercetools.client.config"/>
         </service>
+        <service id="commercetools.client.me.config" class="Commercetools\Core\Config">
+            <factory class="Commercetools\Symfony\CtpBundle\Service\ConfigFactory" method="create"/>
+            <argument>%commercetools.client.config%</argument>
+            <argument type="service" id="commercetools.client.me.handlerstack" />
+            <argument type="service" id="commercetools.logger" />
+        </service>
         <service id="commeretoools.client.me" class="GuzzleHttp\Client">
             <factory service="commercetools.http.clientfactory" method="createClient"/>
-            <argument type="service" id="commercetools.client.config" />
+            <argument type="service" id="commercetools.client.me.config" />
             <argument type="service" id="commercetools.logger" />
             <argument type="service" id="commercetools.cache" />
             <argument type="service" id="Commercetools\Symfony\CustomerBundle\Security\Authentication\Provider\RefreshFlowTokenProvider" />
         </service>
 
-        <service id="commercetools.client.handlerstack" class="GuzzleHttp\HandlerStack">
+        <service id="commercetools.client.me.handlerstack" class="GuzzleHttp\HandlerStack">
             <factory service="Commercetools\Symfony\CtpBundle\Service\HandlerStackFactory" method="create"/>
             <argument type="service" id="Guzzle\HandlerStack"  on-invalid="null"/>
             <argument type="service" id="commercetools.profiler.extension" on-invalid="null"/>
@@ -47,7 +53,7 @@
         >
 <!--            <argument type="service" id="commercetools.client" />-->
             <argument type="service" id="commeretoools.client.me" />
-            <argument type="service" id="commercetools.client.config" />
+            <argument type="service" id="commercetools.client.me.config" />
             <argument /> <!-- User Provider -->
             <argument type="service" id="security.user_checker" />
             <argument /> <!-- Provider-shared Key -->
