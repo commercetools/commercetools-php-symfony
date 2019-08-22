@@ -59,7 +59,7 @@ class ClientFactory
         }
         $config->setContext($context);
 
-        $client = CtpClientFactory::of()->createClient($config, $this->logger, $this->cache);
+        $client = CtpClientFactory::of()->createClient($config, $this->logger, $this->cache, null, null, $context);
 
         return $client;
     }

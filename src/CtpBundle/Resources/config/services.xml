@@ -5,8 +5,9 @@
            xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
     <services>
         <service id="commercetools" synthetic="true" />
-        <service id="Commercetools\Core\Client" alias="commercetools.api.client" />
-        <service id="commercetools.api.client" class="Commercetools\Core\Client">
+        <service id="GuzzleHttp\Client" alias="commercetools.api.client" />
+        <service id="Commercetools\Core\Client\HttpClient" alias="commercetools.api.client" />
+        <service id="commercetools.api.client" class="GuzzleHttp\Client">
             <factory service="commercetools.client.factory" method="build" />
         </service>
         <service id="commercetools.client.factory" class="Commercetools\Symfony\CtpBundle\Service\ClientFactory">
@@ -54,14 +55,16 @@
         <service id="Commercetools\Symfony\CtpBundle\Model\Repository" public="true">
             <argument key="$enableCache">false</argument>
             <argument key="$cache" type="service" id="commercetools.cache" />
-            <argument key="$client" type="service" id="Commercetools\Core\Client"/>
+            <argument key="$client" type="service" id="Commercetools\Core\Client\HttpClient"/>
             <argument key="$mapperFactory" type="service" id="commmercetools.mapper.factory" />
+            <argument key="$contextFactory" type="service" id="commercetools.context.factory" />
         </service>
         <service id="Commercetools\Symfony\CtpBundle\Model\MeRepository" public="true">
             <argument key="$enableCache">false</argument>
             <argument key="$cache" type="service" id="commercetools.cache" />
             <argument key="$client" type="service" id="commeretoools.client.me"/>
             <argument key="$mapperFactory" type="service" id="commmercetools.mapper.factory" />
+            <argument key="$contextFactory" type="service" id="commercetools.context.factory" />
         </service>
 
         <service id="commercetools.custom_types" class="Commercetools\Symfony\CtpBundle\Service\CustomTypeProvider" public="true">

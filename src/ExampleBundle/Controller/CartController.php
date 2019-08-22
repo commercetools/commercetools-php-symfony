@@ -20,7 +20,6 @@ use Commercetools\Symfony\ExampleBundle\Model\Form\Type\AddToCartType;
 use Commercetools\Symfony\CartBundle\Model\Repository\CartRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Commercetools\Core\Model\Cart\Cart;
-use Commercetools\Core\Client;
 use Commercetools\Symfony\CartBundle\Manager\CartManager;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -31,10 +30,6 @@ class CartController extends AbstractController
 {
     const CSRF_TOKEN_NAME = 'csrfToken';
 
-    /**
-     * @var Client
-     */
-    private $client;
 
     /**
      * @var CartManager
@@ -48,13 +43,11 @@ class CartController extends AbstractController
 
     /**
      * CartController constructor.
-     * @param Client $client
      * @param CartManager $manager
      * @param MeCartManager $meCartManager
      */
-    public function __construct(Client $client, CartManager $manager, MeCartManager $meCartManager)
+    public function __construct(CartManager $manager, MeCartManager $meCartManager)
     {
-        $this->client = $client;
         $this->manager = $manager;
         $this->meCartManager = $meCartManager;
     }

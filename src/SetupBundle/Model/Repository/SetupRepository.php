@@ -15,6 +15,7 @@ use Commercetools\Core\Request\ClientRequestInterface;
 use Commercetools\Symfony\CtpBundle\Logger\Logger;
 use Commercetools\Symfony\CtpBundle\Model\QueryParams;
 use Commercetools\Symfony\CtpBundle\Model\Repository;
+use Commercetools\Symfony\CtpBundle\Service\ContextFactory;
 use Commercetools\Symfony\CtpBundle\Service\MapperFactory;
 use Commercetools\Symfony\SetupBundle\Model\ConfigureProject;
 use Commercetools\Symfony\SetupBundle\Model\ProjectUpdateBuilder;
@@ -34,10 +35,11 @@ class SetupRepository extends Repository
      * @param HttpClient $client
      * @param MapperFactory $mapperFactory
      * @param Logger $logger
+     * @param ContextFactory $contextFactory
      */
-    public function __construct($enableCache, CacheItemPoolInterface $cache, HttpClient $client, MapperFactory $mapperFactory, Logger $logger)
+    public function __construct($enableCache, CacheItemPoolInterface $cache, HttpClient $client, MapperFactory $mapperFactory, Logger $logger, ContextFactory $contextFactory)
     {
-        parent::__construct($enableCache, $cache, $client, $mapperFactory);
+        parent::__construct($enableCache, $cache, $client, $mapperFactory, $contextFactory);
         $this->logger = $logger;
     }
 

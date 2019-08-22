@@ -19,6 +19,7 @@ use Commercetools\Core\Request\Products\ProductProjectionSearchRequest;
 use Commercetools\Symfony\CtpBundle\Model\QueryParams;
 use Commercetools\Symfony\CtpBundle\Model\Repository;
 use Commercetools\Symfony\CatalogBundle\Model\Search;
+use Commercetools\Symfony\CtpBundle\Service\ContextFactory;
 use Commercetools\Symfony\CtpBundle\Service\MapperFactory;
 use Psr\Cache\CacheItemPoolInterface;
 use Psr\Http\Message\UriInterface;
@@ -39,16 +40,18 @@ class CatalogRepository extends Repository
      * @param HttpClient $client
      * @param MapperFactory $mapperFactory
      * @param Search $searchModel
+     * @param ContextFactory $contextFactory
      */
     public function __construct(
         $enableCache,
         CacheItemPoolInterface $cache,
         HttpClient $client,
         MapperFactory $mapperFactory,
-        Search $searchModel
+        Search $searchModel,
+        ContextFactory $contextFactory
     ) {
         $this->searchModel = $searchModel;
-        parent::__construct($enableCache, $cache, $client, $mapperFactory);
+        parent::__construct($enableCache, $cache, $client, $mapperFactory, $contextFactory);
     }
 
 
@@ -64,7 +67,7 @@ class CatalogRepository extends Repository
         $cacheKey = static::NAME . '-' . $slug . '-' . $locale;
 
         $productRequest = RequestBuilder::of()->productProjections()
-            ->getBySlug($slug, $this->client->getConfig()->getContext()->getLanguages())
+            ->getBySlug($slug, $this->context->getLanguages())
             ->country($country)
             ->currency($currency);
 
@@ -229,12 +232,13 @@ class CatalogRepository extends Repository
     public function executeSearchRequest(ProductProjectionSearchRequest $searchRequest, $locale)
     {
         $response = $this->getClient()->execute($searchRequest);
+        $ctpResponse = $searchRequest->buildResponse($response);
         $products = $searchRequest->mapFromResponse(
             $response,
             $this->getMapper($locale)
         );
 
-        return [$products, $response->getFacets(), $response->getOffset(), $response->getTotal()];
+        return [$products, $ctpResponse->getFacets(), $ctpResponse->getOffset(), $ctpResponse->getTotal()];
     }
 
     /**

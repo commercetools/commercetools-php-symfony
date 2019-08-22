@@ -4,10 +4,12 @@
 
 namespace Commercetools\Symfony\CtpBundle\Model;
 
+use Commercetools\Core\Model\Common\Context;
 use Commercetools\Core\Model\MapperInterface;
 use Commercetools\Core\Request\AbstractApiRequest;
 use Commercetools\Core\Request\ClientRequestInterface;
 use Commercetools\Core\Request\QueryAllRequestInterface;
+use Commercetools\Symfony\CtpBundle\Service\ContextFactory;
 use Commercetools\Symfony\CtpBundle\Service\MapperFactory;
 use GuzzleHttp\Client;
 use Psr\Cache\CacheItemPoolInterface;
@@ -40,17 +42,23 @@ class MeRepository
     protected $mapperFactory;
 
     /**
+     * @var Context
+     */
+    protected $context;
+
+    /**
      * Repository constructor.
      * @param string|bool $enableCache
      * @param CacheItemPoolInterface $cache
      * @param Client $client
      * @param MapperFactory $mapperFactory
      */
-    public function __construct($enableCache, CacheItemPoolInterface $cache, Client $client, MapperFactory $mapperFactory)
+    public function __construct($enableCache, CacheItemPoolInterface $cache, Client $client, MapperFactory $mapperFactory, ContextFactory $contextFactory)
     {
         if (is_string($enableCache)) {
             $enableCache = ($enableCache == "true");
         }
+        $this->context = $contextFactory->build();
         $this->enableCache = $enableCache;
         $this->cache = $cache;
         $this->client = $client;
@@ -99,7 +107,7 @@ class MeRepository
                 $data = $cachedData;
             }
             $result = unserialize($data->get());
-            $result->setContext($this->client->getConfig()->getContext());
+            $result->setContext($this->context);
         } else {
             $result = $this->getAll($request, $locale);
             $this->store($cacheKey, serialize($result), $ttl);
@@ -161,7 +169,7 @@ class MeRepository
                 throw new NotFoundHttpException("resource not found");
             }
             $result = unserialize($cachedData->get());
-            $result->setContext($this->client->getConfig()->getContext());
+            $result->setContext($this->context);
         } else {
             $response = $request->executeWithClient($this->client);
             if ($response->isError() || is_null($response->toObject())) {

@@ -2,7 +2,6 @@
 
 namespace  Commercetools\Symfony\ExampleBundle\Controller;
 
-use Commercetools\Core\Client;
 use Commercetools\Core\Model\Product\ProductProjection;
 use Commercetools\Core\Model\Product\Search\Filter;
 use Commercetools\Symfony\CatalogBundle\Manager\CatalogManager;
@@ -29,19 +28,16 @@ use Commercetools\Core\Model\ShoppingList\ShoppingList;
 
 class CatalogController extends AbstractController
 {
-    private $client;
     private $catalogManager;
     private $shoppingListManager;
 
     /**
      * CatalogController constructor.
-     * @param Client $client
      * @param CatalogManager|null $catalogManager
      * @param ShoppingListManager|null $shoppingListManager
      */
-    public function __construct(Client $client, CatalogManager $catalogManager = null, ShoppingListManager $shoppingListManager = null)
+    public function __construct(CatalogManager $catalogManager = null, ShoppingListManager $shoppingListManager = null)
     {
-        $this->client = $client;
         $this->catalogManager = $catalogManager;
         $this->shoppingListManager = $shoppingListManager;
     }
@@ -136,11 +132,12 @@ class CatalogController extends AbstractController
 //        dump($variantIds);
 
         $shoppingListsIds = [];
-        if (is_null($user)) {
-            $shoppingLists = $this->shoppingListManager->getAllOfAnonymous($request->getLocale(), $session->getId());
-        } else {
-            $shoppingLists = $this->shoppingListManager->getAllOfCustomer($request->getLocale(), CustomerReference::ofId($user->getId()));
-        }
+        $shoppingLists = [];
+//        if (is_null($user)) {
+//            $shoppingLists = $this->shoppingListManager->getAllOfAnonymous($request->getLocale(), $session->getId());
+//        } else {
+//            $shoppingLists = $this->shoppingListManager->getAllOfCustomer($request->getLocale(), CustomerReference::ofId($user->getId()));
+//        }
 
         foreach ($shoppingLists as $shoppingList) {
             /** @var ShoppingList $shoppingList */

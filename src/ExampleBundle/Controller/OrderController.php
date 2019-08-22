@@ -52,9 +52,8 @@ class OrderController extends AbstractController
      * @param PaymentManager $paymentManager
      * @param MeOrderManager $meOrderManager
      */
-    public function __construct(Client $client, OrderManager $manager, Registry $workflows, PaymentManager $paymentManager, MeOrderManager $meOrderManager)
+    public function __construct(OrderManager $manager, Registry $workflows, PaymentManager $paymentManager, MeOrderManager $meOrderManager)
     {
-        $this->client = $client;
         $this->manager = $manager;
         $this->workflows = $workflows;
         $this->paymentManager = $paymentManager;

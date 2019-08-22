@@ -37,9 +37,8 @@ class UserController extends AbstractController
     /**
      * CustomerController constructor.
      */
-    public function __construct(Client $client, CustomerManager $manager)
+    public function __construct(CustomerManager $manager)
     {
-        $this->client = $client;
         $this->manager = $manager;
     }
 

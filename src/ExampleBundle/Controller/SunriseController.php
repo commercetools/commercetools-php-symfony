@@ -4,7 +4,7 @@
 
 namespace Commercetools\Symfony\ExampleBundle\Controller;
 
-use Commercetools\Core\Client;
+use Commercetools\Core\Client\HttpClient;
 use Commercetools\Core\Model\Cart\Cart;
 use Commercetools\Symfony\CartBundle\Manager\CartManager;
 use Commercetools\Symfony\CartBundle\Manager\MeCartManager;
@@ -21,7 +21,7 @@ class SunriseController extends AbstractController
     const CSRF_TOKEN_NAME = 'csrfToken';
 
     /**
-     * @var Client
+     * @var HttpClient
      */
     private $client;
 
@@ -37,12 +37,11 @@ class SunriseController extends AbstractController
 
     /**
      * CartController constructor.
-     * @param Client $client
+     * @param HttpClient $client
      * @param CatalogManager $catalogManager
      */
-    public function __construct(Client $client, CatalogManager $catalogManager, MeCartManager $cartManager)
+    public function __construct(CatalogManager $catalogManager, MeCartManager $cartManager)
     {
-        $this->client = $client;
         $this->catalogManager = $catalogManager;
         $this->cartManager = $cartManager;
     }

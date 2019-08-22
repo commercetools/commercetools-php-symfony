@@ -42,9 +42,8 @@ class ReviewController extends AbstractController
      * @param ReviewManager $manager
      * @param Registry $workflows
      */
-    public function __construct(Client $client, ReviewManager $manager, Registry $workflows)
+    public function __construct(ReviewManager $manager, Registry $workflows)
     {
-        $this->client = $client;
         $this->manager = $manager;
         $this->workflows = $workflows;
     }

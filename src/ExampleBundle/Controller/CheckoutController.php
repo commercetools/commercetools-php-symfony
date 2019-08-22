@@ -58,12 +58,10 @@ class CheckoutController extends AbstractController
      * @param OrderManager $orderManager
      */
     public function __construct(
-        Client $client,
         CartManager $cartManager,
         ShippingMethodManager $shippingMethodManager,
         OrderManager $orderManager
     ) {
-        $this->client = $client;
         $this->cartManager = $cartManager;
         $this->shippingMethodManager = $shippingMethodManager;
         $this->orderManager = $orderManager;

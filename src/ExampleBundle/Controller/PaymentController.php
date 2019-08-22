@@ -51,9 +51,8 @@ class PaymentController extends AbstractController
      * @param PaymentManager $manager
      * @param Registry $workflows
      */
-    public function __construct(Client $client, PaymentManager $manager, Registry $workflows)
+    public function __construct(PaymentManager $manager, Registry $workflows)
     {
-        $this->client = $client;
         $this->manager = $manager;
         $this->workflows = $workflows;
     }

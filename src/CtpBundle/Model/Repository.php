@@ -6,10 +6,12 @@
 namespace Commercetools\Symfony\CtpBundle\Model;
 
 use Commercetools\Core\Client\HttpClient;
+use Commercetools\Core\Model\Common\Context;
 use Commercetools\Core\Model\MapperInterface;
 use Commercetools\Core\Request\AbstractApiRequest;
 use Commercetools\Core\Request\ClientRequestInterface;
 use Commercetools\Core\Request\QueryAllRequestInterface;
+use Commercetools\Symfony\CtpBundle\Service\ContextFactory;
 use Commercetools\Symfony\CtpBundle\Service\MapperFactory;
 use Psr\Cache\CacheItemPoolInterface;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
@@ -41,17 +43,23 @@ class Repository
     protected $mapperFactory;
 
     /**
+     * @var Context
+     */
+    protected $context;
+
+    /**
      * Repository constructor.
      * @param string|bool $enableCache
      * @param CacheItemPoolInterface $cache
      * @param HttpClient $client
      * @param MapperFactory $mapperFactory
      */
-    public function __construct($enableCache, CacheItemPoolInterface $cache, HttpClient $client, MapperFactory $mapperFactory)
+    public function __construct($enableCache, CacheItemPoolInterface $cache, HttpClient $client, MapperFactory $mapperFactory, ContextFactory $contextFactory)
     {
         if (is_string($enableCache)) {
             $enableCache = ($enableCache == "true");
         }
+        $this->context = $contextFactory->build();
         $this->enableCache = $enableCache;
         $this->cache = $cache;
         $this->client = $client;
@@ -100,7 +108,6 @@ class Repository
                 $data = $cachedData;
             }
             $result = unserialize($data->get());
-            $result->setContext($this->client->getConfig()->getContext());
         } else {
             $result = $this->getAll($request, $locale);
             $this->store($cacheKey, serialize($result), $ttl);
@@ -162,10 +169,10 @@ class Repository
                 throw new NotFoundHttpException("resource not found");
             }
             $result = unserialize($cachedData->get());
-            $result->setContext($this->client->getConfig()->getContext());
+            $result->setContext($this->context);
         } else {
             $response = $this->client->execute($request);
-            if ($response->isError() || is_null($response->toObject())) {
+            if ($response->getStatusCode() != 200) {
                 $this->store($cacheKey, '', $ttl);
                 throw new NotFoundHttpException("resource not found");
             }
@@ -174,6 +181,10 @@ class Repository
                 $response,
                 $this->getMapper($locale)
             );
+            if ($result == null) {
+                $this->store($cacheKey, '', $ttl);
+                throw new NotFoundHttpException("resource not found");
+            }
 
             $this->store($cacheKey, serialize($result), $ttl);
         }
@@ -197,8 +208,6 @@ class Repository
      */
     protected function executeRequest(ClientRequestInterface $request, $locale = 'en', QueryParams $params = null)
     {
-        $client = $this->getClient();
-
         if (!is_null($params)) {
             foreach ($params->getParams() as $param) {
                 $request->addParamObject($param);

@@ -34,9 +34,8 @@ class ShoppingListController extends AbstractController
     /**
      * ShoppingListController constructor.
      */
-    public function __construct(Client $client, ShoppingListManager $manager)
+    public function __construct(ShoppingListManager $manager)
     {
-        $this->client = $client;
         $this->manager = $manager;
     }
 
