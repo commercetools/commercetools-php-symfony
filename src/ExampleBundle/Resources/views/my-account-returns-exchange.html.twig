@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  {% include '@Example/partials/common/htmlhead.html.twig' %}
+</head>
+
+<body>
+  <div class="darkbg hidden"></div>
+  {% include '@Example/partials/common/header.html.twig' %}
+  <div class="my-orders">
+    <div class="container">
+      {% include '@Example/partials/common/messages.html.twig' %}
+      <div class="my-account-title">
+        <span class="my-account-title-text icon-user">{{ 'myAccount.title'|trans([], 'my-account') }}</span>
+      </div>
+      <div class="row">
+        <div class="col-sm-12">
+          <div class="my-orders-wrapper">
+            <div class="row">
+              <div class="col-sm-3">
+                {% include '@Example/partials/myaccount/my-account-sidebar.html.twig' with {'myReturnsAndExchangesTab':true} %}
+              </div>
+              <div id="my-account-desktop-content" class="col-sm-9">
+                <div class="my-orders-content">
+                  <div class="row">
+                    <div class="col-sm-12">
+                      <div class="my-orders-title hidden-xs">
+                        {{ content.contentTitle }}
+                      </div>
+                    </div>
+                  </div>
+                  <div class="my-orders-table-wrapper">
+                    <div class="row">
+                      <div class="col-sm-2 col-xs-4">
+                        <div class="my-orders-table-titles">
+                          {{ content.orderNumberTitle }}
+                        </div>
+                      </div>
+                      <div class="col-sm-2 hidden-xs">
+                        <div class="my-orders-table-titles">
+                          {{ content.receivedTitle }}
+                        </div>
+                      </div>
+                      <div class="col-sm-2 hidden-xs">
+                        <div class="my-orders-table-titles">
+                          {{ 'total'|trans([], 'checkout') }}
+                        </div>
+                      </div>
+                      <div class="col-sm-2 col-xs-4">
+                        <div class="my-orders-table-titles">
+                          {{ content.refundTotalTitle }}
+                        </div>
+                      </div>
+                      <div class="col-sm-4 col-xs-4">
+                        <div class="my-orders-table-titles">
+                          &nbsp;
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  {% for order_i in content.order %}
+                    <div class="my-orders-table-order">
+                      <div class="row">
+                        <div class="col-sm-2 col-xs-4">
+                          <span>{{ order_i.orderNumber }}</span>
+                        </div>
+                        <div class="col-sm-2 hidden-xs">
+                          <span>{{ order_i.receivedOn }}</span>
+                        </div>
+                        <div class="col-sm-2 hidden-xs">
+                          <span>{{ order_i.total }}</span>
+                        </div>
+                        <div class="col-sm-2 col-xs-4">
+                          <span>{{ order_i.refundTotal }}</span>
+                        </div>
+                        <div class="col-sm-4 col-xs-4 text-right">
+                          <button class="my-orders-view-order-btn">{{ order_i.view }}</button>
+                        </div>
+                      </div>
+                    </div>
+                  {% endfor %}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  {# {{> common/wishlist}} #}
+  {% include '@Example/partials/common/footer.html.twig' %}
+  {% include '@Example/partials/common/htmlscripts.html.twig' %}
+</body>
+
+</html>

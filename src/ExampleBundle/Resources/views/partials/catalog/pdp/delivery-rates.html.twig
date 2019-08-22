@@ -1,0 +1,26 @@
+<div class="panel panel-default">
+  <div class="panel-heading" role="tab" id="headingDelivery">
+    <h4 class="panel-title product-accordion-title text-uppercase">
+      <a id="pdp-delivery-returns-toggle" class="collapsed pdp-accord-toggle" data-toggle="collapse" data-parent="#accordion-product-info" href="#collapseDelivery" aria-expanded="false" aria-controls="collapseDelivery">
+        {{ 'delivery.title'|trans([], 'catalog') }}
+        <img class="accordion-plus" src="{{ asset('bundles/example/img/plus79.png') }}" alt="accordion content">
+      </a>
+    </h4>
+  </div>
+  <div id="collapseDelivery" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingDelivery">
+    <div class="panel-body panel-body-pdp">
+      <ul class="product-delivery-list">
+
+        {% for list_i in deliveryRates.list %}
+        <li>
+          <span>{{ list_i.name }}:</span> {{ list_i.price }}{% if list_i.freeAbove %} (FREE for orders above {{ list_i.freeAbove }}){% endif %}
+          {% if list_i.description %}. {{ list_i.description }}.{% endif %}
+        </li>
+        {% endfor %}
+        
+        <li>{{ 'delivery.freeReturns'|trans([], 'catalog') }}</li>
+        <li>{{ 'delivery.moreDeliveryInfo'|trans([], 'catalog') }}</li>
+      </ul>
+    </div>
+  </div>
+</div>

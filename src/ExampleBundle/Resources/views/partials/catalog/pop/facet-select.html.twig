@@ -1,0 +1,11 @@
+<div class="row">
+  <div class="col-sm-12">
+      <div class="pop-filter-select select-facet {% if not displayList %}two-column-select{% endif %}">
+      {% for limitedOptions_i in facet.limitedOptions %}
+        <div>
+        {% include '@Example/partials/catalog/pop/facet-option-input.html.twig' with {'facet':facet, 'option':limitedOptions_i} %}
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+</div>

@@ -10,6 +10,7 @@ use Commercetools\Core\Request\Customers\Command\CustomerChangeAddressAction;
 use Commercetools\Core\Request\Customers\Command\CustomerChangeEmailAction;
 use Commercetools\Core\Request\Customers\Command\CustomerSetFirstNameAction;
 use Commercetools\Core\Request\Customers\Command\CustomerSetLastNameAction;
+use Commercetools\Core\Request\Customers\Command\CustomerSetTitleAction;
 use Commercetools\Symfony\ExampleBundle\Entity\UserAddress;
 use Commercetools\Symfony\ExampleBundle\Entity\UserDetails;
 use Commercetools\Symfony\ExampleBundle\Model\Form\Type\AddressType;
@@ -62,7 +63,7 @@ class UserController extends AbstractController
 
         $lastUsername = $authenticationUtils->getLastUsername();
 
-        return $this->render('@Example/user/login.html.twig', [
+        return $this->render('@Example/my-account-login.html.twig', [
             'last_username' => $lastUsername,
             'error' => $error
         ]);
@@ -75,12 +76,14 @@ class UserController extends AbstractController
 
         $form = $this->createForm(UserType::class, $entity)
             ->add('submit', SubmitType::class);
+
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $firstName = $form->get('firstName')->getData();
-            $lastName = $form->get('lastName')->getData();
-            $email = $form->get('email')->getData();
+            $firstName = $form->get('firstName')->getData() ?? '';
+            $lastName = $form->get('lastName')->getData() ?? '';
+            $email = $form->get('email')->getData() ?? '';
+            $title = $form->get('title')->getData() ?? '';
 
             $currentPassword = $form->get('currentPassword')->getData();
             $newPassword = $form->get('newPassword')->getData();
@@ -89,7 +92,8 @@ class UserController extends AbstractController
             $customerBuilder
                 ->setFirstName(CustomerSetFirstNameAction::of()->setFirstName($firstName))
                 ->setLastName(CustomerSetLastNameAction::of()->setLastName($lastName))
-                ->changeEmail(CustomerChangeEmailAction::ofEmail($email));
+                ->changeEmail(CustomerChangeEmailAction::ofEmail($email))
+                ->setTitle(CustomerSetTitleAction::of()->setTitle($title));
 
             try {
                 $customer = $customerBuilder->flush();
@@ -102,7 +106,7 @@ class UserController extends AbstractController
             }
         }
 
-        return $this->render('ExampleBundle:User:user.html.twig', [
+        return $this->render('@Example/my-account-personal-details.html.twig', [
             'formDetails' => $form->createView()
         ]);
     }
@@ -111,7 +115,7 @@ class UserController extends AbstractController
     {
         $customer = $this->manager->getById($request->getLocale(), $user->getId());
 
-        return $this->render('ExampleBundle:User:addressBook.html.twig', [
+        return $this->render('@Example/my-account-address-book.html.twig', [
             'customer' => $customer
         ]);
     }
@@ -123,22 +127,25 @@ class UserController extends AbstractController
 
         $entity = UserAddress::ofAddress($address);
 
-        $form = $this->createFormBuilder(['address' => $entity->toArray()])
-            ->add('address', AddressType::class)
-            ->add('Submit', SubmitType::class)
-            ->getForm();
+        $form = $this->createForm(AddressType::class, $entity)
+            ->add('submit', SubmitType::class);
+
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $address = Address::fromArray($form->get('address')->getData());
+
+            /** @var UserAddress $userAddress */
+            $userAddress = $form->getData();
+            $address = Address::fromArray($userAddress->toArray());
 
             $customerBuilder = $this->manager->update($customer)
                 ->changeAddress(CustomerChangeAddressAction::ofAddressIdAndAddress($addressId, $address));
             $customerBuilder->flush();
         }
 
-        return $this->render('ExampleBundle:User:editAddress.html.twig', [
-            'form_address' => $form->createView()
+        return $this->render('@Example/my-account-edit-address.html.twig', [
+            'formAddress' => $form->createView(),
+            'addressId' => $addressId
         ]);
     }
 

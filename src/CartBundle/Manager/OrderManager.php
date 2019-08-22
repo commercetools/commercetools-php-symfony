@@ -123,7 +123,7 @@ class OrderManager
      * @param StateReference $stateReference
      * @return Order
      */
-    public function createOrderFromCart($locale, Cart $cart, StateReference $stateReference)
+    public function createOrderFromCart($locale, Cart $cart, StateReference $stateReference = null)
     {
         $event = new OrderCreateEvent();
         $this->dispatcher->dispatch(OrderCreateEvent::class, $event);

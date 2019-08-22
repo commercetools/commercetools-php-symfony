@@ -1,0 +1,13 @@
+<li>
+  <p class="text-uppercase">{{ attribute.name }}</p>
+{#  {{ dump(attribute) }}#}
+  <div>
+    <select name="attribute-{{ attribute.name }}" class="select-product-detail" data-reload="{{ attribute.reload }}" data-cross-select="{{ attribute.selectData }}" data-variants="{{ product.variants|json_encode }}" data-identifiers="{{ product.referenceIdentifier }}" required>
+{#      <option value="">{{ 'choose'|trans([], 'main') }} {{ attribute.name }}</option>#}
+{#      {% for list_i in attribute.list %}#}
+        <option value="{{ attribute.value }}" {% if true %}selected{% endif %}>{{ attribute.value }}</option>
+{#      {% endfor %}#}
+    </select>
+  </div>
+  {% include '@Example/partials/common/required-error-message.html.twig' %}
+</li>

@@ -1,0 +1,104 @@
+<div class="navbar navbar-fixed-top">
+
+  <div class="header">
+    <header class="container">
+      <div class="row">
+        <div class="col-xs-12">
+          <ul class="nav-list">
+
+            <!-- Toggle the menu on mobile -->
+            <li class="list-item-nav-toggle">
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+            </li>
+            <!-- End -->
+
+            <!-- Toggles the search field on mobile / not visible on desktop -->
+            <li class="list-item-search">
+              <button type="button" class="search-toggle icon-magnifying-glass">
+                <span class="sr-only">{{ 'header.search'|trans([], 'main') }}</span>
+              </button>
+            </li>
+            <!-- End -->
+
+            <li class="list-item-store">
+              <a href="{{ root.meta._links.storeLocator.href }}" class="store-select icon-marker">
+                <span class="hidden-xs">{{ 'header.stores'|trans([], 'main') }}</span>
+              </a>
+            </li>
+
+            <li class="list-item-help">
+              <a href="{{ path('_ctp_example_help') }}" class="link-help">{{ 'header.help'|trans([], 'main') }}</a>
+            </li>
+
+            <li class="list-item-call">
+              <a href="tel:0044123456000" class="link-hotline">{{ 'header.callUs'|trans([], 'main') }}</a>
+            </li>
+
+            <li class="list-item-bag">
+              {% include '@Example/partials/common/mini-cart.html.twig' with {'miniCart':header.miniCart} %}
+            </li>
+
+            {% if app.user %}
+                <li class="list-item-user">
+                    <a href="{{ logout_url() }}" class="link-user">
+                        <span>{{ 'header.signOut'|trans([], 'main') }}</span>
+                    </a>
+                </li>
+                <li class="list-item-user">
+                    <a href="{{ path('_ctp_example_user_details') }}" class="link-user icon-user">
+                        <span class="hidden-xs hidden-sm">{{ 'header.myAccount'|trans([], 'main') }}</span>
+                    </a>
+                </li>
+            {% else %}
+                <li class="list-item-user">
+                    <a href="{{ path('login') }}" class="link-user icon-user">
+                        <span class="hidden-xs hidden-sm">{{ 'header.signIn'|trans([], 'main') }}</span>
+                    </a>
+                </li>
+            {% endif %}
+
+            {% if header.location %}
+            <li class="list-item-location clearfix">
+              {% include '@Example/partials/common/location-selector.html.twig' with {'location':header.location} %}
+            </li>
+            {% endif %}
+          </ul>
+        </div>
+      </div>
+    </header>
+  </div>
+
+  <div id="navigation" class="container">
+    <div class="row logo-search">
+      <div class="col-sm-8">
+        {% include '@Example/partials/common/logo.html.twig' %}
+      </div>
+      <div class="col-sm-4">
+        {% include '@Example/partials/common/search.html.twig' %}
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="dropdown-megamenu navbar navbar-default">
+        <div class="navbar-collapse collapse">
+          <ul class="nav navbar-nav">
+              {{ render(controller('ExampleBundle:Sunrise:getNavMenu')) }}
+            {% if header.location %}
+            <li class="visible-xs location-xs">
+              {% include '@Example/partials/common/location-selector-mobile.html.twig' with {'location':header.location} %}
+            </li>
+            {% endif %}
+          </ul>
+          {% include '@Example/partials/common/nav-menu-extension.html.twig' with {'navMenu':header.navMenu} %}
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% include '@Example/partials/common/alert-overlay.html.twig' %}
+<!-- end common/header.hbs -->

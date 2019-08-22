@@ -1,0 +1,5 @@
+<div class="order-summary">
+    <span class="text-uppercase order-summary-title">{{ 'orderSummary'|trans([], 'checkout') }}:</span>
+    <span class="checkout-total-items">{{ 'itemsTotal'|trans([], 'checkout') }}</span>
+</div>
+{% include '@Example/partials/checkout/checkout-item.html.twig' %}

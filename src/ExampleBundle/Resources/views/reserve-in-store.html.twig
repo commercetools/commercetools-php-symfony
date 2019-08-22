@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  {% include '@Example/partials/common/htmlhead.html.twig' %}
+</head>
+
+<body>
+  <div class="darkbg hidden"></div>
+  {% include '@Example/partials/common/header.html.twig' %}
+
+  <div class="container">
+    {% include '@Example/partials/common/messages.html.twig' %}
+    <div class="store-finder-title">{{ 'storeLocation.title'|trans([], 'main') }}</div>
+    {% include '@Example/partials/catalog/reserve/store-list.html.twig' with {'stores':content.stores} %}
+  </div>
+  {% include '@Example/partials/common/footer.html.twig' %}
+  {% include '@Example/partials/common/htmlscripts.html.twig' %}
+  <script src="{{ asset('bundles/example/js/map-scripts.js') }}"></script>
+
+</body>
+
+</html>

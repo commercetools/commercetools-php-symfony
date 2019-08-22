@@ -1,0 +1,5 @@
+<select name="{{ content.sortSelector.key }}" class="select-product-detail" required>
+{% for list_i in sortSelector.list %}
+  <option value="{{ list_i.value }}" {% if list_i.selected %}selected{% endif %}>{{ list_i.label }}</option>
+{% endfor %}
+</select>

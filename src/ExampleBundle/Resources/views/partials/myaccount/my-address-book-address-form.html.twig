@@ -1,0 +1,53 @@
+<div class="row">
+  <div class="col-sm-4">
+    {% include '@Example/partials/form/choose-title.html.twig' with {'containerClass':"title", 'formFieldName': 'title'} %}
+  </div>
+</div>
+<div class="row">
+  {% include '@Example/partials/form/input-text.html.twig' with {'columnWidth':6, 'required':true, 'formFieldName':'firstName'} %}
+  {% include '@Example/partials/form/input-text.html.twig' with {'columnWidth':6, 'required':true, 'formFieldName':'lastName'} %}
+  {% include '@Example/partials/form/input-text.html.twig' with {'columnWidth':12, 'required':true, 'formFieldName':'email'} %}
+  {% include '@Example/partials/form/input-text.html.twig' with {'columnWidth':10, 'required':true, 'formFieldName':'streetName'} %}
+  {% include '@Example/partials/form/input-text.html.twig' with {'columnWidth':2, 'required':true, 'formFieldName':'streetNumber'} %}
+  {% include '@Example/partials/form/input-text.html.twig' with {'columnWidth':12, 'required':false, 'formFieldName':'additionalStreetInfo'} %}
+  {% include '@Example/partials/form/input-text.html.twig' with {'columnWidth':3, 'required':false, 'formFieldName':'building'} %}
+  {% include '@Example/partials/form/input-text.html.twig' with {'columnWidth':3, 'required':false, 'formFieldName':'apartment'} %}
+  {% include '@Example/partials/form/input-text.html.twig' with {'columnWidth':3, 'required':false, 'formFieldName':'department'} %}
+  {% include '@Example/partials/form/input-text.html.twig' with {'columnWidth':3, 'required':false, 'formFieldName':'pOBox'} %}
+  {% include '@Example/partials/form/input-text.html.twig' with {'columnWidth':8, 'required':false, 'formFieldName':'city'} %}
+  {% include '@Example/partials/form/input-text.html.twig' with {'columnWidth':4, 'required':false, 'formFieldName':'postalCode'} %}
+  {% include '@Example/partials/form/input-text.html.twig' with {'columnWidth':12, 'required':false, 'formFieldName':'additionalAddressInfo'} %}
+  {% include '@Example/partials/form/input-text.html.twig' with {'columnWidth':6, 'required':false, 'formFieldName':'phone'} %}
+  {% include '@Example/partials/form/input-text.html.twig' with {'columnWidth':6, 'required':true, 'formFieldName':'mobile'} %}
+
+  <div class="col-sm-6">
+    {% include '@Example/partials/form/choose-country.html.twig' with {'containerClass':"country", 'formFieldName': 'country'} %}
+  </div>
+  {% include '@Example/partials/form/input-text.html.twig' with {'columnWidth':6, 'required':false, 'formFieldName':'region'} %}
+
+{#  {{ form_widget(formAddress) }}#}
+
+</div>
+<hr>
+<div class="row">
+  <div class="col-sm-6">
+    <div class="input-block">
+      <label for="billing-checkbox">
+        <span>
+          <input id="default-billing-checkbox" type="checkbox" name="defaultBillingAddress" value="true" {% if form.defaultBillingAddress %}checked{% endif %}>
+        </span>
+        <span>{{ 'addressBook.billingAddress.label'|trans([], 'my-account') }}</span>
+      </label>
+    </div>
+  </div>
+  <div class="col-sm-6">
+    <div class="input-block">
+      <label for="delivery-checkbox">
+        <span>
+          <input id="default-shipping-checkbox" type="checkbox" name="defaultShippingAddress" value="true" {% if form.defaultShippingAddress %}checked{% endif %}>
+        </span>
+        <span>{{ 'addressBook.shippingAddress.label'|trans([], 'my-account') }}</span>
+      </label>
+    </div>
+  </div>
+</div>

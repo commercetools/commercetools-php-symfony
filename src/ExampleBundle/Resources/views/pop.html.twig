@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  {% include '@Example/partials/common/htmlhead.html.twig' %}
+</head>
+
+<body>
+  <div class="darkbg hidden"></div>
+  {% include '@Example/partials/common/header.html.twig' %}
+  <div class="pop-page">
+    <div id="pop-page" class="container">
+      <div class="pop-alert-overlay hidden">
+        <div class="pop-alert-wrapper">
+          <div class="pop-alert-box">
+            <div class="pop-alert-text">
+              {{ 'messages.pleaseWait'|trans([], 'main') }}
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-xs-12 figure-col">
+          {% include '@Example/partials/catalog/pop/banner.html.twig' with {'banner':content.banner} %}
+        </div>
+      </div>
+      <div class="row row-offcanvas row-offcanvas-left">
+        <div class="col-xs-12">
+          {% include '@Example/partials/catalog/breadcrumb.html.twig' with {'breadcrumb':content.breadcrumb} %}
+        </div>
+        <div class="col-sm-12">
+          <div class="dark-overlay"></div>
+
+          <!-- Mobile version -->
+          <div class="row visible-xs">
+            <div class="col-xs-12">
+              <ul class="mobile-filter-list clearfix">
+                <li class="pull-left">
+                  <button type="button" class="offcanvas-btn offcanvas-open" data-toggle="modal" data-target="#sidebar-overlay">
+                    {{ 'filters.open'|trans([], 'catalog') }}
+                  </button>
+                </li>
+              </ul>
+            </div>
+            {% include '@Example/partials/catalog/pop/filters-sidebar-mobile.html.twig' %}
+          </div>
+          <!-- End mobile version -->
+
+          <form id="form-filter-products" name="filter-products" action="{{ content.filterProductsUrl }}">
+            {% if content.searchTerm %}
+              <input type="hidden" name="q" value="{{ content.searchTerm }}"/>
+            {% endif %}
+
+            <div class="row item-list-pagination">
+              {% if content.searchResult %}
+                <div class="search-results-row">
+                  {% include '@Example/partials/catalog/pop/search-result.html.twig' with {'searchResult':content.searchResult} %}
+                </div>
+              {% else %}
+                <div class="jumbotron-row">
+                  {% include '@Example/partials/catalog/pop/jumbotron.html.twig' with {'jumbotron':content.jumbotron} %}
+                </div>
+              {% endif %}
+              <div class="col-xs-4 hidden-xs text-left">
+                <div class="custom-select-wrapper">
+                  {% include '@Example/partials/catalog/pop/sort-selector.html.twig' with {'sortSelector':content.sortSelector} %}
+                </div>
+              </div>
+              <div class="col-xs-4 hidden-xs text-center custom-pagination">
+                <ul class="page-numbers">
+                  {% include '@Example/partials/common/pagination.html.twig' with {'pagination':content.pagination} %}
+                </ul>
+              </div>
+              <div class="col-xs-4 hidden-xs text-right">
+                {% include '@Example/partials/catalog/pop/display-selector.html.twig' with {'displaySelector':content.displaySelector} %}
+              </div>
+            </div>
+            <div class="product-filter hidden-xs">
+              {% include '@Example/partials/catalog/pop/filters-sidebar.html.twig' %}
+            </div>
+          </form>
+
+          <div id="pop-product-list" class="row">
+            {% include '@Example/partials/catalog/product-list.html.twig' %}
+          </div>
+          <div class="row">
+            <div class="col-sm-9 col-sm-offset-3 col-xs-12 text-center custom-pagination">
+              <ul class="page-numbers page-numbers-bottom">
+                {% include '@Example/partials/common/pagination.html.twig' with {'pagination':content.pagination} %}
+              </ul>
+            </div>
+          </div>
+          <hr class="hr">
+          <div class="row">
+            <div class="col-sm-12">
+              {% include '@Example/partials/catalog/pop/seo.html.twig' with {'seo':content.seo} %}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  {% include '@Example/partials/common/wishlist.html.twig' with {'wishlist':content.wishlist} %}
+
+  {% include '@Example/partials/common/footer.html.twig' %}
+  {% include '@Example/partials/common/htmlscripts.html.twig' %}
+</body>
+</html>

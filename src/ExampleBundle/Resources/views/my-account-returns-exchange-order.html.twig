@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  {% include '@Example/partials/common/htmlhead.html.twig' %}
+</head>
+
+<body>
+  <div class="darkbg hidden"></div>
+  {% include '@Example/partials/common/header.html.twig' %}
+  <div class="my-orders">
+    <div class="container">
+      {% include '@Example/partials/common/messages.html.twig' %}
+      <div class="my-account-title">
+        <span class="my-account-title-text icon-user">{{ 'myAccount.title'|trans([], 'my-account') }}</span>
+      </div>
+      <div class="row">
+        <div class="col-sm-12">
+          <div class="my-orders-wrapper">
+            <div class="row">
+              <div class="col-sm-3">
+                {% include '@Example/partials/myaccount/my-account-sidebar.html.twig' with {'myReturnsAndExchangesTab':true} %}
+              </div>
+              <div id="my-account-desktop-content" class="col-sm-9">
+                <div class="my-orders-order-content">
+                  <div class="row">
+                    <div class="col-sm-12">
+                      <div class="my-orders-title hidden-xs">
+                        {{ content.contentTitle }}
+                      </div>
+                    </div>
+                  </div>
+                  <div class="your-order-details-wrapper">
+                    <div class="your-order-details-title">{{ content.yourOrderTitle }}</div>
+                    <div class="your-order-details">
+                      <div>
+                        <span class="your-order-details-titles">{{ content.orderNumberTitle }}<br>{{ content.orderDateTitle }}</span>
+                        <span class="your-order-details-info">{{ content.orderNumber }}<br>{{ content.orderDate }}</span>
+                      </div>
+                      <div>
+                        <span class="your-order-details-titles">{{ content.receivedOnTitle }}<br>{{ content.refundTotalTitle }}</span>
+                        <span class="your-order-details-info">{{ content.receivedOn }}<br>{{ content.refundTotal }}</span>
+                      </div>
+                    </div>
+                    <button class="my-orders-print-receipt-btn hidden-xs">{{ content.printReceiptBtn }}</button>
+                  </div>
+                  <div class="row">
+                    <div class="col-sm-6">
+                      <div class="my-orders-order-dark-box">
+                        <div class="my-orders-order-dark-box-title">{{ content.shippingAddress.title }}</div>
+                        <div>{{ content.shippingAddress.name }}</div>
+                        <div>{{ content.shippingAddress.address }}</div>
+                        <div>{{ content.shippingAddress.city }}</div>
+                        <div>{{ content.shippingAddress.region }}</div>
+                        <div>{{ content.shippingAddress.postCode }}</div>
+                        <div>{{ content.shippingAddress.country }}</div><br>
+                        <div>{{ content.shippingAddress.number }}</div>
+                        <div>{{ content.shippingAddress.email }}</div>
+                      </div>
+                    </div>
+                    <div class="col-sm-6">
+                      <div class="my-orders-order-dark-box">
+                        <div class="my-orders-order-dark-box-title">{{ content.billingAddress.title }}</div>
+                        <div>{{ content.billingAddress.name }}</div>
+                        <div>{{ content.billingAddress.address }}</div>
+                        <div>{{ content.billingAddress.city }}</div>
+                        <div>{{ content.billingAddress.region }}</div>
+                        <div>{{ content.billingAddress.postCode }}</div>
+                        <div>{{ content.billingAddress.country }}</div><br>
+                        <div>{{ content.billingAddress.number }}</div>
+                        <div>{{ content.billingAddress.email }}</div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="row">
+                    <div class="col-sm-6">
+                      <div class="my-orders-order-dark-box">
+                        <div class="my-orders-order-dark-box-title">{{ content.shippingMethod.title }}</div>
+                        <div>{{ content.shippingMethod.text }}</div>
+                      </div>
+                    </div>
+                    <div class="col-sm-6">
+                      <div class="my-orders-order-dark-box">
+                        <div class="my-orders-order-dark-box-title">{{ content.paymentDetails.title }}</div>
+                        <div>{{ content.paymentDetails.payment }}</div>
+                        <div>{{ content.paymentDetails.name }}</div>
+                        <div>{{ content.paymentDetails.type }}</div>
+                        <div>{{ content.paymentDetails.number }}</div>
+                        <div>{{ content.paymentDetails.date }}</div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="my-orders-order-price-summary-wrapper">
+                    <div class="text-right">
+                      <span class="my-orders-order-promocode-title">{{ 'promoCodeApplied'|trans([], 'checkout') }}</span>
+                      <span class="my-orders-order-promocode">{{ content.promoCode }}</span>
+                    </div>
+                    <div class="text-right">
+                      <div class="my-orders-order-price-titles">
+                        <span>{{ 'subtotal'|trans([], 'checkout') }}</span><br>
+                        <span>{{ content.orderDiscountTitle }}</span><br>
+                        <span>{{ content.standartDeliveryTitle }}</span>
+                      </div>
+                      <div class="my-orders-order-price">
+                        <span>{{ content.subtotal }}</span><br>
+                        <span>{{ content.orderDiscount }}</span><br>
+                        <span>{{ content.standartDelivery }}</span>
+                      </div>
+                      <div class="order-hr"></div>
+                      <div class="my-orders-order-price-titles">
+                        <span>{{ content.salesTaxTitle }}</span><br>
+                        <span class="order-total-big">{{ content.orderTotalTitle }}</span>
+                      </div>
+                      <div class="my-orders-order-price">
+                        <span>{{ content.salesTax }}</span><br>
+                        <span class="order-total-big">{{ content.orderTotal }}</span>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="order-list-summary-titles-wrapper">
+                    <div class="row">
+                      <div class="col-sm-6">
+                        <div>
+                          {{ content.productDescriptionTitle }}
+                        </div>
+                      </div>
+                      <div class="col-sm-2">
+                        <div class="text-right">
+                          {{ 'common.quantity'|trans([], 'main') }}
+                        </div>
+                      </div>
+                      <div class="col-sm-2">
+                        <div class="text-right">
+                          {{ 'common.price'|trans([], 'main') }}
+                        </div>
+                      </div>
+                      <div class="col-sm-2">
+                        <div class="text-right">
+                          {{ 'checkout'|trans([], 'main') }}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  {% for order_i in content.order %}
+                    <div class="order-detail-wrapper">
+                      <div class="row">
+                        <div class="col-sm-2">
+                          <div>
+                            <img class="img-responsive" src="{{ order_i.image }}" alt="Product image">
+                          </div>
+                        </div>
+                        <div class="col-sm-4">
+                          <div>
+                            <div class="order-detail-product-title">{{ order_i.productTitleOne }}</div>
+                            <div class="order-detail-product-title">{{ order_i.productTitleTwo }}</div>
+                            <div class="order-sku">{{ order_i.sku }}</div>
+                            <div class="order-detail-attributes-title">
+                            {% for attributes_i in order_i.attributes %}
+                                <span>{{ attributes_i.label }}</span>{% if not loop.last %}<br>{% endif %}
+                            {% endfor %}
+                            </div>
+                            <div class="order-detail-attributes">
+                            {% for attributes_i in order_i.attributes %}
+                                <span>{{ attributes_i.value }}</span>{% if not loop.last %}<br>{% endif %}
+                            {% endfor %}
+                            </div>
+                            <div class="order-detail-available">{{ order_i.available }}</div>
+                          </div>
+                        </div>
+                        <div class="col-sm-2">
+                          <div class="text-right">
+                            {{ order_i.quantity }}
+                          </div>
+                        </div>
+                        <div class="col-sm-2">
+                          <div class="text-right">
+                            <span class="order-detail-discount-price">{{ order_i.discountedPrice }}</span>
+                            <span>{{ order_i.price }}</span>
+                          </div>
+                        </div>
+                        <div class="col-sm-2">
+                          <div class="text-right">
+                            {{ order_i.totalPrice }}
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  {% endfor %}
+                  <div class="order-print-receipt-btn-wrapper">
+                    <button class="order-print-receipt-btn">{{ content.printReceiptBtn }}</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  {# {{> common/wishlist}} #}
+  {% include '@Example/partials/common/footer.html.twig' %}
+  {% include '@Example/partials/common/htmlscripts.html.twig' %}
+</body>
+
+</html>

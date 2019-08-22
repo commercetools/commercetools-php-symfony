@@ -1,0 +1,12 @@
+<picture>
+  <source srcset="{{ 'bannerBottomRight1.imageLarge' | trans([], 'cms') }}" media="(min-width: 1200px)">
+  <source srcset="{{ 'bannerBottomRight1.imageMedium' | trans([], 'cms') }}" media="(min-width: 768px)">
+  <img src="{{ 'bannerBottomRight1.imageSmall' | trans([], 'cms') }}" class="img-responsive">
+</picture>
+
+<div class="banner-text">
+  <h4 class="banner-title">
+      {{ 'bannerBottomRight1.title' | trans([], 'cms') | raw }}
+  </h4>
+</div>
+

@@ -20,7 +20,7 @@ class HomeControllerTest extends WebTestCase
         $container->has('twig')->willReturn(true)->shouldBeCalledOnce();
         $container->get('twig')->willReturn($twigMock)->shouldBeCalledOnce();
 
-        $twigMock->render('ExampleBundle::index.html.twig', [])->shouldBeCalledOnce();
+        $twigMock->render('@Example/home.html.twig', [])->shouldBeCalledOnce();
 
         $controller = new HomeController();
         $controller->setContainer($container->reveal());

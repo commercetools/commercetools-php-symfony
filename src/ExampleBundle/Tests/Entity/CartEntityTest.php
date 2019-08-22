@@ -21,7 +21,7 @@ class CartEntityTest extends TestCase
         $this->assertInstanceOf(CartEntity::class, $cartEntity);
         $this->assertSame(['country' => 'DE'], $cartEntity->getShippingAddress());
         $this->assertSame([], $cartEntity->getBillingAddress());
-        $this->assertNull($cartEntity->getCheck());
+        $this->assertNull($cartEntity->getDifferentAddresses());
     }
 
     public function testSetShippingAddress()
@@ -48,7 +48,7 @@ class CartEntityTest extends TestCase
     public function testSetCheck()
     {
         $cart = new CartEntity();
-        $cart->setCheck(true);
-        $this->assertSame(true, $cart->getCheck());
+        $cart->setDifferentAddresses(true);
+        $this->assertSame(true, $cart->getDifferentAddresses());
     }
 }

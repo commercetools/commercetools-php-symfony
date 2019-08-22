@@ -1,0 +1,112 @@
+<div class="order">
+  <div class="order-summary-items">
+    {% for list_i in content.cart.lineItems.list %}
+      <div class="order-summary-item">
+        <div class="row">
+          <div class="col-xs-4">
+            <div class="order-summary-img">
+              <img class="img-responsive" src="{{ list_i.variant.image }}" alt="{{ list_i.variant.name }}">
+            </div>
+          </div>
+          <div class="col-xs-8">
+            <div class="summary-item-info">
+              <span class="checkout-product-name">{{ list_i.variant.name }}</span>
+            </div>
+            <div class="sku-code">
+              <span>{{ list_i.variant.sku }}</span>
+            </div>
+            <div class="checkout-attributes">
+                <div class="checkout-attribute-field">
+                {% for attributes_i in list_i.attributes %}
+                  <span class="checkout-attribute">{{ attributes_i.name }}</span>{% if not loop.last %}<br>{% endif %}
+                {% endfor %}
+                </div>
+                  <div class="checkout-attribute-field">
+                {% for attributes_i in list_i.attributes %}
+                  <span>{{ attributes_i.value }}</span>{% if not loop.last %}<br>{% endif %}
+                {% endfor %}
+                </div>
+            </div>
+          </div>
+        </div>
+        <div class="order-item-price">
+          <div class="row">
+            <div class="col-xs-4">
+              <div class="text-right">
+                <span class="text-uppercase pricing-titles">{{ 'common.quantity'|trans({}, 'main') }}</span><br>
+                <span>{{ list_i.quantity }} x</span>
+              </div>
+            </div>
+            <div class="col-xs-4">
+              <div class="text-right order-item-value">
+                <span class="text-uppercase pricing-titles">{{ 'common.price'|trans({}, 'main') }}</span><br>
+                {% if list_i.variant.priceOld %}<span class="checkout-discounted-price">{{ list_i.variant.priceOld }}</span><br>{% endif %}
+                <span>{{ list_i.variant.price }}</span>
+              </div>
+            </div>
+            <div class="col-xs-4">
+              <div class="text-right order-item-value">
+                <span class="text-uppercase pricing-titles">{{ 'total'|trans({}, 'checkout') }}</span><br>
+                <span>{{ list_i.totalPrice }}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    {% endfor %}
+  </div>
+  <div class="checkout-total-price">
+    <div class="row">
+      <div class="col-lg-8 col-md-7 col-sm-7 col-xs-7">
+        <div class="text-right checkout-promo-code">
+          <span class="text-uppercase">{{ 'promoCodeApplied'|trans([], 'checkout') }}</span>
+        </div>
+      </div>
+      <div class="col-lg-4 col-md-5 col-sm-5 col-xs-5">
+        <div class="text-right checkout-promo-code">
+          {% for discountCodes_i in content.cart.discountCodes %}
+          <span class="text-uppercase">{{ discountCodes_i.name }}</span><br>
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col-lg-8 col-md-7 col-sm-7 col-xs-7">
+        <div class="text-right checkout-price-text">
+          <span>{{ 'subtotal'|trans([], 'checkout') }}</span><br>
+          <span>{{ 'shipping'|trans([], 'checkout') }}</span>
+        </div>
+      </div>
+      <div class="col-lg-4 col-md-5 col-sm-5 col-xs-5">
+        <div class="text-right checkout-price-digits">
+          <span>{{ content.cart.subtotalPrice }}</span><br>
+          <span>{{ content.cart.shippingMethod.price }}</span>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-lg-8 col-md-7 col-sm-7 col-xs-7">
+      <div class="text-right order-tax-total-text">
+        <span>{{ 'common.salesTax'|trans([], 'main') }}</span><br>
+        <span class="total-order-value">{{ 'total'|trans([], 'checkout') }}</span>
+      </div>
+    </div>
+    <div class="col-lg-4 col-md-5 col-sm-5 col-xs-5">
+      <div class="text-right order-tax-total-digits">
+        <span>{{ content.cart.salesTax }}</span><br>
+        <span class="total-order-value">{{ content.cart.totalPrice }}</span>
+      </div>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-sm-12">
+      <div>
+        <span class="text-uppercase pull-right edit-quantity-order">
+            <a href="{{ path('_ctp_example_cart') }}">{{ 'editMyCart'|trans([], 'checkout') }}</a>
+        </span>
+      </div>
+    </div>
+  </div>
+</div>

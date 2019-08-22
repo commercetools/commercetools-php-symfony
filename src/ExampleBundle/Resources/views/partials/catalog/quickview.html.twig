@@ -1,0 +1,59 @@
+<div class="modal fade" id="quickview-modal{{ index }}" tabindex="-1" role="dialog" aria-labelledby="quickviewModal{{ index }}">
+  <div class="modal-dialog modal-dialog-quickview" role="document">
+    <div class="modal-content quickview-modal">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="{{ 'close'|trans([], 'main') }}">
+          <span aria-hidden="true">
+            <img src="{{ asset('bundles/example/img/close.png') }}" alt="{{ 'close'|trans([], 'main') }}" />
+          </span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="row product-info-row-pdp">
+          <div class="col-sm-4">
+            <div class="bzoom_wrap">
+              <ul class="bzoom">
+                {% for variant in product.allVariants %}
+                <li class="gallery-image">
+                  <img class="bzoom_thumb_image" src="{{ variant.images.current.url }}"/>
+                  <img class="bzoom_big_image" src="{{ variant.images.current.url }}"/>
+                </li>
+                {% endfor %}
+              </ul>
+            </div>
+          </div>
+          <div class="col-sm-6 col-sm-offset-2 product-description">
+            <div class="row">
+              <div class="col-sm-12">
+                {% include '@Example/partials/catalog/product-name.html.twig' %}
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-sm-12">
+                {% include '@Example/partials/catalog/product-rating.html.twig' %}
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-sm-12">
+                {% include '@Example/partials/catalog/product-price.html.twig' %}
+              </div>
+            </div>
+            <div class="row select-row">
+              {% include '@Example/partials/catalog/add-to-cart.html.twig' %}
+            </div>
+            <div class="quickview-wishlist-row">
+              <ul class="list-inline">
+                <li {% if wishlist %}class="hidden"{% endif %}>
+                  {% include '@Example/partials/catalog/add-to-wishlist-btn.html.twig' %}
+                </li>
+                <li>
+                  {% include '@Example/partials/catalog/product-availability.html.twig' with {'availability':product.availability} %}
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

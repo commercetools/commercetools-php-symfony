@@ -1,0 +1,21 @@
+<div class="wishlist">
+    <button id="wishlist-open-btn" class="hidden-xs wishlist-btn">
+        <div class="wishlist-number">{{ wishlist.quantity }}</div>
+    </button>
+    <div class="wishlist-items hidden">
+        <p class="wishlist-title">
+            {{ 'wishlist.title'|trans([], 'catalog') }} <span>({{ wishlist.quantity }})</span>
+        </p>
+        <span class="recently-added-title">{{ 'wishlist.recentlyAdded'|trans([], 'catalog') }}</span>
+        <div class="clearfix">
+            {% for list_i in wishlist.list %}
+                <a href="{{ list_i.url }}">
+                    <img class="pull-left img-responsive wishlist-img" src="{{ list_i.imageUrl }}" alt="{{ list_i.name }}">
+                </a>
+            {% endfor %}
+        </div>
+        <a href="{{ root.meta._links.myWishlist.href }}" id="wishlist-view-btn" class="btn view-wishlist-btn">
+            {{ 'wishlist.view'|trans([], 'catalog') }}
+        </a>
+    </div>
+</div>

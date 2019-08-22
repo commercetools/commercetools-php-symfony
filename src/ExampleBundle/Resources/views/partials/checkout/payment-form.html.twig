@@ -1,0 +1,78 @@
+<form method="post" action="{{ root.meta._links.checkoutPaymentSubmit.href }}">
+  <input type="hidden" name="csrfToken" value="{{ csrf_token('csrfToken') }}"/>
+  <div class="shipping-info">
+    <span class="text-uppercase payment-info-title">{{ 'paymentInformation'|trans([], 'checkout') }}</span>
+    <span class="pull-right-fields">{{ 'form.required'|trans([], 'main') }}*</span>
+  </div>
+  <div class="row">
+    <div class="col-sm-12">
+      <div class="payment-options-title">
+        <span>{{ 'paymentPage.paymentOptionsTitle'|trans([], 'checkout') }}:</span>
+      </div>
+    </div>
+  </div>
+    <div class="row">
+        {% include '@Example/partials/form/global-messages.html.twig' with {'messages':paymentForm.messages} %}
+        {% include '@Example/partials/form/global-errors.html.twig' with {'errors':paymentForm.errors} %}
+    </div>
+  <div class="row">
+    {% for list_i in content.paymentFormSettings.paymentMethod.list %}
+    <div class="col-lg-3 col-md-4 col-sm-4">
+      <div class="payment-type">
+        <label for="payment-type-{{ list_i.value }}">
+          {% if list_i.image %}<img src="{{ list_i.root.meta.assetsPath }}{{ list_i.image }}" class="payment-type-icon" alt="{{ list_i.label }}">{% endif %}<br>
+          <input id="payment-type-{{ list_i.value }}" class="payment-text" type="radio" name="payment" value="{{ list_i.value }}" {% if list_i.selected %}checked{% endif %}>{{ list_i.label }}
+        </label>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+  <div class="row" id="credit-card-input-field">
+    <div class="col-md-6 col-sm-8">
+      <div class="col-sm-12">
+        <div class="name-on-card">
+          <span class="text-uppercase">{{ 'paymentPage.cardName'|trans([], 'checkout') }}*</span><br>
+          <input id="payment-cardname-input" class="checkout-input-field" type="text">
+        </div>
+        {% include '@Example/partials/common/required-error-message.html.twig' %}
+      </div>
+      <div class="col-sm-12">
+        <div class="card-number">
+          <span class="text-uppercase">{{ 'paymentPage.cardNumber'|trans([], 'checkout') }}*</span><br>
+          <input id="payment-cardnumber-input" class="checkout-input-field card-number-input" type="text">
+        </div>
+      </div>
+      <div class="col-sm-6">
+        <div class="expiry-date">
+          <span class="text-uppercase">{{ 'paymentPage.expiryDateTitle'|trans([], 'checkout') }}*</span><br>
+          <select id="payment-expirymonth-select" class="checkout-dropdown">
+            <option>{{ 'form.month'|trans([], 'main') }}</option>
+            {% for list_i in content.paymentForm.expiryDate.list %}
+            <option value="{{ list_i.value }}" {% if list_i.selected %}selected{% endif %}>{{ list_i.text }}</option>
+            {% endfor %}
+          </select>
+        </div>
+      </div>
+      <div class="col-sm-6">
+        <div class="expiry-year">
+          <br>
+          <select id="payment-expiryyear-select" class="checkout-dropdown">
+            <option>{{ 'form.year'|trans([], 'main') }}</option>
+            {% for list_i in content.paymentForm.year.list %}
+            <option value="{{ list_i.value }}" {% if list_i.selected %}selected{% endif %}>{{ list_i.text }}</option>
+            {% endfor %}
+          </select>
+        </div>
+      </div>
+      <div class="col-sm-7">
+        <div class="security-code">
+          <span class="text-uppercase">{{ 'paymentPage.securityCode'|trans([], 'checkout') }}*</span><br>
+          <input id="payment-securitycode-input" class="checkout-input-field security-code-input" type="text">
+          <span class="security-code-info" title="{{ 'paymentPage.securityCodeTooltip'|trans([], 'checkout') }}"><img class="info-icon" src="{{ asset('bundles/example/img/information.png') }}" alt="information icon"></span>
+        </div>
+      </div>
+    </div>
+  </div>
+  <hr class="hr-checkout-payment">
+  {% include '@Example/partials/checkout/continue-checkout-button.html.twig' %}
+</form>

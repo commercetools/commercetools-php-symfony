@@ -5,6 +5,7 @@
 namespace Commercetools\Symfony\ExampleBundle\Model\Form\Type;
 
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\Extension\Core\Type\EmailType;
@@ -15,6 +16,11 @@ class UserType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
+        $builder->add('title', ChoiceType::class, ['required' => false, 'label' => 'Title', 'choices'  => [
+            'Mr' => 'mr',
+            'Mrs' => 'mrs',
+            'Other' => 'other',
+        ]]);
         $builder->add('firstName', TextType::class, ['required' => false, 'label' => 'First Name']);
         $builder->add('lastName', TextType::class, ['required' => false, 'label' => 'Last Name']);
         $builder->add('email', EmailType::class, ['required' => false, 'label' => 'Email']);

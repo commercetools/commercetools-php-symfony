@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  {% include '@Example/partials/common/htmlhead.html.twig' %}
+</head>
+
+<body>
+  <div class="darkbg hidden"></div>
+  {% include '@Example/partials/common/header.html.twig' %}
+
+  <div class="mix-match">
+    <div class="container">
+      {% include '@Example/partials/common/messages.html.twig' %}
+      {% include '@Example/partials/catalog/breadcrumb.html.twig' with {'breadcrumb':content.breadcrumb} %}
+      <div class="row">
+        <div class="col-md-4 col-md-offset-1 col-sm-6">
+          {% include '@Example/partials/catalog/pdp/product-gallery.html.twig' with {'gallery':content.gallery} %}
+          {% include '@Example/partials/catalog/pdp/view-more.html.twig' with {'hiddenXs':true} %}
+        </div>
+        <div class="col-sm-6">
+          <div class="mix-match-title">{{ 'mixMatch.title'|trans([], 'mix-match') }}</div>
+          <div>{{ 'mixMatch.description'|trans([], 'mix-match') }}</div>
+          {% include '@Example/partials/catalog/pdp/mix-match-product-list.html.twig' with {'products':content.mixMatchProducts} %}
+          <div class="mix-match-bag-wishlist">
+            {% include '@Example/partials/catalog/pdp/add-to-bag-btn.html.twig' %}
+            {% include '@Example/partials/catalog/add-to-wishlist-btn.html.twig' with {'text':true} %}
+            {% include '@Example/partials/catalog/reserve-in-store-btn.html.twig' %}
+          </div>
+          <div class="panel-group panel-group-pdp" id="accordion-product-info" role="tablist" aria-multiselectable="true">
+            {% include '@Example/partials/catalog/pdp/delivery-rates.html.twig' %}
+          </div>
+          <div class="mix-match-social-icons">
+            {% include '@Example/partials/catalog/pdp/social-icons.html.twig' %}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="mix-match-suggestions">
+    <div class="container">
+      <div class="mix-match-suggestions-title">{{ 'suggestions.title'|trans([], 'catalog') }}</div>
+      {% include '@Example/partials/catalog/suggestions.html.twig' %}
+      <hr class="hr">
+      {% include '@Example/partials/catalog/pdp/reviews.html.twig' %}
+    </div>
+  </div>
+
+  {% include '@Example/partials/common/footer.html.twig' %}
+  {% include '@Example/partials/common/htmlscripts.html.twig' %}
+</body>
+</html>

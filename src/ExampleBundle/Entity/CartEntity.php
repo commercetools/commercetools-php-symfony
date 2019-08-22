@@ -11,7 +11,7 @@ class CartEntity
     private $billingAddress;
     private $shippingAddress;
     private $name;
-    private $check;
+    private $differentAddresses;
 
     /**
      * @return mixed
@@ -73,18 +73,18 @@ class CartEntity
     /**
      * @return mixed
      */
-    public function getCheck()
+    public function getDifferentAddresses()
     {
-        return $this->check;
+        return $this->differentAddresses;
     }
 
     /**
-     * @param mixed $check
+     * @param mixed $differentAddresses
      * @return CartEntity
      */
-    public function setCheck($check)
+    public function setDifferentAddresses($differentAddresses)
     {
-        $this->check = $check;
+        $this->differentAddresses = $differentAddresses;
 
         return $this;
     }

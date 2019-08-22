@@ -1,0 +1,32 @@
+<div class="bzoom_wrap hidden-xs">
+  <a id="animated-modal-action" class="animated-modal-action" href="#animatedModal">
+    <img src="{{ asset('bundles/example/img/zoom-60px.png') }}" width="25" height="25" />
+  </a>
+  <ul class="bzoom">
+      <li class="gallery-image" data-modal-content="{{ product.masterVariant.images.current.url }}">
+        <img class="bzoom_thumb_image" src="{{ product.masterVariant.images.current.url }}">
+        <img class="bzoom_big_image" src="{{ product.masterVariant.images.current.url }}">
+      </li>
+    {% for variant in product.allVariants %}
+      <li class="gallery-image" data-modal-content="{{ variant.images.current.url }}">
+        <img class="bzoom_thumb_image" src="{{ variant.images.current.url }}">
+        <img class="bzoom_big_image" src="{{ variant.images.current.url }}">
+      </li>
+    {% endfor %}
+  </ul>
+  <div id="animatedModal" class="animated-modal">
+    <div class="modal-header">
+      <a href="#" class="close-animatedModal clickable">
+        <img src="{{ asset('bundles/example/img/delete-60px.png') }}" width="40" height="40" />
+      </a>
+    </div>
+    <div class="modal-content">
+
+    </div>
+  </div>
+</div>
+<div class="gallery-mobile visible-xs">
+  {% for variant in product.allVariants %}
+    <img src="{{ variant.images.current.url }}" alt="Product Image" />
+  {% endfor %}
+</div>

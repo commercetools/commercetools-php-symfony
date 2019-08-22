@@ -72,7 +72,7 @@ class OrderController extends AbstractController
 //        $orders = $this->manager->getOrdersForUser($request->getLocale(), $user, $session->getId());
         $orders = $this->meOrderManager->getOrdersForUser($request->getLocale());
 
-        return $this->render('@Example/user/orders.html.twig', [
+        return $this->render('@Example/my-account-my-orders.html.twig', [
             'orders' => $orders
         ]);
     }
@@ -100,7 +100,7 @@ class OrderController extends AbstractController
             $payments = $this->paymentManager->getMultiplePayments($request->getLocale(), $paymentsIds);
         }
 
-        return $this->render('@Example/user/order.html.twig', [
+        return $this->render('@Example/my-account-my-orders-order.html.twig', [
             'order' => $order,
             'payments' => $payments ?? []
         ]);

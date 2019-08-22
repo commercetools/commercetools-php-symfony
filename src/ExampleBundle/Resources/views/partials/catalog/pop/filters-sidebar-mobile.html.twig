@@ -1,0 +1,49 @@
+<div class="modal fade" id="sidebar-overlay" tabindex="-1" role="dialog" aria-labelledby="filter-sidebar-mobile-modal">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content sidebar-overlay-modal">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="filter-sidebar-mobile-modal">
+          <span aria-hidden="true">
+            <img src="{{ asset('bundles/example/img/close.png') }}" alt="{{ 'close'|trans([], 'main') }}" />
+          </span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="col-sm-3 filter-options sidebar-offcanvas" id="sidebar">
+          <button class="offcanvas-btn offcanvas-btn-close icon-close" data-toggle="offcanvas" type="button">
+            <span class="sr-only">{{ 'filters.close'|trans([], 'catalog') }}</span>
+          </button>
+          <div class="row">
+            <div class="col-sm-12">
+
+              <form id="form-filter-products-mobile" name="filter-products-mobile" action="{{ content.filterProductsUrl }}">
+                {% if content.searchTerm %}
+                  <input type="hidden" name="q" value="{{ content.searchTerm }}"/>
+                {% endif %}
+
+                <div class="row">
+                  <div class="col-sm-12 ">
+                    <p class="filter-products"><b>{{ 'filters.title'|trans([], 'catalog') }}</b></p>
+                  </div>
+                </div>
+                <hr class="hr">
+                  <div class="row size-box">
+                    <div class="col-xs-12">
+                      <div class="text-left">
+                        {{ 'sortSelector.title'|trans([], 'catalog') }}
+                      </div>
+                      <div class="pop-filter-select custom-select-wrapper">
+                        {% include '@Example/partials/catalog/pop/sort-selector.html.twig' with {'sortSelector':content.sortSelector} %}
+                      </div>
+                    </div>
+                  </div>
+                  {% include '@Example/partials/catalog/pop/facets.html.twig' with {'facets':content.facets} %}
+              </form>
+
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

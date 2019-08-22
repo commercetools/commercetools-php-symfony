@@ -109,6 +109,17 @@ class CatalogManager
 
     /**
      * @param string $locale
+     * @param string $id
+     * @param QueryParams|null $params
+     * @return ProductProjection
+     */
+    public function getProductTypeById($locale, $id, QueryParams $params = null)
+    {
+        return $this->repository->getProductTypeById($locale, $id, $params);
+    }
+
+    /**
+     * @param string $locale
      * @param QueryParams $params
      * @return ProductTypeCollection
      */

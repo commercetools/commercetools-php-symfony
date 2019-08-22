@@ -1,0 +1,194 @@
+<!-- start my-account-my-orders-order.hbs -->
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  {% include '@Example/partials/common/htmlhead.html.twig' %}
+</head>
+
+<body>
+  <div class="darkbg hidden"></div>
+  {% include '@Example/partials/common/header.html.twig' %}
+  <div class="my-orders">
+    <div class="container">
+      {% include '@Example/partials/common/messages.html.twig' %}
+      <div class="my-account-title">
+        <span class="my-account-title-text icon-user">{{ 'myAccount.title'|trans([], 'my-account') }}</span>
+      </div>
+      <div class="row">
+        <div class="col-sm-12">
+          <div class="my-orders-wrapper">
+            <div class="row">
+              <div class="col-sm-3">
+                {% include '@Example/partials/myaccount/my-account-sidebar.html.twig' with {'myOrdersTab':true} %}
+              </div>
+              <div id="my-account-desktop-content" class="col-sm-9">
+                <div class="my-orders-order-content">
+                  <div class="row">
+                    <div class="col-sm-12">
+                      <div class="my-orders-title hidden-xs">
+                          {{ 'myOrders.title'|trans([], 'my-account') }}
+                      </div>
+                    </div>
+                  </div>
+                  <div class="your-order-details-wrapper">
+                    <div class="your-order-details-title">{{ 'myOrder.title'|trans([], 'my-account') }}</div>
+                    <div class="your-order-details">
+                      <span class="your-order-details-titles">{{ 'myOrder.orderNumber'|trans([], 'my-account') }}<br>{{ 'myOrder.creationDate'|trans([], 'my-account') }}</span>
+                      <span class="your-order-details-info">{{ order.orderNumber }}<br>{{ order.getCreatedAt.getDateTime|date("m/d/Y H:i") }}</span>
+                    </div>
+                    <button onclick="window.print()" class="my-orders-print-receipt-btn hidden-xs">{{ 'myOrder.print'|trans([], 'my-account') }}</button>
+                  </div>
+                  <div class="row">
+                    <div class="col-sm-6">
+                      <div class="my-orders-order-dark-box">
+                        <div class="my-orders-order-dark-box-title">{{ 'myOrder.shippingAddress'|trans([], 'my-account') }}</div>
+                        <div>{{ order.shippingAddress.title }} {{ order.shippingAddress.firstName }} {{ order.shippingAddress.lastName }}</div>
+                        <div>{{ order.shippingAddress.streetName }}</div>
+                        <div>{{ order.shippingAddress.additionalStreetInfo }}</div>
+                        <div>{{ order.shippingAddress.city }}</div>
+                        <div>{{ order.shippingAddress.postalCode }} {{ order.shippingAddress.region }}</div>
+                        <div>{{ order.shippingAddress.country }}</div><br>
+                        <div>{{ order.shippingAddress.phone }}</div>
+                        <div>{{ order.shippingAddress.email }}</div>
+                      </div>
+                    </div>
+                    <div class="col-sm-6">
+                      <div class="my-orders-order-dark-box">
+                        <div class="my-orders-order-dark-box-title">{{ 'myOrder.billingAddress'|trans([], 'my-account') }}</div>
+                        <div>{{ order.billingAddress.title }} {{ order.billingAddress.firstName }} {{ order.billingAddress.lastName }}</div>
+                        <div>{{ order.billingAddress.streetName }}</div>
+                        <div>{{ order.billingAddress.additionalStreetInfo }}</div>
+                        <div>{{ order.billingAddress.city }}</div>
+                        <div>{{ order.billingAddress.postalCode }} {{ order.billingAddress.region }}</div>
+                        <div>{{ order.billingAddress.country }}</div><br>
+                        <div>{{ order.billingAddress.phone }}</div>
+                        <div>{{ order.billingAddress.email }}</div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="row">
+                    <div class="col-sm-6">
+                      <div class="my-orders-order-dark-box">
+                        <div class="my-orders-order-dark-box-title">{{ 'myOrder.shippingMethod'|trans([], 'my-account') }}</div>
+                          <div>
+                              {{ order.shippingInfo.shippingMethodName }}
+{#                              {% if content.order.shippingMethod.description %}- {{ content.order.shippingMethod.description }}{% endif %}#}
+                          </div>
+                      </div>
+                    </div>
+                    <div class="col-sm-6">
+                      <div class="my-orders-order-dark-box">
+                        <div class="my-orders-order-dark-box-title">{{ 'myOrder.paymentDetails'|trans([], 'my-account') }}</div>
+{#                        <div>{{ order.paymentDetails.type }}</div>#}
+{#                        <div>{{ order.paymentDetails.number }}</div>#}
+{#                        <div>{{ order.paymentDetails.date }}</div>#}
+                        <div>Gross Price: {{ order.getTaxedPrice.getTotalGross }}</div>
+                        <div>Net Price: {{ order.getTaxedPrice.getTotalNet }}</div>
+                        <div>Taxes:</div>
+                          {%  for taxPortion in order.getTaxedPrice.getTaxPortions %}
+                              <div>{{ taxPortion.getName }}: {{ taxPortion.getAmount }}</div>
+                          {% endfor %}
+                        <div>Total Price: {{ order.getTotalPrice }}</div>
+
+                          {% if order.paymentInfo.payments.count %}
+                              <div>Payment Id: {{ order.paymentInfo.payments.current.id }}</div>
+                          {% endif %}
+                      </div>
+                    </div>
+                  </div>
+                  <div class="my-orders-order-price-summary-wrapper">
+                      {% if order.discountCodes.count %}
+                          <div class="text-right">
+                              <span class="my-orders-order-promocode-title">{{ 'myOrder.price.discountCode'|trans([], 'my-account') }}</span>
+                              <span class="my-orders-order-promocode">{{ order.discountCodes.current }}</span>
+                          </div>
+                      {% endif %}
+                    <div class="text-right">
+                        {% include '@Example/partials/checkout/order-summary/totals.html.twig' with {'cart':order} %}
+                    </div>
+                  </div>
+                  <div class="order-list-summary-titles-wrapper">
+                    <div class="row">
+                      <div class="col-sm-6">
+                        <div>
+                            {{ 'myOrder.items.productDescription'|trans([], 'my-account') }}
+                        </div>
+                      </div>
+                      <div class="col-sm-2">
+                        <div class="text-right">
+                            {{ 'myOrder.items.quantity'|trans([], 'my-account') }}
+                        </div>
+                      </div>
+                      <div class="col-sm-2">
+                        <div class="text-right">
+                            {{ 'myOrder.items.unitPrice'|trans([], 'my-account') }}
+                        </div>
+                      </div>
+                      <div class="col-sm-2">
+                        <div class="text-right">
+                            {{ 'myOrder.items.totalPrice'|trans([], 'my-account') }}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                    {% for list_i in order.lineItems.list %}
+                        <div class="order-detail-wrapper">
+                            <div class="row">
+                                <div class="col-sm-1 col-xs-4 product-img-col">
+                                    <img class="img-responsive cart-item-img" src="{{ list_i.variant.image }}" alt="{{ list_i.variant.name }}">
+                                </div>
+                                <div class="col-sm-3 col-xs-8 product-info-text">
+                                    <p class="cart-item-name">
+                                        <a href="{{ list_i.variant.url }}">{{ list_i.variant.name }}</a>
+                                    </p>
+                                    <p class="grey-p">{{ list_i.variant.sku }}</p>
+                                    <p class="cart-attributes">
+                                        {% for attributes_i in list_i.attributes %}
+                                            {{ attributes_i.name }}
+                                            <span class="black-p" data-model="cartItem.{{ attributes_i.key }}">{{ attributes_i.value }}</span>{% if not loop.last %}<br>{% endif %}
+                                        {% endfor %}
+                                    </p>
+                                </div>
+                                <div class="col-sm-2 col-sm-offset-2 col-xs-12 text-center quantity-counter">
+                                    <span class="visible-xs">{{ 'common.quantity'|trans({}, 'main') }}:</span>
+                                    <span class="quantity-number">{{ list_i.quantity }}</span>
+                                </div>
+
+                                <div class="col-sm-2 col-xs-7">
+                                    <div class="text-right cart-item-price">q
+                                        <span class="visible-xs xs-price-title">{{ 'common.price'|trans({}, 'main') }}</span>
+                                        {% if list_i.variant.priceOld %}
+                                            <span class="discounted-price">{{ list_i.variant.priceOld }}</span>
+                                        {% endif %}
+                                        <span>{{ list_i.variant.price }}</span>
+                                    </div>
+                                </div>
+                                <div class="col-sm-2 col-xs-5">
+                                    <div class="text-right cart-item-price">
+                                        <span class="visible-xs xs-price-title">{{ 'total'|trans({}, 'checkout') }}</span>
+                                        <span>{{ list_i.totalPrice }}</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+
+                  <div class="order-print-receipt-btn-wrapper">
+                    <button onclick="window.print()" class="order-print-receipt-btn">{{ 'myOrder.print'|trans([], 'my-account') }}</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  {% include '@Example/partials/common/wishlist.html.twig' %}
+  {% include '@Example/partials/common/footer.html.twig' %}
+  {% include '@Example/partials/common/htmlscripts.html.twig' %}
+</body>
+
+</html>
+<!-- end my-account-my-orders-order.hbs -->

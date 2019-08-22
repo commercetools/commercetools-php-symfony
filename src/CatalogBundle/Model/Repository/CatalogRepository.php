@@ -251,6 +251,19 @@ class CatalogRepository extends Repository
 
     /**
      * @param $locale
+     * @param $productTypeId
+     * @param QueryParams $params
+     * @return mixed
+     */
+    public function getProductTypeById($locale, $productTypeId, QueryParams $params = null)
+    {
+        $productTypesRequest = RequestBuilder::of()->productTypes()->getById($productTypeId);
+
+        return $this->executeRequest($productTypesRequest, $locale, $params);
+    }
+
+    /**
+     * @param $locale
      * @param QueryParams $params
      * @return mixed
      */

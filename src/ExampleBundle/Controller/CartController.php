@@ -70,7 +70,7 @@ class CartController extends AbstractController
             $cart = Cart::of();
         }
 
-        return $this->render('@Example/cart/index.html.twig', [
+        return $this->render('@Example/cart.html.twig', [
             'cart' => $cart
         ]);
     }
@@ -132,7 +132,7 @@ class CartController extends AbstractController
             }
             $redirectUrl = $this->generateUrl('_ctp_example_product', ['slug' => $slug]);
         } else {
-            $redirectUrl = $this->generateUrl('_ctp_example');
+            $redirectUrl = $this->generateUrl('_ctp_example_index');
         }
 
         return new RedirectResponse($redirectUrl);
