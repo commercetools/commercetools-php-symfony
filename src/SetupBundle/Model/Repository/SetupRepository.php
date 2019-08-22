@@ -6,7 +6,7 @@
 namespace Commercetools\Symfony\SetupBundle\Model\Repository;
 
 use Commercetools\Core\Builder\Request\RequestBuilder;
-use Commercetools\Core\Client;
+use Commercetools\Core\Client\HttpClient;
 use Commercetools\Core\Model\Project\Project;
 use Commercetools\Core\Model\Type\Type;
 use Commercetools\Core\Model\Type\TypeCollection;
@@ -31,11 +31,11 @@ class SetupRepository extends Repository
      * SetupRepository constructor.
      * @param $enableCache
      * @param CacheItemPoolInterface $cache
-     * @param Client $client
+     * @param HttpClient $client
      * @param MapperFactory $mapperFactory
      * @param Logger $logger
      */
-    public function __construct($enableCache, CacheItemPoolInterface $cache, Client $client, MapperFactory $mapperFactory, Logger $logger)
+    public function __construct($enableCache, CacheItemPoolInterface $cache, HttpClient $client, MapperFactory $mapperFactory, Logger $logger)
     {
         parent::__construct($enableCache, $cache, $client, $mapperFactory);
         $this->logger = $logger;

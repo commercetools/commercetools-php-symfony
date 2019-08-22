@@ -5,7 +5,7 @@
 
 namespace Commercetools\Symfony\CtpBundle\Model;
 
-use Commercetools\Core\Client;
+use Commercetools\Core\Client\HttpClient;
 use Commercetools\Core\Model\MapperInterface;
 use Commercetools\Core\Request\AbstractApiRequest;
 use Commercetools\Core\Request\ClientRequestInterface;
@@ -31,7 +31,7 @@ class Repository
     protected $cache;
 
     /**
-     * @var Client
+     * @var HttpClient
      */
     protected $client;
 
@@ -44,10 +44,10 @@ class Repository
      * Repository constructor.
      * @param string|bool $enableCache
      * @param CacheItemPoolInterface $cache
-     * @param Client $client
+     * @param HttpClient $client
      * @param MapperFactory $mapperFactory
      */
-    public function __construct($enableCache, CacheItemPoolInterface $cache, Client $client, MapperFactory $mapperFactory)
+    public function __construct($enableCache, CacheItemPoolInterface $cache, HttpClient $client, MapperFactory $mapperFactory)
     {
         if (is_string($enableCache)) {
             $enableCache = ($enableCache == "true");
@@ -59,7 +59,7 @@ class Repository
     }
 
     /**
-     * @return Client
+     * @return HttpClient
      */
     protected function getClient()
     {
@@ -164,7 +164,7 @@ class Repository
             $result = unserialize($cachedData->get());
             $result->setContext($this->client->getConfig()->getContext());
         } else {
-            $response = $request->executeWithClient($this->client);
+            $response = $this->client->execute($request);
             if ($response->isError() || is_null($response->toObject())) {
                 $this->store($cacheKey, '', $ttl);
                 throw new NotFoundHttpException("resource not found");
@@ -205,7 +205,7 @@ class Repository
             }
         }
 
-        $response = $request->executeWithClient($client);
+        $response = $this->client->execute($request);
 
         $mappedResponse = $request->mapFromResponse(
             $response,

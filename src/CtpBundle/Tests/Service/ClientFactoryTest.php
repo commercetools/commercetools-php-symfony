@@ -5,7 +5,7 @@
 
 namespace Commercetools\Symfony\CtpBundle\Tests\Service;
 
-use Commercetools\Core\Client;
+use Commercetools\Core\Client\HttpClient;
 use Commercetools\Core\Config;
 use Commercetools\Symfony\CtpBundle\Profiler\CommercetoolsProfilerExtension;
 use Commercetools\Symfony\CtpBundle\Profiler\ProfileMiddleware;
@@ -49,7 +49,7 @@ class ClientFactoryTest extends TestCase
 
         $client = $factory->build();
 
-        $this->assertInstanceOf(Client::class, $client);
+        $this->assertInstanceOf(HttpClient::class, $client);
     }
 
     public function testBuildWithProfilerExtension()
@@ -74,6 +74,6 @@ class ClientFactoryTest extends TestCase
             'project' => 'baz',
         ]);
 
-        $this->assertInstanceOf(Client::class, $client);
+        $this->assertInstanceOf(HttpClient::class, $client);
     }
 }

@@ -5,7 +5,7 @@
 namespace Commercetools\Symfony\CatalogBundle\Model\Repository;
 
 use Commercetools\Core\Builder\Request\RequestBuilder;
-use Commercetools\Core\Client;
+use Commercetools\Core\Client\HttpClient;
 use Commercetools\Core\Error\InvalidArgumentException;
 use Commercetools\Core\Model\Common\LocalizedString;
 use Commercetools\Core\Model\Product\Product;
@@ -36,14 +36,14 @@ class CatalogRepository extends Repository
      * CatalogRepository constructor.
      * @param string|bool $enableCache
      * @param CacheItemPoolInterface $cache
-     * @param Client $client
+     * @param HttpClient $client
      * @param MapperFactory $mapperFactory
      * @param Search $searchModel
      */
     public function __construct(
         $enableCache,
         CacheItemPoolInterface $cache,
-        Client $client,
+        HttpClient $client,
         MapperFactory $mapperFactory,
         Search $searchModel
     ) {
@@ -228,7 +228,7 @@ class CatalogRepository extends Repository
      */
     public function executeSearchRequest(ProductProjectionSearchRequest $searchRequest, $locale)
     {
-        $response = $searchRequest->executeWithClient($this->getClient());
+        $response = $this->getClient()->execute($searchRequest);
         $products = $searchRequest->mapFromResponse(
             $response,
             $this->getMapper($locale)

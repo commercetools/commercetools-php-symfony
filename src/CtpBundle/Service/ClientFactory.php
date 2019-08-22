@@ -5,7 +5,8 @@
 
 namespace Commercetools\Symfony\CtpBundle\Service;
 
-use Commercetools\Core\Client;
+use Commercetools\Core\Client\HttpClient;
+use Commercetools\Core\Client\ClientFactory as CtpClientFactory;
 use Commercetools\Core\Config;
 use Commercetools\Core\Model\Common\Context;
 use Commercetools\Symfony\CtpBundle\Profiler\CommercetoolsProfilerExtension;
@@ -40,7 +41,7 @@ class ClientFactory
      * @param string $locale
      * @param Context $context
      * @param Config|array $config
-     * @return Client
+     * @return HttpClient
      */
     public function build(
         $locale = null,
@@ -58,11 +59,7 @@ class ClientFactory
         }
         $config->setContext($context);
 
-        if (is_null($this->logger)) {
-            $client = Client::ofConfigAndCache($config, $this->cache);
-        } else {
-            $client = Client::ofConfigCacheAndLogger($config, $this->cache, $this->logger);
-        }
+        $client = CtpClientFactory::of()->createClient($config, $this->logger, $this->cache);
 
         return $client;
     }

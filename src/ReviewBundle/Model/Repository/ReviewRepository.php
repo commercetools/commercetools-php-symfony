@@ -12,7 +12,7 @@ use Commercetools\Core\Model\Review\ReviewDraft;
 use Commercetools\Symfony\CtpBundle\Model\QueryParams;
 use Commercetools\Symfony\CtpBundle\Service\MapperFactory;
 use Commercetools\Symfony\CtpBundle\Model\Repository;
-use Commercetools\Core\Client;
+use Commercetools\Core\Client\HttpClient;
 use Psr\Cache\CacheItemPoolInterface;
 
 class ReviewRepository extends Repository
@@ -21,13 +21,13 @@ class ReviewRepository extends Repository
      * ReviewRepository constructor.
      * @param $enableCache
      * @param CacheItemPoolInterface $cache
-     * @param Client $client
+     * @param HttpClient $client
      * @param MapperFactory $mapperFactory
      */
     public function __construct(
         $enableCache,
         CacheItemPoolInterface $cache,
-        Client $client,
+        HttpClient $client,
         MapperFactory $mapperFactory
     ) {
         parent::__construct($enableCache, $cache, $client, $mapperFactory);
@@ -86,7 +86,7 @@ class ReviewRepository extends Repository
             }
         }
 
-        $response = $request->executeWithClient($client);
+        $response = $client->execute($request);
         $review = $request->mapFromResponse($response);
 
         return $review;
