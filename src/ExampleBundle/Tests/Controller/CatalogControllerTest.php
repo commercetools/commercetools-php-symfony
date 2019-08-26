@@ -102,7 +102,7 @@ class CatalogControllerTest extends WebTestCase
         $this->myContainer->has('parameter_bag')->willReturn(true)->shouldBeCalledTimes(2);
         $this->myContainer->get('parameter_bag')->willReturn($parameterBag->reveal())->shouldBeCalledTimes(2);
 
-        $controller = new CatalogController($this->ctpClient->reveal(), $this->catalogManager->reveal());
+        $controller = new CatalogController($this->catalogManager->reveal());
         $controller->setContainer($this->myContainer->reveal());
         $response = $controller->indexAction($this->request->reveal(), 'category', 'type');
 
@@ -113,10 +113,10 @@ class CatalogControllerTest extends WebTestCase
     {
         $session = $this->prophesize(SessionInterface::class);
         $shoppingListManager = $this->prophesize(ShoppingListManager::class);
-        $shoppingListManager->getAllOfAnonymous('en', null)
-            ->willReturn([])->shouldBeCalled();
 
         $this->request->getLocale()->willReturn('en')->shouldBeCalled();
+        $this->request->get('slug')->willReturn('en')->shouldBeCalled();
+        $this->request->get('sku')->willReturn('en')->shouldBeCalled();
 
         $form = $this->prophesize(Form::class);
         $form->handleRequest(Argument::type(Request::class))
@@ -136,11 +136,11 @@ class CatalogControllerTest extends WebTestCase
         $this->myContainer->get('form.factory')->willReturn($formFactory->reveal())->shouldBeCalled();
 
         $parameterBag = $this->prophesize(ParameterBag::class);
-        $parameterBag->get('commercetools.project_settings.countries')->willReturn(['DE'])->shouldBeCalledOnce();
-        $parameterBag->get('commercetools.project_settings.currencies')->willReturn(['EUR'])->shouldBeCalledOnce();
+        $parameterBag->get('commercetools.project_settings.countries')->willReturn(['DE'])->shouldBeCalledTimes(2);
+        $parameterBag->get('commercetools.project_settings.currencies')->willReturn(['EUR'])->shouldBeCalledTimes(2);
 
-        $this->myContainer->has('parameter_bag')->willReturn(true)->shouldBeCalledTimes(2);
-        $this->myContainer->get('parameter_bag')->willReturn($parameterBag->reveal())->shouldBeCalledTimes(2);
+        $this->myContainer->has('parameter_bag')->willReturn(true)->shouldBeCalledTimes(4);
+        $this->myContainer->get('parameter_bag')->willReturn($parameterBag->reveal())->shouldBeCalledTimes(4);
 
         $productProjection = ProductProjection::fromArray(ProductProjection::of()->setId('projection-1')
             ->setVariants(
@@ -160,7 +160,7 @@ class CatalogControllerTest extends WebTestCase
         $this->catalogManager->getProductBySlug('en', 'prod-1', 'EUR', 'DE')
             ->willReturn($productProjection)->shouldBeCalledOnce();
 
-        $controller = new CatalogController($this->ctpClient->reveal(), $this->catalogManager->reveal(), $shoppingListManager->reveal());
+        $controller = new CatalogController($this->catalogManager->reveal(), $shoppingListManager->reveal());
         $controller->setContainer($this->myContainer->reveal());
         $controller->detailBySlugAction($this->request->reveal(), 'prod-1', $session->reveal());
     }
@@ -194,7 +194,7 @@ class CatalogControllerTest extends WebTestCase
                 throw new NotFoundHttpException();
             })->shouldBeCalledOnce();
 
-        $controller = new CatalogController($this->ctpClient->reveal(), $this->catalogManager->reveal(), $shoppingListManager->reveal());
+        $controller = new CatalogController($this->catalogManager->reveal(), $shoppingListManager->reveal());
         $controller->setContainer($this->myContainer->reveal());
         $response = $controller->detailBySlugAction($this->request->reveal(), 'prod-1', $session->reveal());
 
@@ -205,13 +205,13 @@ class CatalogControllerTest extends WebTestCase
     {
         $session = $this->prophesize(SessionInterface::class);
         $shoppingListManager = $this->prophesize(ShoppingListManager::class);
-        $shoppingListManager->getAllOfCustomer('en', Argument::type(CustomerReference::class))
-            ->willReturn([])->shouldBeCalled();
+        $this->myContainer->has('parameter_bag')->willReturn(false)->shouldBeCalledOnce();
 
         $user = $this->prophesize(CtpUser::class);
-        $user->getId()->willReturn('user-1')->shouldBeCalled();
 
         $this->request->getLocale()->willReturn('en')->shouldBeCalled();
+        $this->request->get('slug')->willReturn('en')->shouldBeCalled();
+        $this->request->get('sku')->willReturn('en')->shouldBeCalled();
 
         $form = $this->prophesize(Form::class);
         $form->handleRequest(Argument::type(Request::class))
@@ -219,6 +219,13 @@ class CatalogControllerTest extends WebTestCase
                 return $this;
             })->shouldBeCalled();
         $form->createView()->shouldBeCalled();
+
+        $parameterBag = $this->prophesize(ParameterBag::class);
+        $parameterBag->get('commercetools.project_settings.countries')->willReturn(['DE'])->shouldBeCalledOnce();
+        $parameterBag->get('commercetools.project_settings.currencies')->willReturn(['EUR'])->shouldBeCalledOnce();
+
+        $this->myContainer->has('parameter_bag')->willReturn(true)->shouldBeCalledTimes(2);
+        $this->myContainer->get('parameter_bag')->willReturn($parameterBag->reveal())->shouldBeCalledTimes(2);
 
         $formFactory = $this->prophesize(FormFactory::class);
         $formFactory->create(Argument::type('string'), Argument::type(ProductEntity::class), Argument::type('array'))
@@ -232,7 +239,7 @@ class CatalogControllerTest extends WebTestCase
 
         $this->catalogManager->getProductById('en', 'prod-1')->willReturn(ProductProjection::of())->shouldBeCalledOnce();
 
-        $controller = new CatalogController($this->ctpClient->reveal(), $this->catalogManager->reveal(), $shoppingListManager->reveal());
+        $controller = new CatalogController($this->catalogManager->reveal(), $shoppingListManager->reveal());
         $controller->setContainer($this->myContainer->reveal());
         $response = $controller->detailByIdAction($this->request->reveal(), 'prod-1', $session->reveal(), $user->reveal());
 
@@ -271,7 +278,7 @@ class CatalogControllerTest extends WebTestCase
 
         $this->catalogManager->suggestProducts('en', 'foo', 5, 'EUR', 'DE')->willReturn($productProjectionCollection)->shouldBeCalledOnce();
 
-        $controller = new CatalogController($this->ctpClient->reveal(), $this->catalogManager->reveal());
+        $controller = new CatalogController($this->catalogManager->reveal());
         $controller->setContainer($this->myContainer->reveal());
         $suggest = $controller->suggestAction($this->request->reveal(), 'foo');
 
@@ -294,9 +301,9 @@ class CatalogControllerTest extends WebTestCase
     {
         $this->catalogManager->getProductTypes('en', Argument::type(QueryParams::class))->willReturn('')->shouldBeCalledOnce();
 
-        $this->twig->render('ExampleBundle:catalog:productTypesList.html.twig', ['productTypes' => ''])->shouldBeCalledOnce();
+        $this->twig->render('@Example/catalog/productTypesList.html.twig', ['productTypes' => ''])->shouldBeCalledOnce();
 
-        $controller = new CatalogController($this->ctpClient->reveal(), $this->catalogManager->reveal());
+        $controller = new CatalogController($this->catalogManager->reveal());
         $controller->setContainer($this->myContainer->reveal());
         $response = $controller->getProductTypesAction($this->request->reveal());
 
@@ -307,9 +314,9 @@ class CatalogControllerTest extends WebTestCase
     {
         $this->catalogManager->getCategories('en', Argument::type(QueryParams::class))->willReturn('')->shouldBeCalledOnce();
 
-        $this->twig->render('ExampleBundle:catalog:categoriesList.html.twig', ['categories' => ''])->shouldBeCalledOnce();
+        $this->twig->render('@Example/catalog/categoriesList.html.twig', ['categories' => ''])->shouldBeCalledOnce();
 
-        $controller = new CatalogController($this->ctpClient->reveal(), $this->catalogManager->reveal());
+        $controller = new CatalogController($this->catalogManager->reveal());
         $controller->setContainer($this->myContainer->reveal());
         $response = $controller->getCategoriesAction($this->request->reveal());
 

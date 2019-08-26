@@ -42,6 +42,9 @@ class OrderController extends AbstractController
      */
     private $paymentManager;
 
+    /**
+     * @var MeOrderManager
+     */
     private $meOrderManager;
 
     /**

@@ -12,6 +12,7 @@ use Commercetools\Core\Model\Order\Order;
 use Commercetools\Core\Model\Payment\PaymentInfo;
 use Commercetools\Core\Model\Payment\PaymentReference;
 use Commercetools\Core\Model\Payment\PaymentReferenceCollection;
+use Commercetools\Symfony\CartBundle\Manager\MeOrderManager;
 use Commercetools\Symfony\CartBundle\Manager\OrderManager;
 use Commercetools\Symfony\CartBundle\Manager\PaymentManager;
 use Commercetools\Symfony\CustomerBundle\Security\User\CtpUser;
@@ -40,6 +41,8 @@ class OrderControllerTest extends WebTestCase
     /** @var PaymentManager */
     private $paymentManager;
     private $registry;
+    /** @var MeOrderManager */
+    private $meOrderManager;
 
     public function setUp()
     {
@@ -48,6 +51,7 @@ class OrderControllerTest extends WebTestCase
         $this->twig = $this->prophesize(Environment::class);
         $this->ctpCient = $this->prophesize(Client::class);
         $this->orderManager = $this->prophesize(OrderManager::class);
+        $this->meOrderManager = $this->prophesize(MeOrderManager::class);
         $this->paymentManager = $this->prophesize(PaymentManager::class);
         $this->registry = $this->prophesize(Registry::class);
 
@@ -62,11 +66,10 @@ class OrderControllerTest extends WebTestCase
     {
         $user = $this->prophesize(CtpUser::class);
         $session = $this->prophesize(Session::class);
-        $session->getId()->willReturn('baz')->shouldBeCalledOnce();
 
-        $this->orderManager->getOrdersForUser('en', $user->reveal(), 'baz')->willReturn('foo')->shouldBeCalledOnce();
+        $this->meOrderManager->getOrdersForUser('en')->willReturn('foo')->shouldBeCalledOnce();
 
-        $controller = new OrderController($this->ctpCient->reveal(), $this->orderManager->reveal(), $this->registry->reveal(), $this->paymentManager->reveal());
+        $controller = new OrderController($this->orderManager->reveal(), $this->registry->reveal(), $this->paymentManager->reveal(), $this->meOrderManager->reveal());
         $controller->setContainer($this->myContainer->reveal());
         $response = $controller->indexAction($this->request->reveal(), $session->reveal(), $user->reveal());
 
@@ -88,7 +91,7 @@ class OrderControllerTest extends WebTestCase
 
         $this->orderManager->getOrderForUser('en', 'order-1', $user->reveal(), 'baz')->willReturn('foo')->shouldBeCalledOnce();
 
-        $controller = new OrderController($this->ctpCient->reveal(), $this->orderManager->reveal(), $this->registry->reveal(), $this->paymentManager->reveal());
+        $controller = new OrderController($this->orderManager->reveal(), $this->registry->reveal(), $this->paymentManager->reveal(), $this->meOrderManager->reveal());
         $controller->setContainer($this->myContainer->reveal());
         $response = $controller->showOrderAction($this->request->reveal(), $session->reveal(), $user->reveal(), 'order-1');
 
@@ -114,7 +117,7 @@ class OrderControllerTest extends WebTestCase
         $this->orderManager->getOrderForUser('en', 'order-1', $user->reveal(), 'baz')->willReturn($order)->shouldBeCalledOnce();
         $this->paymentManager->getMultiplePayments('en', ['id-1'])->willReturn('foo')->shouldBeCalledOnce();
 
-        $controller = new OrderController($this->ctpCient->reveal(), $this->orderManager->reveal(), $this->registry->reveal(), $this->paymentManager->reveal());
+        $controller = new OrderController($this->orderManager->reveal(), $this->registry->reveal(), $this->paymentManager->reveal(), $this->meOrderManager->reveal());
         $controller->setContainer($this->myContainer->reveal());
         $response = $controller->showOrderAction($this->request->reveal(), $session->reveal(), $user->reveal(), 'order-1');
 
@@ -153,7 +156,7 @@ class OrderControllerTest extends WebTestCase
 
         $this->registry->get(Argument::type(ItemStateWrapper::class))->willReturn($workflow->reveal())->shouldBeCalledOnce();
 
-        $controller = new OrderController($this->ctpCient->reveal(), $this->orderManager->reveal(), $this->registry->reveal(), $this->paymentManager->reveal());
+        $controller = new OrderController($this->orderManager->reveal(), $this->registry->reveal(), $this->paymentManager->reveal(), $this->meOrderManager->reveal());
         $controller->setContainer($this->myContainer->reveal());
         $response = $controller->updateLineItemAction($this->request->reveal(), $session->reveal(), 'order-1', $user->reveal());
 
@@ -193,7 +196,7 @@ class OrderControllerTest extends WebTestCase
 
         $this->registry->get(Argument::type(ItemStateWrapper::class))->willReturn($workflow->reveal())->shouldBeCalledOnce();
 
-        $controller = new OrderController($this->ctpCient->reveal(), $this->orderManager->reveal(), $this->registry->reveal(), $this->paymentManager->reveal());
+        $controller = new OrderController($this->orderManager->reveal(), $this->registry->reveal(), $this->paymentManager->reveal(), $this->meOrderManager->reveal());
         $controller->setContainer($this->myContainer->reveal());
         $response = $controller->updateLineItemAction($this->request->reveal(), $session->reveal(), 'order-1', $user->reveal());
 
@@ -230,7 +233,7 @@ class OrderControllerTest extends WebTestCase
 
         $this->registry->get(Argument::type(ItemStateWrapper::class))->willReturn($workflow->reveal())->shouldBeCalled();
 
-        $controller = new OrderController($this->ctpCient->reveal(), $this->orderManager->reveal(), $this->registry->reveal(), $this->paymentManager->reveal());
+        $controller = new OrderController($this->orderManager->reveal(), $this->registry->reveal(), $this->paymentManager->reveal(), $this->meOrderManager->reveal());
         $controller->setContainer($this->myContainer->reveal());
         $response = $controller->updateLineItemAction($this->request->reveal(), $session->reveal(), 'order-1', $user->reveal());
 
@@ -265,7 +268,7 @@ class OrderControllerTest extends WebTestCase
 
         $this->registry->get(Argument::type(ItemStateWrapper::class))->shouldNotBeCalled();
 
-        $controller = new OrderController($this->ctpCient->reveal(), $this->orderManager->reveal(), $this->registry->reveal(), $this->paymentManager->reveal());
+        $controller = new OrderController($this->orderManager->reveal(), $this->registry->reveal(), $this->paymentManager->reveal(), $this->meOrderManager->reveal());
         $controller->setContainer($this->myContainer->reveal());
         $response = $controller->updateLineItemAction($this->request->reveal(), $session->reveal(), 'order-1', $user->reveal());
 
@@ -301,7 +304,7 @@ class OrderControllerTest extends WebTestCase
             throw new InvalidArgumentException();
         })->shouldBeCalledOnce();
 
-        $controller = new OrderController($this->ctpCient->reveal(), $this->orderManager->reveal(), $this->registry->reveal(), $this->paymentManager->reveal());
+        $controller = new OrderController($this->orderManager->reveal(), $this->registry->reveal(), $this->paymentManager->reveal(), $this->meOrderManager->reveal());
         $controller->setContainer($this->myContainer->reveal());
         $response = $controller->updateLineItemAction($this->request->reveal(), $session->reveal(), 'order-1', $user->reveal());
 
@@ -332,7 +335,7 @@ class OrderControllerTest extends WebTestCase
 
         $this->registry->get(Argument::type(Order::class))->willReturn($workflow->reveal())->shouldBeCalledOnce();
 
-        $controller = new OrderController($this->ctpCient->reveal(), $this->orderManager->reveal(), $this->registry->reveal(), $this->paymentManager->reveal());
+        $controller = new OrderController($this->orderManager->reveal(), $this->registry->reveal(), $this->paymentManager->reveal(), $this->meOrderManager->reveal());
         $controller->setContainer($this->myContainer->reveal());
         $response = $controller->updateOrderAction($this->request->reveal(), $session->reveal(), $user->reveal(), 'order-1', 'state-2');
 
@@ -360,7 +363,7 @@ class OrderControllerTest extends WebTestCase
             throw new InvalidArgumentException();
         })->shouldBeCalledOnce();
 
-        $controller = new OrderController($this->ctpCient->reveal(), $this->orderManager->reveal(), $this->registry->reveal(), $this->paymentManager->reveal());
+        $controller = new OrderController($this->orderManager->reveal(), $this->registry->reveal(), $this->paymentManager->reveal(), $this->meOrderManager->reveal());
         $controller->setContainer($this->myContainer->reveal());
         $response = $controller->updateOrderAction($this->request->reveal(), $session->reveal(), $user->reveal(), 'order-1', 'state-2');
 
@@ -389,7 +392,7 @@ class OrderControllerTest extends WebTestCase
 
         $this->registry->get(Argument::type(Order::class))->willReturn($workflow->reveal())->shouldBeCalled();
 
-        $controller = new OrderController($this->ctpCient->reveal(), $this->orderManager->reveal(), $this->registry->reveal(), $this->paymentManager->reveal());
+        $controller = new OrderController($this->orderManager->reveal(), $this->registry->reveal(), $this->paymentManager->reveal(), $this->meOrderManager->reveal());
         $controller->setContainer($this->myContainer->reveal());
         $response = $controller->updateOrderAction($this->request->reveal(), $session->reveal(), $user->reveal(), 'order-1', 'state-2');
 

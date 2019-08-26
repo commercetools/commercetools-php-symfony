@@ -54,9 +54,6 @@ class CartController extends AbstractController
 
     public function indexAction(Request $request)
     {
-//        $cartId = $session->get(CartRepository::CART_ID);
-//        $cart = $this->manager->getCart($request->getLocale(), $cartId, $user, $session->getId());
-
         $cart = $this->meCartManager->getCart($request->getLocale());
 
         if (is_null($cart)) {
@@ -68,7 +65,7 @@ class CartController extends AbstractController
         ]);
     }
 
-    public function addLineItemAction(Request $request, SessionInterface $session, UserInterface $user = null)
+    public function addLineItemAction(Request $request)
     {
         $productEntity = new ProductEntity();
 
@@ -81,31 +78,7 @@ class CartController extends AbstractController
             $quantity = (int)$form->get('quantity')->getData();
             $slug = $form->get('slug')->getData();
 
-//            $cartId = $session->get(CartRepository::CART_ID);
             $cart = $this->meCartManager->getCart($request->getLocale());
-
-//            if (!is_null($cartId)) {
-//                $cart = $this->manager->getCart($request->getLocale(), $cartId, $user, $session->getId());
-//
-//                $cartBuilder = $this->manager->update($cart);
-//                $cartBuilder->addAction(
-//                    CartAddLineItemAction::ofProductIdVariantIdAndQuantity($productId, $variantId, $quantity)
-//                );
-//                $cartBuilder->flush();
-//            } else {
-//                $lineItem = LineItemDraft::ofProductId($productId)->setVariantId($variantId)->setQuantity($quantity);
-//                $lineItemDraftCollection = LineItemDraftCollection::of()->add($lineItem);
-//
-//                $countryCode = $this->getCountryFromConfig();
-//                $currency = $this->getCurrencyFromConfig();
-//                $location = Location::of()->setCountry($countryCode);
-//
-//                if (is_null($user)) {
-//                    $this->manager->createCartForUser($request->getLocale(), $currency, $location, $lineItemDraftCollection, null, $session->getId());
-//                } else {
-//                    $this->manager->createCartForUser($request->getLocale(), $currency, $location, $lineItemDraftCollection, $user->getID());
-//                }
-//            }
 
             if ($cart instanceof Cart) {
                 $cartBuilder = $this->meCartManager->update($cart);
@@ -130,17 +103,6 @@ class CartController extends AbstractController
 
         return new RedirectResponse($redirectUrl);
     }
-
-//    public function miniCartAction(Request $request)
-//    {
-//        $response = new Response();
-//        $response->headers->addCacheControlDirective('no-cache');
-//        $response->headers->addCacheControlDirective('no-store');
-//
-//        $response = $this->render('ExampleBundle:cart:index.html.twig', $response);
-//
-//        return $response;
-//    }
 
     public function changeLineItemAction(Request $request, SessionInterface $session, UserInterface $user = null)
     {
@@ -200,31 +162,6 @@ class CartController extends AbstractController
 
         return new RedirectResponse($this->generateUrl('_ctp_example_cart'));
     }
-
-//    protected function getItemCount(Cart $cart)
-//    {
-//        $count = 0;
-//        if ($cart->getLineItems()) {
-//            foreach ($cart->getLineItems() as $lineItem) {
-//                $count+= $lineItem->getQuantity();
-//            }
-//        }
-//        return $count;
-//    }
-
-//    /**
-//     * Creates and returns a form builder instance.
-//     *
-//     * @param $name
-//     * @param mixed $data The initial data for the form
-//     * @param array $options Options for the form
-//     *
-//     * @return FormBuilder
-//     */
-//    protected function createNamedFormBuilder($name, $data = null, array $options = array())
-//    {
-//        return $this->container->get('form.factory')->createNamedBuilder($name, FormType::class, $data, $options);
-//    }
 
     // TODO duplicate code / move these to better place
     private function getCountryFromConfig()

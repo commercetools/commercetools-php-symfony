@@ -10,6 +10,8 @@ use Commercetools\Core\Config;
 use Commercetools\Core\Error\InvalidArgumentException;
 use Commercetools\Core\Model\Common\Context;
 use Commercetools\Core\Model\Common\LocalizedString;
+use Commercetools\Core\Model\Product\FacetResult;
+use Commercetools\Core\Model\Product\FacetResultCollection;
 use Commercetools\Core\Model\Product\Product;
 use Commercetools\Core\Model\Product\ProductDraft;
 use Commercetools\Core\Model\Product\ProductProjection;
@@ -32,9 +34,11 @@ use Commercetools\Core\Response\ResourceResponse;
 use Commercetools\Symfony\CatalogBundle\Model\Repository\CatalogRepository;
 use Commercetools\Symfony\CatalogBundle\Model\Search;
 use Commercetools\Symfony\CtpBundle\Model\QueryParams;
+use Commercetools\Symfony\CtpBundle\Service\ContextFactory;
 use Commercetools\Symfony\CtpBundle\Service\MapperFactory;
 use PHPUnit\Framework\TestCase;
 use Prophecy\Argument;
+use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\UriInterface;
 use Symfony\Component\Cache\Tests\Fixtures\ExternalAdapter;
 
@@ -45,12 +49,14 @@ class CatalogRepositoryTest extends TestCase
     private $response;
     private $client;
     private $search;
+    private $contextFactory;
 
     protected function setUp()
     {
         $this->cache = new ExternalAdapter();
         $this->mapperFactory = $this->prophesize(MapperFactory::class);
         $this->search = $this->prophesize(Search::class);
+        $this->contextFactory = $this->prophesize(ContextFactory::class);
 
         $this->response = $this->prophesize(ResourceResponse::class);
         $this->response->toArray()->willReturn([]);
@@ -67,7 +73,8 @@ class CatalogRepositoryTest extends TestCase
             $this->cache,
             $this->client->reveal(),
             $this->mapperFactory->reveal(),
-            $this->search->reveal()
+            $this->search->reveal(),
+            $this->contextFactory->reveal()
         );
     }
 
@@ -76,12 +83,10 @@ class CatalogRepositoryTest extends TestCase
         $context = $this->prophesize(Context::class);
         $context->getLanguages()->willReturn(['en'])->shouldBeCalled();
 
-        $config = $this->prophesize(Config::class);
-        $config->getContext()->willReturn($context->reveal())->shouldBeCalled();
+        $this->contextFactory->build()->willReturn($context->reveal())->shouldBeCalled();
 
-        $this->client->getConfig()->willReturn($config->reveal())->shouldBeCalled();
-
-        $this->response->toObject()->willReturn(ProductProjection::of())->shouldBeCalled();
+        $this->response->getStatusCode()->willReturn(200)->shouldBeCalled();
+        $this->response->toArray()->willReturn(['results' => [['id' => 'bar']]]);
 
         $this->client->execute(
             Argument::type(ProductProjectionBySlugGetRequest::class),
@@ -100,13 +105,9 @@ class CatalogRepositoryTest extends TestCase
     {
         $context = $this->prophesize(Context::class);
         $context->getLanguages()->willReturn(['en'])->shouldBeCalled();
+        $this->contextFactory->build()->willReturn($context->reveal())->shouldBeCalled();
 
-        $config = $this->prophesize(Config::class);
-        $config->getContext()->willReturn($context->reveal())->shouldBeCalled();
-
-        $this->client->getConfig()->willReturn($config->reveal())->shouldBeCalled();
-
-        $this->response->toObject()->willReturn(null)->shouldBeCalled();
+        $this->response->getStatusCode()->willReturn(null)->shouldBeCalled();
 
         $this->client->execute(
             Argument::type(ProductProjectionBySlugGetRequest::class),
@@ -119,9 +120,10 @@ class CatalogRepositoryTest extends TestCase
 
     public function testGetProductById()
     {
-        $this->response->toObject()->willReturn(ProductProjectionCollection::of()->add(
+        $this->response->getStatusCode()->willReturn(200)->shouldBeCalled();
+        $this->response->toArray()->willReturn(ProductProjectionCollection::of()->add(
             ProductProjection::of()->setId('product-1')->setKey('foo')
-        ))->shouldBeCalled();
+        )->toArray());
 
         $this->client->execute(
             Argument::that(function (ProductProjectionByIdGetRequest $request) {
@@ -166,9 +168,12 @@ class CatalogRepositoryTest extends TestCase
         $response->toArray()->willReturn([])->shouldBeCalled();
         $response->getContext()->willReturn(null)->shouldBeCalled();
         $response->isError()->willReturn(false)->shouldBeCalled();
-        $response->getFacets()->willReturn(null)->shouldBeCalledOnce();
+        $response->getFacets()->willReturn([])->shouldBeCalledOnce();
         $response->getOffset()->willReturn(null)->shouldBeCalledOnce();
         $response->getTotal()->willReturn(null)->shouldBeCalledOnce();
+        $response->getResponseKey('facets')->willReturn([])->shouldBeCalledOnce();
+
+        $responseInterface = $this->prophesize(ResponseInterface::class);
 
         $this->client->execute(
             Argument::that(function (ProductProjectionSearchRequest $request) {
@@ -183,7 +188,7 @@ class CatalogRepositoryTest extends TestCase
                 return true;
             }),
             Argument::is(null)
-        )->willReturn($response->reveal())->shouldBeCalledOnce();
+        )->willReturn($responseInterface->reveal())->shouldBeCalledOnce();
 
         $uri = $this->prophesize(UriInterface::class);
 
@@ -211,9 +216,11 @@ class CatalogRepositoryTest extends TestCase
         $response->toArray()->willReturn([])->shouldBeCalled();
         $response->getContext()->willReturn(null)->shouldBeCalled();
         $response->isError()->willReturn(false)->shouldBeCalled();
-        $response->getFacets()->willReturn(null)->shouldBeCalledOnce();
+        $response->getFacets()->willReturn(FacetResultCollection::of())->shouldBeCalledOnce();
         $response->getOffset()->willReturn(null)->shouldBeCalledOnce();
         $response->getTotal()->willReturn(null)->shouldBeCalledOnce();
+
+        $responseInterface = $this->prophesize(ResponseInterface::class);
 
         $this->client->execute(
             Argument::that(function (ProductProjectionSearchRequest $request) {
@@ -226,7 +233,7 @@ class CatalogRepositoryTest extends TestCase
                 return true;
             }),
             Argument::is(null)
-        )->willReturn($response->reveal())->shouldBeCalledOnce();
+        )->willReturn($responseInterface->reveal())->shouldBeCalledOnce();
 
         $uri = $this->prophesize(UriInterface::class);
 

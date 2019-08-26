@@ -57,7 +57,7 @@ class ClientFactoryTest extends TestCase
         $logger = $this->prophesize(LoggerInterface::class);
 
         $profiler = $this->prophesize(CommercetoolsProfilerExtension::class);
-        $profiler->getProfileMiddleWare()->willReturn(ProfileMiddleware::create($profiler->reveal()))->shouldBeCalledOnce();
+//        $profiler->getProfileMiddleWare()->willReturn(ProfileMiddleware::create($profiler->reveal()))->shouldBeCalledOnce();
 
         $factory = new ClientFactory(
             $this->config->reveal(),

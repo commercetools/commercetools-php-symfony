@@ -66,7 +66,7 @@ class UserControllerTest extends WebTestCase
         $authenticationUtils->getLastAuthenticationError()->willReturn('foo')->shouldBeCalledOnce();
         $authenticationUtils->getLastUsername()->willReturn('bar')->shouldBeCalledOnce();
 
-        $controller = new UserController($this->ctpClient->reveal(), $this->customerManager->reveal());
+        $controller = new UserController($this->customerManager->reveal());
         $controller->setContainer($this->myContainer->reveal());
         $response = $controller->loginAction($this->request->reveal(), $authenticationUtils->reveal());
 
@@ -123,7 +123,7 @@ class UserControllerTest extends WebTestCase
         $user = $this->prophesize(CtpUser::class);
         $user->getId()->willReturn('id-1')->shouldBeCalledOnce();
 
-        $controller = new UserController($this->ctpClient->reveal(), $this->customerManager->reveal());
+        $controller = new UserController($this->customerManager->reveal());
         $controller->setContainer($this->myContainer->reveal());
         $response = $controller->detailsAction($this->request->reveal(), $user->reveal());
 
@@ -189,7 +189,7 @@ class UserControllerTest extends WebTestCase
         $user = $this->prophesize(CtpUser::class);
         $user->getId()->willReturn('id-1')->shouldBeCalledOnce();
 
-        $controller = new UserController($this->ctpClient->reveal(), $this->customerManager->reveal());
+        $controller = new UserController($this->customerManager->reveal());
         $controller->setContainer($this->myContainer->reveal());
         $response = $controller->detailsAction($this->request->reveal(), $user->reveal());
 
@@ -203,7 +203,7 @@ class UserControllerTest extends WebTestCase
         $user = $this->prophesize(CtpUser::class);
         $user->getId()->willReturn('id-1')->shouldBeCalledOnce();
 
-        $controller = new UserController($this->ctpClient->reveal(), $this->customerManager->reveal());
+        $controller = new UserController($this->customerManager->reveal());
         $controller->setContainer($this->myContainer->reveal());
         $res = $controller->addressBookAction($this->request->reveal(), $user->reveal());
 
@@ -255,7 +255,7 @@ class UserControllerTest extends WebTestCase
         $user = $this->prophesize(CtpUser::class);
         $user->getId()->willReturn('id-1')->shouldBeCalledOnce();
 
-        $controller = new UserController($this->ctpClient->reveal(), $this->customerManager->reveal());
+        $controller = new UserController($this->customerManager->reveal());
         $controller->setContainer($this->myContainer->reveal());
         $res = $controller->editAddressAction($this->request->reveal(), $user->reveal(), 'bar');
 

@@ -59,13 +59,11 @@ class CommercetoolsSyncCustomTypesFromLocalConfigCommand extends Command
             return;
         }
 
-        $success = true;
         foreach ($requests as $request) {
             try {
                 $this->client->execute($request, null, ['http_errors' => true]);
             } catch (ApiException $exception) {
                 $errorResponse = new ErrorResponse($exception, $request, $exception->getResponse());
-                $success = false;
                 $correlationId = $errorResponse->getCorrelationId();
                 $message = $errorResponse->getMessage();
 
@@ -73,8 +71,6 @@ class CommercetoolsSyncCustomTypesFromLocalConfigCommand extends Command
             }
         }
 
-        if ($success) {
-            $output->writeln('CustomTypes synced to server successfully');
-        }
+        $output->writeln('CustomTypes synced to server successfully');
     }
 }

@@ -233,8 +233,9 @@ class CatalogRepository extends Repository
     {
         $response = $this->getClient()->execute($searchRequest);
         $ctpResponse = $searchRequest->buildResponse($response);
+
         $products = $searchRequest->mapFromResponse(
-            $response,
+            $ctpResponse,
             $this->getMapper($locale)
         );
 

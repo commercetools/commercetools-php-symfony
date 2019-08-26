@@ -10,6 +10,7 @@ use Commercetools\Core\Request\States\StateByIdGetRequest;
 use Commercetools\Core\Request\States\StateQueryRequest;
 use Commercetools\Core\Response\ResourceResponse;
 use Commercetools\Symfony\CtpBundle\Logger\Logger;
+use Commercetools\Symfony\CtpBundle\Service\ContextFactory;
 use Commercetools\Symfony\CtpBundle\Service\MapperFactory;
 use Commercetools\Symfony\StateBundle\Model\Repository\StateRepository;
 use PHPUnit\Framework\TestCase;
@@ -23,12 +24,14 @@ class StateRepositoryTest extends TestCase
     private $response;
     private $client;
     private $logger;
+    private $contextFactory;
 
     protected function setUp()
     {
         $this->cache = new ExternalAdapter();
         $this->mapperFactory = $this->prophesize(MapperFactory::class);
         $this->logger = $this->prophesize(Logger::class);
+        $this->contextFactory = $this->prophesize(ContextFactory::class);
 
         $this->response = $this->prophesize(ResourceResponse::class);
         $this->response->toArray()->willReturn([]);
@@ -45,7 +48,8 @@ class StateRepositoryTest extends TestCase
             $this->cache,
             $this->client->reveal(),
             $this->mapperFactory->reveal(),
-            $this->logger->reveal()
+            $this->logger->reveal(),
+            $this->contextFactory->reveal()
         );
     }
 

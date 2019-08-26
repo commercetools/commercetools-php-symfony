@@ -52,7 +52,6 @@ class CheckoutController extends AbstractController
 
     /**
      * CheckoutController constructor.
-     * @param Client $client
      * @param CartManager $cartManager
      * @param ShippingMethodManager $shippingMethodManager
      * @param OrderManager $orderManager

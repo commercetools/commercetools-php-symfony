@@ -5,7 +5,9 @@
 
 namespace Commercetools\Symfony\CustomerBundle\Tests\Security\Authentication\Provider;
 
-use Commercetools\Core\Client;
+use Commercetools\Core\Client\HttpClient;
+use Commercetools\Core\Client\OAuth\ClientCredentials;
+use Commercetools\Core\Config;
 use Commercetools\Core\Model\Cart\Cart;
 use Commercetools\Core\Model\Cart\LineItem;
 use Commercetools\Core\Model\Cart\LineItemCollection;
@@ -20,6 +22,7 @@ use Commercetools\Symfony\CustomerBundle\Security\User\UserProvider;
 use PHPUnit\Framework\TestCase;
 use Prophecy\Argument;
 use Psr\Log\LoggerInterface;
+use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\Security\Core\Authentication\Token\UsernamePasswordToken;
 use Symfony\Component\Security\Core\Exception\UsernameNotFoundException;
 use Symfony\Component\Security\Core\User\UserChecker;
@@ -31,24 +34,30 @@ class AuthenticationProviderTest extends TestCase
     private $userProvider;
     private $userChecker;
     private $logger;
+    private $config;
+    private $session;
 
     public function setUp()
     {
-        $this->client = $this->prophesize(Client::class);
+        $this->client = $this->prophesize(HttpClient::class);
+        $this->config = $this->prophesize(Config::class);
         $this->userProvider = $this->prophesize(UserProvider::class);
         $this->userChecker = $this->prophesize(UserChecker::class);
         $this->logger = $this->prophesize(LoggerInterface::class);
+        $this->session = $this->prophesize(Session::class);
     }
 
     private function getAuthenticationProvider()
     {
         return new TestAuthProv(
             $this->client->reveal(),
+            $this->config->reveal(),
             $this->userProvider->reveal(),
             $this->userChecker->reveal(),
             'foo',
             true,
-            $this->logger->reveal()
+            $this->logger->reveal(),
+            $this->session->reveal()
         );
     }
 
@@ -116,6 +125,14 @@ class AuthenticationProviderTest extends TestCase
             Argument::is(null)
         )->willReturn($response->reveal())->shouldBeCalledOnce();
 
+        $clientCredentials = $this->prophesize(ClientCredentials::class);
+        $clientCredentials->getClientId()->willReturn('client-1')->shouldBeCalledOnce();
+        $clientCredentials->getClientSecret()->willReturn('secret-1')->shouldBeCalledOnce();
+
+        $this->config->getOAuthClientOptions()->willReturn([])->shouldBeCalled();
+        $this->config->getClientCredentials()->willReturn($clientCredentials->reveal())->shouldBeCalled();
+        $this->config->getOauthUrl("password")->willReturn('url')->shouldBeCalled();
+
         $user = $this->prophesize(User::class);
 
         $provider = $this->getAuthenticationProvider();
@@ -138,6 +155,14 @@ class AuthenticationProviderTest extends TestCase
                 ->toArray()
             ])->shouldBeCalled();
 
+        $clientCredentials = $this->prophesize(ClientCredentials::class);
+        $clientCredentials->getClientId()->willReturn('client-1')->shouldBeCalledOnce();
+        $clientCredentials->getClientSecret()->willReturn('secret-1')->shouldBeCalledOnce();
+
+        $this->config->getOAuthClientOptions()->willReturn([])->shouldBeCalledOnce();
+        $this->config->getClientCredentials()->willReturn($clientCredentials->reveal())->shouldBeCalled();
+        $this->config->getOauthUrl("password")->willReturn('url')->shouldBeCalled();
+
         $response->getContext()->willReturn(null);
         $response->isError()->willReturn(false);
 
@@ -159,6 +184,14 @@ class AuthenticationProviderTest extends TestCase
         $token->getCredentials()->willReturn('foo')->shouldBeCalled();
 
         $response = $this->prophesize(ResourceResponse::class);
+
+        $clientCredentials = $this->prophesize(ClientCredentials::class);
+        $clientCredentials->getClientId()->willReturn('client-1')->shouldBeCalledOnce();
+        $clientCredentials->getClientSecret()->willReturn('secret-1')->shouldBeCalledOnce();
+
+        $this->config->getOAuthClientOptions()->willReturn([])->shouldBeCalledOnce();
+        $this->config->getClientCredentials()->willReturn($clientCredentials->reveal())->shouldBeCalled();
+        $this->config->getOauthUrl("password")->willReturn('url')->shouldBeCalled();
 
         $response->toArray()->willReturn([
             'customer' => Customer::of()
@@ -258,6 +291,7 @@ class AuthenticationProviderTest extends TestCase
     }
 }
 
+//phpcs:disable
 class TestAuthProv extends AuthenticationProvider
 {
     public function checkAuthentication(UserInterface $user, UsernamePasswordToken $token)

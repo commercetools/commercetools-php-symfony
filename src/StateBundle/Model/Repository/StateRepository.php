@@ -11,6 +11,7 @@ use Commercetools\Core\Model\State\State;
 use Commercetools\Core\Model\State\StateCollection;
 use Commercetools\Symfony\CtpBundle\Logger\Logger;
 use Commercetools\Symfony\CtpBundle\Model\Repository;
+use Commercetools\Symfony\CtpBundle\Service\ContextFactory;
 use Commercetools\Symfony\CtpBundle\Service\MapperFactory;
 use Psr\Cache\CacheItemPoolInterface;
 
@@ -28,10 +29,11 @@ class StateRepository extends Repository
      * @param HttpClient $client
      * @param MapperFactory $mapperFactory
      * @param Logger $logger
+     * @param ContextFactory $contextFactory
      */
-    public function __construct($enableCache, CacheItemPoolInterface $cache, HttpClient $client, MapperFactory $mapperFactory, Logger $logger)
+    public function __construct($enableCache, CacheItemPoolInterface $cache, HttpClient $client, MapperFactory $mapperFactory, Logger $logger, ContextFactory $contextFactory)
     {
-        parent::__construct($enableCache, $cache, $client, $mapperFactory);
+        parent::__construct($enableCache, $cache, $client, $mapperFactory, $contextFactory);
         $this->logger = $logger;
     }
 

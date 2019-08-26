@@ -181,6 +181,7 @@ class Repository
                 $response,
                 $this->getMapper($locale)
             );
+
             if ($result == null) {
                 $this->store($cacheKey, '', $ttl);
                 throw new NotFoundHttpException("resource not found");

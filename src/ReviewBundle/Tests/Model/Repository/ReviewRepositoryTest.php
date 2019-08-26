@@ -17,6 +17,7 @@ use Commercetools\Core\Request\Reviews\ReviewQueryRequest;
 use Commercetools\Core\Request\Reviews\ReviewUpdateRequest;
 use Commercetools\Core\Response\ResourceResponse;
 use Commercetools\Symfony\CtpBundle\Model\QueryParams;
+use Commercetools\Symfony\CtpBundle\Service\ContextFactory;
 use Commercetools\Symfony\CtpBundle\Service\MapperFactory;
 use Commercetools\Symfony\ReviewBundle\Model\Repository\ReviewRepository;
 use PHPUnit\Framework\TestCase;
@@ -29,11 +30,13 @@ class ReviewRepositoryTest extends TestCase
     private $mapperFactory;
     private $response;
     private $client;
+    private $contextFactory;
 
     protected function setUp()
     {
         $this->cache = new ExternalAdapter();
         $this->mapperFactory = $this->prophesize(MapperFactory::class);
+        $this->contextFactory = $this->prophesize(ContextFactory::class);
 
         $this->response = $this->prophesize(ResourceResponse::class);
         $this->response->toArray()->willReturn([]);
@@ -49,7 +52,8 @@ class ReviewRepositoryTest extends TestCase
             false,
             $this->cache,
             $this->client->reveal(),
-            $this->mapperFactory->reveal()
+            $this->mapperFactory->reveal(),
+            $this->contextFactory->reveal()
         );
     }
 

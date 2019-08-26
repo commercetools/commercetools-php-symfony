@@ -14,6 +14,7 @@ use Commercetools\Core\Request\ShippingMethods\ShippingMethodByIdGetRequest;
 use Commercetools\Core\Request\ShippingMethods\ShippingMethodByLocationGetRequest;
 use Commercetools\Core\Response\ResourceResponse;
 use Commercetools\Symfony\CartBundle\Model\Repository\ShippingMethodRepository;
+use Commercetools\Symfony\CtpBundle\Service\ContextFactory;
 use Commercetools\Symfony\CtpBundle\Service\MapperFactory;
 use PHPUnit\Framework\TestCase;
 use Prophecy\Argument;
@@ -25,11 +26,13 @@ class ShippingMethodRepositoryTest extends TestCase
     private $mapperFactory;
     private $response;
     private $client;
+    private $contextFactory;
 
     protected function setUp()
     {
         $this->cache = new ExternalAdapter();
         $this->mapperFactory = $this->prophesize(MapperFactory::class);
+        $this->contextFactory = $this->prophesize(ContextFactory::class);
 
         $this->response = $this->prophesize(ResourceResponse::class);
         $this->response->toArray()->willReturn([]);
@@ -45,7 +48,8 @@ class ShippingMethodRepositoryTest extends TestCase
             false,
             $this->cache,
             $this->client->reveal(),
-            $this->mapperFactory->reveal()
+            $this->mapperFactory->reveal(),
+            $this->contextFactory->reveal()
         );
     }
 

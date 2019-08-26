@@ -17,6 +17,7 @@ use Commercetools\Core\Request\Types\TypeCreateRequest;
 use Commercetools\Core\Request\Types\TypeQueryRequest;
 use Commercetools\Core\Response\ResourceResponse;
 use Commercetools\Symfony\CtpBundle\Logger\Logger;
+use Commercetools\Symfony\CtpBundle\Service\ContextFactory;
 use Commercetools\Symfony\CtpBundle\Service\MapperFactory;
 use Commercetools\Symfony\SetupBundle\Model\Repository\SetupRepository;
 use PHPUnit\Framework\TestCase;
@@ -30,12 +31,14 @@ class SetupRepositoryTest extends TestCase
     private $response;
     private $client;
     private $logger;
+    private $contextFactory;
 
     protected function setUp()
     {
         $this->cache = new ExternalAdapter();
         $this->mapperFactory = $this->prophesize(MapperFactory::class);
         $this->logger = $this->prophesize(Logger::class);
+        $this->contextFactory = $this->prophesize(ContextFactory::class);
 
         $this->response = $this->prophesize(ResourceResponse::class);
         $this->response->toArray()->willReturn([]);
@@ -52,7 +55,8 @@ class SetupRepositoryTest extends TestCase
             $this->cache,
             $this->client->reveal(),
             $this->mapperFactory->reveal(),
-            $this->logger->reveal()
+            $this->logger->reveal(),
+            $this->contextFactory->reveal()
         );
     }
 
