@@ -96,7 +96,8 @@ class AuthenticationProvider extends UserAuthenticationProvider
                 $this->session,
                 $this->config,
                 $currentUser,
-                $presentedPassword
+                $presentedPassword,
+                $this->client
             );
 
             try {
@@ -109,7 +110,7 @@ class AuthenticationProvider extends UserAuthenticationProvider
             $psrResponse = $this->client->send($request->httpRequest());
             $customer = $request->mapFromResponse($psrResponse);
 
-            if (strtolower($currentUser) !== strtolower($customer->getEmail())) {
+            if (is_null($customer) || strtolower($currentUser) !== strtolower($customer->getEmail())) {
                 throw new BadCredentialsException('The presented password is invalid.');
             }
 

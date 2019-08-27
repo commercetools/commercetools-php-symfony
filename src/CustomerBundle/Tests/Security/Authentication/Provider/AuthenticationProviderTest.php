@@ -6,6 +6,7 @@
 namespace Commercetools\Symfony\CustomerBundle\Tests\Security\Authentication\Provider;
 
 use Commercetools\Core\Client\HttpClient;
+use Commercetools\Core\Client\HttpRequest;
 use Commercetools\Core\Client\OAuth\ClientCredentials;
 use Commercetools\Core\Config;
 use Commercetools\Core\Model\Cart\Cart;
@@ -15,12 +16,15 @@ use Commercetools\Core\Model\Common\Address;
 use Commercetools\Core\Model\Common\AddressCollection;
 use Commercetools\Core\Model\Customer\Customer;
 use Commercetools\Core\Request\Customers\CustomerLoginRequest;
+use Commercetools\Core\Response\AbstractApiResponse;
 use Commercetools\Core\Response\ResourceResponse;
 use Commercetools\Symfony\CustomerBundle\Security\Authentication\Provider\AuthenticationProvider;
 use Commercetools\Symfony\CustomerBundle\Security\User\User;
 use Commercetools\Symfony\CustomerBundle\Security\User\UserProvider;
+use GuzzleHttp\Psr7\Response;
 use PHPUnit\Framework\TestCase;
 use Prophecy\Argument;
+use Psr\Http\Message\ResponseInterface;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\Security\Core\Authentication\Token\UsernamePasswordToken;
@@ -115,21 +119,35 @@ class AuthenticationProviderTest extends TestCase
         $token->getUser()->willReturn(null)->shouldBeCalled();
         $token->getCredentials()->willReturn('foo')->shouldBeCalled();
 
+        $customer = Customer::of()->setEmail('foo@mail.com');
+
         $response = $this->prophesize(ResourceResponse::class);
         $response->toArray()->willReturn([]);
         $response->getContext()->willReturn(null);
         $response->isError()->willReturn(true);
+        $response->getBody()->willReturn(json_encode($customer));
 
-        $this->client->execute(
-            Argument::type(CustomerLoginRequest::class),
-            Argument::is(null)
+        $oauthResponse = $this->prophesize(Response::class);
+        $oauthResponse->getBody()->willReturn(json_encode([
+            'access_token' => 'foo',
+            'expires_in' => 325,
+            'scope' => 'foo',
+            'refresh_token' => 'refresh-1'
+        ]))->shouldBeCalledOnce();
+
+        $this->client->post(
+            Argument::is('url'),
+            Argument::is(["form_params" => ["grant_type" => "password", "username" => null, "password" => "foo"], "auth" => ["client-1", "secret-1"]])
+        )->willReturn($oauthResponse->reveal())->shouldBeCalledOnce();
+
+        $this->client->send(
+            Argument::type(HttpRequest::class)
         )->willReturn($response->reveal())->shouldBeCalledOnce();
 
         $clientCredentials = $this->prophesize(ClientCredentials::class);
         $clientCredentials->getClientId()->willReturn('client-1')->shouldBeCalledOnce();
         $clientCredentials->getClientSecret()->willReturn('secret-1')->shouldBeCalledOnce();
 
-        $this->config->getOAuthClientOptions()->willReturn([])->shouldBeCalled();
         $this->config->getClientCredentials()->willReturn($clientCredentials->reveal())->shouldBeCalled();
         $this->config->getOauthUrl("password")->willReturn('url')->shouldBeCalled();
 
@@ -159,16 +177,27 @@ class AuthenticationProviderTest extends TestCase
         $clientCredentials->getClientId()->willReturn('client-1')->shouldBeCalledOnce();
         $clientCredentials->getClientSecret()->willReturn('secret-1')->shouldBeCalledOnce();
 
-        $this->config->getOAuthClientOptions()->willReturn([])->shouldBeCalledOnce();
         $this->config->getClientCredentials()->willReturn($clientCredentials->reveal())->shouldBeCalled();
         $this->config->getOauthUrl("password")->willReturn('url')->shouldBeCalled();
 
         $response->getContext()->willReturn(null);
         $response->isError()->willReturn(false);
 
-        $this->client->execute(
-            Argument::type(CustomerLoginRequest::class),
-            Argument::is(null)
+        $oauthResponse = $this->prophesize(Response::class);
+        $oauthResponse->getBody()->willReturn(json_encode([
+            'access_token' => 'foo',
+            'expires_in' => 325,
+            'scope' => 'foo',
+            'refresh_token' => 'refresh-1'
+        ]))->shouldBeCalledOnce();
+
+        $this->client->post(
+            Argument::is('url'),
+            Argument::is(["form_params" => ["grant_type" => "password", "username" => "user-1", "password" => "foo"], "auth" => ["client-1", "secret-1"]])
+        )->willReturn($oauthResponse->reveal())->shouldBeCalledOnce();
+
+        $this->client->send(
+            Argument::type(HttpRequest::class)
         )->willReturn($response->reveal())->shouldBeCalled();
 
         $user = $this->prophesize(User::class);
@@ -189,43 +218,56 @@ class AuthenticationProviderTest extends TestCase
         $clientCredentials->getClientId()->willReturn('client-1')->shouldBeCalledOnce();
         $clientCredentials->getClientSecret()->willReturn('secret-1')->shouldBeCalledOnce();
 
-        $this->config->getOAuthClientOptions()->willReturn([])->shouldBeCalledOnce();
         $this->config->getClientCredentials()->willReturn($clientCredentials->reveal())->shouldBeCalled();
         $this->config->getOauthUrl("password")->willReturn('url')->shouldBeCalled();
 
-        $response->toArray()->willReturn([
-            'customer' => Customer::of()
-                ->setId('id-1')
-                ->setEmail('user@LOCALHOST')
-                ->setPassword('foo')
-                ->setAddresses(AddressCollection::of()->add(Address::of()->setId('address-1')->setCountry('DE')))
-                ->setDefaultShippingAddressId('address-1')
-                ->toArray(),
-            'cart' => Cart::of()
-                ->setId('cart-1')
-                ->setLineItems(LineItemCollection::of()
-                    ->add(LineItem::of()->setId('product-1')->setQuantity(2)))
-                ->toArray()
-        ])->shouldBeCalled();
+        $customer = Customer::of()
+            ->setId('id-1')
+            ->setEmail('user@LOCALHOST')
+            ->setPassword('foo')
+            ->setAddresses(AddressCollection::of()->add(Address::of()->setId('address-1')->setCountry('DE')))
+            ->setDefaultShippingAddressId('address-1')
+            ->toArray();
 
-        $response->getContext()->willReturn(null);
-        $response->isError()->willReturn(false);
+//        $arr = [
+//            'customer' => $customer,
+//            'cart' => Cart::of()
+//                ->setId('cart-1')
+//                ->setLineItems(LineItemCollection::of()
+//                    ->add(LineItem::of()->setId('product-1')->setQuantity(2)))
+//                ->toArray()
+//        ];
 
-        $this->client->execute(
-            Argument::type(CustomerLoginRequest::class),
-            Argument::is(null)
-        )->willReturn($response->reveal())->shouldBeCalledOnce();
+        $response->toArray()->willReturn($customer)->shouldBeCalled();
+
+        $response->getContext()->willReturn(null)->shouldBeCalled();
+        $response->isError()->willReturn(false)->shouldBeCalled();
+//        $response->getBody()->willReturn(json_encode($customer))->shouldBeCalled();
+
+        $loginResponse = $this->prophesize(ResponseInterface::class);
+        $loginResponse->getBody()->willReturn(json_encode([
+            'access_token' => 'token-1',
+            'expires_in' => 325,
+            'scope' => 'foo',
+            'refresh_token' => 'refresh-1'
+        ]))->shouldBeCalledOnce();
+
+        $this->client->post(Argument::is('url'), Argument::type('array'))->willReturn(
+            $loginResponse->reveal()
+        )->shouldBeCalledOnce();
+        $this->client->send(Argument::type(HttpRequest::class))->willReturn($response->reveal())->shouldBeCalledTimes(2);
 
         $user = $this->prophesize(User::class);
-        $user->getCartId()->willReturn('random')->shouldBeCalledOnce();
         $user->setId('id-1')->shouldBeCalledOnce();
-        $user->setCartId('cart-1')->shouldBeCalledOnce();
-        $user->setCartItemCount(2)->shouldBeCalledOnce();
+        $user->setCartId('id-1')->shouldBeCalledOnce();
+        $user->setCartItemCount(0)->shouldBeCalledOnce();
         $user->setDefaultShippingAddress(Argument::that(function (Address $address) {
             static::assertSame('address-1', $address->getId());
             static::assertSame('DE', $address->getCountry());
             return true;
         }))->shouldBeCalled();
+        $user->setAccessToken('token-1')->shouldBeCalledOnce();
+        $user->setRefreshToken('refresh-1')->shouldBeCalledOnce();
 
         $provider = $this->getAuthenticationProvider();
         $provider->checkAuthentication($user->reveal(), $token->reveal());

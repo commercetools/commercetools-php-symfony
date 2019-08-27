@@ -164,16 +164,11 @@ class CatalogRepositoryTest extends TestCase
             })
             ->shouldBeCalledOnce();
 
-        $response = $this->prophesize(PagedSearchResponse::class);
-        $response->toArray()->willReturn([])->shouldBeCalled();
-        $response->getContext()->willReturn(null)->shouldBeCalled();
-        $response->isError()->willReturn(false)->shouldBeCalled();
-        $response->getFacets()->willReturn([])->shouldBeCalledOnce();
-        $response->getOffset()->willReturn(null)->shouldBeCalledOnce();
-        $response->getTotal()->willReturn(null)->shouldBeCalledOnce();
-        $response->getResponseKey('facets')->willReturn([])->shouldBeCalledOnce();
-
+        /** @var ResponseInterface $responseInterface */
         $responseInterface = $this->prophesize(ResponseInterface::class);
+        $responseInterface->getBody()->willReturn(json_encode(['facets' => []]))->shouldBeCalledOnce();
+        $responseInterface->getStatusCode()->willReturn(200)->shouldBeCalledOnce();
+
 
         $this->client->execute(
             Argument::that(function (ProductProjectionSearchRequest $request) {
@@ -212,15 +207,10 @@ class CatalogRepositoryTest extends TestCase
             })
             ->shouldBeCalledOnce();
 
-        $response = $this->prophesize(PagedSearchResponse::class);
-        $response->toArray()->willReturn([])->shouldBeCalled();
-        $response->getContext()->willReturn(null)->shouldBeCalled();
-        $response->isError()->willReturn(false)->shouldBeCalled();
-        $response->getFacets()->willReturn(FacetResultCollection::of())->shouldBeCalledOnce();
-        $response->getOffset()->willReturn(null)->shouldBeCalledOnce();
-        $response->getTotal()->willReturn(null)->shouldBeCalledOnce();
-
+        /** @var ResponseInterface $responseInterface */
         $responseInterface = $this->prophesize(ResponseInterface::class);
+        $responseInterface->getBody()->willReturn(json_encode(['facets' => []]))->shouldBeCalledOnce();
+        $responseInterface->getStatusCode()->willReturn(200)->shouldBeCalledOnce();
 
         $this->client->execute(
             Argument::that(function (ProductProjectionSearchRequest $request) {

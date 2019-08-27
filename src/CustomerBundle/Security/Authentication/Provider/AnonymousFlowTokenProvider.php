@@ -46,8 +46,7 @@ class AnonymousFlowTokenProvider implements TokenProvider
     /**
      * RefreshFlowTokenProvider constructor.
      * @param Session $session
-     * @param ClientCredentials $config
-     * @param string $accessTokenUrl
+     * @param Config $config
      */
     public function __construct(Session $session, Config $config)
     {

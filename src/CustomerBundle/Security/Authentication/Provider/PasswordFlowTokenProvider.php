@@ -58,10 +58,13 @@ class PasswordFlowTokenProvider implements TokenProvider
      * @param Config $config
      * @param string $userName
      * @param string $password
+     * @param Client $client
      */
-    public function __construct(Session $session, Config $config, $userName, $password)
+    public function __construct(Session $session, Config $config, $userName, $password, Client $client)
     {
-        $this->client = new Client($config->getOAuthClientOptions());
+        $this->client = $client;
+
+//            $this->client = new Client($config->getOAuthClientOptions());
 
         $this->credentials = $config->getClientCredentials();
         $this->tokenUrl = $config->getOauthUrl(Config::GRANT_TYPE_PASSWORD);
