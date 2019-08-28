@@ -4,7 +4,6 @@
 
 namespace Commercetools\Symfony\ExampleBundle\Controller;
 
-use Commercetools\Core\Client;
 use Commercetools\Core\Model\Common\Address;
 use Commercetools\Core\Model\ShippingMethod\ShippingMethod;
 use Commercetools\Core\Model\ShippingMethod\ShippingMethodReference;
@@ -136,8 +135,8 @@ class CheckoutController extends AbstractController
         }
 
         return $this->render('@Example/checkout-shipping.html.twig', [
-//            'shipping_methods' => $shippingMethods,
-            'form' => $form->createView()
+            'form' => $form->createView(),
+            'cart' => $cart
         ]);
     }
 
