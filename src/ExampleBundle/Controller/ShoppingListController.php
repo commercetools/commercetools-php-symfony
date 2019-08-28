@@ -3,7 +3,6 @@ declare(strict_types=1);
 
 namespace Commercetools\Symfony\ExampleBundle\Controller;
 
-use Commercetools\Core\Client;
 use Commercetools\Core\Model\Customer\CustomerReference;
 use Commercetools\Core\Model\ShoppingList\ShoppingList;
 use Commercetools\Core\Request\ShoppingLists\Command\ShoppingListAddLineItemAction;
@@ -21,11 +20,6 @@ use Symfony\Component\Security\Core\User\UserInterface;
 
 class ShoppingListController extends AbstractController
 {
-    /**
-     * @var Client
-     */
-    private $client;
-
     /**
      * @var ShoppingListManager
      */

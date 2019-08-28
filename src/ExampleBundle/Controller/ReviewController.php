@@ -5,7 +5,6 @@
 
 namespace Commercetools\Symfony\ExampleBundle\Controller;
 
-use Commercetools\Core\Client;
 use Commercetools\Core\Model\Customer\CustomerReference;
 use Commercetools\Core\Model\Product\ProductReference;
 use Commercetools\Core\Model\Review\Review;
@@ -22,11 +21,6 @@ use Symfony\Component\Workflow\Registry;
 class ReviewController extends AbstractController
 {
     /**
-     * @var Client
-     */
-    private $client;
-
-    /**
      * @var ReviewManager
      */
     private $manager;
@@ -38,7 +32,6 @@ class ReviewController extends AbstractController
 
     /**
      * ReviewController constructor.
-     * @param Client $client
      * @param ReviewManager $manager
      * @param Registry $workflows
      */

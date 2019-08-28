@@ -13,11 +13,11 @@ use Commercetools\Core\Request\Carts\Command\CartSetShippingAddressAction;
 use Commercetools\Core\Request\Carts\Command\CartSetShippingMethodAction;
 use Commercetools\Symfony\CartBundle\Manager\CartManager;
 use Commercetools\Symfony\CartBundle\Manager\MeCartManager;
+use Commercetools\Symfony\CartBundle\Manager\MeOrderManager;
 use Commercetools\Symfony\CartBundle\Manager\OrderManager;
 use Commercetools\Symfony\CartBundle\Manager\ShippingMethodManager;
 use Commercetools\Symfony\ExampleBundle\Entity\CartEntity;
 use Commercetools\Symfony\ExampleBundle\Model\Form\Type\AddressType;
-use Commercetools\Symfony\CartBundle\Model\Repository\CartRepository;
 use Commercetools\Symfony\StateBundle\Model\CtpMarkingStore\CtpMarkingStoreOrderState;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
@@ -55,6 +55,7 @@ class CheckoutController extends AbstractController
      * @param CartManager $cartManager
      * @param ShippingMethodManager $shippingMethodManager
      * @param OrderManager $orderManager
+     * @param MeCartManager $meCartManager
      */
     public function __construct(
         CartManager $cartManager,
@@ -162,33 +163,38 @@ class CheckoutController extends AbstractController
     /**
      * @param Request $request
      * @param SessionInterface $session
-//     * @param CtpMarkingStoreOrderState $markingStoreOrderState
+     * //     * @param CtpMarkingStoreOrderState $markingStoreOrderState
+     * @param MeOrderManager $meOrderManager
      * @param UserInterface|null $user
      * @return \Symfony\Component\HttpFoundation\RedirectResponse|\Symfony\Component\HttpFoundation\Response
      */
     public function placeCartToOrderAction(
         Request $request,
         SessionInterface $session,
+        MeOrderManager $meOrderManager,
         //        CtpMarkingStoreOrderState $markingStoreOrderState,
         UserInterface $user = null
     ) {
-        $cartId = $session->get(CartRepository::CART_ID);
-        $cart = $this->cartManager->getCart($request->getLocale(), $cartId, $user, $session->getId());
+        $cart = $this->meCartManager->getCart($request->getLocale());
 
         if (is_null($cart)) {
             return $this->redirect($this->generateUrl('_ctp_example_cart'));
         }
+
+        // requires admin privileges to set order states etc
 
 //        $markingStoreOrderState = $this->container->get('Commercetools\Symfony\StateBundle\Model\CtpMarkingStore\CtpMarkingStoreOrderState');
 //        if ($this->container->has('state_machine.OrderState')) {
 //            $markingStoreOrderState = $this->container->has('state_machine.OrderState');
 //        }
 
-        $order = $this->orderManager->createOrderFromCart(
-            $request->getLocale(),
-            $cart//,
-            //            $markingStoreOrderState->getStateReferenceOfInitial()
-        );
+//        $order = $this->orderManager->createOrderFromCart(
+//            $request->getLocale(),
+//            $cart,
+//            $markingStoreOrderState->getStateReferenceOfInitial()
+//        );
+
+        $order = $meOrderManager->createOrderFromCart($request->getLocale(), $cart);
 
         return $this->render('@Example/checkout-thankyou.html.twig', [
             'order' => $order

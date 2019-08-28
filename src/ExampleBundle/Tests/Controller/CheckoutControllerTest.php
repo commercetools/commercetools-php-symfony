@@ -18,6 +18,7 @@ use Commercetools\Core\Request\Carts\Command\CartSetShippingAddressAction;
 use Commercetools\Core\Request\Carts\Command\CartSetShippingMethodAction;
 use Commercetools\Symfony\CartBundle\Manager\CartManager;
 use Commercetools\Symfony\CartBundle\Manager\MeCartManager;
+use Commercetools\Symfony\CartBundle\Manager\MeOrderManager;
 use Commercetools\Symfony\CartBundle\Manager\OrderManager;
 use Commercetools\Symfony\CartBundle\Manager\ShippingMethodManager;
 use Commercetools\Symfony\CartBundle\Model\CartUpdateBuilder;
@@ -277,8 +278,8 @@ class CheckoutControllerTest extends WebTestCase
     public function testPlaceCartToOrderActionWithCartNotFound()
     {
         $session = $this->prophesize(Session::class);
-        $session->get('cart.id')->willReturn('cart-1')->shouldBeCalledOnce();
-        $session->getId()->willReturn('baz')->shouldBeCalledOnce();
+//        $session->get('cart.id')->willReturn('cart-1')->shouldBeCalledOnce();
+//        $session->getId()->willReturn('baz')->shouldBeCalledOnce();
 
         $markingStoreOrderState = $this->prophesize(CtpMarkingStoreOrderState::class);
 
@@ -286,12 +287,14 @@ class CheckoutControllerTest extends WebTestCase
         $router->generate('_ctp_example_cart', [], 1)->willReturn('bar')->shouldBeCalledOnce();
 
         $this->myContainer->get('router')->willReturn($router)->shouldBeCalledOnce();
-        $this->cartManager->getCart('en', 'cart-1', null, 'baz')->willReturn(null)->shouldBeCalledOnce();
+        $this->meCartManager->getCart('en')->willReturn(null)->shouldBeCalledOnce();
+
+        $meOrderManager = $this->prophesize(MeOrderManager::class);
 
         $controller = new CheckoutController($this->cartManager->reveal(), $this->shippingMethodManager->reveal(), $this->orderManager->reveal(), $this->meCartManager->reveal());
         $controller->setContainer($this->myContainer->reveal());
 //        $response = $controller->placeCartToOrderAction($this->request->reveal(), $session->reveal(), $markingStoreOrderState->reveal());
-        $response = $controller->placeCartToOrderAction($this->request->reveal(), $session->reveal());
+        $response = $controller->placeCartToOrderAction($this->request->reveal(), $session->reveal(), $meOrderManager->reveal());
 
         $this->assertTrue($response->isRedirect());
     }
@@ -299,8 +302,6 @@ class CheckoutControllerTest extends WebTestCase
     public function testPlaceCartToOrderAction()
     {
         $session = $this->prophesize(Session::class);
-        $session->getId()->willReturn('baz')->shouldBeCalledOnce();
-        $session->get('cart.id')->willReturn('cart-1')->shouldBeCalledOnce();
 
 //        $stateReference = StateReference::ofId('state-1');
 
@@ -317,14 +318,17 @@ class CheckoutControllerTest extends WebTestCase
 
         $this->request->getLocale()->willReturn('en')->shouldBeCalledTimes(2);
 
-        $this->cartManager->getCart('en', 'cart-1', Argument::type(CtpUser::class), 'baz')->willReturn($cart)->shouldBeCalledOnce();
-//        $this->orderManager->createOrderFromCart('en', Argument::type(Cart::class), Argument::type(StateReference::class))->willReturn($order)->shouldBeCalledOnce();
-        $this->orderManager->createOrderFromCart('en', Argument::type(Cart::class))->willReturn($order)->shouldBeCalledOnce();
+        $this->meCartManager->getCart('en')->willReturn($cart)->shouldBeCalledOnce();
+
+        $meOrderManager = $this->prophesize(MeOrderManager::class);
+        $meOrderManager->createOrderFromCart('en', Argument::type(Cart::class))->willReturn($order)->shouldBeCalledOnce();
 
         $controller = new CheckoutController($this->cartManager->reveal(), $this->shippingMethodManager->reveal(), $this->orderManager->reveal(), $this->meCartManager->reveal());
         $controller->setContainer($this->myContainer->reveal());
+
 //        $response = $controller->placeCartToOrderAction($this->request->reveal(), $session->reveal(), $markingStoreOrderState->reveal(), $user->reveal());
-        $response = $controller->placeCartToOrderAction($this->request->reveal(), $session->reveal(), $user->reveal());
+
+        $response = $controller->placeCartToOrderAction($this->request->reveal(), $session->reveal(), $meOrderManager->reveal(), $user->reveal());
 
         $this->assertTrue($response->isOk());
     }

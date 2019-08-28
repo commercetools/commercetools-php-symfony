@@ -10,7 +10,6 @@ use Commercetools\Symfony\CartBundle\Manager\MeOrderManager;
 use Commercetools\Symfony\CartBundle\Manager\PaymentManager;
 use Commercetools\Symfony\StateBundle\Model\ItemStateWrapper;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Commercetools\Core\Client;
 use Commercetools\Symfony\CartBundle\Manager\OrderManager;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
@@ -20,13 +19,6 @@ use Symfony\Component\Workflow\Registry;
 
 class OrderController extends AbstractController
 {
-    const CSRF_TOKEN_NAME = 'csrfToken';
-
-    /**
-     * @var Client
-     */
-    private $client;
-
     /**
      * @var OrderManager
      */
@@ -49,7 +41,6 @@ class OrderController extends AbstractController
 
     /**
      * OrderController constructor.
-     * @param Client $client
      * @param OrderManager $manager
      * @param Registry $workflows
      * @param PaymentManager $paymentManager

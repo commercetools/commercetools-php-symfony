@@ -24,7 +24,7 @@
           <div class="order-details-title">{{ 'thankYouPage.yourOrderDetails'|trans([], 'checkout') }}</div>
           <div class="order-number-date">
             <span class="number-date-title">{{ 'orderNumber'|trans([], 'checkout') }}<br>{{ 'orderDate'|trans([], 'checkout') }}</span>
-            <span class="black-p">{{ order.orderNumber }}<br>{{ order.createdAt }}</span>
+            <span class="black-p">{{ order.orderNumber }}<br>{{ order.createdAt.getDateTime|date("m/d/Y H:i") }}</span>
           </div>
         </div>
         <div class="thankyou-order-summary">
@@ -32,7 +32,7 @@
             <div class="col-sm-4 checkout-first-col">
               {% include '@Example/partials/checkout/address-confirmation.html.twig' with {'address':order.shippingAddress, 'titleKey':"checkout:shippingAddress", 'editable':false} %}
             </div>
-            <div class="col-sm-4 checkout-second-col">q
+            <div class="col-sm-4 checkout-second-col">
               {% include '@Example/partials/checkout/address-confirmation.html.twig' with {'address':order.billingAddress, 'titleKey':"checkout:billingAddress", 'editable':false} %}
             </div>
             <div class="col-sm-4 checkout-third-col">

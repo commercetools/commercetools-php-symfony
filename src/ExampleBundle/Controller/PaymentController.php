@@ -18,7 +18,6 @@ use Commercetools\Symfony\CartBundle\Model\Repository\CartRepository;
 use Commercetools\Symfony\CtpBundle\Service\CustomTypeProvider;
 use Commercetools\Symfony\StateBundle\Model\CtpMarkingStore\CtpMarkingStorePaymentState;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Commercetools\Core\Client;
 use Commercetools\Symfony\CartBundle\Manager\OrderManager;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -29,11 +28,6 @@ use Symfony\Component\Workflow\Registry;
 
 class PaymentController extends AbstractController
 {
-    /**
-     * @var Client
-     */
-    private $client;
-
     /**
      * @var PaymentManager
      */
@@ -47,7 +41,6 @@ class PaymentController extends AbstractController
 
     /**
      * OrderController constructor.
-     * @param Client $client
      * @param PaymentManager $manager
      * @param Registry $workflows
      */
