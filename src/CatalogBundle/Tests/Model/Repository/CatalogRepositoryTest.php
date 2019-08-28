@@ -169,7 +169,6 @@ class CatalogRepositoryTest extends TestCase
         $responseInterface->getBody()->willReturn(json_encode(['facets' => []]))->shouldBeCalledOnce();
         $responseInterface->getStatusCode()->willReturn(200)->shouldBeCalledOnce();
 
-
         $this->client->execute(
             Argument::that(function (ProductProjectionSearchRequest $request) {
                 static::assertContains('limit=5', (string)$request->httpRequest()->getBody());

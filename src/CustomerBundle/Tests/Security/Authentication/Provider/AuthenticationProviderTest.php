@@ -8,6 +8,8 @@ namespace Commercetools\Symfony\CustomerBundle\Tests\Security\Authentication\Pro
 use Commercetools\Core\Client\HttpClient;
 use Commercetools\Core\Client\HttpRequest;
 use Commercetools\Core\Client\OAuth\ClientCredentials;
+use Commercetools\Core\Client\OAuth\PasswordFlowTokenProvider;
+use Commercetools\Core\Client\OAuth\Token;
 use Commercetools\Core\Config;
 use Commercetools\Core\Model\Cart\Cart;
 use Commercetools\Core\Model\Cart\LineItem;
@@ -40,6 +42,7 @@ class AuthenticationProviderTest extends TestCase
     private $logger;
     private $config;
     private $session;
+    private $passwordFlowTokenProvider;
 
     public function setUp()
     {
@@ -49,6 +52,7 @@ class AuthenticationProviderTest extends TestCase
         $this->userChecker = $this->prophesize(UserChecker::class);
         $this->logger = $this->prophesize(LoggerInterface::class);
         $this->session = $this->prophesize(Session::class);
+        $this->passwordFlowTokenProvider = $this->prophesize(PasswordFlowTokenProvider::class);
     }
 
     private function getAuthenticationProvider()
@@ -61,7 +65,7 @@ class AuthenticationProviderTest extends TestCase
             'foo',
             true,
             $this->logger->reveal(),
-            $this->session->reveal()
+            $this->passwordFlowTokenProvider->reveal()
         );
     }
 
@@ -127,29 +131,9 @@ class AuthenticationProviderTest extends TestCase
         $response->isError()->willReturn(true);
         $response->getBody()->willReturn(json_encode($customer));
 
-        $oauthResponse = $this->prophesize(Response::class);
-        $oauthResponse->getBody()->willReturn(json_encode([
-            'access_token' => 'foo',
-            'expires_in' => 325,
-            'scope' => 'foo',
-            'refresh_token' => 'refresh-1'
-        ]))->shouldBeCalledOnce();
-
-        $this->client->post(
-            Argument::is('url'),
-            Argument::is(["form_params" => ["grant_type" => "password", "username" => null, "password" => "foo"], "auth" => ["client-1", "secret-1"]])
-        )->willReturn($oauthResponse->reveal())->shouldBeCalledOnce();
-
         $this->client->send(
             Argument::type(HttpRequest::class)
         )->willReturn($response->reveal())->shouldBeCalledOnce();
-
-        $clientCredentials = $this->prophesize(ClientCredentials::class);
-        $clientCredentials->getClientId()->willReturn('client-1')->shouldBeCalledOnce();
-        $clientCredentials->getClientSecret()->willReturn('secret-1')->shouldBeCalledOnce();
-
-        $this->config->getClientCredentials()->willReturn($clientCredentials->reveal())->shouldBeCalled();
-        $this->config->getOauthUrl("password")->willReturn('url')->shouldBeCalled();
 
         $user = $this->prophesize(User::class);
 
@@ -173,28 +157,8 @@ class AuthenticationProviderTest extends TestCase
                 ->toArray()
             ])->shouldBeCalled();
 
-        $clientCredentials = $this->prophesize(ClientCredentials::class);
-        $clientCredentials->getClientId()->willReturn('client-1')->shouldBeCalledOnce();
-        $clientCredentials->getClientSecret()->willReturn('secret-1')->shouldBeCalledOnce();
-
-        $this->config->getClientCredentials()->willReturn($clientCredentials->reveal())->shouldBeCalled();
-        $this->config->getOauthUrl("password")->willReturn('url')->shouldBeCalled();
-
         $response->getContext()->willReturn(null);
         $response->isError()->willReturn(false);
-
-        $oauthResponse = $this->prophesize(Response::class);
-        $oauthResponse->getBody()->willReturn(json_encode([
-            'access_token' => 'foo',
-            'expires_in' => 325,
-            'scope' => 'foo',
-            'refresh_token' => 'refresh-1'
-        ]))->shouldBeCalledOnce();
-
-        $this->client->post(
-            Argument::is('url'),
-            Argument::is(["form_params" => ["grant_type" => "password", "username" => "user-1", "password" => "foo"], "auth" => ["client-1", "secret-1"]])
-        )->willReturn($oauthResponse->reveal())->shouldBeCalledOnce();
 
         $this->client->send(
             Argument::type(HttpRequest::class)
@@ -212,14 +176,9 @@ class AuthenticationProviderTest extends TestCase
         $token->getUser()->willReturn('USER@localhost')->shouldBeCalled();
         $token->getCredentials()->willReturn('foo')->shouldBeCalled();
 
-        $response = $this->prophesize(ResourceResponse::class);
-
-        $clientCredentials = $this->prophesize(ClientCredentials::class);
-        $clientCredentials->getClientId()->willReturn('client-1')->shouldBeCalledOnce();
-        $clientCredentials->getClientSecret()->willReturn('secret-1')->shouldBeCalledOnce();
-
-        $this->config->getClientCredentials()->willReturn($clientCredentials->reveal())->shouldBeCalled();
-        $this->config->getOauthUrl("password")->willReturn('url')->shouldBeCalled();
+        $oauthToken = $this->prophesize(Token::class);
+        $oauthToken->getToken()->willReturn('token-1')->shouldBeCalled();
+        $oauthToken->getRefreshToken()->willReturn('refresh-1')->shouldBeCalled();
 
         $customer = Customer::of()
             ->setId('id-1')
@@ -229,32 +188,18 @@ class AuthenticationProviderTest extends TestCase
             ->setDefaultShippingAddressId('address-1')
             ->toArray();
 
-//        $arr = [
-//            'customer' => $customer,
-//            'cart' => Cart::of()
-//                ->setId('cart-1')
-//                ->setLineItems(LineItemCollection::of()
-//                    ->add(LineItem::of()->setId('product-1')->setQuantity(2)))
-//                ->toArray()
-//        ];
-
+        $response = $this->prophesize(ResourceResponse::class);
         $response->toArray()->willReturn($customer)->shouldBeCalled();
-
         $response->getContext()->willReturn(null)->shouldBeCalled();
         $response->isError()->willReturn(false)->shouldBeCalled();
-//        $response->getBody()->willReturn(json_encode($customer))->shouldBeCalled();
 
-        $loginResponse = $this->prophesize(ResponseInterface::class);
-        $loginResponse->getBody()->willReturn(json_encode([
-            'access_token' => 'token-1',
-            'expires_in' => 325,
-            'scope' => 'foo',
-            'refresh_token' => 'refresh-1'
-        ]))->shouldBeCalledOnce();
 
-        $this->client->post(Argument::is('url'), Argument::type('array'))->willReturn(
-            $loginResponse->reveal()
-        )->shouldBeCalledOnce();
+
+        $this->passwordFlowTokenProvider->getTokenFor(
+            Argument::is('USER@localhost'),
+            Argument::is('foo')
+        )->willReturn($oauthToken->reveal())->shouldBeCalledOnce();
+
         $this->client->send(Argument::type(HttpRequest::class))->willReturn($response->reveal())->shouldBeCalledTimes(2);
 
         $user = $this->prophesize(User::class);

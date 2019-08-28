@@ -37,7 +37,7 @@
             <argument type="service" id="commercetools.client.me.config" />
             <argument type="service" id="commercetools.logger" />
             <argument type="service" id="commercetools.cache" />
-            <argument type="service" id="Commercetools\Symfony\CustomerBundle\Security\Authentication\Provider\RefreshFlowTokenProvider" />
+            <argument type="service" id="Commercetools\Core\Client\OAuth\TokenStorageProvider" />
         </service>
 
         <service id="commercetools.client.me.handlerstack" class="GuzzleHttp\HandlerStack">
@@ -47,6 +47,24 @@
         </service>
 
         <service id="Commercetools\Symfony\CtpBundle\Service\HandlerStackFactory" />
+
+        <service id="Commercetools\Symfony\CtpBundle\Service\SessionTokenStorage">
+            <argument id="session" type="service"/>
+        </service>
+
+        <service id="Commercetools\Core\Client\OAuth\TokenStorageProvider">
+            <factory service="commercetools.http.clientfactory" method="createTokenStorageProviderFor" />
+            <argument type="service" id="commercetools.client.me.config"/>
+            <argument type="service" id="commercetools.oauth.client" />
+            <argument type="service" id="Commercetools\Symfony\CtpBundle\Service\SessionTokenStorage"/>
+        </service>
+
+        <service id="Commercetools\Core\Client\OAuth\PasswordFlowTokenProvider">
+            <factory service="commercetools.http.clientfactory" method="createPasswordFlowProviderFor" />
+            <argument type="service" id="commercetools.client.me.config"/>
+            <argument type="service" id="commercetools.oauth.client"/>
+            <argument type="service" id="Commercetools\Symfony\CtpBundle\Service\SessionTokenStorage" />
+        </service>
 
         <service id="security.authentication_provider.commercetools"
                  class="Commercetools\Symfony\CustomerBundle\Security\Authentication\Provider\AuthenticationProvider"
@@ -61,7 +79,7 @@
             <argument /> <!-- Provider-shared Key -->
             <argument>%security.authentication.hide_user_not_found%</argument>
             <argument type="service" id="logger" />
-            <argument type="service" id="session" />
+            <argument type="service" id="Commercetools\Core\Client\OAuth\PasswordFlowTokenProvider" />
         </service>
     </services>
 </container>

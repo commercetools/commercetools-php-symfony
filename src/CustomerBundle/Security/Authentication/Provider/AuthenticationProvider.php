@@ -5,6 +5,7 @@
 namespace Commercetools\Symfony\CustomerBundle\Security\Authentication\Provider;
 
 use Commercetools\Core\Builder\Request\RequestBuilder;
+use Commercetools\Core\Client\OAuth\PasswordFlowTokenProvider;
 use Commercetools\Core\Config;
 use Commercetools\Symfony\CustomerBundle\Security\User\CtpUser;
 use GuzzleHttp\Client;
@@ -41,9 +42,9 @@ class AuthenticationProvider extends UserAuthenticationProvider
     private $config;
 
     /**
-     * @var Session
+     * @var PasswordFlowTokenProvider
      */
-    private $session;
+    private $passwordFlowTokenProvider;
 
     /**
      * AuthenticationProvider constructor.
@@ -54,7 +55,7 @@ class AuthenticationProvider extends UserAuthenticationProvider
      * @param $providerKey
      * @param bool $hideUserNotFoundExceptions
      * @param LoggerInterface $logger
-     * @param Session $session
+     * @param PasswordFlowTokenProvider $passwordFlowTokenProvider
      */
     public function __construct(
         Client $client,
@@ -66,14 +67,14 @@ class AuthenticationProvider extends UserAuthenticationProvider
         // phpcs:ignore
         LoggerInterface $logger,
         // phpcs:ignore
-        Session $session
+        PasswordFlowTokenProvider $passwordFlowTokenProvider
     ) {
         parent::__construct($userChecker, $providerKey, $hideUserNotFoundExceptions);
         $this->userProvider = $userProvider;
         $this->config = $config;
         $this->client = $client;
         $this->logger = $logger;
-        $this->session = $session;
+        $this->passwordFlowTokenProvider = $passwordFlowTokenProvider;
     }
 
     /**
@@ -92,16 +93,8 @@ class AuthenticationProvider extends UserAuthenticationProvider
                 throw new BadCredentialsException('The presented password cannot be empty.');
             }
 
-            $provider = new PasswordFlowTokenProvider(
-                $this->session,
-                $this->config,
-                $currentUser,
-                $presentedPassword,
-                $this->client
-            );
-
             try {
-                $token = $provider->getToken();
+                $token = $this->passwordFlowTokenProvider->getTokenFor($currentUser, $presentedPassword);
             } catch (ClientException $e) {
                 throw new BadCredentialsException('The presented password is invalid.');
             }
