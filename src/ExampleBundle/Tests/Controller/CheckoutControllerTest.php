@@ -17,6 +17,7 @@ use Commercetools\Core\Request\Carts\Command\CartSetBillingAddressAction;
 use Commercetools\Core\Request\Carts\Command\CartSetShippingAddressAction;
 use Commercetools\Core\Request\Carts\Command\CartSetShippingMethodAction;
 use Commercetools\Symfony\CartBundle\Manager\CartManager;
+use Commercetools\Symfony\CartBundle\Manager\MeCartManager;
 use Commercetools\Symfony\CartBundle\Manager\OrderManager;
 use Commercetools\Symfony\CartBundle\Manager\ShippingMethodManager;
 use Commercetools\Symfony\CartBundle\Model\CartUpdateBuilder;
@@ -50,6 +51,8 @@ class CheckoutControllerTest extends WebTestCase
     private $shippingMethodManager;
     /** @var OrderManager */
     private $orderManager;
+    /** @var MeCartManager */
+    private $meCartManager;
 
     public function setUp()
     {
@@ -60,6 +63,7 @@ class CheckoutControllerTest extends WebTestCase
         $this->cartManager = $this->prophesize(CartManager::class);
         $this->shippingMethodManager = $this->prophesize(ShippingMethodManager::class);
         $this->orderManager = $this->prophesize(OrderManager::class);
+        $this->meCartManager = $this->prophesize(MeCartManager::class);
 
         $this->request->getLocale()->willReturn('en')->shouldBeCalledOnce();
     }
@@ -80,7 +84,7 @@ class CheckoutControllerTest extends WebTestCase
         $this->myContainer->get('twig')->willReturn($this->twig)->shouldBeCalledOnce();
         $this->request->getLocale()->willReturn('en')->shouldNotBeCalled();
 
-        $controller = new CheckoutController($this->cartManager->reveal(), $this->shippingMethodManager->reveal(), $this->orderManager->reveal());
+        $controller = new CheckoutController($this->cartManager->reveal(), $this->shippingMethodManager->reveal(), $this->orderManager->reveal(), $this->meCartManager->reveal());
         $controller->setContainer($this->myContainer->reveal());
         $response = $controller->signinAction($authenticationUtils->reveal());
 
@@ -102,7 +106,7 @@ class CheckoutControllerTest extends WebTestCase
 
         $authenticationUtils = $this->prophesize(AuthenticationUtils::class);
 
-        $controller = new CheckoutController($this->cartManager->reveal(), $this->shippingMethodManager->reveal(), $this->orderManager->reveal());
+        $controller = new CheckoutController($this->cartManager->reveal(), $this->shippingMethodManager->reveal(), $this->orderManager->reveal(), $this->meCartManager->reveal());
         $controller->setContainer($this->myContainer->reveal());
         $response = $controller->signinAction($authenticationUtils->reveal());
 
@@ -111,12 +115,6 @@ class CheckoutControllerTest extends WebTestCase
 
     public function testShippingMethodActionSubmitted()
     {
-        $user = $this->prophesize(CtpUser::class);
-
-        $session = $this->prophesize(Session::class);
-        $session->getId()->willReturn('baz')->shouldBeCalledOnce();
-        $session->get('cart.id')->willReturn('cart-id-1')->shouldBeCalledOnce();
-
         $form = $this->prophesize(Form::class);
         $form->handleRequest(Argument::type(Request::class))
             ->will(function () {
@@ -164,12 +162,12 @@ class CheckoutControllerTest extends WebTestCase
         $shippingMethod = ShippingMethodCollection::of()->add(ShippingMethod::of()->setName('sh-mtd')->setId('sh-mtd-1'));
 
         $this->shippingMethodManager->getShippingMethodsByCart('en', 'cart-id-1')->willReturn($shippingMethod)->shouldBeCalledOnce();
-        $this->cartManager->getCart('en', 'cart-id-1', Argument::type(CtpUser::class), 'baz')->willReturn($cart)->shouldBeCalledOnce();
-        $this->cartManager->update(Argument::type(Cart::class))->willReturn($cartUpdateBuilder->reveal())->shouldBeCalledOnce();
+        $this->meCartManager->getCart('en')->willReturn($cart)->shouldBeCalledOnce();
+        $this->meCartManager->update(Argument::type(Cart::class))->willReturn($cartUpdateBuilder->reveal())->shouldBeCalledOnce();
 
-        $controller = new CheckoutController($this->cartManager->reveal(), $this->shippingMethodManager->reveal(), $this->orderManager->reveal());
+        $controller = new CheckoutController($this->cartManager->reveal(), $this->shippingMethodManager->reveal(), $this->orderManager->reveal(), $this->meCartManager->reveal());
         $controller->setContainer($this->myContainer->reveal());
-        $response = $controller->shippingMethodAction($this->request->reveal(), $session->reveal(), $user->reveal());
+        $response = $controller->shippingMethodAction($this->request->reveal());
 
         $this->assertTrue($response->isRedirect());
     }
@@ -177,10 +175,6 @@ class CheckoutControllerTest extends WebTestCase
     public function testShippingMethod()
     {
         $user = $this->prophesize(CtpUser::class);
-
-        $session = $this->prophesize(Session::class);
-        $session->getId()->willReturn('baz')->shouldBeCalledOnce();
-        $session->get('cart.id')->willReturn('cart-id-1')->shouldBeCalledOnce();
 
         $form = $this->prophesize(Form::class);
         $form->handleRequest(Argument::type(Request::class))
@@ -218,25 +212,17 @@ class CheckoutControllerTest extends WebTestCase
         $shippingMethod = ShippingMethodCollection::of()->add(ShippingMethod::of()->setName('sh-mtd')->setId('sh-mtd-1'));
 
         $this->shippingMethodManager->getShippingMethodsByCart('en', 'cart-id-1')->willReturn($shippingMethod)->shouldBeCalledOnce();
-        $this->cartManager->getCart('en', 'cart-id-1', Argument::type(CtpUser::class), 'baz')->willReturn($cart)->shouldBeCalledOnce();
+        $this->meCartManager->getCart('en')->willReturn($cart)->shouldBeCalledOnce();
 
-        $controller = new CheckoutController($this->cartManager->reveal(), $this->shippingMethodManager->reveal(), $this->orderManager->reveal());
+        $controller = new CheckoutController($this->cartManager->reveal(), $this->shippingMethodManager->reveal(), $this->orderManager->reveal(), $this->meCartManager->reveal());
         $controller->setContainer($this->myContainer->reveal());
-        $response = $controller->shippingMethodAction($this->request->reveal(), $session->reveal(), $user->reveal());
+        $response = $controller->shippingMethodAction($this->request->reveal(), $user->reveal());
 
         $this->assertTrue($response->isOk());
     }
 
     public function testShippingMethodWithoutCart()
     {
-        $user = $this->prophesize(CtpUser::class);
-
-        $session = $this->prophesize(Session::class);
-        $session->getId()->willReturn('baz')->shouldBeCalledOnce();
-        $session->get('cart.id')->willReturn('cart-id-1')->shouldBeCalledOnce();
-
-        $cart = Cart::of();
-
         $router = $this->prophesize(Router::class);
         $router->generate('_ctp_example_cart', [], 1)->willReturn('bar')->shouldBeCalledOnce();
 
@@ -246,38 +232,32 @@ class CheckoutControllerTest extends WebTestCase
 
         $shippingMethod = ShippingMethodCollection::of()->add(ShippingMethod::of()->setName('sh-mtd')->setId('sh-mtd-1'));
 
-        $this->shippingMethodManager->getShippingMethodsByCart('en', 'cart-id-1')->willReturn($shippingMethod)->shouldBeCalledOnce();
-        $this->cartManager->getCart('en', 'cart-id-1', Argument::type(CtpUser::class), 'baz')->willReturn($cart)->shouldBeCalledOnce();
+        $this->shippingMethodManager->getShippingMethodsByCart('en', null)->willReturn($shippingMethod)->shouldBeCalledOnce();
+        $this->meCartManager->getCart('en')->willReturn(Cart::of())->shouldBeCalledOnce();
 
-        $controller = new CheckoutController($this->cartManager->reveal(), $this->shippingMethodManager->reveal(), $this->orderManager->reveal());
+        $controller = new CheckoutController($this->cartManager->reveal(), $this->shippingMethodManager->reveal(), $this->orderManager->reveal(), $this->meCartManager->reveal());
         $controller->setContainer($this->myContainer->reveal());
-        $response = $controller->shippingMethodAction($this->request->reveal(), $session->reveal(), $user->reveal());
+        $response = $controller->shippingMethodAction($this->request->reveal());
 
         $this->assertTrue($response->isRedirect());
     }
 
     public function testReviewOrderDetailsActionCartNotFound()
     {
-        $session = $this->prophesize(Session::class);
-
         $router = $this->prophesize(Router::class);
         $router->generate('_ctp_example_cart', [], 1)->willReturn('bar')->shouldBeCalledOnce();
 
         $this->myContainer->get('router')->willReturn($router)->shouldBeCalledOnce();
 
-        $controller = new CheckoutController($this->cartManager->reveal(), $this->shippingMethodManager->reveal(), $this->orderManager->reveal());
+        $controller = new CheckoutController($this->cartManager->reveal(), $this->shippingMethodManager->reveal(), $this->orderManager->reveal(), $this->meCartManager->reveal());
         $controller->setContainer($this->myContainer->reveal());
-        $response = $controller->reviewOrderDetailsAction($this->request->reveal(), $session->reveal());
+        $response = $controller->reviewOrderDetailsAction($this->request->reveal());
 
         $this->assertTrue($response->isRedirect());
     }
 
     public function testReviewOrderDetailsAction()
     {
-        $session = $this->prophesize(Session::class);
-        $session->getId()->willReturn('baz')->shouldBeCalledOnce();
-        $session->get('cart.id')->willReturn('cart-1')->shouldBeCalledOnce();
-
         $user = $this->prophesize(CtpUser::class);
         $cart = Cart::of()->setId('cart-1');
 
@@ -285,11 +265,11 @@ class CheckoutControllerTest extends WebTestCase
         $this->myContainer->has('twig')->willReturn(true)->shouldBeCalledOnce();
         $this->myContainer->get('twig')->willReturn($this->twig)->shouldBeCalledOnce();
 
-        $this->cartManager->getCart('en', 'cart-1', Argument::type(CtpUser::class), 'baz')->willReturn($cart)->shouldBeCalledOnce();
+        $this->meCartManager->getCart('en')->willReturn($cart)->shouldBeCalledOnce();
 
-        $controller = new CheckoutController($this->cartManager->reveal(), $this->shippingMethodManager->reveal(), $this->orderManager->reveal());
+        $controller = new CheckoutController($this->cartManager->reveal(), $this->shippingMethodManager->reveal(), $this->orderManager->reveal(), $this->meCartManager->reveal());
         $controller->setContainer($this->myContainer->reveal());
-        $response = $controller->reviewOrderDetailsAction($this->request->reveal(), $session->reveal(), $user->reveal());
+        $response = $controller->reviewOrderDetailsAction($this->request->reveal(), $user->reveal());
 
         $this->assertTrue($response->isOk());
     }
@@ -308,7 +288,7 @@ class CheckoutControllerTest extends WebTestCase
         $this->myContainer->get('router')->willReturn($router)->shouldBeCalledOnce();
         $this->cartManager->getCart('en', 'cart-1', null, 'baz')->willReturn(null)->shouldBeCalledOnce();
 
-        $controller = new CheckoutController($this->cartManager->reveal(), $this->shippingMethodManager->reveal(), $this->orderManager->reveal());
+        $controller = new CheckoutController($this->cartManager->reveal(), $this->shippingMethodManager->reveal(), $this->orderManager->reveal(), $this->meCartManager->reveal());
         $controller->setContainer($this->myContainer->reveal());
 //        $response = $controller->placeCartToOrderAction($this->request->reveal(), $session->reveal(), $markingStoreOrderState->reveal());
         $response = $controller->placeCartToOrderAction($this->request->reveal(), $session->reveal());
@@ -341,7 +321,7 @@ class CheckoutControllerTest extends WebTestCase
 //        $this->orderManager->createOrderFromCart('en', Argument::type(Cart::class), Argument::type(StateReference::class))->willReturn($order)->shouldBeCalledOnce();
         $this->orderManager->createOrderFromCart('en', Argument::type(Cart::class))->willReturn($order)->shouldBeCalledOnce();
 
-        $controller = new CheckoutController($this->cartManager->reveal(), $this->shippingMethodManager->reveal(), $this->orderManager->reveal());
+        $controller = new CheckoutController($this->cartManager->reveal(), $this->shippingMethodManager->reveal(), $this->orderManager->reveal(), $this->meCartManager->reveal());
         $controller->setContainer($this->myContainer->reveal());
 //        $response = $controller->placeCartToOrderAction($this->request->reveal(), $session->reveal(), $markingStoreOrderState->reveal(), $user->reveal());
         $response = $controller->placeCartToOrderAction($this->request->reveal(), $session->reveal(), $user->reveal());
@@ -351,30 +331,22 @@ class CheckoutControllerTest extends WebTestCase
 
     public function testSetAddressActionWithNullCart()
     {
-        $session = $this->prophesize(Session::class);
-        $session->getId()->willReturn('baz')->shouldBeCalledOnce();
-        $session->get('cart.id')->willReturn('cart-1')->shouldBeCalledOnce();
-
-        $this->cartManager->getCart('en', 'cart-1', null, 'baz')->willReturn(Cart::of())->shouldBeCalledOnce();
+        $this->meCartManager->getCart('en')->willReturn(Cart::of())->shouldBeCalledOnce();
 
         $router = $this->prophesize(Router::class);
         $router->generate('_ctp_example_cart', [], 1)->willReturn('bar')->shouldBeCalledOnce();
 
         $this->myContainer->get('router')->willReturn($router)->shouldBeCalledOnce();
 
-        $controller = new CheckoutController($this->cartManager->reveal(), $this->shippingMethodManager->reveal(), $this->orderManager->reveal());
+        $controller = new CheckoutController($this->cartManager->reveal(), $this->shippingMethodManager->reveal(), $this->orderManager->reveal(), $this->meCartManager->reveal());
         $controller->setContainer($this->myContainer->reveal());
-        $response = $controller->setAddressAction($this->request->reveal(), $session->reveal());
+        $response = $controller->setAddressAction($this->request->reveal());
 
         $this->assertTrue($response->isRedirect());
     }
 
     public function testSetAddressActionSubmitted()
     {
-        $session = $this->prophesize(Session::class);
-        $session->getId()->willReturn('baz')->shouldBeCalledOnce();
-        $session->get('cart.id')->willReturn('cart-1')->shouldBeCalledOnce();
-
         $user = $this->prophesize(User::class);
         $user->getDefaultShippingAddress()->willReturn(Address::of()->setCountry('FR'))->shouldBeCalled();
 
@@ -425,27 +397,23 @@ class CheckoutControllerTest extends WebTestCase
         })->shouldBeCalled();
         $cartUpdateBuilder->flush()->willReturn($cart)->shouldBeCalled();
 
-        $this->cartManager->getCart('en', 'cart-1', Argument::type(CtpUser::class), 'baz')->willReturn($cart)->shouldBeCalledOnce();
-        $this->cartManager->update(Argument::type(Cart::class))->willReturn($cartUpdateBuilder->reveal())->shouldBeCalledOnce();
+        $this->meCartManager->getCart('en')->willReturn($cart)->shouldBeCalledOnce();
+        $this->meCartManager->update(Argument::type(Cart::class))->willReturn($cartUpdateBuilder->reveal())->shouldBeCalledOnce();
 
         $router = $this->prophesize(Router::class);
         $router->generate('_ctp_example_checkout_shipping', [], 1)->willReturn('bar')->shouldBeCalledOnce();
 
         $this->myContainer->get('router')->willReturn($router)->shouldBeCalledOnce();
 
-        $controller = new CheckoutController($this->cartManager->reveal(), $this->shippingMethodManager->reveal(), $this->orderManager->reveal());
+        $controller = new CheckoutController($this->cartManager->reveal(), $this->shippingMethodManager->reveal(), $this->orderManager->reveal(), $this->meCartManager->reveal());
         $controller->setContainer($this->myContainer->reveal());
-        $response = $controller->setAddressAction($this->request->reveal(), $session->reveal(), $user->reveal());
+        $response = $controller->setAddressAction($this->request->reveal(), $user->reveal());
 
         $this->assertTrue($response->isRedirect());
     }
 
     public function testSetAddressActionNotSubmitted()
     {
-        $session = $this->prophesize(Session::class);
-        $session->getId()->willReturn('baz')->shouldBeCalledOnce();
-        $session->get('cart.id')->willReturn('cart-1')->shouldBeCalledOnce();
-
         $user = $this->prophesize(User::class);
         $user->getDefaultShippingAddress()->willReturn(Address::of()->setCountry('FR'))->shouldBeCalled();
 
@@ -453,7 +421,7 @@ class CheckoutControllerTest extends WebTestCase
             ->setId('cart-1')
             ->setShippingAddress(Address::of()->setCountry('DE'));
 
-        $this->cartManager->getCart('en', 'cart-1', Argument::type(CtpUser::class), 'baz')->willReturn($cart)->shouldBeCalledOnce();
+        $this->meCartManager->getCart('en')->willReturn($cart)->shouldBeCalledOnce();
 
         $form = $this->prophesize(Form::class);
         $form->handleRequest(Argument::type(Request::class))
@@ -483,9 +451,9 @@ class CheckoutControllerTest extends WebTestCase
         $this->myContainer->has('twig')->willReturn(true)->shouldBeCalledOnce();
         $this->myContainer->get('twig')->willReturn($this->twig)->shouldBeCalledOnce();
 
-        $controller = new CheckoutController($this->cartManager->reveal(), $this->shippingMethodManager->reveal(), $this->orderManager->reveal());
+        $controller = new CheckoutController($this->cartManager->reveal(), $this->shippingMethodManager->reveal(), $this->orderManager->reveal(), $this->meCartManager->reveal());
         $controller->setContainer($this->myContainer->reveal());
-        $response = $controller->setAddressAction($this->request->reveal(), $session->reveal(), $user->reveal());
+        $response = $controller->setAddressAction($this->request->reveal(), $user->reveal());
 
         $this->assertTrue($response->isOk());
     }
