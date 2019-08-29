@@ -132,12 +132,11 @@ class CatalogController extends AbstractController
 //        dump($variantIds);
 
         $shoppingListsIds = [];
-        $shoppingLists = [];
-//        if (is_null($user)) {
-//            $shoppingLists = $this->shoppingListManager->getAllOfAnonymous($request->getLocale(), $session->getId());
-//        } else {
-//            $shoppingLists = $this->shoppingListManager->getAllOfCustomer($request->getLocale(), CustomerReference::ofId($user->getId()));
-//        }
+        if (is_null($user)) {
+            $shoppingLists = $this->shoppingListManager->getAllOfAnonymous($request->getLocale(), $session->getId());
+        } else {
+            $shoppingLists = $this->shoppingListManager->getAllOfCustomer($request->getLocale(), CustomerReference::ofId($user->getId()));
+        }
 
         foreach ($shoppingLists as $shoppingList) {
             /** @var ShoppingList $shoppingList */

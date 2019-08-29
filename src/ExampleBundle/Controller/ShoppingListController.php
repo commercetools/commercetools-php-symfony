@@ -80,9 +80,11 @@ class ShoppingListController extends AbstractController
             $shoppingLists = $this->manager->getAllOfCustomer($request->getLocale(), CustomerReference::ofId($user->getId()));
         }
 
-        foreach ($shoppingLists as $shoppingList) {
-            /** @var ShoppingList $shoppingList */
-            $shoppingListsIds[(string)$shoppingList->getName()] = $shoppingList->getId();
+        if (!is_null($shoppingLists)) {
+            foreach ($shoppingLists as $shoppingList) {
+                /** @var ShoppingList $shoppingList */
+                $shoppingListsIds[(string)$shoppingList->getName()] = $shoppingList->getId();
+            }
         }
 
         $productEntity = new ProductToShoppingList();

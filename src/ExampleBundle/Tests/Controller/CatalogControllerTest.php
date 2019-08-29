@@ -114,6 +114,8 @@ class CatalogControllerTest extends WebTestCase
         $session = $this->prophesize(SessionInterface::class);
         $shoppingListManager = $this->prophesize(ShoppingListManager::class);
 
+        $session->getId()->willReturn('session-id-1')->shouldBeCalledOnce();
+
         $this->request->getLocale()->willReturn('en')->shouldBeCalled();
         $this->request->get('slug')->willReturn('en')->shouldBeCalled();
         $this->request->get('sku')->willReturn('en')->shouldBeCalled();
@@ -159,6 +161,8 @@ class CatalogControllerTest extends WebTestCase
 
         $this->catalogManager->getProductBySlug('en', 'prod-1', 'EUR', 'DE')
             ->willReturn($productProjection)->shouldBeCalledOnce();
+
+        $shoppingListManager->getAllOfAnonymous('en', 'session-id-1')->willReturn([])->shouldBeCalledOnce();
 
         $controller = new CatalogController($this->catalogManager->reveal(), $shoppingListManager->reveal());
         $controller->setContainer($this->myContainer->reveal());
@@ -208,6 +212,7 @@ class CatalogControllerTest extends WebTestCase
         $this->myContainer->has('parameter_bag')->willReturn(false)->shouldBeCalledOnce();
 
         $user = $this->prophesize(CtpUser::class);
+        $user->getId()->willReturn('user-1')->shouldBeCalledOnce();
 
         $this->request->getLocale()->willReturn('en')->shouldBeCalled();
         $this->request->get('slug')->willReturn('en')->shouldBeCalled();
@@ -238,6 +243,7 @@ class CatalogControllerTest extends WebTestCase
         $this->myContainer->get('form.factory')->willReturn($formFactory->reveal())->shouldBeCalled();
 
         $this->catalogManager->getProductById('en', 'prod-1')->willReturn(ProductProjection::of())->shouldBeCalledOnce();
+        $shoppingListManager->getAllOfCustomer('en', Argument::type(CustomerReference::class))->willReturn([])->shouldBeCalledOnce();
 
         $controller = new CatalogController($this->catalogManager->reveal(), $shoppingListManager->reveal());
         $controller->setContainer($this->myContainer->reveal());
