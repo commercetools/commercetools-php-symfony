@@ -17,10 +17,14 @@
 
         <button type="submit" class="heart-xs visible-xs">
         <span class="sr-only">{{ 'wishlist.add'|trans([], 'catalog') }}</span>
-      </button>
+        </button>
     </form>
-    <div class="pop-product-image">
-      <img class="img-lazy" data-original="{{ product.masterVariant.images.current.url }}" alt="{{ product.name }}" />
+      <div class="pop-product-image">
+          {% if wishlist %}
+              <img class="img-lazy" data-original="{{ product.variant.images.current.url }}" alt="{{ product.name }}" />
+          {% else %}
+              <img class="img-lazy" data-original="{{ product.masterVariant.images.current.url }}" alt="{{ product.name }}" />
+        {% endif %}
     </div>
     <div class="pop-product-name">
       <span class="name-headline">{{ product.name }}</span>
@@ -31,7 +35,11 @@
         <span class="strikethrough">{{ product.masterVariant.price }}</span>
         <span class="pop-item-price-old">{{ product.masterVariant.price.discounted }}</span>
       {% else %}
-        <span>{{ product.masterVariant.price }}</span>
+          {% if wishlist %}
+              <span>{{ product.variant.prices.current }}</span>
+          {% else %}
+              <span>{{ product.masterVariant.price }}</span>
+          {% endif %}
       {% endif %}
     </div>
     <div class="pop-product-more-colors">
