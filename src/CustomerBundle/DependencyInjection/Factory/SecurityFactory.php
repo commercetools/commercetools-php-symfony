@@ -26,8 +26,8 @@ class SecurityFactory extends FormLoginFactory
         $provider = 'security.authentication_provider.commercetools.'.$id;
         $container
             ->setDefinition($provider, new ChildDefinition('security.authentication_provider.commercetools'))
-            ->replaceArgument(2, new Reference($userProviderId))
-            ->replaceArgument(4, $id);
+            ->replaceArgument('$userProvider', new Reference($userProviderId))
+            ->replaceArgument('$providerKey', $id);
 
         return $provider;
     }
