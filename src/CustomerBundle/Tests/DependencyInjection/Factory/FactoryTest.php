@@ -19,10 +19,10 @@ class FactoryTest extends TestCase
         $container = $this->prophesize(ContainerBuilder::class);
         $definition = $this->prophesize(ChildDefinition::class);
 
-        $definition->replaceArgument(2, Argument::type(Reference::class))
+        $definition->replaceArgument('$userProvider', Argument::type(Reference::class))
             ->willReturn($definition)->shouldBeCalledOnce();
 
-        $definition->replaceArgument(4, Argument::is('foo'))
+        $definition->replaceArgument('$providerKey', Argument::is('foo'))
             ->willReturn($definition)->shouldBeCalledOnce();
 
         $container->setDefinition(
