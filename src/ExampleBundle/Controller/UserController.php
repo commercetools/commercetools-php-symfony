@@ -5,6 +5,7 @@
 namespace Commercetools\Symfony\ExampleBundle\Controller;
 
 use Commercetools\Core\Model\Common\Address;
+use Commercetools\Core\Request\Customers\Command\CustomerAddAddressAction;
 use Commercetools\Core\Request\Customers\Command\CustomerChangeAddressAction;
 use Commercetools\Core\Request\Customers\Command\CustomerChangeEmailAction;
 use Commercetools\Core\Request\Customers\Command\CustomerSetFirstNameAction;
@@ -34,6 +35,39 @@ class UserController extends AbstractController
     public function __construct(CustomerManager $manager)
     {
         $this->manager = $manager;
+    }
+
+    public function addAddressAction(Request $request, UserInterface $user)
+    {
+        $customer = $this->manager->getById($request->getLocale(), $user->getId());
+
+        $form = $this->createForm(AddressType::class, new UserAddress())
+            ->add('submit', SubmitType::class);
+
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+
+            /** @var UserAddress $userAddress */
+            $userAddress = $form->getData();
+            $address = Address::fromArray($userAddress->toArray());
+
+            $customerBuilder = $this->manager->update($customer)
+                ->addAddress(CustomerAddAddressAction::ofAddress($address));
+            $customerResponse = $customerBuilder->flush();
+
+            $addresses = $customerResponse->getAddresses()->toArray();
+
+            if (isset(end($addresses)['id'])) {
+                $addressId = end($addresses)['id'];
+                return $this->redirect($this->generateUrl('_ctp_example_user_address_edit', ['addressId' => $addressId]));
+            }
+        }
+
+        return $this->render('@Example/my-account-new-address.html.twig', [
+            'formAddress' => $form->createView(),
+            'customer' => $customer
+        ]);
     }
 
 //    public function indexAction()

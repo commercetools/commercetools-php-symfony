@@ -30,30 +30,32 @@
                       </div>
                     </div>
                   </div>
-                  <form id="form-add-my-address-book" action="{{ root.meta._links.myAddressBookAddAddressSubmit.href }}" method="POST">
-                    <input type="hidden" name="csrfToken" value="{{ csrf_token('csrfToken') }}"/>
+                    {{ form_start(formAddress, {'action': path('_ctp_example_user_address_new', {'addressId': addressId})}) }}
+                    {% set formObject = formAddress %}
+                    {% form_theme formAddress 'bootstrap_3_layout.html.twig' %}
+                    {{ form_row(formAddress._token) }}
                     <div class="row">
                       {% include '@Example/partials/form/global-messages.html.twig' with {'messages':content.newAddressForm.messages} %}
                       {% include '@Example/partials/form/global-errors.html.twig' with {'errors':content.newAddressForm.errors} %}
                     </div>
                     <div class="row">
                       <div class="col-sm-12">
-                        {% include '@Example/partials/myaccount/my-address-book-address-form.html.twig' with {'form':content.newAddressForm, 'settings':content.newAddressFormSettings} %}
+                        {% include '@Example/partials/myaccount/my-address-book-address-form.html.twig' %}
                       </div>
                     </div>
                     <div class="row">
                       <div class="col-sm-12">
                         <div class="edit-address-book-footer">
                           <div class="btn-grey push-left">
-                            <a href="{{ root.meta._links.myAddressBook.href }}">{{ 'addressBook.buttons.cancelAddressBtn'|trans([], 'my-account') }}</button>
+                            <a href="{{ path('_ctp_example_user_address_book') }}">{{ 'addressBook.buttons.cancelAddressBtn'|trans([], 'my-account') }}</a>
                           </div>
                           <div class="add-new-address-btn push-right">
-                            <button type="submit">{{ 'addressBook.buttons.saveAddressBtn'|trans([], 'my-account') }}</button>
+                            {{ form_widget(formAddress.submit, { 'label' : 'addressBook.buttons.saveAddressBtn'|trans([], 'my-account')}) }}
                           </div>
                         </div>
                       </div>
                     </div>
-                  </form>
+                  {{ form_end(formAddress, {'render_rest': false}) }}
                 </div>
               </div>
             </div>

@@ -49,6 +49,10 @@ _ctp_example_user_address_book:
     path:    /user/address
     defaults: { _controller: Commercetools\Symfony\ExampleBundle\Controller\UserController::addressBookAction }
 
+_ctp_example_user_address_new:
+    path:    /user/address/new
+    defaults: { _controller: Commercetools\Symfony\ExampleBundle\Controller\UserController::addAddressAction }
+
 _ctp_example_user_address_edit:
     path:    /user/address/edit/{addressId}
     defaults: { _controller: Commercetools\Symfony\ExampleBundle\Controller\UserController::editAddressAction }
