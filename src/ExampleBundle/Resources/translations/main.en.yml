@@ -21,7 +21,7 @@ header:
   title: Sunrise
   stores: Stores
   help: Help
-  callUs: Call us on __phoneNumber__
+  callUs: Call us on %phoneNumber%
   miniCart: Cart
   viewBag: View Bag
   checkout: Checkout
