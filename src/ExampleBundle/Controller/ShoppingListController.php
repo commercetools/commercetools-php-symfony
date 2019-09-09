@@ -3,7 +3,6 @@ declare(strict_types=1);
 
 namespace Commercetools\Symfony\ExampleBundle\Controller;
 
-use Commercetools\Core\Model\Customer\CustomerReference;
 use Commercetools\Core\Model\ShoppingList\ShoppingList;
 use Commercetools\Core\Request\ShoppingLists\Command\ShoppingListAddLineItemAction;
 use Commercetools\Core\Request\ShoppingLists\Command\ShoppingListChangeLineItemQuantityAction;
@@ -11,74 +10,58 @@ use Commercetools\Core\Request\ShoppingLists\Command\ShoppingListRemoveLineItemA
 use Commercetools\Symfony\CtpBundle\Model\QueryParams;
 use Commercetools\Symfony\ExampleBundle\Entity\ProductToShoppingList;
 use Commercetools\Symfony\ExampleBundle\Model\Form\Type\AddToShoppingListType;
-use Commercetools\Symfony\ShoppingListBundle\Manager\ShoppingListManager;
+use Commercetools\Symfony\ShoppingListBundle\Manager\MeShoppingListManager;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Session\SessionInterface;
-use Symfony\Component\Security\Core\User\UserInterface;
 
 class ShoppingListController extends AbstractController
 {
     /**
-     * @var ShoppingListManager
+     * @var MeShoppingListManager
      */
     private $manager;
 
     /**
      * ShoppingListController constructor.
+     * @param MeShoppingListManager $manager
      */
-    public function __construct(ShoppingListManager $manager)
+    public function __construct(MeShoppingListManager $manager)
     {
         $this->manager = $manager;
     }
 
-    public function indexAction(Request $request, SessionInterface $session, UserInterface $user = null)
+    public function indexAction(Request $request)
     {
         $params = new QueryParams();
         $params->add('expand', 'lineItems[*].variant');
         $params->add('sort', 'createdAt desc');
 
-        if (is_null($user)) {
-            $shoppingLists = $this->manager->getAllOfAnonymous($request->getLocale(), $session->getId(), $params);
-        } else {
-            $shoppingLists = $this->manager->getAllOfCustomer($request->getLocale(), CustomerReference::ofId($user->getId()), $params);
-        }
+        $shoppingLists = $this->manager->getAllMyShoppingLists($request->getLocale(), $params);
 
         return $this->render('@Example/my-account-wishlist.html.twig', ['lists' => $shoppingLists]);
     }
 
-    public function createAction(Request $request, SessionInterface $session, UserInterface $user = null)
+    public function createAction(Request $request)
     {
-        if (is_null($user)) {
-            $this->manager->createShoppingListByAnonymous($request->getLocale(), $session->getId(), $request->get('shoppingListName'));
-        } else {
-            $this->manager->createShoppingListByCustomer($request->getLocale(), CustomerReference::ofId($user->getId()), $request->get('shoppingListName'));
-        }
+        $this->manager->createShoppingList($request->getLocale(), $request->get('shoppingListName'));
 
         return $this->redirectToRoute('_ctp_example_shoppingList');
     }
 
-    public function deleteByIdAction(Request $request, $shoppingListId, SessionInterface $session, UserInterface $user = null)
+    public function deleteByIdAction(Request $request, $shoppingListId)
     {
-        $customerReference = is_null($user) ? null : CustomerReference::ofId($user->getId());
-
-        $shoppingList = $this->manager->getShoppingListForUser($request->getLocale(), $shoppingListId, $customerReference, $session->getId());
+        $shoppingList = $this->manager->getById($request->getLocale(), $shoppingListId);
 
         $this->manager->deleteShoppingList($request->getLocale(), $shoppingList);
 
         return new RedirectResponse($this->generateUrl('_ctp_example_cart'));
     }
 
-    public function addLineItemAction(Request $request, SessionInterface $session, UserInterface $user = null)
+    public function addLineItemAction(Request $request)
     {
         $shoppingListsIds = [];
-
-        if (is_null($user)) {
-            $shoppingLists = $this->manager->getAllOfAnonymous($request->getLocale(), $session->getId());
-        } else {
-            $shoppingLists = $this->manager->getAllOfCustomer($request->getLocale(), CustomerReference::ofId($user->getId()));
-        }
+        $shoppingLists = $this->manager->getAllMyShoppingLists($request->getLocale());
 
         foreach ($shoppingLists as $shoppingList) {
             /** @var ShoppingList $shoppingList */

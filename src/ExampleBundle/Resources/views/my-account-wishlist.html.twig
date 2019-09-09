@@ -16,8 +16,9 @@
             &nbsp;&nbsp;&nbsp;
             <span class="items-total-txt">{{ 'myWishlist.itemsTotal'|trans({'items': lists.current.lineItems.count}, 'my-account') }}</span>
         </div>
-        {% if lists.current %}
+        {% for list in lists %}
         <div class="row">
+            {{ list.name }}
             <div class="col-sm-12">
                 <div class="my-orders-wrapper">
                     <div class="row">
@@ -25,7 +26,7 @@
                             <div class="my-orders-order-content">
                                 <div class="my-account-wishlist-items-wrapper">
                                     <div class="row">
-                                        {% for lineItem in lists.current.lineItems %}
+                                        {% for lineItem in list.lineItems %}
                                             <div class="col-sm-6 col-md-3">
                                                 {% include '@Example/partials/catalog/product-thumbnail.html.twig' with {'product':lineItem, 'index':loop.index0, 'wishlist':true} %}
                                                 <form id="form-remove-from-wishlist{{ loop.index0 }}" name="remove-from-wishlist"
@@ -45,7 +46,7 @@
                                 </div>
                                 <div class="my-account-wishlist-clear-btn">
                                     <form id="form-clear-wishlist" name="clear-wishlist"
-                                          action="{{ path('_ctp_example_shoppingList_delete', {'shoppingListId': lists.current.id}) }}" method="post">
+                                          action="{{ path('_ctp_example_shoppingList_delete', {'shoppingListId': list.id}) }}" method="post">
                                         <input type="hidden" name="csrfToken" value="{{ csrf_token('csrfToken') }}"/>
 
                                         <button type="submit">{{ 'myWishlist.clear'|trans([], 'my-account') }}</button>
@@ -57,7 +58,7 @@
                 </div>
             </div>
         </div>
-        {% endif %}
+        {% endfor %}
     </div>
 </div>
 {% include '@Example/partials/common/footer.html.twig' %}
