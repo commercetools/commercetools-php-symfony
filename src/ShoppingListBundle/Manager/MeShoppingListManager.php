@@ -13,7 +13,7 @@ use Commercetools\Symfony\ShoppingListBundle\Model\Repository\MeShoppingListRepo
 use Commercetools\Symfony\ShoppingListBundle\Model\ShoppingListUpdateBuilder;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
-class MeShoppingListManager
+class MeShoppingListManager implements ShoppingListManagerInterface
 {
     /**
      * @var MeShoppingListRepository

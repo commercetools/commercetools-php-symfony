@@ -56,17 +56,16 @@ class MeShoppingListRepository extends MeRepository
     }
 
     /**
-     * @param string $locale
      * @param ShoppingList $shoppingList
      * @param array $actions
      * @param QueryParams|null $params
      * @return ShoppingList
      */
-    public function update($locale, ShoppingList $shoppingList, array $actions, QueryParams $params = null)
+    public function update(ShoppingList $shoppingList, array $actions, QueryParams $params = null)
     {
         $request = RequestBuilder::of()->me()->shoppingLists()->update($shoppingList)->setActions($actions);
 
-        return $this->executeRequest($request, $locale, $params);
+        return $this->executeRequest($request, 'en', $params);
     }
 
     /**

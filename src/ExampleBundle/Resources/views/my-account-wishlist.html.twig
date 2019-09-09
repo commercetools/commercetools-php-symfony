@@ -34,7 +34,8 @@
                                                 <form id="form-remove-from-wishlist{{ loop.index0 }}" name="remove-from-wishlist"
                                                       action="{{ path('_ctp_example_shoppingList_remove_lineItem') }}" method="post">
                                                     <input type="hidden" name="csrfToken" value="{{ csrf_token('csrfToken') }}"/>
-                                                    <input type="hidden" name="lineItemId" value="{{ lineItem.Id }}">
+                                                    <input type="hidden" name="lineItemId" value="{{ lineItem.id }}">
+                                                    <input type="hidden" name="shoppingListId" value="{{ list.id }}">
 
                                                     <div class="my-account-wishlist-remove-btn">
                                                         <button type="submit">{{ 'removeBtn.title'|trans({},'catalog') }}</button>

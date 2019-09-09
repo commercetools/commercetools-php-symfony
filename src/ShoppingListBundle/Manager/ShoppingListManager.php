@@ -15,7 +15,7 @@ use Commercetools\Symfony\ShoppingListBundle\Model\ShoppingListUpdateBuilder;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Commercetools\Core\Model\Customer\CustomerReference;
 
-class ShoppingListManager
+class ShoppingListManager implements ShoppingListManagerInterface
 {
     /**
      * @var ShoppingListRepository

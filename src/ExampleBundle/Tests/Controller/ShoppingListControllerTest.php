@@ -291,7 +291,6 @@ class ShoppingListControllerTest extends WebTestCase
 
         $this->request->getLocale()->willReturn('en')->shouldBeCalledTimes(2);
 
-        // TODO ~context related~
         $context = new Context();
         $context->setLanguages([0 => 'en']);
 

@@ -8,6 +8,7 @@ use Commercetools\Core\Builder\Update\ShoppingListsActionBuilder;
 use Commercetools\Core\Model\ShoppingList\ShoppingList;
 use Commercetools\Core\Request\AbstractAction;
 use Commercetools\Symfony\ShoppingListBundle\Manager\ShoppingListManager;
+use Commercetools\Symfony\ShoppingListBundle\Manager\ShoppingListManagerInterface;
 
 class ShoppingListUpdateBuilder extends ShoppingListsActionBuilder
 {
@@ -23,10 +24,10 @@ class ShoppingListUpdateBuilder extends ShoppingListsActionBuilder
 
     /**
      * ShoppingListUpdate constructor.
-     * @param ShoppingListManager $manager
+     * @param ShoppingListManagerInterface $manager
      * @param ShoppingList $shoppingList
      */
-    public function __construct(ShoppingList $shoppingList, ShoppingListManager $manager)
+    public function __construct(ShoppingList $shoppingList, ShoppingListManagerInterface $manager)
     {
         $this->manager = $manager;
         $this->shoppingList = $shoppingList;
