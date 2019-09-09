@@ -6,7 +6,7 @@
 namespace Commercetools\Symfony\StateBundle\Model\Repository;
 
 use Commercetools\Core\Builder\Request\RequestBuilder;
-use Commercetools\Core\Client\HttpClient;
+use Commercetools\Core\Client\ApiClient;
 use Commercetools\Core\Model\State\State;
 use Commercetools\Core\Model\State\StateCollection;
 use Commercetools\Symfony\CtpBundle\Logger\Logger;
@@ -26,12 +26,12 @@ class StateRepository extends Repository
      * StateRepository constructor.
      * @param $enableCache
      * @param CacheItemPoolInterface $cache
-     * @param HttpClient $client
+     * @param ApiClient $client
      * @param MapperFactory $mapperFactory
      * @param Logger $logger
      * @param ContextFactory $contextFactory
      */
-    public function __construct($enableCache, CacheItemPoolInterface $cache, HttpClient $client, MapperFactory $mapperFactory, Logger $logger, ContextFactory $contextFactory)
+    public function __construct($enableCache, CacheItemPoolInterface $cache, ApiClient $client, MapperFactory $mapperFactory, Logger $logger, ContextFactory $contextFactory)
     {
         parent::__construct($enableCache, $cache, $client, $mapperFactory, $contextFactory);
         $this->logger = $logger;

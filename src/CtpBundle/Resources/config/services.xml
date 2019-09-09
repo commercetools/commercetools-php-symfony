@@ -6,7 +6,7 @@
     <services>
         <service id="commercetools" synthetic="true" />
         <service id="GuzzleHttp\Client" alias="commercetools.api.client" />
-        <service id="Commercetools\Core\Client\HttpClient" alias="commercetools.api.client" />
+        <service id="Commercetools\Core\Client\ApiClient" alias="commercetools.api.client" />
         <service id="commercetools.api.client" class="GuzzleHttp\Client">
             <factory service="commercetools.client.factory" method="build" />
         </service>
@@ -55,7 +55,7 @@
         <service id="Commercetools\Symfony\CtpBundle\Model\Repository" public="true">
             <argument key="$enableCache">false</argument>
             <argument key="$cache" type="service" id="commercetools.cache" />
-            <argument key="$client" type="service" id="Commercetools\Core\Client\HttpClient"/>
+            <argument key="$client" type="service" id="Commercetools\Core\Client\ApiClient"/>
             <argument key="$mapperFactory" type="service" id="commmercetools.mapper.factory" />
             <argument key="$contextFactory" type="service" id="commercetools.context.factory" />
         </service>

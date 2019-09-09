@@ -5,7 +5,7 @@
 
 namespace Commercetools\Symfony\CustomerBundle\Tests\Security\Authentication\Provider;
 
-use Commercetools\Core\Client\HttpClient;
+use Commercetools\Core\Client\ApiClient;
 use Commercetools\Core\Client\HttpRequest;
 use Commercetools\Core\Client\OAuth\ClientCredentials;
 use Commercetools\Core\Client\OAuth\PasswordFlowTokenProvider;
@@ -46,7 +46,7 @@ class AuthenticationProviderTest extends TestCase
 
     public function setUp()
     {
-        $this->client = $this->prophesize(HttpClient::class);
+        $this->client = $this->prophesize(ApiClient::class);
         $this->config = $this->prophesize(Config::class);
         $this->userProvider = $this->prophesize(UserProvider::class);
         $this->userChecker = $this->prophesize(UserChecker::class);

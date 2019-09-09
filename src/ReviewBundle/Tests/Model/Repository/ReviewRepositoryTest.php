@@ -5,7 +5,7 @@
 
 namespace Commercetools\Symfony\ReviewBundle\Tests\Model\Repository;
 
-use Commercetools\Core\Client\HttpClient;
+use Commercetools\Core\Client\ApiClient;
 use Commercetools\Core\Model\Customer\CustomerReference;
 use Commercetools\Core\Model\Product\ProductReference;
 use Commercetools\Core\Model\Review\Review;
@@ -43,7 +43,7 @@ class ReviewRepositoryTest extends TestCase
         $this->response->getContext()->willReturn(null);
         $this->response->isError()->willReturn(false);
 
-        $this->client = $this->prophesize(HttpClient::class);
+        $this->client = $this->prophesize(ApiClient::class);
     }
 
     private function getReviewRepository()

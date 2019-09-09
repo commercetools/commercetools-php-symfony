@@ -13,7 +13,7 @@ use Commercetools\Symfony\CtpBundle\Model\QueryParams;
 use Commercetools\Symfony\CtpBundle\Service\ContextFactory;
 use Commercetools\Symfony\CtpBundle\Service\MapperFactory;
 use Commercetools\Symfony\CtpBundle\Model\Repository;
-use Commercetools\Core\Client\HttpClient;
+use Commercetools\Core\Client\ApiClient;
 use Psr\Cache\CacheItemPoolInterface;
 
 class ReviewRepository extends Repository

@@ -20,7 +20,7 @@
         <service id="commercetools.http.clientfactory" class="Commercetools\Core\Client\ClientFactory">
             <factory class="Commercetools\Core\Client\ClientFactory" method="of"/>
         </service>
-        <service id="Commercetools\Symfony\CustomerBundle\Security\Authentication\Provider\RefreshFlowTokenProvider">
+        <service id="Commercetools\Core\Client\OAuth\RefreshFlowTokenProvider">
             <argument type="service" id="session"/>
             <argument type="service" id="commercetools.client.config"/>
             <argument type="service" id="commercetools.oauth.client"/>

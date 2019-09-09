@@ -6,7 +6,7 @@
 namespace Commercetools\Symfony\SetupBundle\Tests\Model\Repository;
 
 use Commercetools\Core\Builder\Update\ProjectActionBuilder;
-use Commercetools\Core\Client\HttpClient;
+use Commercetools\Core\Client\ApiClient;
 use Commercetools\Core\Model\Common\LocalizedString;
 use Commercetools\Core\Model\Project\Project;
 use Commercetools\Core\Model\Type\TypeDraft;
@@ -45,7 +45,7 @@ class SetupRepositoryTest extends TestCase
         $this->response->getContext()->willReturn(null);
         $this->response->isError()->willReturn(false);
 
-        $this->client = $this->prophesize(HttpClient::class);
+        $this->client = $this->prophesize(ApiClient::class);
     }
 
     private function getSetupRepository()

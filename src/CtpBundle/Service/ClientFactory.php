@@ -5,7 +5,7 @@
 
 namespace Commercetools\Symfony\CtpBundle\Service;
 
-use Commercetools\Core\Client\HttpClient;
+use Commercetools\Core\Client\ApiClient;
 use Commercetools\Core\Client\ClientFactory as CtpClientFactory;
 use Commercetools\Core\Config;
 use Commercetools\Core\Model\Common\Context;
@@ -41,7 +41,7 @@ class ClientFactory
      * @param string $locale
      * @param Context $context
      * @param Config|array $config
-     * @return HttpClient
+     * @return ApiClient
      */
     public function build(
         $locale = null,

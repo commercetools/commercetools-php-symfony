@@ -5,6 +5,7 @@
 namespace Commercetools\Symfony\ExampleBundle\Tests\Entity;
 
 use Commercetools\Core\Model\Common\Address;
+use Commercetools\Core\Model\Customer\Customer;
 use Commercetools\Symfony\ExampleBundle\Entity\UserAddress;
 use PHPUnit\Framework\TestCase;
 
@@ -31,7 +32,9 @@ class UserAddressTest extends TestCase
         'phone' => '0546659948',
         'mobile' => '0620923399',
         'department' => '1',
-        'company' => 'CT'
+        'company' => 'CT',
+        'isDefaultBillingAddress' => false,
+        'isDefaultShippingAddress' => false
     ];
 
     public function testOfAddress()
@@ -96,7 +99,7 @@ class UserAddressTest extends TestCase
     public function testToArray()
     {
         $address = Address::fromArray($this->data);
-        $userAddress = UserAddress::ofAddress($address);
+        $userAddress = UserAddress::ofAddressAndCustomer($address, Customer::of());
         $arrayAddress = $userAddress->toArray();
 
         $this->assertEquals($this->data, $arrayAddress);

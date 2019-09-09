@@ -57,6 +57,10 @@ _ctp_example_user_address_edit:
     path:    /user/address/edit/{addressId}
     defaults: { _controller: Commercetools\Symfony\ExampleBundle\Controller\UserController::editAddressAction }
 
+_ctp_example_user_address_delete:
+    path:    /user/address/delete/{addressId}
+    defaults: { _controller: Commercetools\Symfony\ExampleBundle\Controller\UserController::deleteAddressAction }
+
 _ctp_example_cart:
     path: /cart
     defaults: { _controller: Commercetools\Symfony\ExampleBundle\Controller\CartController::indexAction }

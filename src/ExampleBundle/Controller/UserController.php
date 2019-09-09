@@ -8,6 +8,9 @@ use Commercetools\Core\Model\Common\Address;
 use Commercetools\Core\Request\Customers\Command\CustomerAddAddressAction;
 use Commercetools\Core\Request\Customers\Command\CustomerChangeAddressAction;
 use Commercetools\Core\Request\Customers\Command\CustomerChangeEmailAction;
+use Commercetools\Core\Request\Customers\Command\CustomerRemoveAddressAction;
+use Commercetools\Core\Request\Customers\Command\CustomerSetDefaultBillingAddressAction;
+use Commercetools\Core\Request\Customers\Command\CustomerSetDefaultShippingAddressAction;
 use Commercetools\Core\Request\Customers\Command\CustomerSetFirstNameAction;
 use Commercetools\Core\Request\Customers\Command\CustomerSetLastNameAction;
 use Commercetools\Core\Request\Customers\Command\CustomerSetTitleAction;
@@ -69,20 +72,6 @@ class UserController extends AbstractController
             'customer' => $customer
         ]);
     }
-
-//    public function indexAction()
-//    {
-//        /**
-//         * @var User $user
-//         */
-//        $user = $this->getUser();
-//
-//        return $this->render('ExampleBundle:catalog:index.html.twig',
-//            [
-//                'user' => $user
-//            ]
-//        );
-//    }
 
     public function loginAction(Request $request, AuthenticationUtils $authenticationUtils)
     {
@@ -147,6 +136,19 @@ class UserController extends AbstractController
         ]);
     }
 
+    public function deleteAddressAction(Request $request, UserInterface $user, $addressId)
+    {
+        $customer = $this->manager->getById($request->getLocale(), $user->getId());
+
+        $customerBuilder = $this->manager->update($customer)
+            ->removeAddress(CustomerRemoveAddressAction::ofAddressId($addressId));
+        $customer = $customerBuilder->flush();
+
+        return $this->render('@Example/my-account-address-book.html.twig', [
+            'customer' => $customer
+        ]);
+    }
+
     public function editAddressAction(Request $request, UserInterface $user, $addressId)
     {
         $customer = $this->manager->getById($request->getLocale(), $user->getId());
@@ -167,6 +169,15 @@ class UserController extends AbstractController
 
             $customerBuilder = $this->manager->update($customer)
                 ->changeAddress(CustomerChangeAddressAction::ofAddressIdAndAddress($addressId, $address));
+
+            if ($userAddress->getIsDefaultBillingAddress()) {
+                $customerBuilder->addAction(CustomerSetDefaultBillingAddressAction::of()->setAddressId($addressId));
+            }
+
+            if ($userAddress->getIsDefaultShippingAddress()) {
+                $customerBuilder->addAction(CustomerSetDefaultShippingAddressAction::of()->setAddressId($addressId));
+            }
+
             $customerBuilder->flush();
         }
 
@@ -175,25 +186,6 @@ class UserController extends AbstractController
             'addressId' => $addressId
         ]);
     }
-
-//    protected function getCustomer(User $user)
-//    {
-//        if (!$user instanceof User){
-//            throw new \InvalidArgumentException;
-//        }
-//
-//        /**
-//         * @var Client $client
-//         */
-//        $client = $this->get('commercetools.client');
-//
-//        $request = CustomerByIdGetRequest::ofId($user->getId());
-//        $response = $request->executeWithClient($client);
-//
-//        $customer = $request->mapResponse($response);
-//
-//        return $customer;
-//    }
 
     public function signUpAction()
     {

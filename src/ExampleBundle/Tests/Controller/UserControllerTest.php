@@ -10,6 +10,7 @@ use Commercetools\Core\Model\Common\AddressCollection;
 use Commercetools\Core\Model\Customer\Customer;
 use Commercetools\Core\Request\Customers\Command\CustomerChangeAddressAction;
 use Commercetools\Core\Request\Customers\Command\CustomerChangeEmailAction;
+use Commercetools\Core\Request\Customers\Command\CustomerSetDefaultShippingAddressAction;
 use Commercetools\Core\Request\Customers\Command\CustomerSetFirstNameAction;
 use Commercetools\Core\Request\Customers\Command\CustomerSetLastNameAction;
 use Commercetools\Core\Request\Customers\Command\CustomerSetTitleAction;
@@ -221,12 +222,17 @@ class UserControllerTest extends WebTestCase
         $customerUpdateBuilder->changeAddress(Argument::type(CustomerChangeAddressAction::class))->will(function () {
             return $this;
         })->shouldBeCalled();
+        $customerUpdateBuilder->addAction(Argument::type(CustomerSetDefaultShippingAddressAction::class))->will(function () {
+            return $this;
+        })->shouldBeCalledOnce();
         $customerUpdateBuilder->flush()->willReturn($customer)->shouldBeCalled();
 
         $this->customerManager->getById('en', 'id-1')->willReturn($customer)->shouldBeCalled();
         $this->customerManager->update(Argument::type(Customer::class))->willReturn($customerUpdateBuilder->reveal())->shouldBeCalled();
 
         $userAddress = $this->prophesize(UserAddress::class);
+        $userAddress->getIsDefaultBillingAddress()->willReturn(false)->shouldBeCalledOnce();
+        $userAddress->getIsDefaultShippingAddress()->willReturn(true)->shouldBeCalledOnce();
         $userAddress->toArray()->willReturn([])->shouldBeCalledOnce();
 
         $form = $this->prophesize(Form::class);

@@ -5,7 +5,7 @@
 
 namespace Commercetools\Symfony\CartBundle\Tests\Model\Repository;
 
-use Commercetools\Core\Client\HttpClient;
+use Commercetools\Core\Client\ApiClient;
 use Commercetools\Core\Model\ShippingMethod\ShippingMethod;
 use Commercetools\Core\Model\ShippingMethod\ShippingMethodCollection;
 use Commercetools\Core\Model\Zone\Location;
@@ -39,7 +39,7 @@ class ShippingMethodRepositoryTest extends TestCase
         $this->response->getContext()->willReturn(null);
         $this->response->isError()->willReturn(false);
 
-        $this->client = $this->prophesize(HttpClient::class);
+        $this->client = $this->prophesize(ApiClient::class);
     }
 
     private function getShippingMethodRepository()

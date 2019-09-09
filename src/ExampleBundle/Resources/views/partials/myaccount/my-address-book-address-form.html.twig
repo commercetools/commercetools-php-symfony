@@ -34,7 +34,8 @@
     <div class="input-block">
       <label for="billing-checkbox">
         <span>
-          <input id="default-billing-checkbox" type="checkbox" name="defaultBillingAddress" value="true" {% if form.defaultBillingAddress %}checked{% endif %}>
+{#          <input id="default-billing-checkbox" type="checkbox" name="defaultBillingAddressId" value="true" {% if form.defaultBillingAddressId %}checked{% endif %}>#}
+          {{ form_widget(formObject['isDefaultBillingAddress']) }}
         </span>
         <span>{{ 'addressBook.billingAddress.label'|trans([], 'my-account') }}</span>
       </label>
@@ -44,7 +45,8 @@
     <div class="input-block">
       <label for="delivery-checkbox">
         <span>
-          <input id="default-shipping-checkbox" type="checkbox" name="defaultShippingAddress" value="true" {% if form.defaultShippingAddress %}checked{% endif %}>
+{#          <input id="default-shipping-checkbox" type="checkbox" name="defaultShippingAddressId" value="true" {% if form.defaultShippingAddressId %}checked{% endif %}>#}
+          {{ form_widget(formObject['isDefaultShippingAddress']) }}
         </span>
         <span>{{ 'addressBook.shippingAddress.label'|trans([], 'my-account') }}</span>
       </label>

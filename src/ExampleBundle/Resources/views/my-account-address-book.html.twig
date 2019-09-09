@@ -35,106 +35,17 @@
                     <div class="col-sm-6">
                       <div class="box-addresses-title">
                         {{ 'addressBook.defaultAddresses.title'|trans([], 'my-account') }}
-
-                        <table class="table-condensed">
-                          {% for address in customer.getAddresses %}
-                            <tr class="active">
-                              <td class="first-table">Title</td>
-                              <td class="second-table">{{ address.getTitle }}</td>
-                            </tr>
-                            <tr class="active">
-                              <td class="first-table">Salutation</td>
-                              <td class="second-table">{{ address.getSalutation }}</td>
-                            </tr>
-                            <tr class="active">
-                              <td class="first-table">FirstName</td>
-                              <td class="second-table">{{ address.getFirstName }}</td>
-                            </tr>
-                            <tr class="active">
-                              <td class="first-table">LastName</td>
-                              <td class="second-table">{{ address.getLastName }}</td>
-                            </tr>
-                            <tr class="active">
-                              <td class="first-table">Email</td>
-                              <td class="second-table">{{ address.getEmail }}</td>
-                            </tr>
-                            <tr class="active">
-                              <td class="first-table">Company</td>
-                              <td class="second-table">{{ address.getCompany }}</td>
-                            </tr>
-                            <tr class="active">
-                              <td class="first-table">StreetName and number</td>
-                              <td class="second-table"> {{ address.getStreetName }} {{ address.getStreetNumber }}</td>
-                            </tr>
-                            <tr class="active">
-                              <td class="first-table">Building</td>
-                              <td class="second-table">{{ address.getBuilding }}</td>
-                            </tr>
-                            <tr class="active">
-                              <td class="first-table">Apartment</td>
-                              <td class="second-table">{{ address.getApartment }}</td>
-                            </tr>
-                            <tr class="active">
-                              <td class="first-table">Department</td>
-                              <td class="second-table">{{ address.getDepartment }}</td>
-                            </tr>
-                            <tr class="active">
-                              <td class="first-table">Postalcode</td>
-                              <td class="second-table">{{ address.getPostalCode }}</td>
-                            </tr>
-                            <tr class="active">
-                              <td class="first-table">City</td>
-                              <td class="second-table">{{ address.getCity }}</td>
-                            </tr>
-                            <tr class="active">
-                              <td class="first-table">Country</td>
-                              <td class="second-table">{{ address.getCountry }}</td>
-                            </tr>
-                            <tr class="active">
-                              <td class="first-table">Region</td>
-                              <td class="second-table">{{ address.getRegion }}</td>
-                            </tr>
-                            <tr class="active">
-                              <td class="first-table">State</td>
-                              <td class="second-table">{{ address.getState }}</td>
-                            </tr>
-                            <tr class="active">
-                              <td class="first-table">Postalbox</td>
-                              <td class="second-table">{{ address.getPOBox }}</td>
-                            </tr>
-                            <tr class="active">
-                              <td class="first-table">Address info</td>
-                              <td class="second-table">{{ address.getAdditionalStreetInfo }}</td>
-                            </tr>
-                            <tr class="active">
-                              <td class="first-table">Street info</td>
-                              <td class="second-table">{{ address.getAdditionalAddressInfo }}</td>
-                            </tr>
-                            <tr class="active">
-                              <td class="first-table">Phone</td>
-                              <td class="second-table">{{ address.getPhone }}</td>
-                            </tr>
-                            <tr class="active">
-                              <td class="first-table">Mobile</td>
-                              <td class="second-table">{{ address.getMobile }}</td>
-                            </tr>
-                            <tr class="active">
-                              <td class="first-table"></td>
-                              <td class="second-table"><a href="{{ path('_ctp_example_user_address_edit', {'addressId': address.getId}) }}"><button>Edit</button></a> </td>
-                            </tr>
-                          {% endfor %}
-                        </table>
                       </div>
-                      {% if content.defaultShippingAddress %}
+                      {% if customer.defaultShippingAddressId %}
                       <div class="address-book-dark-box">
                         <div class="address-book-dark-box-title">{{ 'addressBook.shippingAddress.title'|trans([], 'my-account') }}</div>
-                        {% include '@Example/partials/myaccount/my-address-book-address.html.twig' with {'addressInfo':content.defaultShippingAddress} %}
+                        {% include '@Example/partials/myaccount/my-address-book-address.html.twig' with {'addressInfo': customer.defaultShippingAddress} %}
                       </div>
                       {% endif %}
-                      {% if content.defaultBillingAddress %}
+                      {% if customer.defaultBillingAddressId %}
                       <div class="address-book-dark-box">
                         <div class="address-book-dark-box-title">{{ 'addressBook.billingAddress.title'|trans([], 'my-account') }}</div>
-                        {% include '@Example/partials/myaccount/my-address-book-address.html.twig' with {'addressInfo':content.defaultBillingAddress} %}
+                        {% include '@Example/partials/myaccount/my-address-book-address.html.twig' with {'addressInfo': customer.defaultBillingAddress} %}
                       </div>
                       {% endif %}
                     </div>
@@ -142,9 +53,9 @@
                       <div class="box-addresses-title">
                         {{ 'addressBook.additionalAddress.title'|trans([], 'my-account') }}
                       </div>
-                      {% for addresses_i in content.addresses %}
+                      {% for address in customer.addresses %}
                       <div class="address-book-white-box">
-                        {% include '@Example/partials/myaccount/my-address-book-address.html.twig' with {'addressInfo':addresses_i} %}
+                        {% include '@Example/partials/myaccount/my-address-book-address.html.twig' with {'addressInfo':address} %}
                       </div>
                       {% endfor %}
                     </div>

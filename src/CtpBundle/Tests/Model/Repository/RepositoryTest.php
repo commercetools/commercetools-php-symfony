@@ -6,7 +6,7 @@
 namespace Commercetools\Symfony\CtpBundle\Tests\Model\Repository;
 
 use Cache\Adapter\Common\CacheItem;
-use Commercetools\Core\Client\HttpClient;
+use Commercetools\Core\Client\ApiClient;
 use Commercetools\Core\Config;
 use Commercetools\Core\Model\JsonObjectMapper;
 use Commercetools\Core\Model\Product\ProductCollection;
@@ -42,7 +42,7 @@ class RepositoryTest extends TestCase
         $this->response->isError()->willReturn(false);
         $this->response->toObject()->willReturn(ProductCollection::of());
 
-        $this->client = $this->prophesize(HttpClient::class);
+        $this->client = $this->prophesize(ApiClient::class);
     }
 
     private function getRepository()

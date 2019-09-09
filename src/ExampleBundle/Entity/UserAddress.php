@@ -5,6 +5,7 @@
 namespace Commercetools\Symfony\ExampleBundle\Entity;
 
 use Commercetools\Core\Model\Common\Address;
+use Commercetools\Core\Model\Customer\Customer;
 use Symfony\Component\Validator\Constraints\Email;
 use Symfony\Component\Validator\Constraints\Length;
 use Symfony\Component\Validator\Constraints\NotBlank;
@@ -33,7 +34,40 @@ class UserAddress
     private $additionalStreetInfo;
     private $phone;
     private $mobile;
+    private $isDefaultBillingAddress;
+    private $isDefaultShippingAddress;
 
+    /**
+     * @return mixed
+     */
+    public function getIsDefaultBillingAddress()
+    {
+        return $this->isDefaultBillingAddress;
+    }
+
+    /**
+     * @param mixed $isDefaultBillingAddress
+     */
+    public function setIsDefaultBillingAddress($isDefaultBillingAddress)
+    {
+        $this->isDefaultBillingAddress = $isDefaultBillingAddress;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getIsDefaultShippingAddress()
+    {
+        return $this->isDefaultShippingAddress;
+    }
+
+    /**
+     * @param mixed $isDefaultShippingAddress
+     */
+    public function setIsDefaultShippingAddress($isDefaultShippingAddress)
+    {
+        $this->isDefaultShippingAddress = $isDefaultShippingAddress;
+    }
 
     /**
      * @return mixed
@@ -54,7 +88,6 @@ class UserAddress
         return $this;
     }
 
-
     /**
      * @return mixed
      */
@@ -74,7 +107,6 @@ class UserAddress
         return $this;
     }
 
-
     /**
      * @return mixed
      */
@@ -93,7 +125,6 @@ class UserAddress
 
         return $this;
     }
-
 
     /**
      * @return mixed
@@ -505,6 +536,16 @@ class UserAddress
         $userAddress->setMobile($address->getMobile());
         $userAddress->setDepartment($address->getDepartment());
         $userAddress->setPostalCode($address->getPostalCode());
+
+        return $userAddress;
+    }
+
+    public static function ofAddressAndCustomer(Address $address, Customer $customer)
+    {
+        $userAddress = self::ofAddress($address);
+
+        $userAddress->setIsDefaultBillingAddress($customer->getDefaultBillingAddressId() === $address->getId() && !is_null($address->getId()));
+        $userAddress->setIsDefaultShippingAddress($customer->getDefaultShippingAddressId() === $address->getId() && !is_null($address->getId()));
 
         return $userAddress;
     }

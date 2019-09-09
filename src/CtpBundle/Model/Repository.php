@@ -5,7 +5,7 @@
 
 namespace Commercetools\Symfony\CtpBundle\Model;
 
-use Commercetools\Core\Client\HttpClient;
+use Commercetools\Core\Client\ApiClient;
 use Commercetools\Core\Model\Common\Context;
 use Commercetools\Core\Model\MapperInterface;
 use Commercetools\Core\Request\AbstractApiRequest;
@@ -33,7 +33,7 @@ class Repository
     protected $cache;
 
     /**
-     * @var HttpClient
+     * @var ApiClient
      */
     protected $client;
 
@@ -51,10 +51,11 @@ class Repository
      * Repository constructor.
      * @param string|bool $enableCache
      * @param CacheItemPoolInterface $cache
-     * @param HttpClient $client
+     * @param ApiClient $client
      * @param MapperFactory $mapperFactory
+     * @param ContextFactory $contextFactory
      */
-    public function __construct($enableCache, CacheItemPoolInterface $cache, HttpClient $client, MapperFactory $mapperFactory, ContextFactory $contextFactory)
+    public function __construct($enableCache, CacheItemPoolInterface $cache, ApiClient $client, MapperFactory $mapperFactory, ContextFactory $contextFactory)
     {
         if (is_string($enableCache)) {
             $enableCache = ($enableCache == "true");
@@ -67,7 +68,7 @@ class Repository
     }
 
     /**
-     * @return HttpClient
+     * @return ApiClient
      */
     protected function getClient()
     {

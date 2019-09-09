@@ -5,7 +5,7 @@
 namespace Commercetools\Symfony\CatalogBundle\Model\Repository;
 
 use Commercetools\Core\Builder\Request\RequestBuilder;
-use Commercetools\Core\Client\HttpClient;
+use Commercetools\Core\Client\ApiClient;
 use Commercetools\Core\Error\InvalidArgumentException;
 use Commercetools\Core\Model\Common\LocalizedString;
 use Commercetools\Core\Model\Product\Product;
@@ -37,7 +37,7 @@ class CatalogRepository extends Repository
      * CatalogRepository constructor.
      * @param string|bool $enableCache
      * @param CacheItemPoolInterface $cache
-     * @param HttpClient $client
+     * @param ApiClient $client
      * @param MapperFactory $mapperFactory
      * @param Search $searchModel
      * @param ContextFactory $contextFactory
@@ -45,7 +45,7 @@ class CatalogRepository extends Repository
     public function __construct(
         $enableCache,
         CacheItemPoolInterface $cache,
-        HttpClient $client,
+        ApiClient $client,
         MapperFactory $mapperFactory,
         Search $searchModel,
         ContextFactory $contextFactory

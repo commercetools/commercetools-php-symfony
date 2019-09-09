@@ -208,7 +208,7 @@ class CommercetoolsExtensionTest extends AbstractExtensionTestCase
         $this->load($config, $this->getContainerExtensions());
 
         $this->assertContainerBuilderHasSyntheticService('commercetools');
-        $this->assertContainerBuilderHasService('Commercetools\Core\Client\HttpClient');
+        $this->assertContainerBuilderHasService('Commercetools\Core\Client\ApiClient');
         $this->assertContainerBuilderHasService('commercetools.api.client', 'GuzzleHttp\Client');
         $this->assertContainerBuilderHasService('commercetools.client.config', 'Commercetools\Core\Config');
         $this->assertContainerBuilderHasService('commercetools.client.factory', 'Commercetools\Symfony\CtpBundle\Service\ClientFactory');

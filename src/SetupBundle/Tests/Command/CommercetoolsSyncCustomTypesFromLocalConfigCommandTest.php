@@ -5,7 +5,7 @@
 
 namespace Commercetools\Symfony\SetupBundle\Tests\Command;
 
-use Commercetools\Core\Client\HttpClient;
+use Commercetools\Core\Client\ApiClient;
 use Commercetools\Core\Error\ApiException;
 use Commercetools\Core\Model\Type\Type;
 use Commercetools\Core\Model\Type\TypeCollection;
@@ -47,7 +47,7 @@ class CommercetoolsSyncCustomTypesFromLocalConfigCommandTest extends KernelTestC
         )->shouldBeCalledOnce();
 
         /** @var Client $client */
-        $client = $this->prophesize(HttpClient::class);
+        $client = $this->prophesize(ApiClient::class);
         $client->execute(Argument::any())->shouldNotBeCalled();
 
         $params = [
@@ -83,7 +83,7 @@ class CommercetoolsSyncCustomTypesFromLocalConfigCommandTest extends KernelTestC
             TypeCollection::of()
         )->shouldBeCalledOnce();
 
-        $client = $this->prophesize(HttpClient::class);
+        $client = $this->prophesize(ApiClient::class);
         $client->execute(
             Argument::that(function (TypeCreateRequest $request) {
                 static::assertInstanceOf(TypeDraft::class, $request->getObject());
@@ -126,7 +126,7 @@ class CommercetoolsSyncCustomTypesFromLocalConfigCommandTest extends KernelTestC
             TypeCollection::of()->add(Type::of()->setKey('bar')->setVersion(1))
         )->shouldBeCalledOnce();
 
-        $client = $this->prophesize(HttpClient::class);
+        $client = $this->prophesize(ApiClient::class);
         $client->execute(
             Argument::that(function (TypeDeleteByKeyRequest $request) {
                 static::assertSame('bar', $request->getKey());
@@ -172,7 +172,7 @@ class CommercetoolsSyncCustomTypesFromLocalConfigCommandTest extends KernelTestC
         $responseInterface->getBody()->shouldBeCalled();
         $responseInterface->getReasonPhrase()->shouldBeCalled();
 
-        $client = $this->prophesize(HttpClient::class);
+        $client = $this->prophesize(ApiClient::class);
         $client->execute(
             Argument::that(function (TypeDeleteByKeyRequest $request) {
                 static::assertSame('bar', $request->getKey());

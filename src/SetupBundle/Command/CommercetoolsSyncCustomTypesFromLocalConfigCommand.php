@@ -5,7 +5,7 @@
 
 namespace Commercetools\Symfony\SetupBundle\Command;
 
-use Commercetools\Core\Client\HttpClient;
+use Commercetools\Core\Client\ApiClient;
 use Commercetools\Core\Error\ApiException;
 use Commercetools\Core\Model\Type\TypeCollection;
 use Commercetools\Core\Response\ErrorResponse;
@@ -22,7 +22,7 @@ class CommercetoolsSyncCustomTypesFromLocalConfigCommand extends Command
     private $client;
     private $parameters;
 
-    public function __construct(SetupRepository $repository, HttpClient $client, array $parameters)
+    public function __construct(SetupRepository $repository, ApiClient $client, array $parameters)
     {
         parent::__construct();
         $this->repository = $repository;
