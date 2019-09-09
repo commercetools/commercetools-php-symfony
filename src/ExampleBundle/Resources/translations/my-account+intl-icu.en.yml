@@ -88,6 +88,7 @@ myWishlist:
       =1 {There is one item in your wishlist}
       other {There are # items in your wishlist}
     }
+  listName: List name
 changePassword:
   oldPasswordLabelTxt: Current password
   newPasswordLabelTxt: New password

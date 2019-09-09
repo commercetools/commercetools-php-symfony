@@ -38,7 +38,6 @@ class ShoppingListControllerTest extends WebTestCase
     private $request;
     private $myContainer;
     private $twig;
-    private $ctpClient;
     /** @var ShoppingListManager */
     private $shoppingListManager;
     /** @var MeShoppingListManager */
@@ -49,7 +48,6 @@ class ShoppingListControllerTest extends WebTestCase
         $this->request = $this->prophesize(Request::class);
         $this->myContainer = $this->prophesize(ContainerInterface::class);
         $this->twig = $this->prophesize(Environment::class);
-        $this->ctpClient = $this->prophesize(Client::class);
         $this->shoppingListManager = $this->prophesize(ShoppingListManager::class);
         $this->meShoppingListManager = $this->prophesize(MeShoppingListManager::class);
 
@@ -317,6 +315,59 @@ class ShoppingListControllerTest extends WebTestCase
         $controller = new ShoppingListController($this->shoppingListManager->reveal());
         $controller->setContainer($this->myContainer->reveal());
         $response = $controller->addLineItemAction($this->request->reveal(), $session->reveal(), $user->reveal());
+
+        $this->assertTrue($response->isRedirect());
+    }
+
+    public function testAddLineItemAction()
+    {
+        $form = $this->prophesize(Form::class);
+        $form->handleRequest(Argument::type(Request::class))
+            ->will(function () {
+                return $this;
+            })->shouldBeCalled();
+        $form->isSubmitted()->willReturn(true)->shouldBeCalledOnce();
+        $form->isValid()->willReturn(true)->shouldBeCalledOnce();
+        $form->get('shoppingListId')->will(function () {
+            $this->getData()->willReturn('list-1');
+            return $this;
+        });
+
+        $formFactory = $this->prophesize(FormFactory::class);
+        $formFactory->create(Argument::is(AddToShoppingListType::class), Argument::type(ProductToShoppingList::class), Argument::type('array'))
+            ->willReturn($form->reveal())->shouldBeCalled();
+
+        $router = $this->prophesize(Router::class);
+        $router->generate('_ctp_example_shoppingList', [], 1)->willReturn('bar')->shouldBeCalledOnce();
+
+        $this->myContainer->get('router')->willReturn($router)->shouldBeCalledOnce();
+        $this->myContainer->get('form.factory')->willReturn($formFactory->reveal())->shouldBeCalled();
+
+        $this->request->getLocale()->willReturn('en')->shouldBeCalledTimes(2);
+
+        $context = new Context();
+        $context->setLanguages([0 => 'en']);
+
+        $shoppingListCollection = ShoppingListCollection::of()->add(
+            ShoppingList::of()->setId('list-1')->setName(LocalizedString::ofLangAndText('en', 'list-name-1'))
+        )->setContext($context);
+
+        $shoppingListUpdateBuilder = $this->prophesize(ShoppingListUpdateBuilder::class);
+        $shoppingListUpdateBuilder->addLineItem(Argument::type('closure'))->will(function () {
+            return $this;
+        })->shouldBeCalled();
+        $shoppingListUpdateBuilder->flush()->shouldBeCalled();
+
+        $this->meShoppingListManager->getAllMyShoppingLists('en')
+            ->willReturn($shoppingListCollection)->shouldBeCalledOnce();
+        $this->meShoppingListManager->getById('en', 'list-1')
+            ->willReturn(ShoppingList::of())->shouldBeCalledOnce();
+        $this->meShoppingListManager->update(Argument::type(ShoppingList::class))->willReturn($shoppingListUpdateBuilder)
+            ->shouldBeCalledOnce();
+
+        $controller = new ShoppingListController($this->meShoppingListManager->reveal());
+        $controller->setContainer($this->myContainer->reveal());
+        $response = $controller->addLineItemAction($this->request->reveal());
 
         $this->assertTrue($response->isRedirect());
     }

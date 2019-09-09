@@ -17,8 +17,10 @@
             <span class="items-total-txt">{{ 'myWishlist.itemsTotal'|trans({'items': lists.current.lineItems.count}, 'my-account') }}</span>
         </div>
         {% for list in lists %}
+            <div class="row">
+                <div class="col-sm-12">{{ 'myWishlist.listName'|trans({},'my-account') }}: {{ list.name }}</div>
+            </div>
         <div class="row">
-            {{ list.name }}
             <div class="col-sm-12">
                 <div class="my-orders-wrapper">
                     <div class="row">
