@@ -33,10 +33,9 @@ class CartManagerTest extends TestCase
             })->shouldBeCalled();
 
         $dispatcher->dispatch(
-            Argument::containingString(CartPostUpdateEvent::class),
             Argument::type(CartPostUpdateEvent::class)
         )->will(function ($args) {
-            return $args[1];
+            return $args[0];
         })->shouldBeCalled();
 
         $manager = new CartManager($repository->reveal(), $dispatcher->reveal());
@@ -51,10 +50,10 @@ class CartManagerTest extends TestCase
         $repository = $this->prophesize(CartRepository::class);
         $dispatcher = $this->prophesize(EventDispatcherInterface::class);
         $dispatcher->dispatch(
-            Argument::containingString(AbstractAction::class),
-            Argument::type(CartUpdateEvent::class)
+            Argument::type(CartUpdateEvent::class),
+            Argument::containingString(AbstractAction::class)
         )->will(function ($args) {
-            return $args[1];
+            return $args[0];
         })->shouldBeCalled();
         $action = $this->prophesize(AbstractAction::class);
 

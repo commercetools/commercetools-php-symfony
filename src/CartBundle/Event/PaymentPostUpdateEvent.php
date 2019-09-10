@@ -6,7 +6,7 @@ namespace Commercetools\Symfony\CartBundle\Event;
 
 use Commercetools\Core\Model\Payment\Payment;
 use Commercetools\Core\Request\AbstractAction;
-use Symfony\Component\EventDispatcher\Event;
+use Symfony\Contracts\EventDispatcher\Event;
 
 class PaymentPostUpdateEvent extends Event
 {

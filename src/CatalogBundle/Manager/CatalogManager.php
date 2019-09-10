@@ -158,7 +158,7 @@ class CatalogManager
         $eventName = is_null($eventName) ? get_class($action) : $eventName;
 
         $event = new ProductUpdateEvent($product, $action);
-        $event = $this->dispatcher->dispatch($eventName, $event);
+        $event = $this->dispatcher->dispatch($event, $eventName);
 
         return $event->getActions();
     }
@@ -185,7 +185,7 @@ class CatalogManager
     public function dispatchPostUpdate(Product $product, array $actions)
     {
         $event = new ProductPostUpdateEvent($product, $actions);
-        $event = $this->dispatcher->dispatch(ProductPostUpdateEvent::class, $event);
+        $event = $this->dispatcher->dispatch($event);
 
         return $event->getActions();
     }

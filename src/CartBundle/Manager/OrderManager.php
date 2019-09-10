@@ -125,13 +125,11 @@ class OrderManager
      */
     public function createOrderFromCart($locale, Cart $cart, StateReference $stateReference = null)
     {
-        $event = new OrderCreateEvent();
-        $this->dispatcher->dispatch(OrderCreateEvent::class, $event);
+        $this->dispatcher->dispatch(new OrderCreateEvent());
 
         $order = $this->repository->createOrderFromCart($locale, $cart, $stateReference);
 
-        $eventPost = new OrderPostCreateEvent();
-        $this->dispatcher->dispatch(OrderPostCreateEvent::class, $eventPost);
+        $this->dispatcher->dispatch(new OrderPostCreateEvent());
 
         return $order;
     }
@@ -156,7 +154,7 @@ class OrderManager
         $eventName = is_null($eventName) ? get_class($action) : $eventName;
 
         $event = new OrderUpdateEvent($order, $action);
-        $event = $this->dispatcher->dispatch($eventName, $event);
+        $event = $this->dispatcher->dispatch($event, $eventName);
 
         return $event->getActions();
     }
@@ -183,7 +181,7 @@ class OrderManager
     public function dispatchPostUpdate(Order $order, array $actions)
     {
         $event = new OrderPostUpdateEvent($order, $actions);
-        $event = $this->dispatcher->dispatch(OrderPostUpdateEvent::class, $event);
+        $event = $this->dispatcher->dispatch($event);
 
         return $event->getActions();
     }

@@ -4,7 +4,7 @@
 
 namespace Commercetools\Symfony\CartBundle\Event;
 
-use Symfony\Component\EventDispatcher\Event;
+use Symfony\Contracts\EventDispatcher\Event;
 
 class PaymentCreateEvent extends Event
 {

@@ -86,7 +86,7 @@ class ReviewManager
         $eventName = is_null($eventName) ? get_class($action) : $eventName;
 
         $event = new ReviewUpdateEvent($review, $action);
-        $event = $this->dispatcher->dispatch($eventName, $event);
+        $event = $this->dispatcher->dispatch($event, $eventName);
 
         return $event->getActions();
     }
@@ -106,7 +106,7 @@ class ReviewManager
     public function dispatchPostUpdate(Review $review, array $actions)
     {
         $event = new ReviewPostUpdateEvent($review, $actions);
-        $event = $this->dispatcher->dispatch(ReviewPostUpdateEvent::class, $event);
+        $event = $this->dispatcher->dispatch($event);
 
         return $event->getReview();
     }

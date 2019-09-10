@@ -35,10 +35,9 @@ class OrderManagerTest extends TestCase
             })->shouldBeCalled();
 
         $dispatcher->dispatch(
-            Argument::containingString(OrderPostUpdateEvent::class),
             Argument::type(OrderPostUpdateEvent::class)
         )->will(function ($args) {
-            return $args[1];
+            return $args[0];
         })->shouldBeCalled();
 
         $manager = new OrderManager($repository->reveal(), $dispatcher->reveal());
@@ -53,10 +52,10 @@ class OrderManagerTest extends TestCase
         $repository = $this->prophesize(OrderRepository::class);
         $dispatcher = $this->prophesize(EventDispatcherInterface::class);
         $dispatcher->dispatch(
-            Argument::containingString(AbstractAction::class),
-            Argument::type(OrderUpdateEvent::class)
+            Argument::type(OrderUpdateEvent::class),
+            Argument::containingString(AbstractAction::class)
         )->will(function ($args) {
-            return $args[1];
+            return $args[0];
         })->shouldBeCalled();
         $action = $this->prophesize(AbstractAction::class);
 

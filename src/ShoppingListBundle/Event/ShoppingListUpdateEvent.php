@@ -6,7 +6,7 @@ namespace Commercetools\Symfony\ShoppingListBundle\Event;
 
 use Commercetools\Core\Model\ShoppingList\ShoppingList;
 use Commercetools\Core\Request\AbstractAction;
-use Symfony\Component\EventDispatcher\Event;
+use Symfony\Contracts\EventDispatcher\Event;
 
 class ShoppingListUpdateEvent extends Event
 {

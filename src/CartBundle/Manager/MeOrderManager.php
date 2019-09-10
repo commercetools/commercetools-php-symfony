@@ -83,13 +83,11 @@ class MeOrderManager
      */
     public function createOrderFromCart($locale, Cart $cart)
     {
-        $event = new OrderCreateEvent();
-        $this->dispatcher->dispatch(OrderCreateEvent::class, $event);
+        $this->dispatcher->dispatch(new OrderCreateEvent());
 
         $order = $this->repository->createOrderFromCart($locale, $cart);
 
-        $eventPost = new OrderPostCreateEvent();
-        $this->dispatcher->dispatch(OrderPostCreateEvent::class, $eventPost);
+        $this->dispatcher->dispatch(new OrderPostCreateEvent());
 
         return $order;
     }

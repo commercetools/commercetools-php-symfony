@@ -71,7 +71,7 @@ class CustomerManager
         $eventName = is_null($eventName) ? get_class($action) : $eventName;
 
         $event = new CustomerUpdateEvent($customer, $action);
-        $event = $this->dispatcher->dispatch($eventName, $event);
+        $event = $this->dispatcher->dispatch($event, $eventName);
 
         return $event->getActions();
     }
@@ -96,7 +96,7 @@ class CustomerManager
     public function dispatchPostUpdate(Customer $customer, array $actions)
     {
         $event = new CustomerPostUpdateEvent($customer, $actions);
-        $event = $this->dispatcher->dispatch(CustomerPostUpdateEvent::class, $event);
+        $event = $this->dispatcher->dispatch($event);
 
         return $event->getCustomer();
     }
@@ -121,13 +121,11 @@ class CustomerManager
      */
     public function createCustomer($locale, $email, $password, SessionInterface $session = null)
     {
-        $event = new CustomerCreateEvent();
-        $this->dispatcher->dispatch(CustomerCreateEvent::class, $event);
+        $this->dispatcher->dispatch(new CustomerCreateEvent());
 
         $customer = $this->repository->createCustomer($locale, $email, $password, $session);
 
-        $eventPost = new CustomerPostCreateEvent($customer->getCustomer());
-        $this->dispatcher->dispatch(CustomerPostCreateEvent::class, $eventPost);
+        $this->dispatcher->dispatch(new CustomerPostCreateEvent($customer->getCustomer()));
 
         return $customer;
     }

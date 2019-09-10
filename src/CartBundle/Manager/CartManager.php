@@ -74,13 +74,11 @@ class CartManager implements CartManagerInterface
             throw new InvalidArgumentException('At least one of `customerId` or `anonymousId` should be present');
         }
 
-        $event = new CartCreateEvent();
-        $this->dispatcher->dispatch(CartCreateEvent::class, $event);
+        $this->dispatcher->dispatch(new CartCreateEvent());
 
         $cart = $this->repository->createCart($locale, $currency, $location, $lineItemDraftCollection, $customerId, $anonymousId);
 
-        $eventPost = new CartPostCreateEvent($cart);
-        $this->dispatcher->dispatch(CartPostCreateEvent::class, $eventPost);
+        $this->dispatcher->dispatch(new CartPostCreateEvent($cart));
 
         return $cart;
     }
@@ -105,7 +103,7 @@ class CartManager implements CartManagerInterface
         $eventName = is_null($eventName) ? get_class($action) : $eventName;
 
         $event = new CartUpdateEvent($cart, $action);
-        $event = $this->dispatcher->dispatch($eventName, $event);
+        $event = $this->dispatcher->dispatch($event, $eventName);
 
         return $event->getActions();
     }
@@ -132,7 +130,7 @@ class CartManager implements CartManagerInterface
     public function dispatchPostUpdate(Cart $cart, array $actions)
     {
         $event = new CartPostUpdateEvent($cart, $actions);
-        $event = $this->dispatcher->dispatch(CartPostUpdateEvent::class, $event);
+        $event = $this->dispatcher->dispatch($event);
 
         return $event->getActions();
     }
@@ -143,11 +141,9 @@ class CartManager implements CartManagerInterface
     public function dispatchPostGet(Cart $cart = null)
     {
         if (is_null($cart)) {
-            $event = new CartNotFoundEvent();
-            $this->dispatcher->dispatch(CartNotFoundEvent::class, $event);
+            $this->dispatcher->dispatch(new CartNotFoundEvent());
         } else {
-            $event = new CartGetEvent($cart);
-            $this->dispatcher->dispatch(CartGetEvent::class, $event);
+            $this->dispatcher->dispatch(new CartGetEvent($cart));
         }
     }
 }

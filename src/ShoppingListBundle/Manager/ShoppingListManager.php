@@ -132,7 +132,7 @@ class ShoppingListManager implements ShoppingListManagerInterface
     /**
      * @param ShoppingList $shoppingList
      * @param AbstractAction $action
-     * @param null $eventName
+     * @param string|null $eventName
      * @return AbstractAction[]
      */
     public function dispatch(ShoppingList $shoppingList, AbstractAction $action, $eventName = null)
@@ -140,7 +140,7 @@ class ShoppingListManager implements ShoppingListManagerInterface
         $eventName = is_null($eventName) ? get_class($action) : $eventName;
 
         $event = new ShoppingListUpdateEvent($shoppingList, $action);
-        $event = $this->dispatcher->dispatch($eventName, $event);
+        $event = $this->dispatcher->dispatch($event, $eventName);
 
         return $event->getActions();
     }
@@ -165,7 +165,7 @@ class ShoppingListManager implements ShoppingListManagerInterface
     public function dispatchPostUpdate(ShoppingList $shoppingList, array $actions)
     {
         $event = new ShoppingListPostUpdateEvent($shoppingList, $actions);
-        $event = $this->dispatcher->dispatch(ShoppingListPostUpdateEvent::class, $event);
+        $event = $this->dispatcher->dispatch($event);
 
         return $event->getShoppingList();
     }

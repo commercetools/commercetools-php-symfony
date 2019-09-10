@@ -6,7 +6,7 @@ namespace Commercetools\Symfony\ReviewBundle\Event;
 
 use Commercetools\Core\Model\Review\Review;
 use Commercetools\Core\Request\AbstractAction;
-use Symfony\Component\EventDispatcher\Event;
+use Symfony\Contracts\EventDispatcher\Event;
 
 class ReviewPostUpdateEvent extends Event
 {
