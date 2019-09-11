@@ -4,27 +4,17 @@
 
 namespace Commercetools\Symfony\ExampleBundle\Controller;
 
-use Commercetools\Core\Client\ApiClient;
 use Commercetools\Core\Model\Cart\Cart;
-use Commercetools\Symfony\CartBundle\Manager\CartManager;
 use Commercetools\Symfony\CartBundle\Manager\MeCartManager;
-use Commercetools\Symfony\CartBundle\Model\Repository\CartRepository;
 use Commercetools\Symfony\CatalogBundle\Manager\CatalogManager;
 use Commercetools\Symfony\CtpBundle\Model\QueryParams;
+use Commercetools\Symfony\ExampleBundle\Model\Form\Type\AddToCartType;
+use Commercetools\Symfony\ExampleBundle\Model\Form\Type\ContactUsType;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Session\SessionInterface;
-use Symfony\Component\Security\Core\User\UserInterface;
 
 class SunriseController extends AbstractController
 {
-    const CSRF_TOKEN_NAME = 'csrfToken';
-
-    /**
-     * @var ApiClient
-     */
-    private $client;
-
     /**
      * @var CatalogManager
      */
@@ -37,13 +27,37 @@ class SunriseController extends AbstractController
 
     /**
      * CartController constructor.
-     * @param ApiClient $client
      * @param CatalogManager $catalogManager
+     * @param MeCartManager $cartManager
      */
     public function __construct(CatalogManager $catalogManager, MeCartManager $cartManager)
     {
         $this->catalogManager = $catalogManager;
         $this->cartManager = $cartManager;
+    }
+
+    public function homeAction()
+    {
+        return $this->render('@Example/home.html.twig');
+    }
+
+    public function faqAction()
+    {
+        return $this->render('@Example/faq.html.twig');
+    }
+
+    public function helpAction()
+    {
+        return $this->render('@Example/home.html.twig');
+    }
+
+    public function contactAction()
+    {
+        $addToCartForm = $this->createForm(ContactUsType::class);
+
+        return $this->render('@Example/contact-form.html.twig', [
+            'form' => $addToCartForm->createView()
+        ]);
     }
 
     public function getNavMenuAction(Request $request, $sort = 'id asc')
@@ -62,11 +76,7 @@ class SunriseController extends AbstractController
 
     public function getMiniCartAction(Request $request)
     {
-        $cart = $this->cartManager->getCart($request->getLocale());
-
-        if (is_null($cart)) {
-            $cart = Cart::of();
-        }
+        $cart = $this->cartManager->getCart($request->getLocale()) ?? Cart::of();
 
         return $this->render('@Example/partials/common/mini-cart-inner.html.twig', [
             'miniCart' => $cart

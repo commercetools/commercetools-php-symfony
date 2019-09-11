@@ -26,7 +26,7 @@
         <div class="contact-form-description-respond">{{ 'contactForm.responseTime'|trans([], 'main') }}</div>
       </div>
       <div>
-        {% include '@Example/partials/form/contact-form-form.html.twig' with {'form':content.contactForm, 'settings':content.contactFormSettings} %}
+        {% include '@Example/partials/form/contact-form-form.html.twig' with {'form':form, 'settings':content.contactFormSettings} %}
       </div>
     </div>
 

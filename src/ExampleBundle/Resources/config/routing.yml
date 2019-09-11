@@ -1,6 +1,6 @@
 _ctp_example_index:
     path:     /
-    defaults: { _controller: Commercetools\Symfony\ExampleBundle\Controller\HomeController::indexAction }
+    defaults: { _controller: Commercetools\Symfony\ExampleBundle\Controller\SunriseController::homeAction }
 
 _ctp_example_catalog:
     path:     /products
@@ -193,12 +193,16 @@ _ctp_example_review_create:
 
 _ctp_example_help:
     path: /help
-    defaults: { _controller: ExampleBundle:Help:index}
+    defaults: { _controller: ExampleBundle:Sunrise:help }
+
+_ctp_example_contact:
+    path: /contact
+    defaults: { _controller: ExampleBundle:Sunrise:contact }
 
 _ctp_example_discount_code_add:
     path: /
-    defaults: { _controller: Commercetools\Symfony\ExampleBundle\Controller\HomeController::indexAction }
+    defaults: { _controller: Commercetools\Symfony\ExampleBundle\Controller\SunriseController::homeAction }
 
 _ctp_example_discount_code_remove:
     path: /
-    defaults: { _controller: Commercetools\Symfony\ExampleBundle\Controller\HomeController::indexAction }
+    defaults: { _controller: Commercetools\Symfony\ExampleBundle\Controller\SunriseController::homeAction }

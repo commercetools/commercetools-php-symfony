@@ -2,17 +2,29 @@
 
 namespace  Commercetools\Symfony\ExampleBundle\Tests\Controller;
 
-use Commercetools\Symfony\ExampleBundle\Controller\HomeController;
+use Commercetools\Symfony\CartBundle\Manager\MeCartManager;
+use Commercetools\Symfony\CatalogBundle\Manager\CatalogManager;
+use Commercetools\Symfony\ExampleBundle\Controller\SunriseController;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Twig\Environment;
 
-class HomeControllerTest extends WebTestCase
+class SunriseControllerTest extends WebTestCase
 {
-    public function testIndex()
+    /** @var CatalogManager */
+    private $catalogManager;
+    /** @var MeCartManager */
+    private $meCartManager;
+
+    public function setUp(): void
     {
-        $request = $this->prophesize(Request::class);
+        $this->catalogManager = $this->prophesize(CatalogManager::class);
+        $this->meCartManager = $this->prophesize(MeCartManager::class);
+    }
+
+    public function testHome()
+    {
         $container = $this->prophesize(ContainerInterface::class);
         $twigMock = $this->prophesize(Environment::class);
 
@@ -22,8 +34,8 @@ class HomeControllerTest extends WebTestCase
 
         $twigMock->render('@Example/home.html.twig', [])->shouldBeCalledOnce();
 
-        $controller = new HomeController();
+        $controller = new SunriseController($this->catalogManager->reveal(), $this->meCartManager->reveal());
         $controller->setContainer($container->reveal());
-        $controller->indexAction($request);
+        $controller->homeAction();
     }
 }
