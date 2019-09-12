@@ -27,6 +27,7 @@ use Psr\Http\Message\UriInterface;
 class CatalogRepository extends Repository
 {
     const NAME = 'products';
+    const CATEGORIES_NAME = 'categories';
 
     /**
      * @var Search
@@ -274,9 +275,17 @@ class CatalogRepository extends Repository
      */
     public function getCategories($locale, QueryParams $params = null)
     {
+        $cacheKey = static::CATEGORIES_NAME . '-' . $locale;
+
         $categoriesRequest = RequestBuilder::of()->categories()->query();
 
-        return $this->executeRequest($categoriesRequest, $locale, $params);
+        if (!is_null($params)) {
+            foreach ($params->getParams() as $param) {
+                $categoriesRequest->addParamObject($param);
+            }
+        }
+
+        return $this->retrieve($cacheKey, $categoriesRequest, $locale);
     }
 
     /**

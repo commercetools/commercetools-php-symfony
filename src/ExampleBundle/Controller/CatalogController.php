@@ -66,26 +66,27 @@ class CatalogController extends AbstractController
         }
 
         $uri = new Uri($request->getRequestUri());
+        $category = null;
 
         $filter = null;
         if (!is_null($categoryId)) {
             $filter['filter.query'][] = Filter::ofName('categories.id')->setValue($categoryId);
+
+            $categories = $this->catalogManager->getCategories($request->getLocale());
+            $category = $categories->getById($categoryId);
         }
 
         if (!is_null($productTypeId)) {
             $filter['filter.query'][] = Filter::ofName('productType.id')->setValue($productTypeId);
         }
 
-        $country = $this->getCountryFromConfig();
-        $currency = $this->getCurrencyFromConfig();
-
         list($products, $facets, $offset) = $this->catalogManager->searchProducts(
             $request->getLocale(),
             12,
             1,
             'price asc',
-            $currency,
-            $country,
+            $this->getCurrencyFromConfig(),
+            $this->getCountryFromConfig(),
             $uri,
             $search,
             $filter
@@ -95,6 +96,7 @@ class CatalogController extends AbstractController
             'products' => $products,
             'facets' => $facets,
             'offset' => $offset,
+            'category' => $category,
             'form' => $form->createView()
         ]);
     }

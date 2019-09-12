@@ -28,7 +28,7 @@
           <ul>
             <li class="footer-title hidden-xs">{{ 'footer.shortcuts'|trans([], 'main') }}</li>
             <li><a href="{{ path('_ctp_example_user_details') }}">{{ 'footer.myAccount'|trans([], 'main') }}</a></li>
-            <li><a href="{{ root.meta._links.storeLocator.href }}">{{ 'footer.storeLocator'|trans([], 'main') }}</a></li>
+            <li><a href="{{ path('_ctp_example_locate_store' )}}">{{ 'footer.storeLocator'|trans([], 'main') }}</a></li>
             <li><a href="{{ root.meta._links.giftCards.href }}">{{ 'footer.giftCards'|trans([], 'main') }}</a></li>
             <li><a href="{{ root.meta._links.payment.href }}">{{ 'footer.payment'|trans([], 'main') }}</a></li>
           </ul>

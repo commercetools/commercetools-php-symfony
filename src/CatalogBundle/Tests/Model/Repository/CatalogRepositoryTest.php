@@ -284,6 +284,8 @@ class CatalogRepositoryTest extends TestCase
 
     public function testGetCategories()
     {
+        $this->response->getStatusCode()->willReturn(200)->shouldBeCalledOnce();
+
         $this->client->execute(
             Argument::type(CategoryQueryRequest::class),
             Argument::is(null)

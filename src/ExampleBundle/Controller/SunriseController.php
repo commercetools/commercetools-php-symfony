@@ -51,6 +51,12 @@ class SunriseController extends AbstractController
         return $this->render('@Example/home.html.twig');
     }
 
+    public function locateStoreAction()
+    {
+        return $this->render('@Example/store-finder.html.twig');
+    }
+
+
     public function contactAction()
     {
         $addToCartForm = $this->createForm(ContactUsType::class);

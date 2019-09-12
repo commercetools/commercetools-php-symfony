@@ -199,6 +199,10 @@ _ctp_example_contact:
     path: /contact
     defaults: { _controller: ExampleBundle:Sunrise:contact }
 
+_ctp_example_locate_store:
+    path: /locate-store
+    defaults: { _controller: ExampleBundle:Sunrise:locateStore }
+
 _ctp_example_discount_code_add:
     path: /
     defaults: { _controller: Commercetools\Symfony\ExampleBundle\Controller\SunriseController::homeAction }

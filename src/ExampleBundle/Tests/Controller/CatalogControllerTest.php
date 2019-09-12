@@ -7,6 +7,7 @@ namespace Commercetools\Symfony\ExampleBundle\Tests\Controller;
 
 use Commercetools\Core\Client;
 use Commercetools\Core\Helper\CurrencyFormatter;
+use Commercetools\Core\Model\Category\CategoryCollection;
 use Commercetools\Core\Model\Common\Context;
 use Commercetools\Core\Model\Common\Image;
 use Commercetools\Core\Model\Common\ImageCollection;
@@ -24,6 +25,7 @@ use Commercetools\Symfony\CustomerBundle\Security\User\CtpUser;
 use Commercetools\Symfony\ExampleBundle\Controller\CatalogController;
 use Commercetools\Symfony\ExampleBundle\Entity\ProductEntity;
 use Commercetools\Symfony\ShoppingListBundle\Manager\ShoppingListManager;
+use GuzzleHttp\Psr7\Uri;
 use Prophecy\Argument;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Symfony\Component\DependencyInjection\ContainerInterface;
@@ -94,6 +96,7 @@ class CatalogControllerTest extends WebTestCase
         $this->myContainer->get('form.factory')->willReturn($formFactory->reveal())->shouldBeCalled();
 
         $this->request->getRequestUri()->shouldBeCalled();
+        $this->request->getLocale()->willReturn('en')->shouldBeCalledTimes(2);
 
         $parameterBag = $this->prophesize(ParameterBag::class);
         $parameterBag->get('commercetools.project_settings.countries')->willReturn(['DE'])->shouldBeCalledOnce();
@@ -101,6 +104,22 @@ class CatalogControllerTest extends WebTestCase
 
         $this->myContainer->has('parameter_bag')->willReturn(true)->shouldBeCalledTimes(2);
         $this->myContainer->get('parameter_bag')->willReturn($parameterBag->reveal())->shouldBeCalledTimes(2);
+
+        $this->catalogManager->getCategories(
+            Argument::is('en')
+        )->willReturn(CategoryCollection::of())->shouldBeCalledOnce();
+
+        $this->catalogManager->searchProducts(
+            "en",
+            12,
+            1,
+            "price asc",
+            "EUR",
+            "DE",
+            Argument::type(Uri::class),
+            true,
+            Argument::type('array')
+        )->willReturn(ProductProjectionCollection::class)->shouldBeCalledOnce();
 
         $controller = new CatalogController($this->catalogManager->reveal());
         $controller->setContainer($this->myContainer->reveal());

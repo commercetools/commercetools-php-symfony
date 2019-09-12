@@ -7,7 +7,6 @@ use Commercetools\Symfony\CatalogBundle\Manager\CatalogManager;
 use Commercetools\Symfony\ExampleBundle\Controller\SunriseController;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Symfony\Component\DependencyInjection\ContainerInterface;
-use Symfony\Component\HttpFoundation\Request;
 use Twig\Environment;
 
 class SunriseControllerTest extends WebTestCase
