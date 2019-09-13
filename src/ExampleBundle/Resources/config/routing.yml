@@ -7,15 +7,19 @@ _ctp_example_catalog:
     defaults: { _controller: Commercetools\Symfony\ExampleBundle\Controller\CatalogController::indexAction }
 
 _ctp_example_product:
-    path:    /product/slug/{slug}
+    path:    /product/slug-{slug}
     defaults: { _controller: Commercetools\Symfony\ExampleBundle\Controller\CatalogController::detailBySlugAction }
 
 _ctp_example_product_by_id:
-    path:    /product/id/{id}
+    path:    /product/id-{id}
     defaults: { _controller: Commercetools\Symfony\ExampleBundle\Controller\CatalogController::detailByIdAction }
 
 _ctp_example_products_of_category:
-    path:    /products/category/{categoryId}
+    path:    /products/catid-{categoryId}
+    defaults: { _controller: Commercetools\Symfony\ExampleBundle\Controller\CatalogController::indexAction }
+
+_ctp_example_products_of_category_with_slug:
+    path:    /products/category-{categorySlug}/
     defaults: { _controller: Commercetools\Symfony\ExampleBundle\Controller\CatalogController::indexAction }
 
 _ctp_example_product_categories:
@@ -27,7 +31,7 @@ _ctp_example_productTypes:
     defaults: { _controller: Commercetools\Symfony\ExampleBundle\Controller\CatalogController::getProductTypesAction }
 
 _ctp_example_products_of_productType:
-    path:    /products/type/{productTypeId}
+    path:    /products/type-{productTypeId}
     defaults: { _controller: Commercetools\Symfony\ExampleBundle\Controller\CatalogController::indexAction }
 
 login:

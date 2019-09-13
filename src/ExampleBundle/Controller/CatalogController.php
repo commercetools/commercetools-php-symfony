@@ -42,7 +42,7 @@ class CatalogController extends AbstractController
         $this->shoppingListManager = $shoppingListManager;
     }
 
-    public function indexAction(Request $request, $categoryId = null, $productTypeId = null)
+    public function indexAction(Request $request, $categoryId = null, $productTypeId = null, $categorySlug = null)
     {
         $form = $this->createFormBuilder()
             ->add(
@@ -70,14 +70,21 @@ class CatalogController extends AbstractController
 
         $filter = null;
         if (!is_null($categoryId)) {
-            $filter['filter.query'][] = Filter::ofName('categories.id')->setValue($categoryId);
-
             $categories = $this->catalogManager->getCategories($request->getLocale());
             $category = $categories->getById($categoryId);
+
+            $filter['filter.query'][] = Filter::ofName('categories.id')->setValue($categoryId);
         }
 
         if (!is_null($productTypeId)) {
             $filter['filter.query'][] = Filter::ofName('productType.id')->setValue($productTypeId);
+        }
+
+        if (!is_null($categorySlug)) {
+            $categories = $this->catalogManager->getCategories($request->getLocale());
+            $category = $categories->getBySlug($categorySlug, $request->getLocale());
+
+            $filter['filter.query'][] = Filter::ofName('categories.id')->setValue($category->getId());
         }
 
         list($products, $facets, $offset) = $this->catalogManager->searchProducts(

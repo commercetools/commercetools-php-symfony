@@ -52,15 +52,17 @@
             <argument id="session" type="service"/>
         </service>
 
+        <service id="commercetools.http.providerfactory" class="Commercetools\Core\Client\ProviderFactory" />
+
         <service id="Commercetools\Core\Client\OAuth\TokenStorageProvider">
-            <factory service="commercetools.http.clientfactory" method="createTokenStorageProviderFor" />
+            <factory service="commercetools.http.providerfactory" method="createTokenStorageProviderFor" />
             <argument type="service" id="commercetools.client.me.config"/>
             <argument type="service" id="commercetools.oauth.client" />
             <argument type="service" id="Commercetools\Symfony\CtpBundle\Service\SessionTokenStorage"/>
         </service>
 
         <service id="Commercetools\Core\Client\OAuth\PasswordFlowTokenProvider">
-            <factory service="commercetools.http.clientfactory" method="createPasswordFlowProviderFor" />
+            <factory service="commercetools.http.providerfactory" method="createPasswordFlowProviderFor" />
             <argument type="service" id="commercetools.client.me.config"/>
             <argument type="service" id="commercetools.oauth.client"/>
             <argument type="service" id="Commercetools\Symfony\CtpBundle\Service\SessionTokenStorage" />

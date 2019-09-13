@@ -10,13 +10,9 @@
 
 {% for category in navMenu.categories %}
   <li class="dropdown menu-large">
-{#  TODO
-  add
-data-toggle="dropdown"
-  to the following <a> to support parent/children categories
-#}
-    <a href="{{ path('_ctp_example_products_of_category', {'categoryId': category.id}) }}" class="dropdown-toggle {% if category.sale %}sale icon-ribbon{% endif %}">
-      {{ category.name }}
+{#    <a href="{{ path('_ctp_example_products_of_category', {'categoryId': category.id}) }}" class="dropdown-toggle {% if category.sale %}sale icon-ribbon{% endif %}" data-toggle="dropdown">#}
+    <a href="{{ category.url }}" class="dropdown-toggle {% if category.sale %}sale icon-ribbon{% endif %}" data-toggle="dropdown">
+      {{ category.text }}
       <img class="mobile-plus-content visible-xs" src="{{ asset('bundles/example/img/plus79.png') }}" alt="{{ 'more'|trans([], 'main') }}">
     </a>
     {% include '@Example/partials/common/nav-menu-category.html.twig' with {'category':category} %}
