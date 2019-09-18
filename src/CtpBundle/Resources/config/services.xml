@@ -59,13 +59,6 @@
             <argument key="$mapperFactory" type="service" id="commmercetools.mapper.factory" />
             <argument key="$contextFactory" type="service" id="commercetools.context.factory" />
         </service>
-        <service id="Commercetools\Symfony\CtpBundle\Model\MeRepository" public="true">
-            <argument key="$enableCache">false</argument>
-            <argument key="$cache" type="service" id="commercetools.cache" />
-            <argument key="$client" type="service" id="commeretoools.client.me"/>
-            <argument key="$mapperFactory" type="service" id="commmercetools.mapper.factory" />
-            <argument key="$contextFactory" type="service" id="commercetools.context.factory" />
-        </service>
 
         <service id="commercetools.client.me.handlerstack" class="GuzzleHttp\HandlerStack">
             <factory service="Commercetools\Symfony\CtpBundle\Service\HandlerStackFactory" method="create"/>
@@ -74,21 +67,6 @@
         </service>
 
         <service id="Commercetools\Symfony\CtpBundle\Service\HandlerStackFactory" />
-
-        <service id="commercetools.client.me.config" class="Commercetools\Core\Config">
-            <factory class="Commercetools\Symfony\CtpBundle\Service\ConfigFactory" method="create"/>
-            <argument>%commercetools.client.config%</argument>
-            <argument type="service" id="commercetools.client.me.handlerstack" />
-            <argument type="service" id="commercetools.logger" />
-        </service>
-
-        <service id="commeretoools.client.me" class="GuzzleHttp\Client">
-            <factory service="commercetools.http.clientfactory" method="createClient"/>
-            <argument type="service" id="commercetools.client.me.config" />
-            <argument type="service" id="commercetools.logger" />
-            <argument type="service" id="commercetools.cache" />
-            <argument type="service" id="Commercetools\Core\Client\OAuth\TokenStorageProvider" />
-        </service>
 
         <service id="commercetools.custom_types" class="Commercetools\Symfony\CtpBundle\Service\CustomTypeProvider" public="true">
             <factory method="build" class="Commercetools\Symfony\CtpBundle\Service\CustomTypeProviderFactory"/>

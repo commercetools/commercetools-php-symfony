@@ -13,14 +13,5 @@
             <argument id="Commercetools\Symfony\ShoppingListBundle\Model\Repository\ShoppingListRepository" type="service"/>
             <argument id="event_dispatcher" type="service"/>
         </service>
-
-        <service id="Commercetools\Symfony\ShoppingListBundle\Model\Repository\MeShoppingListRepository"
-                 parent="Commercetools\Symfony\CtpBundle\Model\MeRepository">
-            <argument key="$enableCache">%commercetools.cache.shopping_list%</argument>
-        </service>
-        <service id="Commercetools\Symfony\ShoppingListBundle\Manager\MeShoppingListManager" public="true">
-            <argument id="Commercetools\Symfony\ShoppingListBundle\Model\Repository\MeShoppingListRepository" type="service"/>
-            <argument id="event_dispatcher" type="service"/>
-        </service>
     </services>
 </container>

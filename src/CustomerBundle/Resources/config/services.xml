@@ -25,8 +25,23 @@
             <argument type="service" id="commercetools.client.config"/>
             <argument type="service" id="commercetools.oauth.client"/>
         </service>
-        
+
         <service id="commercetools.oauth.client" class="GuzzleHttp\Client"/>
+
+        <service id="commercetools.client.me.config" class="Commercetools\Core\Config">
+            <factory class="Commercetools\Symfony\CtpBundle\Service\ConfigFactory" method="create"/>
+            <argument>%commercetools.client.config%</argument>
+            <argument type="service" id="commercetools.client.me.handlerstack" />
+            <argument type="service" id="commercetools.logger" />
+        </service>
+
+        <service id="commeretoools.client.me" class="GuzzleHttp\Client">
+            <factory service="commercetools.http.clientfactory" method="createClient"/>
+            <argument type="service" id="commercetools.client.me.config" />
+            <argument type="service" id="commercetools.logger" />
+            <argument type="service" id="commercetools.cache" />
+            <argument type="service" id="Commercetools\Core\Client\OAuth\TokenStorageProvider" />
+        </service>
 
         <service id="Commercetools\Symfony\CtpBundle\Service\SessionTokenStorage">
             <argument id="session" type="service"/>
@@ -62,6 +77,40 @@
             <argument>%security.authentication.hide_user_not_found%</argument>
             <argument type="service" id="logger" />
             <argument type="service" id="Commercetools\Core\Client\OAuth\PasswordFlowTokenProvider" />
+        </service>
+
+        <service id="Commercetools\Symfony\CtpBundle\Model\MeRepository" public="true">
+            <argument key="$enableCache">false</argument>
+            <argument key="$cache" type="service" id="commercetools.cache" />
+            <argument key="$client" type="service" id="commeretoools.client.me"/>
+            <argument key="$mapperFactory" type="service" id="commmercetools.mapper.factory" />
+            <argument key="$contextFactory" type="service" id="commercetools.context.factory" />
+        </service>
+
+        <service id="Commercetools\Symfony\CartBundle\Model\Repository\MeOrderRepository"
+                 parent="Commercetools\Symfony\CtpBundle\Model\MeRepository" public="true">
+            <argument key="$enableCache">%commercetools.cache.order%</argument>
+        </service>
+        <service id="Commercetools\Symfony\CartBundle\Model\Repository\MeCartRepository"
+                 parent="Commercetools\Symfony\CtpBundle\Model\MeRepository" public="true">
+            <argument key="$enableCache">%commercetools.cache.cart%</argument>
+        </service>
+        <service id="Commercetools\Symfony\CartBundle\Manager\MeOrderManager" public="true">
+            <argument id="Commercetools\Symfony\CartBundle\Model\Repository\MeOrderRepository" type="service"/>
+            <argument id="event_dispatcher" type="service"/>
+        </service>
+        <service id="Commercetools\Symfony\CartBundle\Manager\MeCartManager" public="true">
+            <argument id="Commercetools\Symfony\CartBundle\Model\Repository\MeCartRepository" type="service"/>
+            <argument id="event_dispatcher" type="service"/>
+        </service>
+
+        <service id="Commercetools\Symfony\ShoppingListBundle\Model\Repository\MeShoppingListRepository"
+                 parent="Commercetools\Symfony\CtpBundle\Model\MeRepository">
+            <argument key="$enableCache">%commercetools.cache.shopping_list%</argument>
+        </service>
+        <service id="Commercetools\Symfony\ShoppingListBundle\Manager\MeShoppingListManager" public="true">
+            <argument id="Commercetools\Symfony\ShoppingListBundle\Model\Repository\MeShoppingListRepository" type="service"/>
+            <argument id="event_dispatcher" type="service"/>
         </service>
     </services>
 </container>
