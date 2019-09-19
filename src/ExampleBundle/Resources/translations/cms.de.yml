@@ -17,7 +17,7 @@ bannerTopRight:
   imageLarge: ./assets/bundles/example/img/cms/woman_large-4to3.jpg
 
 bannerMiddle:
-  title: <img class="hidden-xs" src="../../assets/bundles/example/img/cms/sun-logo.png"/><br/><br/>Here comes the sun
+  title: Here comes the sun
   subtitle: URLAUB IN DER SONNE - SOMMER CHIC
   description: Die Modetrends für den Sommer 2016 spielen mit Prints, Army- und Safarilooks sowie Pastel Farben. Accessoires wie runde Sonnenbrillen, geschnürte Stiefel und Shopper oder Handtaschen sorgen für Abwechslung. SUNRISE stellt Ihnen die Fashion Trends für den Sommer 2016 vor. Lassen Sie sich inspirieren!<br/><br/>Kaum ist der Frühling vorbei, umfängt uns der warme Sommer. Erfahren Sie, was die wichtigsten Fashion - Trends der kommenden Sommersaison sind und welche traumhaften Stücke Sie besitzen sollen! London, New York, Mailand, Paris – SUNRISE präsentiert die aktuelle Sommermode 2016 aus den Modemetropolen . Die neuesten Kleider, elegante Tops, Hosen, Bademode, exklusive Schuhe und Ballerinas, bezaubernden Schmuck, Sonnenbrillen und Accessoires für den perfekten Sommer.
   linkText: Jetzt kaufen
@@ -36,7 +36,7 @@ bannerBottomLeft:
   imageLarge: ./assets/bundles/example/img/cms/shoes_large-4to3.jpg
 
 bannerBottomRight1:
-  title: <img src="../../assets/bundles/example/img/cms/sun-logo.png"/><br/><br/>SOMMER MODE 2016
+  title: SOMMER MODE 2016
   imageSmall: ./assets/bundles/example/img/cms/blue-bg_small-4to3.png
   imageMedium: ./assets/bundles/example/img/cms/blue-bg_medium-4to3.png
   imageLarge: ./assets/bundles/example/img/cms/blue-bg_large-4to3.png

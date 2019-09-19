@@ -36,7 +36,7 @@ bannerBottomLeft:
   imageLarge: ./bundles/example/img/cms/shoes_large-4to3.jpg
 
 bannerBottomRight1:
-  title: <img src="./bundles/example/img/cms/sun-logo.png"/><br/><br/>SUMMER FASHION 2016
+  title: SUMMER FASHION 2016
   imageSmall: ./bundles/example/img/cms/blue-bg_small-4to3.png
   imageMedium: ./bundles/example/img/cms/blue-bg_medium-4to3.png
   imageLarge: ./bundles/example/img/cms/blue-bg_large-4to3.png
