@@ -55,7 +55,7 @@
               <div class="text-right cart-item-price">
                   <span class="visible-xs xs-price-title">{{ 'common.price'|trans({}, 'main') }}</span>
                 {% if lineItem.variant.priceOld %}
-                    <span class="discounted-price">{{ lineItem.variant.price.discounted }}</span>
+                    <span class="discounted-price">{{ lineItem.variant.price.discounted.value }}</span>
                 {% endif %}
                   <span>{{ lineItem.price }}</span>
               </div>

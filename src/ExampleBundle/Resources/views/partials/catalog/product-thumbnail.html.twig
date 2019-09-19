@@ -33,7 +33,7 @@
     <div class="pop-item-price">
       {% if product.masterVariant.price.discounted %}
         <span class="strikethrough">{{ product.masterVariant.price }}</span>
-        <span class="pop-item-price-old">{{ product.masterVariant.price.discounted }}</span>
+        <span class="pop-item-price-old">{{ product.masterVariant.price.discounted.value }}</span>
       {% else %}
           {% if wishlist %}
               <span>{{ product.variant.prices.current }}</span>
