@@ -8,7 +8,7 @@
 
 <div class="banner-text">
   <h4 class="banner-title">
-    {{ 'bannerMiddle.title' | trans([], 'cms') | raw }}
+    <img class="hidden-xs" src="{{ asset('bundles/example/img/cms/sun-logo.png') }}"/><br/><br/>{{ 'bannerMiddle.title' | trans([], 'cms') | raw }}
   </h4>
   <p class="banner-subtitle">{{ 'bannerMiddle.subtitle' | trans([], 'cms') | raw }}</p>
   <p class="hidden-xs hidden-sm">{{ 'bannerMiddle.description' | trans([], 'cms') | raw }}</p>
