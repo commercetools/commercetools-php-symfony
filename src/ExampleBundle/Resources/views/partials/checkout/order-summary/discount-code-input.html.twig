@@ -6,7 +6,7 @@
 {#            {% include '@Example/partials/form/global-errors.html.twig' with {'errors':content.cart.addDiscountCodeForm.errors} %}#}
         </div>
         <div class="col-sm-12">
-            <form id="form-add-discount-code" class="text-right promotion-info" action="{{ path('_ctp_example_discount_code_add') }}" method="post">
+            <form id="form-add-discount-code" class="text-right promotion-info" action="{{ path('_ctp_example_discount_code_add', {}, true) }}" method="post">
                 <span class="text-uppercase promo-info-text" title="{{ 'discountTooltip'|trans([], 'checkout') }}">
                     {{ 'discountPromoInfo'|trans([], 'checkout') }}
                     <img class="info-icon" src="{{ asset('bundles/example/img/information-3787f70287d781184eef270161383e9f.png') }}" alt="information icon">

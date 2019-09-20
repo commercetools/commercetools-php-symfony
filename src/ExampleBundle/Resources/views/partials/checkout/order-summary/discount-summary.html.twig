@@ -11,7 +11,7 @@
         </div>
      </div>
      <div class="col-sm-2 col-xs-5 text-right">
-        <form action="{{ path('_ctp_example_discount_code_remove') }}" method="post">
+        <form action="{{ path('_ctp_example_discount_code_remove', {}, true) }}" method="post">
             <span class="payment-code">{{ discountCode.name }}</span>
             <input type="hidden" name="csrfToken" value="{{ discountCode.csrf_token('csrfToken') }}"/>
             <input type="hidden" name="discountCodeId" value="{{ discountCode.id }}">

@@ -1,7 +1,7 @@
 {% if wishlist %}
-    <a id="link-product-thumbnail-{{ index }}" href="{{ path('_ctp_example_product_by_id', {'id': lineItem.productId}) }}">
+    <a id="link-product-thumbnail-{{ index }}" href="{{ path('_ctp_example_product_by_id', {'id': lineItem.productId}, true) }}">
 {% else %}
-    <a id="link-product-thumbnail-{{ index }}" href="{{ path('_ctp_example_product', {'slug': product.slug}) }}">
+    <a id="link-product-thumbnail-{{ index }}" href="{{ path('_ctp_example_product', {'slug': product.slug}, true) }}">
 {% endif %}
   <div class="shop-item">
     {% if product.sale %}
@@ -10,7 +10,7 @@
     {% if product.new %}
       <div class="new-flag">{{ 'thumbnail.new'|trans([], 'catalog') }}</div>
     {% endif %}
-    <form id="form-add-to-wishlist-mobile{{ index }}" method="post" {% if wishlist %}class="hidden"{% endif %} name="add-to-wishlist-mobile" action="{{ path('_ctp_example_shoppingList_add_lineItem') }}">
+    <form id="form-add-to-wishlist-mobile{{ index }}" method="post" {% if wishlist %}class="hidden"{% endif %} name="add-to-wishlist-mobile" action="{{ path('_ctp_example_shoppingList_add_lineItem', {}, true) }}">
         <input type="hidden" name="csrfToken" value="{{ csrf_token('csrfToken') }}"/>
         <input type="hidden" name="productId" value="{{ product.id }}">
         <input type="hidden" name="variantId" value="{{ product.masterVariant.id }}">
@@ -59,7 +59,7 @@
       <button type="button" class="quickview" data-modal="quickview-modal{{ index }}">
         {{ 'thumbnail.quickView'|trans([], 'catalog') }}
       </button>
-      <form id="form-add-to-wishlist{{ index }}" method="post" {% if wishlist %}class="hidden"{% endif %} name="add-to-wishlist" action="{{ path('_ctp_example_shoppingList_add_lineItem') }}">
+      <form id="form-add-to-wishlist{{ index }}" method="post" {% if wishlist %}class="hidden"{% endif %} name="add-to-wishlist" action="{{ path('_ctp_example_shoppingList_add_lineItem', {}, true) }}">
           <input type="hidden" name="csrfToken" value="{{ csrf_token('csrfToken') }}"/>
           <input type="hidden" name="productId" value="{{ product.id }}">
           <input type="hidden" name="variantId" value="{{ product.masterVariant.id }}">

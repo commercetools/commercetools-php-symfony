@@ -1,4 +1,4 @@
-<form action="{{ path('_ctp_example_change_lineItem') }}" method="post">
+<form action="{{ path('_ctp_example_change_lineItem', {}, true) }}" method="post">
     <input type="hidden" name="csrfToken" value="{{ csrf_token('csrfToken') }}"/>
     <input type="hidden" name="lineItemId" value="{{ lineItem.id }}">
     <div class="sm-pull-right visible-xs">

@@ -6,13 +6,13 @@
 <div>{{ addressInfo.country }}</div>
 <div class="address-book-edit-delete">
     <div>
-        <a href="{{ path('_ctp_example_user_address_edit', {'addressId':addressInfo.id}) }}">
+        <a href="{{ path('_ctp_example_user_address_edit', {'addressId':addressInfo.id}, true) }}">
             <img src="{{ asset('bundles/example/img/edit-1.png') }}" alt="edit icon">
             {{ 'addressBook.buttons.edit'|trans([], 'my-account') }}
         </a>
     </div>
     <div>
-        <form action="{{ path('_ctp_example_user_address_delete', {'addressId':addressInfo.id}) }}" method="POST">
+        <form action="{{ path('_ctp_example_user_address_delete', {'addressId':addressInfo.id}, true) }}" method="POST">
             <input type="hidden" name="csrfToken" value="{{ csrf_token('csrfToken') }}"/>
             <button type="submit">
                 <img src="{{ asset('bundles/example/img/delete-60px.png') }}" alt="delete icon">

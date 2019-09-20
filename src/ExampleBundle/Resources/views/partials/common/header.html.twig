@@ -31,7 +31,7 @@
             </li>
 
             <li class="list-item-help">
-              <a href="{{ path('_ctp_example_help') }}" class="link-help">{{ 'header.help'|trans([], 'main') }}</a>
+              <a href="{{ path('_ctp_example_help', {}, true) }}" class="link-help">{{ 'header.help'|trans([], 'main') }}</a>
             </li>
 
             <li class="list-item-call">
@@ -49,13 +49,13 @@
                     </a>
                 </li>
                 <li class="list-item-user">
-                    <a href="{{ path('_ctp_example_user_details') }}" class="link-user icon-user">
+                    <a href="{{ path('_ctp_example_user_details', {}, true) }}" class="link-user icon-user">
                         <span class="hidden-xs hidden-sm">{{ 'header.myAccount'|trans([], 'main') }}</span>
                     </a>
                 </li>
             {% else %}
                 <li class="list-item-user">
-                    <a href="{{ path('login') }}" class="link-user icon-user">
+                    <a href="{{ path('login', {}, true) }}" class="link-user icon-user">
                         <span class="hidden-xs hidden-sm">{{ 'header.signIn'|trans([], 'main') }}</span>
                     </a>
                 </li>

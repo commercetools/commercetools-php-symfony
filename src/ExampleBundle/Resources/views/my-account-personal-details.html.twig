@@ -31,7 +31,7 @@
                         <span>{{ 'personalDetails.title'|trans([], 'my-account') }}</span>
                         <span class="pull-right required-text personal-details-edit-show">{{ 'form.required'|trans([], 'main') }}*</span>
                     </div>
-                  {{ form_start(formDetails, {'action': path('_ctp_example_user_details')}) }}
+                  {{ form_start(formDetails, {'action': path('_ctp_example_user_details', {}, true)}) }}
                   {% form_theme formDetails 'bootstrap_3_layout.html.twig' %}
                     <div class="personal-details-edit-hide">
                         <div class="personal-details-box">

@@ -86,7 +86,7 @@
                             <span>{{ order.shipping }}</span>
                           </div>
                           <div class="col-sm-2 col-xs-4 text-right">
-                            <form id="form-view-my-order{{ loop.index0 }}" name="view-my-order" method="GET" action="{{ path('_ctp_example_order', {'orderId': order.id}) }}">
+                            <form id="form-view-my-order{{ loop.index0 }}" name="view-my-order" method="GET" action="{{ path('_ctp_example_order', {'orderId': order.id}, true) }}">
                               <button type="submit" class="my-orders-view-order-btn">{{ 'myOrders.view'|trans({}, 'my-account') }}</button>
                             </form>
                           </div>
