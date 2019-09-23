@@ -15,6 +15,7 @@ use Commercetools\Core\Request\Customers\Command\CustomerSetFirstNameAction;
 use Commercetools\Core\Request\Customers\Command\CustomerSetLastNameAction;
 use Commercetools\Core\Request\Customers\Command\CustomerSetTitleAction;
 use Commercetools\Symfony\CustomerBundle\Manager\CustomerManager;
+use Commercetools\Symfony\CustomerBundle\Manager\MeCustomerManager;
 use Commercetools\Symfony\CustomerBundle\Model\CustomerUpdateBuilder;
 use Commercetools\Symfony\CustomerBundle\Security\User\CtpUser;
 use Commercetools\Symfony\ExampleBundle\Controller\UserController;
@@ -43,6 +44,8 @@ class UserControllerTest extends WebTestCase
     private $ctpClient;
     /** @var CustomerManager */
     private $customerManager;
+    /** @var MeCustomerManager */
+    private $meCustomerManager;
 
     public function setUp()
     {
@@ -51,6 +54,7 @@ class UserControllerTest extends WebTestCase
         $this->twig = $this->prophesize(Environment::class);
         $this->ctpClient = $this->prophesize(Client::class);
         $this->customerManager = $this->prophesize(CustomerManager::class);
+        $this->meCustomerManager = $this->prophesize(MeCustomerManager::class);
 
         $this->request->getLocale()->willReturn('en')->shouldBeCalledOnce();
 
@@ -67,7 +71,7 @@ class UserControllerTest extends WebTestCase
         $authenticationUtils->getLastAuthenticationError()->willReturn('foo')->shouldBeCalledOnce();
         $authenticationUtils->getLastUsername()->willReturn('bar')->shouldBeCalledOnce();
 
-        $controller = new UserController($this->customerManager->reveal());
+        $controller = new UserController($this->customerManager->reveal(), $this->meCustomerManager->reveal());
         $controller->setContainer($this->myContainer->reveal());
         $response = $controller->loginAction($this->request->reveal(), $authenticationUtils->reveal());
 
@@ -117,16 +121,13 @@ class UserControllerTest extends WebTestCase
         })->shouldBeCalled();
         $customerUpdateBuilder->flush()->willReturn($customer)->shouldBeCalled();
 
-        $this->customerManager->getById('en', 'id-1')->willReturn($customer)->shouldBeCalled();
-        $this->customerManager->update(Argument::type(Customer::class))->willReturn($customerUpdateBuilder->reveal())->shouldBeCalled();
-        $this->customerManager->changePassword(Argument::type(Customer::class), 'foo', 'foo')->shouldBeCalled();
+        $this->meCustomerManager->getMeInfo('en')->willReturn($customer)->shouldBeCalled();
+        $this->meCustomerManager->update(Argument::type(Customer::class))->willReturn($customerUpdateBuilder->reveal())->shouldBeCalled();
+//        $this->meCustomerManager->changePassword(Argument::type(Customer::class), 'foo', 'foo')->shouldBeCalled();
 
-        $user = $this->prophesize(CtpUser::class);
-        $user->getId()->willReturn('id-1')->shouldBeCalledOnce();
-
-        $controller = new UserController($this->customerManager->reveal());
+        $controller = new UserController($this->customerManager->reveal(), $this->meCustomerManager->reveal());
         $controller->setContainer($this->myContainer->reveal());
-        $response = $controller->detailsAction($this->request->reveal(), $user->reveal());
+        $response = $controller->detailsAction($this->request->reveal());
 
         $this->assertTrue($response->isOk());
     }
@@ -183,16 +184,13 @@ class UserControllerTest extends WebTestCase
             throw new \Exception();
         })->shouldBeCalled();
 
-        $this->customerManager->getById('en', 'id-1')->willReturn($customer)->shouldBeCalled();
-        $this->customerManager->update(Argument::type(Customer::class))->willReturn($customerUpdateBuilder->reveal())->shouldBeCalled();
-        $this->customerManager->changePassword(Argument::type(Customer::class), 'foo', 'foo')->shouldBeCalled();
+        $this->meCustomerManager->getMeInfo('en')->willReturn($customer)->shouldBeCalled();
+        $this->meCustomerManager->update(Argument::type(Customer::class))->willReturn($customerUpdateBuilder->reveal())->shouldBeCalled();
+//        $this->customerManager->changePassword(Argument::type(Customer::class), 'foo', 'foo')->shouldBeCalled();
 
-        $user = $this->prophesize(CtpUser::class);
-        $user->getId()->willReturn('id-1')->shouldBeCalledOnce();
-
-        $controller = new UserController($this->customerManager->reveal());
+        $controller = new UserController($this->customerManager->reveal(), $this->meCustomerManager->reveal());
         $controller->setContainer($this->myContainer->reveal());
-        $response = $controller->detailsAction($this->request->reveal(), $user->reveal());
+        $response = $controller->detailsAction($this->request->reveal());
 
         $this->assertTrue($response->isOk());
     }
@@ -204,7 +202,7 @@ class UserControllerTest extends WebTestCase
         $user = $this->prophesize(CtpUser::class);
         $user->getId()->willReturn('id-1')->shouldBeCalledOnce();
 
-        $controller = new UserController($this->customerManager->reveal());
+        $controller = new UserController($this->customerManager->reveal(), $this->meCustomerManager->reveal());
         $controller->setContainer($this->myContainer->reveal());
         $res = $controller->addressBookAction($this->request->reveal(), $user->reveal());
 
@@ -261,7 +259,7 @@ class UserControllerTest extends WebTestCase
         $user = $this->prophesize(CtpUser::class);
         $user->getId()->willReturn('id-1')->shouldBeCalledOnce();
 
-        $controller = new UserController($this->customerManager->reveal());
+        $controller = new UserController($this->customerManager->reveal(), $this->meCustomerManager->reveal());
         $controller->setContainer($this->myContainer->reveal());
         $res = $controller->editAddressAction($this->request->reveal(), $user->reveal(), 'bar');
 

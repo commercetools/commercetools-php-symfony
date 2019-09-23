@@ -175,7 +175,7 @@ class CatalogRepositoryTest extends TestCase
                 static::assertContains('priceCurrency=EUR', (string)$request->httpRequest()->getBody());
                 static::assertContains('priceCountry=DE', (string)$request->httpRequest()->getBody());
                 static::assertContains('sort=id+desc', (string)$request->httpRequest()->getBody());
-                static::assertContains('offset=5', (string)$request->httpRequest()->getBody());
+                static::assertContains('offset=2', (string)$request->httpRequest()->getBody());
                 static::assertNotContains('fuzzy', (string)$request->httpRequest()->getBody());
                 static::assertNotContains('filter', (string)$request->httpRequest()->getBody());
 

@@ -129,16 +129,16 @@ class CatalogRepository extends Repository
 
     /**
      * @param int|null $itemsPerPage
-     * @param int|null $currentPage
+     * @param int|null $offset
      * @param string|null $sort
      * @return ProductProjectionSearchRequest
      */
-    public function baseSearchProductsRequest($itemsPerPage = 20, $currentPage = 1, $sort = 'id asc')
+    public function baseSearchProductsRequest($itemsPerPage = 20, $offset = 1, $sort = 'id asc')
     {
         return RequestBuilder::of()->productProjections()->search()
             ->sort($sort)
             ->limit($itemsPerPage)
-            ->offset(min($itemsPerPage * ($currentPage - 1), 100000));
+            ->offset($offset);
     }
 
     /**

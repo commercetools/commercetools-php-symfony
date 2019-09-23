@@ -12,8 +12,11 @@ use Commercetools\Symfony\ExampleBundle\Model\Form\Type\AddToCartType;
 use Commercetools\Symfony\ExampleBundle\Model\Form\Type\AddToShoppingListType;
 use Commercetools\Symfony\ExampleBundle\Model\View\ProductModel;
 use Commercetools\Symfony\ExampleBundle\Model\ViewData;
+use Commercetools\Symfony\ExampleBundle\Model\ViewDataCollection;
 use GuzzleHttp\Psr7\Uri;
+use Commercetools\Symfony\ExampleBundle\Model\View\Url;
 use Psr\Cache\CacheItemPoolInterface;
+use Psr\Http\Message\UriInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
@@ -25,9 +28,14 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Commercetools\Core\Model\Customer\CustomerReference;
 use Commercetools\Core\Model\ShoppingList\ShoppingList;
+use function GuzzleHttp\Psr7\parse_query;
 
 class CatalogController extends AbstractController
 {
+    const PAGE_SELECTOR_RANGE = 2;
+    const FIRST_PAGE = 1;
+    const ITEMS_PER_PAGE = 12;
+
     private $catalogManager;
     private $shoppingListManager;
 
@@ -66,9 +74,14 @@ class CatalogController extends AbstractController
         }
 
         $uri = new Uri($request->getRequestUri());
-        $category = null;
+        $queryVars = parse_query($uri);
 
+        $page = $queryVars['page'] ?? 1;
+        $offset = min(self::ITEMS_PER_PAGE * ($page - 1), 100000);
+
+        $category = null;
         $filter = null;
+
         if (!is_null($categoryId)) {
             $categories = $this->catalogManager->getCategories($request->getLocale());
             $category = $categories->getById($categoryId);
@@ -89,12 +102,12 @@ class CatalogController extends AbstractController
 
         list($products, $facets, $offset) = $this->catalogManager->searchProducts(
             $request->getLocale(),
-            12,
-            1,
-            'price asc',
+            self::ITEMS_PER_PAGE,
+            $offset,
+            'id asc',
             $this->getCurrencyFromConfig(),
             $this->getCountryFromConfig(),
-            $uri,
+            new Uri($request->getRequestUri()),
             $search,
             $filter
         );
@@ -247,6 +260,82 @@ class CatalogController extends AbstractController
         ]);
     }
 
+    protected function getProductModel($cache)
+    {
+        $model = new ProductModel(
+            $cache,
+            $this->catalogManager,
+            $this->getCountryFromConfig(),
+            $this->getCurrencyFromConfig()
+        );
+
+        return $model;
+    }
+
+    protected function applyPagination(UriInterface $uri, $offset, $total, $itemsPerPage)
+    {
+        $firstPage = static::FIRST_PAGE;
+        $pageRange = static::PAGE_SELECTOR_RANGE;
+        $currentPage = floor($offset / max(1, $itemsPerPage)) + 1;
+        $totalPages = ceil($total / max(1, $itemsPerPage));
+
+        $displayedPages = $pageRange * 2 + 3;
+        $pageThresholdLeft = $displayedPages - $pageRange;
+        $thresholdPageLeft = $displayedPages - 1;
+        $pageThresholdRight = $totalPages - $pageRange - 2;
+        $thresholdPageRight = $totalPages - $displayedPages + 2;
+        $pagination = new ViewData();
+
+        if ($totalPages <= $displayedPages) {
+            $pagination->pages = $this->getPages($uri, $firstPage, $totalPages, $currentPage);
+        } elseif ($currentPage < $pageThresholdLeft) {
+            $pagination->pages = $this->getPages($uri, $firstPage, $thresholdPageLeft, $currentPage);
+            $pagination->lastPage = $this->getPageUrl($uri, $totalPages);
+        } elseif ($currentPage > $pageThresholdRight) {
+            $pagination->pages = $this->getPages($uri, $thresholdPageRight, $totalPages, $currentPage);
+            $pagination->firstPage = $this->getPageUrl($uri, $firstPage);
+        } else {
+            $pagination->pages = $this->getPages(
+                $uri,
+                $currentPage - $pageRange,
+                $currentPage + $pageRange,
+                $currentPage
+            );
+            $pagination->firstPage = $this->getPageUrl($uri, $firstPage);
+            $pagination->lastPage = $this->getPageUrl($uri, $totalPages);
+        }
+
+        if ($currentPage > 1) {
+            $prevPage = $currentPage - 1;
+            $pagination->previousUrl = $this->getPageUrl($uri, $prevPage)->url;
+        }
+        if ($currentPage < $totalPages) {
+            $nextPage = $currentPage + 1;
+            $pagination->nextUrl = $this->getPageUrl($uri, $nextPage)->url;
+        }
+
+        $this->pagination = $pagination;
+    }
+
+    protected function getPages(UriInterface $uri, $start, $stop, $currentPage)
+    {
+        $pages = new ViewDataCollection();
+        for ($i = $start; $i <= $stop; $i++) {
+            $url = $this->getPageUrl($uri, $i);
+            if ($currentPage == $i) {
+                $url->selected = true;
+            }
+            $pages->add($url);
+        }
+        return $pages;
+    }
+
+    protected function getPageUrl(UriInterface $uri, $number, $query = 'page')
+    {
+        $url = new Url($number, Uri::withQueryValue($uri, $query, $number));
+        return $url;
+    }
+
     // TODO duplicate code / move these to better place
     private function getCountryFromConfig()
     {
@@ -258,17 +347,5 @@ class CatalogController extends AbstractController
     {
         $currencies = $this->getParameter('commercetools.project_settings.currencies');
         return current($currencies);
-    }
-
-    protected function getProductModel($cache)
-    {
-        $model = new ProductModel(
-            $cache,
-            $this->catalogManager,
-            $this->getCountryFromConfig(),
-            $this->getCurrencyFromConfig()
-        );
-
-        return $model;
     }
 }

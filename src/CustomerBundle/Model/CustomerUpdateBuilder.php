@@ -8,6 +8,7 @@ use Commercetools\Core\Builder\Update\CustomersActionBuilder;
 use Commercetools\Core\Model\Customer\Customer;
 use Commercetools\Core\Request\AbstractAction;
 use Commercetools\Symfony\CustomerBundle\Manager\CustomerManager;
+use Commercetools\Symfony\CustomerBundle\Manager\CustomerManagerInterface;
 
 class CustomerUpdateBuilder extends CustomersActionBuilder
 {
@@ -23,10 +24,10 @@ class CustomerUpdateBuilder extends CustomersActionBuilder
 
     /**
      * CustomerUpdate constructor.
-     * @param CustomerManager $manager
      * @param Customer $customer
+     * @param CustomerManagerInterface $manager
      */
-    public function __construct(Customer $customer, CustomerManager $manager)
+    public function __construct(Customer $customer, CustomerManagerInterface $manager)
     {
         $this->manager = $manager;
         $this->customer = $customer;

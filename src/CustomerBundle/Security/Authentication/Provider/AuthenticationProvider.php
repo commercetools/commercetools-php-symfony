@@ -5,8 +5,14 @@
 namespace Commercetools\Symfony\CustomerBundle\Security\Authentication\Provider;
 
 use Commercetools\Core\Builder\Request\RequestBuilder;
+use Commercetools\Core\Client\ApiClient;
 use Commercetools\Core\Client\OAuth\PasswordFlowTokenProvider;
 use Commercetools\Core\Config;
+use Commercetools\Core\Error\BadRequestException;
+use Commercetools\Core\Model\Customer\Customer;
+use Commercetools\Core\Model\Customer\CustomerSigninResult;
+use Commercetools\Core\Request\Customers\CustomerLoginRequest;
+use Commercetools\Core\Request\Me\MeLoginRequest;
 use Commercetools\Symfony\CustomerBundle\Security\User\CtpUser;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\ClientException;
@@ -30,7 +36,7 @@ class AuthenticationProvider extends UserAuthenticationProvider
     private $userProvider;
 
     /**
-     * @var Client
+     * @var ApiClient
      */
     private $client;
 
@@ -94,27 +100,29 @@ class AuthenticationProvider extends UserAuthenticationProvider
             }
 
             try {
-                $token = $this->passwordFlowTokenProvider->getTokenFor($currentUser, $presentedPassword);
+                $request = RequestBuilder::of()->me()->login($currentUser, $presentedPassword)->setAnonymousCartSignInMode(MeLoginRequest::SIGN_IN_MODE_MERGE);
+                try {
+                    $response = $this->client->execute($request);
+                } catch (BadRequestException $e) {
+                    $request->setAnonymousCartSignInMode(MeLoginRequest::SIGN_IN_MODE_NEW);
+                    $response = $this->client->execute($request);
+                }
+                $customerSignInResult = $request->mapFromResponse($response);
+                $this->passwordFlowTokenProvider->getTokenFor($currentUser, $presentedPassword);
             } catch (ClientException $e) {
                 throw new BadCredentialsException('The presented password is invalid.');
             }
 
-            $request = RequestBuilder::of()->me()->get();
-            $psrResponse = $this->client->send($request->httpRequest());
-            $customer = $request->mapFromResponse($psrResponse);
-
-            if (is_null($customer) || strtolower($currentUser) !== strtolower($customer->getEmail())) {
+            if (is_null($customerSignInResult) || strtolower($currentUser) !== strtolower($customerSignInResult->getCustomer()->getEmail())) {
                 throw new BadCredentialsException('The presented password is invalid.');
             }
 
+            $customer = $customerSignInResult->getCustomer();
+
             if ($user instanceof CtpUser) {
                 $user->setId($customer->getId());
-                $user->setAccessToken($token->getToken());
-                $user->setRefreshToken($token->getRefreshToken());
 
-                $request = RequestBuilder::of()->me()->carts()->getActiveCart();
-                $psrResponse = $this->client->send($request->httpRequest());
-                $cart = $request->mapFromResponse($psrResponse);
+                $cart = $customerSignInResult->getCart();
 
                 if (!is_null($cart)) {
                     $user->setCartId($cart->getId());

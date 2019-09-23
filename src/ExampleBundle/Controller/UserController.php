@@ -14,6 +14,7 @@ use Commercetools\Core\Request\Customers\Command\CustomerSetDefaultShippingAddre
 use Commercetools\Core\Request\Customers\Command\CustomerSetFirstNameAction;
 use Commercetools\Core\Request\Customers\Command\CustomerSetLastNameAction;
 use Commercetools\Core\Request\Customers\Command\CustomerSetTitleAction;
+use Commercetools\Symfony\CustomerBundle\Manager\MeCustomerManager;
 use Commercetools\Symfony\ExampleBundle\Entity\UserAddress;
 use Commercetools\Symfony\ExampleBundle\Entity\UserDetails;
 use Commercetools\Symfony\ExampleBundle\Model\Form\Type\AddressType;
@@ -32,17 +33,23 @@ class UserController extends AbstractController
      */
     private $manager;
 
+    /** @var MeCustomerManager */
+    private $meCustomerManager;
+
     /**
      * CustomerController constructor.
+     * @param CustomerManager $manager
+     * @param MeCustomerManager $meCustomerManager
      */
-    public function __construct(CustomerManager $manager)
+    public function __construct(CustomerManager $manager, MeCustomerManager $meCustomerManager)
     {
         $this->manager = $manager;
+        $this->meCustomerManager = $meCustomerManager;
     }
 
-    public function addAddressAction(Request $request, UserInterface $user)
+    public function addAddressAction(Request $request)
     {
-        $customer = $this->manager->getById($request->getLocale(), $user->getId());
+        $customer = $this->meCustomerManager->getMeInfo($request->getLocale());
 
         $form = $this->createForm(AddressType::class, new UserAddress())
             ->add('submit', SubmitType::class);
@@ -85,9 +92,9 @@ class UserController extends AbstractController
         ]);
     }
 
-    public function detailsAction(Request $request, UserInterface $user)
+    public function detailsAction(Request $request)
     {
-        $customer = $this->manager->getById($request->getLocale(), $user->getId());
+        $customer = $this->meCustomerManager->getMeInfo($request->getLocale());
         $entity = UserDetails::ofCustomer($customer);
 
         $form = $this->createForm(UserType::class, $entity)
@@ -104,7 +111,7 @@ class UserController extends AbstractController
             $currentPassword = $form->get('currentPassword')->getData();
             $newPassword = $form->get('newPassword')->getData();
 
-            $customerBuilder = $this->manager->update($customer);
+            $customerBuilder = $this->meCustomerManager->update($customer);
             $customerBuilder
                 ->setFirstName(CustomerSetFirstNameAction::of()->setFirstName($firstName))
                 ->setLastName(CustomerSetLastNameAction::of()->setLastName($lastName))

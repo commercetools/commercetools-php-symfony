@@ -17,7 +17,9 @@ use Commercetools\Core\Model\Cart\LineItemCollection;
 use Commercetools\Core\Model\Common\Address;
 use Commercetools\Core\Model\Common\AddressCollection;
 use Commercetools\Core\Model\Customer\Customer;
+use Commercetools\Core\Model\Customer\CustomerSigninResult;
 use Commercetools\Core\Request\Customers\CustomerLoginRequest;
+use Commercetools\Core\Request\Me\MeLoginRequest;
 use Commercetools\Core\Response\AbstractApiResponse;
 use Commercetools\Core\Response\ResourceResponse;
 use Commercetools\Symfony\CustomerBundle\Security\Authentication\Provider\AuthenticationProvider;
@@ -131,8 +133,8 @@ class AuthenticationProviderTest extends TestCase
         $response->isError()->willReturn(true);
         $response->getBody()->willReturn(json_encode($customer));
 
-        $this->client->send(
-            Argument::type(HttpRequest::class)
+        $this->client->execute(
+            Argument::type(MeLoginRequest::class)
         )->willReturn($response->reveal())->shouldBeCalledOnce();
 
         $user = $this->prophesize(User::class);
@@ -160,8 +162,8 @@ class AuthenticationProviderTest extends TestCase
         $response->getContext()->willReturn(null);
         $response->isError()->willReturn(false);
 
-        $this->client->send(
-            Argument::type(HttpRequest::class)
+        $this->client->execute(
+            Argument::type(MeLoginRequest::class)
         )->willReturn($response->reveal())->shouldBeCalled();
 
         $user = $this->prophesize(User::class);
@@ -177,8 +179,6 @@ class AuthenticationProviderTest extends TestCase
         $token->getCredentials()->willReturn('foo')->shouldBeCalled();
 
         $oauthToken = $this->prophesize(Token::class);
-        $oauthToken->getToken()->willReturn('token-1')->shouldBeCalled();
-        $oauthToken->getRefreshToken()->willReturn('refresh-1')->shouldBeCalled();
 
         $customer = Customer::of()
             ->setId('id-1')
@@ -186,33 +186,38 @@ class AuthenticationProviderTest extends TestCase
             ->setPassword('foo')
             ->setAddresses(AddressCollection::of()->add(Address::of()->setId('address-1')->setCountry('DE')))
             ->setDefaultShippingAddressId('address-1')
-            ->toArray();
+        ->toArray();
 
-        $response = $this->prophesize(ResourceResponse::class);
-        $response->toArray()->willReturn($customer)->shouldBeCalled();
+        $customerSignInResult = $this->prophesize(CustomerSigninResult::class);
+        $customerSignInResult->getCustomer()->willReturn($customer);
+        $customerSignInResult->toArray()->willReturn([
+            'customer' => $customer,
+            'cart' => Cart::of()->setId('cart-id-1')->toArray()
+        ])->shouldBeCalledOnce();
+
+        $response = $this->prophesize(AbstractApiResponse::class);
+        $response->toArray()->willReturn($customerSignInResult->reveal()->toArray())->shouldBeCalled();
         $response->getContext()->willReturn(null)->shouldBeCalled();
         $response->isError()->willReturn(false)->shouldBeCalled();
-
-
 
         $this->passwordFlowTokenProvider->getTokenFor(
             Argument::is('USER@localhost'),
             Argument::is('foo')
         )->willReturn($oauthToken->reveal())->shouldBeCalledOnce();
 
-        $this->client->send(Argument::type(HttpRequest::class))->willReturn($response->reveal())->shouldBeCalledTimes(2);
+        $this->client->execute(Argument::type(MeLoginRequest::class))->willReturn(
+            $response->reveal()
+        )->shouldBeCalledTimes(1);
 
         $user = $this->prophesize(User::class);
         $user->setId('id-1')->shouldBeCalledOnce();
-        $user->setCartId('id-1')->shouldBeCalledOnce();
+        $user->setCartId('cart-id-1')->shouldBeCalledOnce();
         $user->setCartItemCount(0)->shouldBeCalledOnce();
         $user->setDefaultShippingAddress(Argument::that(function (Address $address) {
             static::assertSame('address-1', $address->getId());
             static::assertSame('DE', $address->getCountry());
             return true;
         }))->shouldBeCalled();
-        $user->setAccessToken('token-1')->shouldBeCalledOnce();
-        $user->setRefreshToken('refresh-1')->shouldBeCalledOnce();
 
         $provider = $this->getAuthenticationProvider();
         $provider->checkAuthentication($user->reveal(), $token->reveal());

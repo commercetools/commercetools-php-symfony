@@ -11,7 +11,6 @@ use Commercetools\Symfony\CartBundle\Manager\MeCartManager;
 use Commercetools\Symfony\CatalogBundle\Manager\CatalogManager;
 use Commercetools\Symfony\CtpBundle\Model\QueryParams;
 use Commercetools\Symfony\CtpBundle\Model\Repository;
-use Commercetools\Symfony\ExampleBundle\Model\Form\Type\AddToCartType;
 use Commercetools\Symfony\ExampleBundle\Model\Form\Type\ContactUsType;
 use Commercetools\Symfony\ExampleBundle\Model\View\NavMenu;
 use Commercetools\Symfony\ExampleBundle\Model\View\Tree;

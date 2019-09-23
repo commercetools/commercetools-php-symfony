@@ -54,11 +54,7 @@ class CartController extends AbstractController
 
     public function indexAction(Request $request)
     {
-        $cart = $this->meCartManager->getCart($request->getLocale());
-
-        if (is_null($cart)) {
-            $cart = Cart::of();
-        }
+        $cart = $this->meCartManager->getCart($request->getLocale()) ?? Cart::of();
 
         return $this->render('@Example/cart.html.twig', [
             'cart' => $cart

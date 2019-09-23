@@ -20,11 +20,6 @@
         <service id="commercetools.http.clientfactory" class="Commercetools\Core\Client\ClientFactory">
             <factory class="Commercetools\Core\Client\ClientFactory" method="of"/>
         </service>
-        <service id="Commercetools\Core\Client\OAuth\RefreshFlowTokenProvider">
-            <argument type="service" id="session"/>
-            <argument type="service" id="commercetools.client.config"/>
-            <argument type="service" id="commercetools.oauth.client"/>
-        </service>
 
         <service id="commercetools.oauth.client" class="GuzzleHttp\Client"/>
 
@@ -110,6 +105,15 @@
         </service>
         <service id="Commercetools\Symfony\ShoppingListBundle\Manager\MeShoppingListManager" public="true">
             <argument id="Commercetools\Symfony\ShoppingListBundle\Model\Repository\MeShoppingListRepository" type="service"/>
+            <argument id="event_dispatcher" type="service"/>
+        </service>
+
+        <service id="Commercetools\Symfony\CustomerBundle\Model\Repository\MeCustomerRepository"
+                 parent="Commercetools\Symfony\CtpBundle\Model\MeRepository">
+            <argument key="$enableCache">%commercetools.cache.customer%</argument>
+        </service>
+        <service id="Commercetools\Symfony\CustomerBundle\Manager\MeCustomerManager" public="true">
+            <argument id="Commercetools\Symfony\CustomerBundle\Model\Repository\MeCustomerRepository" type="service"/>
             <argument id="event_dispatcher" type="service"/>
         </service>
     </services>

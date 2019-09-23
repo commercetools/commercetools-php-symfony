@@ -12,15 +12,14 @@ use Commercetools\Symfony\CustomerBundle\Event\CustomerCreateEvent;
 use Commercetools\Symfony\CustomerBundle\Event\CustomerPostCreateEvent;
 use Commercetools\Symfony\CustomerBundle\Event\CustomerUpdateEvent;
 use Commercetools\Symfony\CustomerBundle\Event\CustomerPostUpdateEvent;
-use Commercetools\Symfony\CustomerBundle\Model\Repository\CustomerRepository;
 use Commercetools\Symfony\CustomerBundle\Model\CustomerUpdateBuilder;
+use Commercetools\Symfony\CustomerBundle\Model\Repository\MeCustomerRepository;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
-use Symfony\Component\HttpFoundation\Session\SessionInterface;
 
-class CustomerManager implements CustomerManagerInterface
+class MeCustomerManager implements CustomerManagerInterface
 {
     /**
-     * @var CustomerRepository
+     * @var MeCustomerRepository
      */
     private $repository;
 
@@ -31,10 +30,10 @@ class CustomerManager implements CustomerManagerInterface
 
     /**
      * CustomerManager constructor.
-     * @param CustomerRepository $repository
+     * @param MeCustomerRepository $repository
      * @param EventDispatcherInterface $dispatcher
      */
-    public function __construct(CustomerRepository $repository, EventDispatcherInterface $dispatcher)
+    public function __construct(MeCustomerRepository $repository, EventDispatcherInterface $dispatcher)
     {
         $this->repository = $repository;
         $this->dispatcher = $dispatcher;
@@ -42,13 +41,12 @@ class CustomerManager implements CustomerManagerInterface
 
     /**
      * @param string $locale
-     * @param string $customerId
      * @param QueryParams|null $params
      * @return Customer
      */
-    public function getById($locale, $customerId, QueryParams $params = null)
+    public function getMeInfo($locale, QueryParams $params = null)
     {
-        return $this->repository->getCustomerById($locale, $customerId, $params);
+        return $this->repository->getMeInfo($locale, $params);
     }
 
     /**
@@ -116,14 +114,13 @@ class CustomerManager implements CustomerManagerInterface
      * @param string $locale
      * @param string $email
      * @param string $password
-     * @param SessionInterface|null $session
      * @return CustomerSigninResult
      */
-    public function createCustomer($locale, $email, $password, SessionInterface $session = null)
+    public function createCustomer($locale, $email, $password)
     {
         $this->dispatcher->dispatch(new CustomerCreateEvent());
 
-        $customer = $this->repository->createCustomer($locale, $email, $password, $session);
+        $customer = $this->repository->createCustomer($locale, $email, $password);
 
         $this->dispatcher->dispatch(new CustomerPostCreateEvent($customer->getCustomer()));
 

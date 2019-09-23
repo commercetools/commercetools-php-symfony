@@ -112,8 +112,8 @@ class CatalogControllerTest extends WebTestCase
         $this->catalogManager->searchProducts(
             "en",
             12,
-            1,
-            "price asc",
+            0,
+            "id asc",
             "EUR",
             "DE",
             Argument::type(Uri::class),
