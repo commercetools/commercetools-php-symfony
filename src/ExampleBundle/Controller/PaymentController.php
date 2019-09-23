@@ -22,6 +22,7 @@ use Commercetools\Symfony\CartBundle\Manager\OrderManager;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Workflow\Exception\InvalidArgumentException;
 use Symfony\Component\Workflow\Registry;
@@ -125,7 +126,7 @@ class PaymentController extends AbstractController
             return $this->render('@Example/index.html.twig');
         }
 
-        return $this->redirect($this->generateUrl('_ctp_example_order', ['orderId' => $orderId]));
+        return $this->redirect($this->generateUrl('_ctp_example_order', ['orderId' => $orderId], UrlGeneratorInterface::RELATIVE_PATH));
     }
 
     /**
@@ -174,7 +175,7 @@ class PaymentController extends AbstractController
             return $this->render('@Example/cart/cartConfirm.html.twig');
         }
 
-        return $this->redirect($this->generateUrl('_ctp_example_checkout_confirm'));
+        return $this->redirect($this->generateUrl('_ctp_example_checkout_confirm', [], UrlGeneratorInterface::RELATIVE_PATH));
     }
 
     /**
@@ -251,9 +252,9 @@ class PaymentController extends AbstractController
         $orderId = $request->get('orderId');
 
         if (is_null($orderId)) {
-            return $this->redirect($this->generateUrl('_ctp_example_orders_all'));
+            return $this->redirect($this->generateUrl('_ctp_example_orders_all', [], UrlGeneratorInterface::RELATIVE_PATH));
         }
 
-        return $this->redirect($this->generateUrl('_ctp_example_order', ['orderId' => $orderId]));
+        return $this->redirect($this->generateUrl('_ctp_example_order', ['orderId' => $orderId], UrlGeneratorInterface::RELATIVE_PATH));
     }
 }

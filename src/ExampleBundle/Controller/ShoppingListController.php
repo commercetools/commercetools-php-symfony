@@ -14,6 +14,7 @@ use Commercetools\Symfony\ShoppingListBundle\Manager\MeShoppingListManager;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
 class ShoppingListController extends AbstractController
 {
@@ -55,7 +56,7 @@ class ShoppingListController extends AbstractController
 
         $this->manager->deleteShoppingList($request->getLocale(), $shoppingList);
 
-        return new RedirectResponse($this->generateUrl('_ctp_example_cart'));
+        return new RedirectResponse($this->generateUrl('_ctp_example_cart', [], UrlGeneratorInterface::RELATIVE_PATH));
     }
 
     public function addLineItemAction(Request $request)
