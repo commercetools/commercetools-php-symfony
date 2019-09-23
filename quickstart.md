@@ -74,6 +74,71 @@ class DefaultController extends AbstractController
 {% endblock %}
 ```
 
+## ExampleBundle
+
+You may enable ExampleBundle to have a running instance of the Sunrise sample e-shop. It
+resembles an e-shop demonstrating sample data, templates and functionalities.
+
+* run `composer require symfony/asset symfony/translation`
+* to enable commercetools user management and authentication edit `congig/packages/security.yaml`
+```yaml
+security:
+  providers:
+    ctp:
+      id: Commercetools\Symfony\CustomerBundle\Security\User\UserProvider
+  access_control:
+  - { path: /user/, roles: ROLE_USER }
+  encoders:
+    Symfony\Component\Security\Core\User\User: plaintext
+    Commercetools\Symfony\CustomerBundle\Security\User\User: plaintext
+  firewalls:
+    main:
+      anonymous: ~
+      commercetools-login:
+        login_path: login
+        check_path: login_check
+        default_target_path: _ctp_example_index
+      logout:
+        path:   logout
+        target: _ctp_example_index
+    dev:
+      pattern: ^/(_(profiler|wdt)|css|images|js)/
+      security: false
+    default:
+      anonymous: ~
+```
+* enable all commercetools bundles in `config/bundles.php`
+```php
+return [
+...
+    Commercetools\Symfony\CtpBundle\CtpBundle::class => ['all' => true],
+    Commercetools\Symfony\ShoppingListBundle\ShoppingListBundle::class => ['all' => true],
+    Commercetools\Symfony\CartBundle\CartBundle::class => ['all' => true],
+    Commercetools\Symfony\CustomerBundle\CustomerBundle::class => ['all' => true],
+    Commercetools\Symfony\ReviewBundle\ReviewBundle::class => ['all' => true],
+    Commercetools\Symfony\CatalogBundle\CatalogBundle::class => ['all' => true],
+    Commercetools\Symfony\ExampleBundle\ExampleBundle::class => ['all' => true],
+    Commercetools\Symfony\SetupBundle\SetupBundle::class => ['all' => true],
+    Commercetools\Symfony\StateBundle\StateBundle::class => ['all' => true],
+...
+];
+```
+* note: to disable errors on undefined twig variables change in `config/packages/twig.yaml`. This is
+because right now there are undefined variables in the Sunrise templates. This setting should and it is
+recommended to be back to it's original value for any real world scenario.
+```yaml
+twig:
+    strict_variables: false
+```
+
+## Sample Data
+* At this point no data is inserted in the shop which will result that your sample e-shop is
+more or less empty and no sample products/categories/etc
+will be demonstrated. To insert the sample Sunrise data please follow the procedure
+[here](https://github.com/commercetools/commercetools-sunrise-data/). You may run this importer
+in a totally new repo, since you will not need any of it after running it once in your project.
+
+
 
 ## Preview in browser
 
@@ -86,5 +151,3 @@ created your project in commercetools, you will have to manually add some produc
 the list will be empty. If you, manually added some products and your locale was not `en`,
 you should change the parameter `en` used in the `DefaultController` above, to match the
 locale that you used in your products.
-
-
