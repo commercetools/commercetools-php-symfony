@@ -13,7 +13,6 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Commercetools\Symfony\CartBundle\Manager\OrderManager;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
-use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Workflow\Exception\InvalidArgumentException;
 use Symfony\Component\Workflow\Registry;
@@ -138,7 +137,7 @@ class OrderController extends AbstractController
         }
 
         $workflow->apply($subject, $request->get('toState'));
-        return $this->redirect($this->generateUrl('_ctp_example_order', ['orderId' => $orderId], UrlGeneratorInterface::RELATIVE_PATH));
+        return $this->redirect($this->generateUrl('_ctp_example_order', ['orderId' => $orderId]));
     }
 
     /**
@@ -166,6 +165,6 @@ class OrderController extends AbstractController
         }
 
         $workflow->apply($order, $toState);
-        return $this->redirect($this->generateUrl('_ctp_example_order', ['orderId' => $orderId], UrlGeneratorInterface::RELATIVE_PATH));
+        return $this->redirect($this->generateUrl('_ctp_example_order', ['orderId' => $orderId]));
     }
 }

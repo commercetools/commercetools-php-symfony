@@ -24,7 +24,6 @@ use Commercetools\Symfony\CartBundle\Manager\CartManager;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
-use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
 
 class CartController extends AbstractController
@@ -97,9 +96,9 @@ class CartController extends AbstractController
 
                 $this->meCartManager->createCart($request->getLocale(), $currency, $location, $lineItemDraftCollection);
             }
-            $redirectUrl = $this->generateUrl('_ctp_example_product', ['slug' => $slug], UrlGeneratorInterface::RELATIVE_PATH);
+            $redirectUrl = $this->generateUrl('_ctp_example_product', ['slug' => $slug]);
         } else {
-            $redirectUrl = $this->generateUrl('_ctp_example_index', [], UrlGeneratorInterface::RELATIVE_PATH);
+            $redirectUrl = $this->generateUrl('_ctp_example_index');
         }
 
         return new RedirectResponse($redirectUrl);
@@ -119,7 +118,7 @@ class CartController extends AbstractController
         );
         $cartBuilder->flush();
 
-        return new RedirectResponse($this->generateUrl('_ctp_example_cart', [], UrlGeneratorInterface::RELATIVE_PATH));
+        return new RedirectResponse($this->generateUrl('_ctp_example_cart'));
     }
 
     public function deleteLineItemAction(Request $request, SessionInterface $session, UserInterface $user = null)
@@ -133,7 +132,7 @@ class CartController extends AbstractController
 
         $cartBuilder->flush();
 
-        return new RedirectResponse($this->generateUrl('_ctp_example_cart', [], UrlGeneratorInterface::RELATIVE_PATH));
+        return new RedirectResponse($this->generateUrl('_ctp_example_cart'));
     }
 
     public function addShoppingListToCartAction(Request $request, SessionInterface $session, UserInterface $user = null)
@@ -161,7 +160,7 @@ class CartController extends AbstractController
         $cartBuilder->addShoppingList(CartAddShoppingListAction::ofShoppingList($shoppingList));
         $cartBuilder->flush();
 
-        return new RedirectResponse($this->generateUrl('_ctp_example_cart', [], UrlGeneratorInterface::RELATIVE_PATH));
+        return new RedirectResponse($this->generateUrl('_ctp_example_cart'));
     }
 
     // TODO duplicate code / move these to better place

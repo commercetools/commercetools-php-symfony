@@ -25,7 +25,6 @@ use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
-use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Security\Http\Authentication\AuthenticationUtils;
 
@@ -76,7 +75,7 @@ class CheckoutController extends AbstractController
     public function signinAction(AuthenticationUtils $authenticationUtils)
     {
         if ($this->get('security.authorization_checker')->isGranted('IS_AUTHENTICATED_FULLY')) {
-            return $this->redirect($this->generateUrl('_ctp_example_checkout_address', [], UrlGeneratorInterface::RELATIVE_PATH));
+            return $this->redirect($this->generateUrl('_ctp_example_checkout_address'));
         }
 
         $error = $authenticationUtils->getLastAuthenticationError();
@@ -100,7 +99,7 @@ class CheckoutController extends AbstractController
         $shippingMethods = $this->shippingMethodManager->getShippingMethodsByCart($request->getLocale(), $cart->getId());
 
         if (is_null($cart->getId())) {
-            return $this->redirect($this->generateUrl('_ctp_example_cart', [], UrlGeneratorInterface::RELATIVE_PATH));
+            return $this->redirect($this->generateUrl('_ctp_example_cart'));
         }
 
         $methods = [];
@@ -133,7 +132,7 @@ class CheckoutController extends AbstractController
             );
             $cartBuilder->flush();
 
-            return $this->redirect($this->generateUrl('_ctp_example_checkout_confirm', [], UrlGeneratorInterface::RELATIVE_PATH));
+            return $this->redirect($this->generateUrl('_ctp_example_checkout_confirm'));
         }
 
         return $this->render('@Example/checkout-shipping.html.twig', [
@@ -152,7 +151,7 @@ class CheckoutController extends AbstractController
         $cart = $this->meCartManager->getCart($request->getLocale());
 
         if (is_null($cart) || is_null($cart->getId())) {
-            return $this->redirect($this->generateUrl('_ctp_example_cart', [], UrlGeneratorInterface::RELATIVE_PATH));
+            return $this->redirect($this->generateUrl('_ctp_example_cart'));
         }
 
         return $this->render('@Example/checkout-confirmation.html.twig', [
@@ -179,7 +178,7 @@ class CheckoutController extends AbstractController
         $cart = $this->meCartManager->getCart($request->getLocale());
 
         if (is_null($cart)) {
-            return $this->redirect($this->generateUrl('_ctp_example_cart', [], UrlGeneratorInterface::RELATIVE_PATH));
+            return $this->redirect($this->generateUrl('_ctp_example_cart'));
         }
 
         // requires admin privileges to set order states etc
@@ -214,7 +213,7 @@ class CheckoutController extends AbstractController
 
         if (is_null($cart) || is_null($cart->getId())) {
             // add error message
-            return $this->redirect($this->generateUrl('_ctp_example_cart', [], UrlGeneratorInterface::RELATIVE_PATH));
+            return $this->redirect($this->generateUrl('_ctp_example_cart'));
         }
 
         $entity = CartEntity::ofCart($cart);
@@ -253,7 +252,7 @@ class CheckoutController extends AbstractController
             $cart = $cartBuilder->flush();
 
             if (!is_null($cart)) {
-                return $this->redirect($this->generateUrl('_ctp_example_checkout_shipping', [], UrlGeneratorInterface::RELATIVE_PATH));
+                return $this->redirect($this->generateUrl('_ctp_example_checkout_shipping'));
             }
         }
 
