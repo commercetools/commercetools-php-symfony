@@ -30,7 +30,7 @@
                       </div>
                     </div>
                   </div>
-                  {{ form_start(formAddress, {'action': path('_ctp_example_user_address_edit', {'addressId': addressId}, true)}) }}
+                  {{ form_start(formAddress, {'action': path('_ctp_example_user_address_edit', {'addressId': addressId})}) }}
                   {% set formObject = formAddress %}
                   {% form_theme formAddress 'bootstrap_3_layout.html.twig' %}
                   {{ form_row(formAddress._token) }}
@@ -51,7 +51,7 @@
                       <div class="col-sm-12">
                         <div class="edit-address-book-footer">
                           <div class="btn-grey push-left">
-                            <a href="{{ path('_ctp_example_user_address_book', {}, true) }}">{{ 'addressBook.buttons.cancelAddressBtn'|trans([], 'my-account') }}</a>
+                            <a href="{{ path('_ctp_example_user_address_book') }}">{{ 'addressBook.buttons.cancelAddressBtn'|trans([], 'my-account') }}</a>
                           </div>
                           <div class="add-new-address-btn push-right">
                             {{ form_widget(formAddress.submit, { 'label' : 'addressBook.buttons.saveAddressBtn'|trans([], 'my-account')}) }}

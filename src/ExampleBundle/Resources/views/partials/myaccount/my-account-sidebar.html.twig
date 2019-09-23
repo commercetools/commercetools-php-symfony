@@ -1,25 +1,25 @@
 <!-- start myaccount/my-account-sidebar.hbs -->
 <div class="my-account-sidebar">
   <div {% if myPersonalDetailsTab %}id="my-account-mobile-content"{% endif %} class="my-account-sidebar-items {% if myPersonalDetailsTab %}active{% endif %}">
-    <a href="{{ path('_ctp_example_user_details', {}, true) }}">{{ 'myAccountSidebar.personalDetails'|trans([], 'my-account') }}</a>
+    <a href="{{ path('_ctp_example_user_details') }}">{{ 'myAccountSidebar.personalDetails'|trans([], 'my-account') }}</a>
   </div>
 {#  <div {% if changeMyPasswordTab %}id="my-account-mobile-content"{% endif %}class="my-account-sidebar-items {% if changeMyPasswordTab %}active{% endif %}">#}
 {#    <a href="{{ root.meta._links.changePassword.href }}">{{ 'myAccountSidebar.changePassword'|trans([], 'my-account') }}</a>#}
 {#  </div>#}
   <div {% if myAddressBookTab %}id="my-account-mobile-content"{% endif %}class="my-account-sidebar-items {% if myAddressBookTab %}active{% endif %}">
-    <a href="{{ path('_ctp_example_user_address_book', {}, true) }}">{{ 'myAccountSidebar.addressBook'|trans([], 'my-account') }}</a>
+    <a href="{{ path('_ctp_example_user_address_book') }}">{{ 'myAccountSidebar.addressBook'|trans([], 'my-account') }}</a>
   </div>
   <div {% if myPaymentDetailsTab %}id="my-account-mobile-content"{% endif %}class="my-account-sidebar-items {% if myPaymentDetailsTab %}active{% endif %}">
-    <a href="{{ path('_ctp_example_index', {}, true) }}">{{ 'myAccountSidebar.paymentDetails'|trans([], 'my-account') }}</a>
+    <a href="{{ path('_ctp_example_index') }}">{{ 'myAccountSidebar.paymentDetails'|trans([], 'my-account') }}</a>
   </div>
   <div {% if myOrdersTab %}id="my-account-mobile-content"{% endif %}class="my-account-sidebar-items {% if myOrdersTab %}active{% endif %}">
-    <a href="{{ path('_ctp_example_orders_all', {}, true) }}">{{ 'myAccountSidebar.myOrders'|trans([], 'my-account') }}</a>
+    <a href="{{ path('_ctp_example_orders_all') }}">{{ 'myAccountSidebar.myOrders'|trans([], 'my-account') }}</a>
   </div>
   <div {% if myReturnsAndExchangesTab %}id="my-account-mobile-content"{% endif %}class="my-account-sidebar-items {% if myReturnsAndExchangesTab %}active{% endif %}">
     <a href="{{ root.meta._links.myReturnsAndExchanges.href }}">{{ 'myAccountSidebar.returnsExchange'|trans([], 'my-account') }}</a>
   </div>
   <div {% if myWishlistTab %}id="my-account-mobile-content"{% endif %}class="my-account-sidebar-items clearfix {% if myWishlistTab %}active{% endif %}">
-    <a href="{{ path('_ctp_example_shoppingList', {}, true) }}">
+    <a href="{{ path('_ctp_example_shoppingList') }}">
       <span><img class="sidebar-wishlist-heart hidden-sm" src="{{ asset('bundles/example/img/heart-1.png') }}" alt="heart icon"></span>{{ 'myAccountSidebar.wishlist'|trans([], 'my-account') }}<span class="sidebar-wishlist-quantity hidden-sm">{{ content.sidebarItemSix.wishlistItems }}</span>
     </a>
   </div>

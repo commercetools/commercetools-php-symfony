@@ -10,7 +10,7 @@
   <hr class="login-box-hr">
   <div class="login-box-description">{{ 'loginBox.description'|trans([], 'my-account-login') }}</div>
   <div class="login-box-input-wrapper">
-    <form id="form-sign-in" method="POST" action="{{ path('login_check', {}, true) }}">
+    <form id="form-sign-in" method="POST" action="{{ path('login_check') }}">
       <input type="hidden" name="csrfToken" value="{{ csrf_token('csrfToken') }}"/>
       <div class="row">
         {% include '@Example/partials/form/global-messages.html.twig' with {'messages':form.messages} %}
