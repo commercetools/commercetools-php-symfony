@@ -136,8 +136,6 @@ class CatalogControllerTest extends WebTestCase
         $session->getId()->willReturn('session-id-1')->shouldBeCalledOnce();
 
         $this->request->getLocale()->willReturn('en')->shouldBeCalled();
-        $this->request->get('slug')->willReturn('en')->shouldBeCalled();
-        $this->request->get('sku')->willReturn('en')->shouldBeCalled();
 
         $form = $this->prophesize(Form::class);
         $form->handleRequest(Argument::type(Request::class))
@@ -157,11 +155,11 @@ class CatalogControllerTest extends WebTestCase
         $this->myContainer->get('form.factory')->willReturn($formFactory->reveal())->shouldBeCalled();
 
         $parameterBag = $this->prophesize(ParameterBag::class);
-        $parameterBag->get('commercetools.project_settings.countries')->willReturn(['DE'])->shouldBeCalledTimes(2);
-        $parameterBag->get('commercetools.project_settings.currencies')->willReturn(['EUR'])->shouldBeCalledTimes(2);
+        $parameterBag->get('commercetools.project_settings.countries')->willReturn(['DE'])->shouldBeCalledTimes(1);
+        $parameterBag->get('commercetools.project_settings.currencies')->willReturn(['EUR'])->shouldBeCalledTimes(1);
 
-        $this->myContainer->has('parameter_bag')->willReturn(true)->shouldBeCalledTimes(4);
-        $this->myContainer->get('parameter_bag')->willReturn($parameterBag->reveal())->shouldBeCalledTimes(4);
+        $this->myContainer->has('parameter_bag')->willReturn(true)->shouldBeCalledTimes(2);
+        $this->myContainer->get('parameter_bag')->willReturn($parameterBag->reveal())->shouldBeCalledTimes(2);
 
         $productProjection = ProductProjection::fromArray(ProductProjection::of()->setId('projection-1')
             ->setVariants(
@@ -234,8 +232,6 @@ class CatalogControllerTest extends WebTestCase
         $user->getId()->willReturn('user-1')->shouldBeCalledOnce();
 
         $this->request->getLocale()->willReturn('en')->shouldBeCalled();
-        $this->request->get('slug')->willReturn('en')->shouldBeCalled();
-        $this->request->get('sku')->willReturn('en')->shouldBeCalled();
 
         $form = $this->prophesize(Form::class);
         $form->handleRequest(Argument::type(Request::class))
@@ -245,11 +241,11 @@ class CatalogControllerTest extends WebTestCase
         $form->createView()->shouldBeCalled();
 
         $parameterBag = $this->prophesize(ParameterBag::class);
-        $parameterBag->get('commercetools.project_settings.countries')->willReturn(['DE'])->shouldBeCalledOnce();
-        $parameterBag->get('commercetools.project_settings.currencies')->willReturn(['EUR'])->shouldBeCalledOnce();
+        $parameterBag->get('commercetools.project_settings.countries')->willReturn(['DE'])->shouldNotBeCalled();
+        $parameterBag->get('commercetools.project_settings.currencies')->willReturn(['EUR'])->shouldNotBeCalled();
 
-        $this->myContainer->has('parameter_bag')->willReturn(true)->shouldBeCalledTimes(2);
-        $this->myContainer->get('parameter_bag')->willReturn($parameterBag->reveal())->shouldBeCalledTimes(2);
+        $this->myContainer->has('parameter_bag')->willReturn(true)->shouldBeCalledTimes(0);
+        $this->myContainer->get('parameter_bag')->willReturn($parameterBag->reveal())->shouldBeCalledTimes(0);
 
         $formFactory = $this->prophesize(FormFactory::class);
         $formFactory->create(Argument::type('string'), Argument::type(ProductEntity::class), Argument::type('array'))

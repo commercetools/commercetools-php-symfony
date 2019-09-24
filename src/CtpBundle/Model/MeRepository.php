@@ -204,15 +204,13 @@ class MeRepository
      */
     protected function executeRequest(ClientRequestInterface $request, $locale = 'en', QueryParams $params = null)
     {
-        $client = $this->getClient();
-
         if (!is_null($params)) {
             foreach ($params->getParams() as $param) {
                 $request->addParamObject($param);
             }
         }
 
-        $response = $client->send($request->httpRequest());
+        $response = $this->client->send($request->httpRequest());
 
         $mappedResponse = $request->mapFromResponse(
             $response,

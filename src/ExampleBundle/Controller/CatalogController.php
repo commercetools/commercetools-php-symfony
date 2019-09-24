@@ -35,6 +35,8 @@ class CatalogController extends AbstractController
     const PAGE_SELECTOR_RANGE = 2;
     const FIRST_PAGE = 1;
     const ITEMS_PER_PAGE = 12;
+    const PAGE = 'page';
+    const DEFAULT_SORT = 'id asc';
 
     private $catalogManager;
     private $shoppingListManager;
@@ -73,10 +75,9 @@ class CatalogController extends AbstractController
             $search = $form->get('search')->getData();
         }
 
-        $uri = new Uri($request->getRequestUri());
-        $queryVars = parse_query($uri);
+        $queryVars = parse_query((new Uri($request->getRequestUri()))->getQuery());
 
-        $page = $queryVars['page'] ?? 1;
+        $page = $queryVars[self::PAGE] ?? 1;
         $offset = min(self::ITEMS_PER_PAGE * ($page - 1), 100000);
 
         $category = null;
@@ -104,7 +105,7 @@ class CatalogController extends AbstractController
             $request->getLocale(),
             self::ITEMS_PER_PAGE,
             $offset,
-            'id asc',
+            self::DEFAULT_SORT,
             $this->getCurrencyFromConfig(),
             $this->getCountryFromConfig(),
             new Uri($request->getRequestUri()),
@@ -145,13 +146,10 @@ class CatalogController extends AbstractController
 
     private function productDetails(Request $request, ProductProjection $product, SessionInterface $session, UserInterface $user = null, CacheItemPoolInterface $cache = null)
     {
-        // o-s
         $variantIds = [];
         foreach ($product->getAllVariants() as $variant) {
             $variantIds[$variant->getSku()] = $variant->getId();
         }
-
-//        dump($variantIds);
 
         $shoppingListsIds = [];
         if (is_null($user)) {
@@ -181,28 +179,6 @@ class CatalogController extends AbstractController
 
         $addToShoppingListForm = $this->createForm(AddToShoppingListType::class, $productToShoppingList, ['action' => $this->generateUrl('_ctp_example_shoppingList_add_lineItem')]);
         $addToShoppingListForm->handleRequest($request);
-
-        // o-e
-
-        // n-s
-
-        $locale = $request->getLocale();
-        $country = $this->getCountryFromConfig();
-        $currency = $this->getCurrencyFromConfig();
-
-        $slug = $request->get('slug');
-        $sku = $request->get('sku');
-
-//        $viewData = new ViewData();
-//
-//        $product = $this->catalogManager->getProductBySlug($locale, $slug, $currency, $country);
-//        $productData = $this->getProductModel($cache)->getProductDetailData($product, $sku, $locale);
-//        $viewData->content = new ViewData();
-//        $viewData->content->product = $productData;
-
-//        dump($viewData);
-
-        // n-e
 
         return $this->render('@Example/pdp.html.twig', [
             'product' =>  $product,
