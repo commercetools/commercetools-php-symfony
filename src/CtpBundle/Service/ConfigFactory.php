@@ -13,16 +13,17 @@ use Psr\Log\LoggerInterface;
 
 class ConfigFactory
 {
-    public static function create(array $config, HandlerStack $handlerStack, LoggerInterface $logger)
+    public static function create(array $config, HandlerStack $handlerStack, LoggerInterface $logger, $debug = false)
     {
         $config = Config::fromArray($config);
 
         $config->setClientOptions(['handler' => $handlerStack]);
 
-        // in debug only
-        $handler = HandlerStack::create();
-        $handler->push(Middleware::log($logger, new MessageFormatter()));
-        $config->setOAuthClientOptions(['handler' => $handler]);
+        if ($debug) {
+            $handler = HandlerStack::create();
+            $handler->push(Middleware::log($logger, new MessageFormatter()));
+            $config->setOAuthClientOptions(['handler' => $handler]);
+        }
 
         return $config;
     }

@@ -36,6 +36,7 @@
             <argument>%commercetools.client.config%</argument>
             <argument type="service" id="commercetools.client.handlerstack" />
             <argument type="service" id="commercetools.logger" />
+            <argument>%kernel.debug%</argument>
         </service>
         <service id="commercetools.cache" parent="cache.app">
             <tag name="cache.pool" />

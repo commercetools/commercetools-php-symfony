@@ -23,7 +23,6 @@
                  abstract="true"
                  public="false"
         >
-<!--            <argument type="service" id="commercetools.client" />-->
             <argument type="service" id="commeretoools.client.me" />
             <argument type="service" id="commercetools.client.me.config" />
             <argument /> <!-- User Provider -->
