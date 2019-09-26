@@ -40,7 +40,10 @@ class AddToCartType extends AbstractType
                 'attr' => ['class' => 'form']
             ])
             ->add('slug', HiddenType::class)
-            ->add('addToCart', SubmitType::class, ['label' => 'Add to cart'])
+            ->add('addToCart', SubmitType::class, [
+                'label' => 'Add to cart',
+                'attr' => ['class' => 'add-to-bag-btn text-center']
+            ])
         ;
     }
 }

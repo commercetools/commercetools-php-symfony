@@ -1,50 +1,43 @@
-<form id="form-add-to-cart{{ index }}" name="add_to_cart" method="post" action="{{ path('_ctp_example_add_lineItem') }}">
-  <input type="hidden" name="csrfToken" value="{{ csrf_token('csrfToken') }}"/>
-  <input type="hidden" name="productId" value="{{ product.id }}">
-  <input type="hidden" name="variantId" value="{{ product.masterVariant.id }}">
-  <input type="hidden" name="productSku" value="{{ product.masterVariant.sku }}">
-  <input type="hidden" name="productSlug" value="{{ product.slug }}">
+{#<form id="form-add-to-cart{{ index }}" name="add_to_cart" method="post" action="{{ path('_ctp_example_add_lineItem') }}">#}
+{#  <input type="hidden" name="csrfToken" value="{{ csrf_token('csrfToken') }}"/>#}
+{#  <input type="hidden" name="productId" value="{{ product.id }}">#}
+{#  <input type="hidden" name="variantId" value="{{ product.masterVariant.id }}">#}
+{#  <input type="hidden" name="productSku" value="{{ product.masterVariant.sku }}">#}
+{#  <input type="hidden" name="productSlug" value="{{ product.slug }}">#}
 
-  <div class="row select-row">
-    <ul class="list-inline">
+{#  <div class="row select-row">#}
+{#    <ul class="list-inline">#}
 {#      {{ dump(product.masterVariant.attributes) }}#}
 {#      {% for attribute in product.masterVariant.attributes %}#}
 {#        {% include '@Example/partials/catalog/product-attribute.html.twig' %}#}
 {#      {% endfor %}#}
-      <li class="size-guide-li">
-        {% include '@Example/partials/catalog/size-guide.html.twig' %}
-      </li>
-    </ul>
-  </div>
-  <div class="row">
-    <ul class="product-actions-list list-inline">
-      <li class="bag-items-li">
-        <select value="" name="quantity" class="bag-items" required>
-          {% for i in 1..10 %}
-          <option value="{{ i }}">{{ i }}</option>
-          {% endfor %}
-        </select>
-      </li>
-      <li>
-        <button type="submit" class="add-to-bag-btn text-center">
-          <img class="bag-thumb" src="{{ asset('bundles/example/img/hand-bag-2-black.png') }}" alt="{{ 'cart.add'|trans([], 'catalog') }}">
-          {{ 'cart.add'|trans([], 'catalog') }}
-        </button>
-      </li>
-    </ul>
-  </div>
-</form>
+{#      <li class="size-guide-li">#}
+{#        {% include '@Example/partials/catalog/size-guide.html.twig' %}#}
+{#      </li>#}
+{#    </ul>#}
+{#  </div>#}
+{#  <div class="row">#}
+{#    <ul class="product-actions-list list-inline">#}
+{#      <li class="bag-items-li">#}
+{#        <select value="" name="quantity" class="bag-items" required>#}
+{#          {% for i in 1..10 %}#}
+{#          <option value="{{ i }}">{{ i }}</option>#}
+{#          {% endfor %}#}
+{#        </select>#}
+{#      </li>#}
+{#      <li>#}
+{#        <button type="submit" class="add-to-bag-btn text-center">#}
+{#          <img class="bag-thumb" src="{{ asset('bundles/example/img/hand-bag-2-black.png') }}" alt="{{ 'cart.add'|trans([], 'catalog') }}">#}
+{#          {{ 'cart.add'|trans([], 'catalog') }}#}
+{#        </button>#}
+{#      </li>#}
+{#    </ul>#}
+{#  </div>#}
+{#</form>#}
 
 {% if addToCartForm %}
   {{ form_start(addToCartForm) }}
   {% form_theme addToCartForm 'bootstrap_3_layout.html.twig' %}
   {{ form_widget(addToCartForm) }}
   {{ form_end(addToCartForm) }}
-{% endif %}
-
-{% if addToShoppingListForm %}
-  {{ form_start(addToShoppingListForm) }}
-  {% form_theme addToShoppingListForm 'bootstrap_3_layout.html.twig' %}
-  {{ form_widget(addToShoppingListForm) }}
-  {{ form_end(addToShoppingListForm) }}
 {% endif %}
