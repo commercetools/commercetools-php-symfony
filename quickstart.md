@@ -1,5 +1,11 @@
 # Quick-start
 
+  * [Pre-requisites](#pre-requisites)
+  * [Create a basic page](#create-a-basic-page)
+  * [Install ExampleBundle](#examplebundle)
+  * [Import sample data](#sample-data)
+  * [Preview in browser](#preview-in-browser)
+
 ### Pre-requisites
 
 * You have successfully completed the Installation step and verified that everything works fine.
@@ -80,7 +86,30 @@ You may enable ExampleBundle to have a running instance of the Sunrise sample e-
 resembles an e-shop demonstrating sample data, templates and functionalities.
 
 * run `composer require symfony/asset symfony/translation`
-* to enable commercetools user management and authentication edit `congig/packages/security.yaml`
+* enable all commercetools bundles in `config/bundles.php`
+```php
+return [
+...
+    Commercetools\Symfony\CtpBundle\CtpBundle::class => ['all' => true],
+    Commercetools\Symfony\ShoppingListBundle\ShoppingListBundle::class => ['all' => true],
+    Commercetools\Symfony\CartBundle\CartBundle::class => ['all' => true],
+    Commercetools\Symfony\CustomerBundle\CustomerBundle::class => ['all' => true],
+    Commercetools\Symfony\ReviewBundle\ReviewBundle::class => ['all' => true],
+    Commercetools\Symfony\CatalogBundle\CatalogBundle::class => ['all' => true],
+    Commercetools\Symfony\ExampleBundle\ExampleBundle::class => ['all' => true],
+    Commercetools\Symfony\SetupBundle\SetupBundle::class => ['all' => true],
+    Commercetools\Symfony\StateBundle\StateBundle::class => ['all' => true],
+...
+];
+```
+* import the ExampleBundle routes in `config/routes.yaml`
+```yaml
+_example:
+    resource: "@ExampleBundle/Resources/config/routing.yml"
+```
+
+* enable user/customer management and authentication to be managed by commercetools
+by editing `congig/packages/security.yaml` as:
 ```yaml
 security:
   providers:
@@ -107,22 +136,6 @@ security:
     default:
       anonymous: ~
 ```
-* enable all commercetools bundles in `config/bundles.php`
-```php
-return [
-...
-    Commercetools\Symfony\CtpBundle\CtpBundle::class => ['all' => true],
-    Commercetools\Symfony\ShoppingListBundle\ShoppingListBundle::class => ['all' => true],
-    Commercetools\Symfony\CartBundle\CartBundle::class => ['all' => true],
-    Commercetools\Symfony\CustomerBundle\CustomerBundle::class => ['all' => true],
-    Commercetools\Symfony\ReviewBundle\ReviewBundle::class => ['all' => true],
-    Commercetools\Symfony\CatalogBundle\CatalogBundle::class => ['all' => true],
-    Commercetools\Symfony\ExampleBundle\ExampleBundle::class => ['all' => true],
-    Commercetools\Symfony\SetupBundle\SetupBundle::class => ['all' => true],
-    Commercetools\Symfony\StateBundle\StateBundle::class => ['all' => true],
-...
-];
-```
 * note: to disable errors on undefined twig variables change in `config/packages/twig.yaml`. This is
 because right now there are undefined variables in the Sunrise templates. This setting should and it is
 recommended to be back to it's original value for any real world scenario.
@@ -131,12 +144,17 @@ twig:
     strict_variables: false
 ```
 
+* recreate the translation messages by running:
+`bin/console translation:update --dump-messages --force en ExampleBundle`
+
 ## Sample Data
-* At this point no data is inserted in the shop which will result that your sample e-shop is
+
+* At this point no data is inserted in the shop which will result to your sample e-shop be
 more or less empty and no sample products/categories/etc
-will be demonstrated. To insert the sample Sunrise data please follow the procedure
+will be demonstrated. To import the sample Sunrise data please follow the procedure
 [here](https://github.com/commercetools/commercetools-sunrise-data/). You may run this importer
-in a totally new repo, since you will not need any of it after running it once in your project.
+in a repository other than the one you currently work at, since you will not need any of it
+after running it once on your project.
 
 
 
