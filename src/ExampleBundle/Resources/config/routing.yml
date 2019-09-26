@@ -197,15 +197,15 @@ _ctp_example_review_create:
 
 _ctp_example_help:
     path: /help
-    defaults: { _controller: ExampleBundle:Sunrise:help }
+    defaults: { _controller: Commercetools\Symfony\ExampleBundle\Controller\SunriseController::helpAction }
 
 _ctp_example_contact:
     path: /contact
-    defaults: { _controller: ExampleBundle:Sunrise:contact }
+    defaults: { _controller: Commercetools\Symfony\ExampleBundle\Controller\SunriseController::ContactAction }
 
 _ctp_example_locate_store:
     path: /locate-store
-    defaults: { _controller: ExampleBundle:Sunrise:locateStore }
+    defaults: { _controller: Commercetools\Symfony\ExampleBundle\Controller\SunriseController::locateStoreAction }
 
 _ctp_example_discount_code_add:
     path: /

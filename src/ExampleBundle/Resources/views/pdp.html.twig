@@ -33,9 +33,8 @@
         {% include '@Example/partials/catalog/suggestions.html.twig' %}
       </div>
       <hr class="hr">
-{#      {% include '@Example/partials/catalog/pdp/reviews.html.twig' %}#}
       {{ render(controller(
-        'ExampleBundle:Review:showReviewsForProduct', { 'productId' : product.id }
+        'Commercetools\\Symfony\\ExampleBundle\\Controller\\SunriseController::getMiniCartAction', { 'productId' : product.id }
       )) }}
     </div>
   </div>
