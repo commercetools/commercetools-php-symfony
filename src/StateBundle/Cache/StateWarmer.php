@@ -5,7 +5,7 @@
 
 namespace Commercetools\Symfony\StateBundle\Cache;
 
-use Commercetools\Core\Error\ApiException;
+use GuzzleHttp\Exception\ClientException;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\HttpKernel\CacheWarmer\CacheWarmerInterface;
 
@@ -29,7 +29,7 @@ class StateWarmer implements CacheWarmerInterface
     {
         try {
             $this->stateKeyResolver->fillCache();
-        } catch (ApiException $exception) {
+        } catch (ClientException $exception) {
             $this->logger->info("Could not fetch states from commercetools");
         }
     }
