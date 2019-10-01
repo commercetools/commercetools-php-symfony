@@ -5,8 +5,9 @@
            xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
     <services>
         <service id="commercetools" synthetic="true" />
-        <service id="Commercetools\Core\Client" alias="commercetools.api.client" />
-        <service id="commercetools.api.client" class="Commercetools\Core\Client">
+        <service id="GuzzleHttp\Client" alias="commercetools.api.client" />
+        <service id="Commercetools\Core\Client\ApiClient" alias="commercetools.api.client" />
+        <service id="commercetools.api.client" class="GuzzleHttp\Client">
             <factory service="commercetools.client.factory" method="build" />
         </service>
         <service id="commercetools.client.factory" class="Commercetools\Symfony\CtpBundle\Service\ClientFactory">
@@ -25,9 +26,17 @@
         <service id="commmercetools.mapper.factory" class="Commercetools\Symfony\CtpBundle\Service\MapperFactory">
             <argument type="service" id="commercetools.context.factory"/>
         </service>
+        <service id="commercetools.client.handlerstack" class="GuzzleHttp\HandlerStack">
+            <factory service="Commercetools\Symfony\CtpBundle\Service\HandlerStackFactory" method="create"/>
+            <argument type="service" id="Guzzle\HandlerStack"  on-invalid="null"/>
+            <argument type="service" id="commercetools.profiler.extension" on-invalid="null"/>
+        </service>
         <service id="commercetools.client.config" class="Commercetools\Core\Config">
-            <factory class="Commercetools\Core\Config" method="fromArray"/>
+            <factory class="Commercetools\Symfony\CtpBundle\Service\ConfigFactory" method="create"/>
             <argument>%commercetools.client.config%</argument>
+            <argument type="service" id="commercetools.client.handlerstack" />
+            <argument type="service" id="commercetools.logger" />
+            <argument>%kernel.debug%</argument>
         </service>
         <service id="commercetools.cache" parent="cache.app">
             <tag name="cache.pool" />
@@ -47,17 +56,72 @@
         <service id="Commercetools\Symfony\CtpBundle\Model\Repository" public="true">
             <argument key="$enableCache">false</argument>
             <argument key="$cache" type="service" id="commercetools.cache" />
-            <argument key="$client" type="service" id="Commercetools\Core\Client"/>
+            <argument key="$client" type="service" id="Commercetools\Core\Client\ApiClient"/>
             <argument key="$mapperFactory" type="service" id="commmercetools.mapper.factory" />
+            <argument key="$contextFactory" type="service" id="commercetools.context.factory" />
         </service>
 
+        <service id="commercetools.client.me.handlerstack" class="GuzzleHttp\HandlerStack">
+            <factory service="Commercetools\Symfony\CtpBundle\Service\HandlerStackFactory" method="create"/>
+            <argument type="service" id="Guzzle\HandlerStack"  on-invalid="null"/>
+            <argument type="service" id="commercetools.profiler.extension" on-invalid="null"/>
+        </service>
 
-        <!--<service class="Commercetools\Symfony\CtpBundle\Service\CustomTypeFactory">-->
-        <!--</service>-->
+        <service id="Commercetools\Symfony\CtpBundle\Service\HandlerStackFactory" />
+
         <service id="commercetools.custom_types" class="Commercetools\Symfony\CtpBundle\Service\CustomTypeProvider" public="true">
             <factory method="build" class="Commercetools\Symfony\CtpBundle\Service\CustomTypeProviderFactory"/>
             <argument>%commercetools.custom_types%</argument>
         </service>
         <service id="Commercetools\Symfony\CtpBundle\Service\CustomTypeProvider" alias="commercetools.custom_types"/>
+
+        <service id="commercetools.http.clientfactory" class="Commercetools\Core\Client\ClientFactory">
+            <factory class="Commercetools\Core\Client\ClientFactory" method="of"/>
+        </service>
+
+        <service id="commercetools.oauth.client" class="GuzzleHttp\Client"/>
+
+        <service id="commercetools.client.me.config" class="Commercetools\Core\Config">
+            <factory class="Commercetools\Symfony\CtpBundle\Service\ConfigFactory" method="create"/>
+            <argument>%commercetools.client.config%</argument>
+            <argument type="service" id="commercetools.client.me.handlerstack" />
+            <argument type="service" id="commercetools.logger" />
+        </service>
+
+        <service id="commeretoools.client.me" class="GuzzleHttp\Client">
+            <factory service="commercetools.http.clientfactory" method="createClient"/>
+            <argument type="service" id="commercetools.client.me.config" />
+            <argument type="service" id="commercetools.logger" />
+            <argument type="service" id="commercetools.cache" />
+            <argument type="service" id="Commercetools\Core\Client\OAuth\TokenStorageProvider" />
+        </service>
+
+        <service id="Commercetools\Symfony\CtpBundle\Service\SessionTokenStorage">
+            <argument id="session" type="service"/>
+        </service>
+
+        <service id="commercetools.http.providerfactory" class="Commercetools\Core\Client\ProviderFactory" />
+
+        <service id="Commercetools\Core\Client\OAuth\TokenStorageProvider">
+            <factory service="commercetools.http.providerfactory" method="createTokenStorageProviderFor" />
+            <argument type="service" id="commercetools.client.me.config"/>
+            <argument type="service" id="commercetools.oauth.client" />
+            <argument type="service" id="Commercetools\Symfony\CtpBundle\Service\SessionTokenStorage"/>
+        </service>
+
+        <service id="Commercetools\Core\Client\OAuth\PasswordFlowTokenProvider">
+            <factory service="commercetools.http.providerfactory" method="createPasswordFlowProviderFor" />
+            <argument type="service" id="commercetools.client.me.config"/>
+            <argument type="service" id="commercetools.oauth.client"/>
+            <argument type="service" id="Commercetools\Symfony\CtpBundle\Service\SessionTokenStorage" />
+        </service>
+
+        <service id="Commercetools\Symfony\CtpBundle\Model\MeRepository" public="true">
+            <argument key="$enableCache">false</argument>
+            <argument key="$cache" type="service" id="commercetools.cache" />
+            <argument key="$client" type="service" id="commeretoools.client.me"/>
+            <argument key="$mapperFactory" type="service" id="commmercetools.mapper.factory" />
+            <argument key="$contextFactory" type="service" id="commercetools.context.factory" />
+        </service>
     </services>
 </container>

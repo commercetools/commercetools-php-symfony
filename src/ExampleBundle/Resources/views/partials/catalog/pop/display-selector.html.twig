@@ -1,0 +1,8 @@
+<p class="item-count">{{ 'displaySelector.title'|trans([], 'catalog') }}</p>
+<div class="custom-select-wrapper">
+	<select name="{{ displaySelector.key }}" class="select-product-detail" required>
+	  {% for list_i in displaySelector.list %}
+	    <option value="{{ list_i.value }}" {% if list_i.selected %}selected{% endif %}>{{ list_i.label }}</option>
+	  {% endfor %}
+	</select>
+</div>

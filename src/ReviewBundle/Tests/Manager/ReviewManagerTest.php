@@ -33,10 +33,9 @@ class ReviewManagerTest extends TestCase
             })->shouldBeCalled();
 
         $dispatcher->dispatch(
-            Argument::containingString(ReviewPostUpdateEvent::class),
             Argument::type(ReviewPostUpdateEvent::class)
         )->will(function ($args) {
-            return $args[1];
+            return $args[0];
         })->shouldBeCalled();
 
         $manager = new ReviewManager($repository->reveal(), $dispatcher->reveal());
@@ -51,10 +50,10 @@ class ReviewManagerTest extends TestCase
         $repository = $this->prophesize(ReviewRepository::class);
         $dispatcher = $this->prophesize(EventDispatcherInterface::class);
         $dispatcher->dispatch(
-            Argument::containingString(AbstractAction::class),
-            Argument::type(ReviewUpdateEvent::class)
+            Argument::type(ReviewUpdateEvent::class),
+            Argument::containingString(AbstractAction::class)
         )->will(function ($args) {
-            return $args[1];
+            return $args[0];
         })->shouldBeCalled();
         $action = $this->prophesize(AbstractAction::class);
 

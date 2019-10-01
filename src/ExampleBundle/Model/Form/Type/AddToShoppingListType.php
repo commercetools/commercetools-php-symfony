@@ -41,8 +41,8 @@ class AddToShoppingListType extends AbstractType
         }
 
         $builder->add('addToShoppingList', SubmitType::class, [
-            'label' => 'Add to Shopping List',
-            'attr' => ['class' => 'btn-default btn'],
+            'label' => ' ',
+            'attr' => ['class' => 'btn-default btn pdp-product-heart'],
         ]);
     }
 }

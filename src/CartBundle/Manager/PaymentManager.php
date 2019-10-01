@@ -100,13 +100,11 @@ class PaymentManager
             throw new InvalidArgumentException('At least one of `customerReference` or `anonymousId` should be present');
         }
 
-        $event = new PaymentCreateEvent();
-        $this->dispatcher->dispatch(PaymentCreateEvent::class, $event);
+        $this->dispatcher->dispatch(new PaymentCreateEvent());
 
         $payment = $this->repository->createPayment($locale, $amountPlanned, $customerReference, $anonymousId, $paymentStatus, $customFieldObjectDraft);
 
-        $eventPost = new PaymentPostCreateEvent($payment);
-        $this->dispatcher->dispatch(PaymentPostCreateEvent::class, $eventPost);
+        $this->dispatcher->dispatch(new PaymentPostCreateEvent($payment));
 
         return $payment;
     }
@@ -131,7 +129,7 @@ class PaymentManager
         $eventName = is_null($eventName) ? get_class($action) : $eventName;
 
         $event = new PaymentUpdateEvent($payment, $action);
-        $event = $this->dispatcher->dispatch($eventName, $event);
+        $event = $this->dispatcher->dispatch($event, $eventName);
 
         return $event->getActions();
     }
@@ -158,7 +156,7 @@ class PaymentManager
     public function dispatchPostUpdate(Payment $payment, array $actions)
     {
         $event = new PaymentPostUpdateEvent($payment, $actions);
-        $event = $this->dispatcher->dispatch(PaymentPostUpdateEvent::class, $event);
+        $event = $this->dispatcher->dispatch($event);
 
         return $event->getActions();
     }

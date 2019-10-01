@@ -10,29 +10,14 @@ use Commercetools\Core\Model\Product\ProductReference;
 use Commercetools\Core\Model\Review\Review;
 use Commercetools\Core\Model\Review\ReviewDraft;
 use Commercetools\Symfony\CtpBundle\Model\QueryParams;
+use Commercetools\Symfony\CtpBundle\Service\ContextFactory;
 use Commercetools\Symfony\CtpBundle\Service\MapperFactory;
 use Commercetools\Symfony\CtpBundle\Model\Repository;
-use Commercetools\Core\Client;
+use Commercetools\Core\Client\ApiClient;
 use Psr\Cache\CacheItemPoolInterface;
 
 class ReviewRepository extends Repository
 {
-    /**
-     * ReviewRepository constructor.
-     * @param $enableCache
-     * @param CacheItemPoolInterface $cache
-     * @param Client $client
-     * @param MapperFactory $mapperFactory
-     */
-    public function __construct(
-        $enableCache,
-        CacheItemPoolInterface $cache,
-        Client $client,
-        MapperFactory $mapperFactory
-    ) {
-        parent::__construct($enableCache, $cache, $client, $mapperFactory);
-    }
-
     public function getReviewById($locale, $reviewId, QueryParams $params = null)
     {
         $request = RequestBuilder::of()->reviews()->getById($reviewId);
@@ -86,7 +71,7 @@ class ReviewRepository extends Repository
             }
         }
 
-        $response = $request->executeWithClient($client);
+        $response = $client->execute($request);
         $review = $request->mapFromResponse($response);
 
         return $review;

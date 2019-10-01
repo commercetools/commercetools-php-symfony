@@ -1,0 +1,74 @@
+{% if wishlist %}
+    <a id="link-product-thumbnail-{{ index }}" href="{{ path('_ctp_example_product_by_id', {'id': lineItem.productId}) }}">
+{% else %}
+    <a id="link-product-thumbnail-{{ index }}" href="{{ path('_ctp_example_product', {'slug': product.slug}) }}">
+{% endif %}
+  <div class="shop-item">
+    {% if product.sale %}
+      <div class="sale-flag">{{ 'thumbnail.sale'|trans([], 'catalog') }}</div>
+    {% endif %}
+    {% if product.new %}
+      <div class="new-flag">{{ 'thumbnail.new'|trans([], 'catalog') }}</div>
+    {% endif %}
+    <form id="form-add-to-wishlist-mobile{{ index }}" method="post" {% if wishlist %}class="hidden"{% endif %} name="add-to-wishlist-mobile" action="{{ path('_ctp_example_shoppingList_add_lineItem') }}">
+        <input type="hidden" name="csrfToken" value="{{ csrf_token('csrfToken') }}"/>
+        <input type="hidden" name="productId" value="{{ product.id }}">
+        <input type="hidden" name="variantId" value="{{ product.masterVariant.id }}">
+
+        <button type="submit" class="heart-xs visible-xs">
+        <span class="sr-only">{{ 'wishlist.add'|trans([], 'catalog') }}</span>
+        </button>
+    </form>
+      <div class="pop-product-image">
+          {% if wishlist %}
+              <img class="img-lazy" data-original="{{ product.variant.images.current.url }}" alt="{{ product.name }}" />
+          {% else %}
+              <img class="img-lazy" data-original="{{ product.masterVariant.images.current.url }}" alt="{{ product.name }}" />
+        {% endif %}
+    </div>
+    <div class="pop-product-name">
+      <span class="name-headline">{{ product.name }}</span>
+      <span class="name-subline">{{ product.description }}</span>
+    </div>
+    <div class="pop-item-price">
+      {% if product.masterVariant.price.discounted %}
+        <span class="strikethrough">{{ product.masterVariant.price }}</span>
+        <span class="pop-item-price-old">{{ product.masterVariant.price.discounted.value }}</span>
+      {% else %}
+          {% if wishlist %}
+              <span>{{ product.variant.prices.current }}</span>
+          {% else %}
+              <span>{{ product.masterVariant.price }}</span>
+          {% endif %}
+      {% endif %}
+    </div>
+    <div class="pop-product-more-colors">
+      <ul class="list-inline">
+        <li>
+          <div class="product-thumbnail-swatch-red"></div>
+        </li>
+        <li>
+          <div class="product-thumbnail-swatch-green"></div>
+        </li>
+        <li>
+          <div class="product-thumbnail-swatch-blue"></div>
+        </li>
+      </ul>
+    </div>
+    <div class="shop-item-overlay hidden-xs">
+      <button type="button" class="quickview" data-modal="quickview-modal{{ index }}">
+        {{ 'thumbnail.quickView'|trans([], 'catalog') }}
+      </button>
+      <form id="form-add-to-wishlist{{ index }}" method="post" {% if wishlist %}class="hidden"{% endif %} name="add-to-wishlist" action="{{ path('_ctp_example_shoppingList_add_lineItem') }}">
+          <input type="hidden" name="csrfToken" value="{{ csrf_token('csrfToken') }}"/>
+          <input type="hidden" name="productId" value="{{ product.id }}">
+          <input type="hidden" name="variantId" value="{{ product.masterVariant.id }}">
+
+          <button type="submit" class="heart">
+          <span class="sr-only">{{ 'wishlist.add'|trans([], 'catalog') }}</span>
+        </button>
+      </form>
+    </div>
+  </div>
+</a>
+{% include '@Example/partials/catalog/quickview.html.twig' with {'wishlist':wishlist} %}

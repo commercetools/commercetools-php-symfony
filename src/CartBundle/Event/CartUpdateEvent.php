@@ -6,7 +6,7 @@ namespace Commercetools\Symfony\CartBundle\Event;
 
 use Commercetools\Core\Model\Cart\Cart;
 use Commercetools\Core\Request\AbstractAction;
-use Symfony\Component\EventDispatcher\Event;
+use Symfony\Contracts\EventDispatcher\Event;
 
 class CartUpdateEvent extends Event
 {

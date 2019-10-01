@@ -2,7 +2,6 @@
 
 namespace  Commercetools\Symfony\ExampleBundle\Controller;
 
-use Commercetools\Core\Client;
 use Commercetools\Core\Model\Product\ProductProjection;
 use Commercetools\Core\Model\Product\Search\Filter;
 use Commercetools\Symfony\CatalogBundle\Manager\CatalogManager;
@@ -11,7 +10,13 @@ use Commercetools\Symfony\ExampleBundle\Entity\ProductEntity;
 use Commercetools\Symfony\ExampleBundle\Entity\ProductToShoppingList;
 use Commercetools\Symfony\ExampleBundle\Model\Form\Type\AddToCartType;
 use Commercetools\Symfony\ExampleBundle\Model\Form\Type\AddToShoppingListType;
+use Commercetools\Symfony\ExampleBundle\Model\View\ProductModel;
+use Commercetools\Symfony\ExampleBundle\Model\ViewData;
+use Commercetools\Symfony\ExampleBundle\Model\ViewDataCollection;
 use GuzzleHttp\Psr7\Uri;
+use Commercetools\Symfony\ExampleBundle\Model\View\Url;
+use Psr\Cache\CacheItemPoolInterface;
+use Psr\Http\Message\UriInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
@@ -23,27 +28,31 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Commercetools\Core\Model\Customer\CustomerReference;
 use Commercetools\Core\Model\ShoppingList\ShoppingList;
+use function GuzzleHttp\Psr7\parse_query;
 
 class CatalogController extends AbstractController
 {
-    private $client;
+    const PAGE_SELECTOR_RANGE = 2;
+    const FIRST_PAGE = 1;
+    const ITEMS_PER_PAGE = 12;
+    const PAGE = 'page';
+    const DEFAULT_SORT = 'id asc';
+
     private $catalogManager;
     private $shoppingListManager;
 
     /**
      * CatalogController constructor.
-     * @param Client $client
      * @param CatalogManager|null $catalogManager
      * @param ShoppingListManager|null $shoppingListManager
      */
-    public function __construct(Client $client, CatalogManager $catalogManager = null, ShoppingListManager $shoppingListManager = null)
+    public function __construct(CatalogManager $catalogManager = null, ShoppingListManager $shoppingListManager = null)
     {
-        $this->client = $client;
         $this->catalogManager = $catalogManager;
         $this->shoppingListManager = $shoppingListManager;
     }
 
-    public function indexAction(Request $request, $categoryId = null, $productTypeId = null)
+    public function indexAction(Request $request, $categoryId = null, $productTypeId = null, $categorySlug = null)
     {
         $form = $this->createFormBuilder()
             ->add(
@@ -66,10 +75,18 @@ class CatalogController extends AbstractController
             $search = $form->get('search')->getData();
         }
 
-        $uri = new Uri($request->getRequestUri());
+        $queryVars = parse_query((new Uri($request->getRequestUri()))->getQuery());
 
+        $page = $queryVars[self::PAGE] ?? 1;
+        $offset = min(self::ITEMS_PER_PAGE * ($page - 1), 100000);
+
+        $category = null;
         $filter = null;
+
         if (!is_null($categoryId)) {
+            $categories = $this->catalogManager->getCategories($request->getLocale());
+            $category = $categories->getById($categoryId);
+
             $filter['filter.query'][] = Filter::ofName('categories.id')->setValue($categoryId);
         }
 
@@ -77,29 +94,35 @@ class CatalogController extends AbstractController
             $filter['filter.query'][] = Filter::ofName('productType.id')->setValue($productTypeId);
         }
 
-        $country = $this->getCountryFromConfig();
-        $currency = $this->getCurrencyFromConfig();
+        if (!is_null($categorySlug)) {
+            $categories = $this->catalogManager->getCategories($request->getLocale());
+            $category = $categories->getBySlug($categorySlug, $request->getLocale());
+
+            $filter['filter.query'][] = Filter::ofName('categories.id')->setValue($category->getId());
+        }
 
         list($products, $facets, $offset) = $this->catalogManager->searchProducts(
             $request->getLocale(),
-            12,
-            1,
-            'price asc',
-            $currency,
-            $country,
-            $uri,
+            self::ITEMS_PER_PAGE,
+            $offset,
+            self::DEFAULT_SORT,
+            $this->getCurrencyFromConfig(),
+            $this->getCountryFromConfig(),
+            new Uri($request->getRequestUri()),
             $search,
             $filter
         );
 
-        return $this->render('ExampleBundle:catalog:index.html.twig', [
+        return $this->render('@Example/pop.html.twig', [
             'products' => $products,
+            'facets' => $facets,
             'offset' => $offset,
-            'form' => $form->createView(),
+            'category' => $category,
+            'form' => $form->createView()
         ]);
     }
 
-    public function detailBySlugAction(Request $request, $slug, SessionInterface $session, UserInterface $user = null)
+    public function detailBySlugAction(Request $request, $slug, SessionInterface $session, UserInterface $user = null, CacheItemPoolInterface $cache = null)
     {
         $country = $this->getCountryFromConfig();
         $currency = $this->getCurrencyFromConfig();
@@ -108,10 +131,10 @@ class CatalogController extends AbstractController
             $product = $this->catalogManager->getProductBySlug($request->getLocale(), $slug, $currency, $country);
         } catch (NotFoundHttpException $e) {
             $this->addFlash('error', sprintf('Cannot find product: %s', $slug));
-            return $this->render('@Example/index.html.twig');
+            return $this->render('@Example/no-search-result.html.twig');
         }
 
-        return $this->productDetails($request, $product, $session, $user);
+        return $this->productDetails($request, $product, $session, $user, $cache);
     }
 
     public function detailByIdAction(Request $request, $id, SessionInterface $session, UserInterface $user = null)
@@ -121,7 +144,7 @@ class CatalogController extends AbstractController
         return $this->productDetails($request, $product, $session, $user);
     }
 
-    private function productDetails(Request $request, ProductProjection $product, SessionInterface $session, UserInterface $user = null)
+    private function productDetails(Request $request, ProductProjection $product, SessionInterface $session, UserInterface $user = null, CacheItemPoolInterface $cache = null)
     {
         $variantIds = [];
         foreach ($product->getAllVariants() as $variant) {
@@ -157,7 +180,7 @@ class CatalogController extends AbstractController
         $addToShoppingListForm = $this->createForm(AddToShoppingListType::class, $productToShoppingList, ['action' => $this->generateUrl('_ctp_example_shoppingList_add_lineItem')]);
         $addToShoppingListForm->handleRequest($request);
 
-        return $this->render('ExampleBundle:catalog:product.html.twig', [
+        return $this->render('@Example/pdp.html.twig', [
             'product' =>  $product,
             'addToCartForm' => $addToCartForm->createView(),
             'addToShoppingListForm' => $addToShoppingListForm->createView()
@@ -197,7 +220,7 @@ class CatalogController extends AbstractController
 
         $categories = $this->catalogManager->getCategories($request->getLocale(), $params);
 
-        return $this->render('ExampleBundle:catalog:categoriesList.html.twig', [
+        return $this->render('@Example/catalog/categoriesList.html.twig', [
             'categories' => $categories
         ]);
     }
@@ -208,9 +231,85 @@ class CatalogController extends AbstractController
 
         $productTypes = $this->catalogManager->getProductTypes($request->getLocale(), $params);
 
-        return $this->render('ExampleBundle:catalog:productTypesList.html.twig', [
+        return $this->render('@Example/catalog/productTypesList.html.twig', [
             'productTypes' => $productTypes
         ]);
+    }
+
+    protected function getProductModel($cache)
+    {
+        $model = new ProductModel(
+            $cache,
+            $this->catalogManager,
+            $this->getCountryFromConfig(),
+            $this->getCurrencyFromConfig()
+        );
+
+        return $model;
+    }
+
+    protected function applyPagination(UriInterface $uri, $offset, $total, $itemsPerPage)
+    {
+        $firstPage = static::FIRST_PAGE;
+        $pageRange = static::PAGE_SELECTOR_RANGE;
+        $currentPage = floor($offset / max(1, $itemsPerPage)) + 1;
+        $totalPages = ceil($total / max(1, $itemsPerPage));
+
+        $displayedPages = $pageRange * 2 + 3;
+        $pageThresholdLeft = $displayedPages - $pageRange;
+        $thresholdPageLeft = $displayedPages - 1;
+        $pageThresholdRight = $totalPages - $pageRange - 2;
+        $thresholdPageRight = $totalPages - $displayedPages + 2;
+        $pagination = new ViewData();
+
+        if ($totalPages <= $displayedPages) {
+            $pagination->pages = $this->getPages($uri, $firstPage, $totalPages, $currentPage);
+        } elseif ($currentPage < $pageThresholdLeft) {
+            $pagination->pages = $this->getPages($uri, $firstPage, $thresholdPageLeft, $currentPage);
+            $pagination->lastPage = $this->getPageUrl($uri, $totalPages);
+        } elseif ($currentPage > $pageThresholdRight) {
+            $pagination->pages = $this->getPages($uri, $thresholdPageRight, $totalPages, $currentPage);
+            $pagination->firstPage = $this->getPageUrl($uri, $firstPage);
+        } else {
+            $pagination->pages = $this->getPages(
+                $uri,
+                $currentPage - $pageRange,
+                $currentPage + $pageRange,
+                $currentPage
+            );
+            $pagination->firstPage = $this->getPageUrl($uri, $firstPage);
+            $pagination->lastPage = $this->getPageUrl($uri, $totalPages);
+        }
+
+        if ($currentPage > 1) {
+            $prevPage = $currentPage - 1;
+            $pagination->previousUrl = $this->getPageUrl($uri, $prevPage)->url;
+        }
+        if ($currentPage < $totalPages) {
+            $nextPage = $currentPage + 1;
+            $pagination->nextUrl = $this->getPageUrl($uri, $nextPage)->url;
+        }
+
+        $this->pagination = $pagination;
+    }
+
+    protected function getPages(UriInterface $uri, $start, $stop, $currentPage)
+    {
+        $pages = new ViewDataCollection();
+        for ($i = $start; $i <= $stop; $i++) {
+            $url = $this->getPageUrl($uri, $i);
+            if ($currentPage == $i) {
+                $url->selected = true;
+            }
+            $pages->add($url);
+        }
+        return $pages;
+    }
+
+    protected function getPageUrl(UriInterface $uri, $number, $query = 'page')
+    {
+        $url = new Url($number, Uri::withQueryValue($uri, $query, $number));
+        return $url;
     }
 
     // TODO duplicate code / move these to better place

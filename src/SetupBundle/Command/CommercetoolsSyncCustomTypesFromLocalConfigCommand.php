@@ -5,7 +5,8 @@
 
 namespace Commercetools\Symfony\SetupBundle\Command;
 
-use Commercetools\Core\Client;
+use Commercetools\Core\Client\ApiClient;
+use Commercetools\Core\Error\ApiException;
 use Commercetools\Core\Model\Type\TypeCollection;
 use Commercetools\Core\Response\ErrorResponse;
 use Commercetools\Symfony\CtpBundle\Model\QueryParams;
@@ -21,7 +22,7 @@ class CommercetoolsSyncCustomTypesFromLocalConfigCommand extends Command
     private $client;
     private $parameters;
 
-    public function __construct(SetupRepository $repository, Client $client, array $parameters)
+    public function __construct(SetupRepository $repository, ApiClient $client, array $parameters)
     {
         parent::__construct();
         $this->repository = $repository;
@@ -58,21 +59,18 @@ class CommercetoolsSyncCustomTypesFromLocalConfigCommand extends Command
             return;
         }
 
-        $success = true;
         foreach ($requests as $request) {
-            $response = $request->executeWithClient($this->client);
-
-            if ($response instanceof ErrorResponse) {
-                $success = false;
-                $correlationId = $response->getCorrelationId();
-                $message = $response->getMessage();
+            try {
+                $this->client->execute($request, null, ['http_errors' => true]);
+            } catch (ApiException $exception) {
+                $errorResponse = new ErrorResponse($exception, $request, $exception->getResponse());
+                $correlationId = $errorResponse->getCorrelationId();
+                $message = $errorResponse->getMessage();
 
                 $output->writeln("Action failed: $message \nCorrelationId: $correlationId");
             }
         }
 
-        if ($success) {
-            $output->writeln('CustomTypes synced to server successfully');
-        }
+        $output->writeln('CustomTypes synced to server successfully');
     }
 }

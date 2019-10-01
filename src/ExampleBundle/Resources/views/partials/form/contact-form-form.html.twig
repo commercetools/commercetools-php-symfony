@@ -1,0 +1,21 @@
+<form class="" action="" method="post">
+  {% set formObject = form %}
+  {% include '@Example/partials/form/choose-title.html.twig' with {'containerClass':"title", 'formFieldName':'title'} %}
+  <div class="row">
+    {% include '@Example/partials/form/input-text.html.twig' with {'columnWidth':6, 'required':true, 'formFieldName':'firstName'} %}
+    {% include '@Example/partials/form/input-text.html.twig' with {'columnWidth':6, 'required':true, 'formFieldName':'lastName'} %}
+    {% include '@Example/partials/form/input-text.html.twig' with {'columnWidth':6, 'required':true, 'formFieldName':'subject'} %}
+    {% include '@Example/partials/form/input-text.html.twig' with {'columnWidth':6, 'required':true, 'formFieldName':'orderNumber'} %}
+    {% include '@Example/partials/form/input-text.html.twig' with {'columnWidth':6, 'required':true, 'formFieldName':'email'} %}
+    {% include '@Example/partials/form/input-text.html.twig' with {'columnWidth':6, 'required':false, 'formFieldName':'phone'} %}
+    <div class="col-sm-12">
+      <div class="contact-form-form-textarea">
+        <label for="message">{{ 'contactForm.message'|trans([], 'main') }}*</label>
+        <textarea type="textarea" cols="40" rows="10" name="message" required></textarea>
+      </div>
+    </div>
+  </div>
+  <div class="contact-form-form-submit-btn">
+    <button>{{ 'form.submit'|trans([], 'main') }}</button>
+  </div>
+</form>

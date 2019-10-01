@@ -1,0 +1,18 @@
+<div class="aspect-ratio aspect-ratio--8to3">
+  <picture>
+    <source srcset="{{ asset('bundles/example/img/cms/man_large-8to3.jpg') }}" media="(min-width: 1200px)">
+    <source srcset="{{ asset('bundles/example/img/cms/man_medium-8to3.jpg') }}" media="(min-width: 768px)">
+    <img src="{{ asset('bundles/example/img/cms/man_small-8to3.jpg') }}" class="img-responsive">
+  </picture>
+</div>
+
+<div class="banner-text">
+  <h4 class="banner-title">
+    <img class="hidden-xs" src="{{ asset('bundles/example/img/cms/sun-logo.png') }}"/><br/><br/>{{ 'bannerMiddle.title' | trans([], 'cms') | raw }}
+  </h4>
+  <p class="banner-subtitle">{{ 'bannerMiddle.subtitle' | trans([], 'cms') | raw }}</p>
+  <p class="hidden-xs hidden-sm">{{ 'bannerMiddle.description' | trans([], 'cms') | raw }}</p>
+  <a class="btn banner-btn" href="{{ 'bannerMiddle.linkHref' | trans([], 'cms') }}">
+    {{ 'bannerMiddle.linkText' | trans([], 'cms') }}
+  </a>
+</div>

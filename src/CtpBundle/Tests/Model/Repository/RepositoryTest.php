@@ -6,7 +6,7 @@
 namespace Commercetools\Symfony\CtpBundle\Tests\Model\Repository;
 
 use Cache\Adapter\Common\CacheItem;
-use Commercetools\Core\Client;
+use Commercetools\Core\Client\ApiClient;
 use Commercetools\Core\Config;
 use Commercetools\Core\Model\JsonObjectMapper;
 use Commercetools\Core\Model\Product\ProductCollection;
@@ -16,6 +16,7 @@ use Commercetools\Core\Request\QueryAllRequestInterface;
 use Commercetools\Core\Response\PagedQueryResponse;
 use Commercetools\Core\Response\ResourceResponse;
 use Commercetools\Symfony\CtpBundle\Model\Repository;
+use Commercetools\Symfony\CtpBundle\Service\ContextFactory;
 use Commercetools\Symfony\CtpBundle\Service\MapperFactory;
 use PHPUnit\Framework\TestCase;
 use Prophecy\Argument;
@@ -27,11 +28,13 @@ class RepositoryTest extends TestCase
     private $mapperFactory;
     private $response;
     private $client;
+    private $contextFactory;
 
     protected function setUp()
     {
         $this->cache = $this->prophesize(CacheItemPoolInterface::class);
         $this->mapperFactory = $this->prophesize(MapperFactory::class);
+        $this->contextFactory = $this->prophesize(ContextFactory::class);
 
         $this->response = $this->prophesize(ResourceResponse::class);
         $this->response->toArray()->willReturn([]);
@@ -39,7 +42,7 @@ class RepositoryTest extends TestCase
         $this->response->isError()->willReturn(false);
         $this->response->toObject()->willReturn(ProductCollection::of());
 
-        $this->client = $this->prophesize(Client::class);
+        $this->client = $this->prophesize(ApiClient::class);
     }
 
     private function getRepository()
@@ -48,7 +51,8 @@ class RepositoryTest extends TestCase
             true,
             $this->cache->reveal(),
             $this->client->reveal(),
-            $this->mapperFactory->reveal()
+            $this->mapperFactory->reveal(),
+            $this->contextFactory->reveal()
         );
     }
 
@@ -107,8 +111,6 @@ class RepositoryTest extends TestCase
         $this->cache->hasItem('foo')->willReturn(true)->shouldBeCalledOnce();
         $this->cache->getItem('foo')->willReturn($cachedItem->reveal())->shouldBeCalledOnce();
 
-        $this->client->getConfig()->willReturn(Config::of())->shouldBeCalledOnce();
-
         $repository = $this->getRepository();
         $repository->retrieveAll('foo', $request->reveal(), 'en');
     }
@@ -122,8 +124,6 @@ class RepositoryTest extends TestCase
 
         $this->cache->hasItem('foo')->willReturn(true)->shouldBeCalledOnce();
         $this->cache->getItem('foo')->willReturn($cachedItem->reveal())->shouldBeCalledOnce();
-
-        $this->client->getConfig()->willReturn(Config::of())->shouldBeCalledOnce();
 
         $request = $this->prophesize(AbstractApiRequest::class);
 
@@ -166,6 +166,7 @@ class RepositoryTest extends TestCase
     }
 }
 
+//phpcs:disable
 class TestRepository extends Repository
 {
     public function retrieveAll(

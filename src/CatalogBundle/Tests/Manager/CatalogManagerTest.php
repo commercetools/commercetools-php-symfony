@@ -156,10 +156,9 @@ class CatalogManagerTest extends TestCase
             })->shouldBeCalled();
 
         $this->eventDispatcher->dispatch(
-            Argument::containingString(ProductPostUpdateEvent::class),
             Argument::type(ProductPostUpdateEvent::class)
         )->will(function ($args) {
-            return $args[1];
+            return $args[0];
         })->shouldBeCalled();
 
         $manager = new CatalogManager($this->repository->reveal(), $this->eventDispatcher->reveal());
@@ -175,10 +174,10 @@ class CatalogManagerTest extends TestCase
         $action = ProductSetKeyAction::of();
 
         $this->eventDispatcher->dispatch(
-            Argument::containingString(ProductSetKeyAction::class),
-            Argument::type(ProductUpdateEvent::class)
+            Argument::type(ProductUpdateEvent::class),
+            Argument::containingString(ProductSetKeyAction::class)
         )->will(function ($args) {
-            return $args[1];
+            return $args[0];
         })->shouldBeCalled();
 
         $manager = new CatalogManager($this->repository->reveal(), $this->eventDispatcher->reveal());
@@ -194,10 +193,9 @@ class CatalogManagerTest extends TestCase
         $action = ProductSetKeyAction::of();
 
         $this->eventDispatcher->dispatch(
-            Argument::containingString(ProductPostUpdateEvent::class),
             Argument::type(ProductPostUpdateEvent::class)
         )->will(function ($args) {
-            return $args[1];
+            return $args[0];
         })->shouldBeCalled();
 
         $manager = new CatalogManager($this->repository->reveal(), $this->eventDispatcher->reveal());

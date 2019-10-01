@@ -41,6 +41,26 @@ interface CtpUser extends UserInterface, EquatableInterface
     public function setCartItemCount($cartItemCount);
 
     /**
+     * @param string $token
+     */
+    public function setAccessToken($token);
+
+    /**
+     * @return string
+     */
+    public function getAccessToken();
+
+    /**
+     * @param string $token
+     */
+    public function setRefreshToken($token);
+
+    /**
+     * @return string
+     */
+    public function getRefreshToken();
+
+    /**
      * @param $username
      * @param $password
      * @param array $roles

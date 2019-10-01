@@ -41,10 +41,9 @@ class CustomerManagerTest extends TestCase
             })->shouldBeCalled();
 
         $this->dispatcher->dispatch(
-            Argument::containingString(CustomerPostUpdateEvent::class),
             Argument::type(CustomerPostUpdateEvent::class)
         )->will(function ($args) {
-            return $args[1];
+            return $args[0];
         })->shouldBeCalled();
 
         $manager = new CustomerManager($this->repository->reveal(), $this->dispatcher->reveal());
@@ -56,10 +55,10 @@ class CustomerManagerTest extends TestCase
     public function testDispatch()
     {
         $this->dispatcher->dispatch(
-            Argument::containingString(CustomerSetKeyAction::class),
-            Argument::type(CustomerUpdateEvent::class)
+            Argument::type(CustomerUpdateEvent::class),
+            Argument::containingString(CustomerSetKeyAction::class)
         )->will(function ($args) {
-            return $args[1];
+            return $args[0];
         })->shouldBeCalled();
 
         $action = CustomerSetKeyAction::of()->setKey('bar');
@@ -78,10 +77,10 @@ class CustomerManagerTest extends TestCase
         $this->repository->createCustomer('en', 'user@localhost', 'password', null)
             ->willReturn(CustomerSigninResult::of()->setCustomer(Customer::of()))->shouldBeCalled();
 
-        $this->dispatcher->dispatch(CustomerCreateEvent::class, Argument::type(CustomerCreateEvent::class))
+        $this->dispatcher->dispatch(Argument::type(CustomerCreateEvent::class))
             ->shouldBeCalledOnce();
 
-        $this->dispatcher->dispatch(CustomerPostCreateEvent::class, Argument::type(CustomerPostCreateEvent::class))
+        $this->dispatcher->dispatch(Argument::type(CustomerPostCreateEvent::class))
             ->shouldBeCalledOnce();
 
         $manager = new CustomerManager($this->repository->reveal(), $this->dispatcher->reveal());

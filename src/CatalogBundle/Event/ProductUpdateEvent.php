@@ -6,7 +6,7 @@ namespace Commercetools\Symfony\CatalogBundle\Event;
 
 use Commercetools\Core\Model\Product\Product;
 use Commercetools\Core\Request\AbstractAction;
-use Symfony\Component\EventDispatcher\Event;
+use Symfony\Contracts\EventDispatcher\Event;
 
 class ProductUpdateEvent extends Event
 {

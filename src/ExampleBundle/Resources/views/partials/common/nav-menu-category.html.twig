@@ -1,0 +1,19 @@
+{% if category.children %}
+  <ul class="dropdown-menu megamenu row dropdown-submenu">
+    <li class="col-sm-8">
+      <div class="nav-accordion">
+        {% for children_i in category.children %}
+          <h3><a href="{{ children_i.url }}">{{ children_i.text }}</a></h3>
+          <ul>
+            {% for children_i in children_i.children %}
+              <li><a href="{{ children_i.url }}">{{ children_i.text }}</a></li>
+            {% endfor %}
+          </ul>
+        {% endfor %}
+      </div>
+    </li>
+    <li class="col-sm-4 hidden-xs">
+      <img src="{{ asset('bundles/example/img/menu-teaser.jpg') }}" alt="{{ 'header.teaser'|trans([], 'main') }}" class="img-responsive megamenu-img">
+    </li>
+  </ul>
+{% endif %}

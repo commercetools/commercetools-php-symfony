@@ -21,6 +21,10 @@ class CtpStateMachinePass implements CompilerPassInterface
             $workflowDefinition = $container->getDefinition($id);
             $initialState = $workflowDefinition->getArgument(2);
 
+            if (is_array($initialState)) { // BC 4.3.1
+                $initialState = current($initialState);
+            }
+
             $workflowServiceDefinition = $container->getDefinition(str_replace('.definition', '', $id));
             $stateMachineName = $workflowServiceDefinition->getArgument(3);
 

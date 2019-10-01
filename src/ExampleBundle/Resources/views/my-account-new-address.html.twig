@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  {% include '@Example/partials/common/htmlhead.html.twig' %}
+</head>
+
+<body>
+  <div class="darkbg hidden"></div>
+  {% include '@Example/partials/common/header.html.twig' %}
+  <div class="address-book">
+    <div class="container">
+      {% include '@Example/partials/common/messages.html.twig' %}
+      <div class="my-account-title">
+        <span class="my-account-title-text icon-user">{{ 'myAccount.title'|trans([], 'my-account') }}</span>
+      </div>
+      <div class="row">
+        <div class="col-sm-12">
+          <div class="address-book-wrapper">
+            <div class="row">
+              <div class="col-sm-3">
+                {% include '@Example/partials/myaccount/my-account-sidebar.html.twig' with {'myAddressBookTab':true} %}
+              </div>
+              <div id="my-account-desktop-content" class="col-sm-9">
+                <div class="address-book-content edit-address-book-content">
+                  <div class="row">
+                    <div class="col-sm-12">
+                      <div class="address-book-title hidden-xs">
+                        {{ 'addressBook.title'|trans([], 'my-account') }}
+                      </div>
+                    </div>
+                  </div>
+                    {{ form_start(formAddress, {'action': path('_ctp_example_user_address_new', {'addressId': addressId})}) }}
+                    {% set formObject = formAddress %}
+                    {% form_theme formAddress 'bootstrap_3_layout.html.twig' %}
+                    {{ form_row(formAddress._token) }}
+                    <div class="row">
+                      {% include '@Example/partials/form/global-messages.html.twig' with {'messages':content.newAddressForm.messages} %}
+                      {% include '@Example/partials/form/global-errors.html.twig' with {'errors':content.newAddressForm.errors} %}
+                    </div>
+                    <div class="row">
+                      <div class="col-sm-12">
+                        {% include '@Example/partials/myaccount/my-address-book-address-form.html.twig' %}
+                      </div>
+                    </div>
+                    <div class="row">
+                      <div class="col-sm-12">
+                        <div class="edit-address-book-footer">
+                          <div class="btn-grey push-left">
+                            <a href="{{ path('_ctp_example_user_address_book') }}">{{ 'addressBook.buttons.cancelAddressBtn'|trans([], 'my-account') }}</a>
+                          </div>
+                          <div class="add-new-address-btn push-right">
+                            {{ form_widget(formAddress.submit, { 'label' : 'addressBook.buttons.saveAddressBtn'|trans([], 'my-account')}) }}
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  {{ form_end(formAddress, {'render_rest': false}) }}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  {# {{> common/wishlist}} #}
+  {% include '@Example/partials/common/footer.html.twig' %}
+  {% include '@Example/partials/common/htmlscripts.html.twig' %}
+</body>
+
+</html>

@@ -15,6 +15,8 @@ use Symfony\Component\HttpFoundation\Session\SessionInterface;
 class CustomerRepository extends Repository
 {
     const CUSTOMER_ID = 'customer.id';
+    const CUSTOMER_ACCESS_TOKEN = 'customer.access_token';
+    const CUSTOMER_REFRESH_TOKEN = 'customer.refresh_token';
 
     /**
      * @param string $locale

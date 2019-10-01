@@ -28,5 +28,9 @@
             <argument id="workflow.registry" type="service"/>
             <argument id="session" type="service" />
         </service>
+
+        <service id="Commercetools\Symfony\ExampleBundle\Extension\SunriseExtension">
+            <tag name="twig.extension" />
+        </service>
     </services>
 </container>

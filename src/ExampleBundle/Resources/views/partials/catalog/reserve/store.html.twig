@@ -1,0 +1,61 @@
+{% for stores_i in stores %}
+    <li class="item address">
+        <div class="item-link">
+            <span class="distance">
+              <i class="icon icon-marker"></i>
+              <span class="gm-computed-distance" data-coord-lat="{{ stores_i.storeInfo.location.lat }}" data-coord-lng="{{ stores_i.storeInfo.location.lng }}">
+                {{ 'storeLocation.calculatingTxt'|trans({}, 'main') }}
+              </span> km
+            </span>
+
+            {% if stores_i.prices.discounted %}
+              <span class="price-discounted">
+                {{ stores_i.prices.value }}
+              </span>
+
+              <b class="price">
+                {{ stores_i.prices.discounted.value }}
+              </b>
+            {% else %}
+              <b class="price">
+                {{ stores_i.prices.value }}
+              </b>
+            {% endif %}
+
+            <strong class="title">
+              {{ stores_i.storeInfo.name }}
+            </strong>
+
+            <div class="info">
+                <div class="info-title">
+                  {{ 'storeLocation.address'|trans({}, 'main') }}:
+                </div>
+                <div class="info-content">
+                  {{ stores_i.storeInfo.address.streetName }} {{ stores_i.storeInfo.address.streetNumber }}<br/>
+                  {% if stores_i.storeInfo.address.postalCode %}{{ stores_i.storeInfo.address.postalCode }}.{% endif %}
+                  {{ stores_i.storeInfo.address.city }}
+                  {% if stores_i.storeInfo.address.country %}({{ stores_i.storeInfo.address.country }}){% endif %}
+                </div>
+
+                <div class="info-title">
+                  {{ 'storeLocation.openingTimes'|trans({}, 'main') }}:
+                </div>
+                <div class="info-content">
+                  {{ stores_i.storeInfo.openingTimes|raw }}
+                </div>
+            </div>
+
+            <div class="box-footer">
+              {% include '@Example/partials/catalog/product-availability.html.twig' with {'availability':stores_i.availability} %}
+
+                <div class="action">
+                    <form id="form-reserve-in-store{{ loop.index0 }}" name="reserve-in-store" method="post" action="{{ stores_i.root.meta._links.reserveInStore.href }}">
+                        <input type="hidden" name="csrfToken" value="{{ stores_i.csrf_token('csrfToken') }}"/>
+                        <input type="hidden" name="storeId" value="{{ stores_i.storeInfo.id }}">
+                        <button type="submit" class="btn btn-standard">{{ 'storeLocation.reserve'|trans({}, 'main') }}</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </li>
+{% endfor %}

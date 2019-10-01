@@ -1,0 +1,10 @@
+<p class="product-price">
+  {% if wishlist %}
+    <span>{{ product.variant.prices.current }}</span>
+  {% else %}
+    {% if product.masterVariant.price.discounted %}
+      <span class="discounted-price">{{ product.masterVariant.price.discounted.value }}</span>
+    {% endif %}
+    <span>{{ product.masterVariant.price }}</span>
+  {% endif %}
+</p>

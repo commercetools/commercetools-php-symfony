@@ -5,7 +5,6 @@
 
 namespace Commercetools\Symfony\ExampleBundle\Controller;
 
-use Commercetools\Core\Client;
 use Commercetools\Core\Model\Customer\CustomerReference;
 use Commercetools\Core\Model\Product\ProductReference;
 use Commercetools\Core\Model\Review\Review;
@@ -22,11 +21,6 @@ use Symfony\Component\Workflow\Registry;
 class ReviewController extends AbstractController
 {
     /**
-     * @var Client
-     */
-    private $client;
-
-    /**
      * @var ReviewManager
      */
     private $manager;
@@ -38,13 +32,11 @@ class ReviewController extends AbstractController
 
     /**
      * ReviewController constructor.
-     * @param Client $client
      * @param ReviewManager $manager
      * @param Registry $workflows
      */
-    public function __construct(Client $client, ReviewManager $manager, Registry $workflows)
+    public function __construct(ReviewManager $manager, Registry $workflows)
     {
-        $this->client = $client;
         $this->manager = $manager;
         $this->workflows = $workflows;
     }
@@ -63,7 +55,7 @@ class ReviewController extends AbstractController
 
         $reviewForm = $this->createForm(AddReviewType::class);
 
-        return $this->render('ExampleBundle:review:index.html.twig', [
+        return $this->render('@Example/partials/catalog/pdp/reviews.html.twig', [
             'reviews' => $reviews,
             'reviewForm' => $reviewForm->createView(),
             'submitUrl' => $this->generateUrl('_ctp_example_review_create', ['productId' => $productId])

@@ -15,6 +15,7 @@ use Commercetools\Symfony\CatalogBundle\Event\ProductPostUpdateEvent;
 use Commercetools\Symfony\CatalogBundle\Event\ProductUpdateEvent;
 use Commercetools\Symfony\CatalogBundle\Model\Repository\CatalogRepository;
 use Commercetools\Symfony\CtpBundle\Model\QueryParams;
+use Commercetools\Symfony\ExampleBundle\Controller\CatalogController;
 use Psr\Http\Message\UriInterface;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
@@ -43,9 +44,9 @@ class CatalogManager
 
     /**
      * @param string $locale
-     * @param int|null $itemsPerPage
-     * @param int|null  $currentPage
-     * @param string|null $sort
+     * @param int $itemsPerPage
+     * @param int $offset
+     * @param string $sort
      * @param string|null $currency
      * @param string|null $country
      * @param UriInterface|null $uri
@@ -55,16 +56,16 @@ class CatalogManager
      */
     public function searchProducts(
         $locale,
-        $itemsPerPage = null,
-        $currentPage = null,
-        $sort = null,
+        $itemsPerPage = CatalogController::ITEMS_PER_PAGE,
+        $offset = 1,
+        $sort = 'id asc',
         $currency = null,
         $country = null,
         UriInterface $uri = null,
         $search = null,
         $filters = null
     ) {
-        $searchRequest = $this->repository->baseSearchProductsRequest($itemsPerPage, $currentPage, $sort);
+        $searchRequest = $this->repository->baseSearchProductsRequest($itemsPerPage, $offset, $sort);
         $searchRequest = $this->repository->searchRequestAddCountryAndCurrency($searchRequest, $country, $currency);
         $searchRequest = $this->repository->searchRequestAddSearchParameters($searchRequest, $locale, $uri, $search);
         $searchRequest = $this->repository->searchRequestAddSearchFilters($searchRequest, $filters);
@@ -109,6 +110,17 @@ class CatalogManager
 
     /**
      * @param string $locale
+     * @param string $id
+     * @param QueryParams|null $params
+     * @return ProductProjection
+     */
+    public function getProductTypeById($locale, $id, QueryParams $params = null)
+    {
+        return $this->repository->getProductTypeById($locale, $id, $params);
+    }
+
+    /**
+     * @param string $locale
      * @param QueryParams $params
      * @return ProductTypeCollection
      */
@@ -147,7 +159,7 @@ class CatalogManager
         $eventName = is_null($eventName) ? get_class($action) : $eventName;
 
         $event = new ProductUpdateEvent($product, $action);
-        $event = $this->dispatcher->dispatch($eventName, $event);
+        $event = $this->dispatcher->dispatch($event, $eventName);
 
         return $event->getActions();
     }
@@ -174,7 +186,7 @@ class CatalogManager
     public function dispatchPostUpdate(Product $product, array $actions)
     {
         $event = new ProductPostUpdateEvent($product, $actions);
-        $event = $this->dispatcher->dispatch(ProductPostUpdateEvent::class, $event);
+        $event = $this->dispatcher->dispatch($event);
 
         return $event->getActions();
     }

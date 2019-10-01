@@ -6,7 +6,7 @@
 namespace Commercetools\Symfony\SetupBundle\Model\Repository;
 
 use Commercetools\Core\Builder\Request\RequestBuilder;
-use Commercetools\Core\Client;
+use Commercetools\Core\Client\ApiClient;
 use Commercetools\Core\Model\Project\Project;
 use Commercetools\Core\Model\Type\Type;
 use Commercetools\Core\Model\Type\TypeCollection;
@@ -15,6 +15,7 @@ use Commercetools\Core\Request\ClientRequestInterface;
 use Commercetools\Symfony\CtpBundle\Logger\Logger;
 use Commercetools\Symfony\CtpBundle\Model\QueryParams;
 use Commercetools\Symfony\CtpBundle\Model\Repository;
+use Commercetools\Symfony\CtpBundle\Service\ContextFactory;
 use Commercetools\Symfony\CtpBundle\Service\MapperFactory;
 use Commercetools\Symfony\SetupBundle\Model\ConfigureProject;
 use Commercetools\Symfony\SetupBundle\Model\ProjectUpdateBuilder;
@@ -31,13 +32,14 @@ class SetupRepository extends Repository
      * SetupRepository constructor.
      * @param $enableCache
      * @param CacheItemPoolInterface $cache
-     * @param Client $client
+     * @param ApiClient $client
      * @param MapperFactory $mapperFactory
      * @param Logger $logger
+     * @param ContextFactory $contextFactory
      */
-    public function __construct($enableCache, CacheItemPoolInterface $cache, Client $client, MapperFactory $mapperFactory, Logger $logger)
+    public function __construct($enableCache, CacheItemPoolInterface $cache, ApiClient $client, MapperFactory $mapperFactory, Logger $logger, ContextFactory $contextFactory)
     {
-        parent::__construct($enableCache, $cache, $client, $mapperFactory);
+        parent::__construct($enableCache, $cache, $client, $mapperFactory, $contextFactory);
         $this->logger = $logger;
     }
 

@@ -1,0 +1,15 @@
+<form action="{{ path('_ctp_example_change_lineItem') }}" method="post">
+    <input type="hidden" name="csrfToken" value="{{ csrf_token('csrfToken') }}"/>
+    <input type="hidden" name="lineItemId" value="{{ lineItem.id }}">
+    <div class="sm-pull-right visible-xs">
+        <button type="submit" class="quantity-submit-btn"><span class="glyphicon glyphicon-refresh"></span></button>
+    </div>
+    <div class="sm-pull-right quantity-spinner">
+        <span class="input-number-decrement">–</span>
+        <input name="quantity" class="input-number" type="text" value="{{ lineItem.quantity }}" min="1" max="10">
+        <span class="input-number-increment">+</span>
+    </div>
+    <div class="sm-pull-right hidden-xs">
+        <button type="submit" class="quantity-submit-btn"><span class="glyphicon glyphicon-refresh"></span></button>
+    </div>
+</form>

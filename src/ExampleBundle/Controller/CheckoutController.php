@@ -4,19 +4,20 @@
 
 namespace Commercetools\Symfony\ExampleBundle\Controller;
 
-use Commercetools\Core\Client;
 use Commercetools\Core\Model\Common\Address;
 use Commercetools\Core\Model\ShippingMethod\ShippingMethod;
 use Commercetools\Core\Model\ShippingMethod\ShippingMethodReference;
+use Commercetools\Core\Model\State\StateReference;
 use Commercetools\Core\Request\Carts\Command\CartSetBillingAddressAction;
 use Commercetools\Core\Request\Carts\Command\CartSetShippingAddressAction;
 use Commercetools\Core\Request\Carts\Command\CartSetShippingMethodAction;
 use Commercetools\Symfony\CartBundle\Manager\CartManager;
+use Commercetools\Symfony\CartBundle\Manager\MeCartManager;
+use Commercetools\Symfony\CartBundle\Manager\MeOrderManager;
 use Commercetools\Symfony\CartBundle\Manager\OrderManager;
 use Commercetools\Symfony\CartBundle\Manager\ShippingMethodManager;
 use Commercetools\Symfony\ExampleBundle\Entity\CartEntity;
 use Commercetools\Symfony\ExampleBundle\Model\Form\Type\AddressType;
-use Commercetools\Symfony\CartBundle\Model\Repository\CartRepository;
 use Commercetools\Symfony\StateBundle\Model\CtpMarkingStore\CtpMarkingStoreOrderState;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
@@ -29,11 +30,6 @@ use Symfony\Component\Security\Http\Authentication\AuthenticationUtils;
 
 class CheckoutController extends AbstractController
 {
-    /**
-     * @var Client
-     */
-    private $client;
-
     /**
      * @var CartManager
      */
@@ -50,22 +46,27 @@ class CheckoutController extends AbstractController
     private $orderManager;
 
     /**
+     * @var MeCartManager
+     */
+    private $meCartManager;
+
+    /**
      * CheckoutController constructor.
-     * @param Client $client
      * @param CartManager $cartManager
      * @param ShippingMethodManager $shippingMethodManager
      * @param OrderManager $orderManager
+     * @param MeCartManager $meCartManager
      */
     public function __construct(
-        Client $client,
         CartManager $cartManager,
         ShippingMethodManager $shippingMethodManager,
-        OrderManager $orderManager
+        OrderManager $orderManager,
+        MeCartManager $meCartManager
     ) {
-        $this->client = $client;
         $this->cartManager = $cartManager;
         $this->shippingMethodManager = $shippingMethodManager;
         $this->orderManager = $orderManager;
+        $this->meCartManager = $meCartManager;
     }
 
     /**
@@ -81,7 +82,7 @@ class CheckoutController extends AbstractController
 
         $lastUsername = $authenticationUtils->getLastUsername();
 
-        return $this->render('ExampleBundle:checkout:secureCheckout.html.twig', [
+        return $this->render('@Example/checkout/secureCheckout.html.twig', [
             'last_username' => $lastUsername,
             'error' => $error
         ]);
@@ -89,16 +90,13 @@ class CheckoutController extends AbstractController
 
     /**
      * @param Request $request
-     * @param SessionInterface $session
-     * @param UserInterface|null $user
      * @return \Symfony\Component\HttpFoundation\RedirectResponse|\Symfony\Component\HttpFoundation\Response
      */
-    public function shippingMethodAction(Request $request, SessionInterface $session, UserInterface $user = null)
+    public function shippingMethodAction(Request $request)
     {
-        $cartId = $session->get(CartRepository::CART_ID);
-        $shippingMethods = $this->shippingMethodManager->getShippingMethodsByCart($request->getLocale(), $cartId);
 
-        $cart = $this->cartManager->getCart($request->getLocale(), $cartId, $user, $session->getId());
+        $cart = $this->meCartManager->getCart($request->getLocale());
+        $shippingMethods = $this->shippingMethodManager->getShippingMethodsByCart($request->getLocale(), $cart->getId());
 
         if (is_null($cart->getId())) {
             return $this->redirect($this->generateUrl('_ctp_example_cart'));
@@ -126,40 +124,37 @@ class CheckoutController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $cartBuilder = $this->cartManager->update($cart);
-            $cartBuilder->setActions([
+            $cartBuilder = $this->meCartManager->update($cart);
+            $cartBuilder->addAction(
                 CartSetShippingMethodAction::of()->setShippingMethod(
                     ShippingMethodReference::ofId($form->get('name')->getData())
                 )
-            ]);
-
+            );
             $cartBuilder->flush();
 
             return $this->redirect($this->generateUrl('_ctp_example_checkout_confirm'));
         }
 
-        return $this->render('ExampleBundle:checkout:checkoutShipping.html.twig', [
-            'shipping_methods' => $shippingMethods,
-            'form' => $form->createView()
+        return $this->render('@Example/checkout-shipping.html.twig', [
+            'form' => $form->createView(),
+            'cart' => $cart
         ]);
     }
 
     /**
      * @param Request $request
-     * @param SessionInterface $session
      * @param UserInterface|null $user
      * @return \Symfony\Component\HttpFoundation\RedirectResponse|\Symfony\Component\HttpFoundation\Response
      */
-    public function reviewOrderDetailsAction(Request $request, SessionInterface $session, UserInterface $user = null)
+    public function reviewOrderDetailsAction(Request $request, UserInterface $user = null)
     {
-        $cartId = $session->get(CartRepository::CART_ID);
-        $cart = $this->cartManager->getCart($request->getLocale(), $cartId, $user, $session->getId());
+        $cart = $this->meCartManager->getCart($request->getLocale());
 
         if (is_null($cart) || is_null($cart->getId())) {
             return $this->redirect($this->generateUrl('_ctp_example_cart'));
         }
 
-        return $this->render('ExampleBundle:cart:cartConfirm.html.twig', [
+        return $this->render('@Example/checkout-confirmation.html.twig', [
             'cart' => $cart,
             'customer' => $user,
         ]);
@@ -168,31 +163,41 @@ class CheckoutController extends AbstractController
     /**
      * @param Request $request
      * @param SessionInterface $session
-     * @param CtpMarkingStoreOrderState $markingStoreOrderState
+     * //     * @param CtpMarkingStoreOrderState $markingStoreOrderState
+     * @param MeOrderManager $meOrderManager
      * @param UserInterface|null $user
      * @return \Symfony\Component\HttpFoundation\RedirectResponse|\Symfony\Component\HttpFoundation\Response
      */
     public function placeCartToOrderAction(
         Request $request,
         SessionInterface $session,
-        CtpMarkingStoreOrderState $markingStoreOrderState,
+        MeOrderManager $meOrderManager,
+        //        CtpMarkingStoreOrderState $markingStoreOrderState,
         UserInterface $user = null
     ) {
-        $cartId = $session->get(CartRepository::CART_ID);
-        $cart = $this->cartManager->getCart($request->getLocale(), $cartId, $user, $session->getId());
+        $cart = $this->meCartManager->getCart($request->getLocale());
 
-        if (is_null($cart->getId())) {
+        if (is_null($cart)) {
             return $this->redirect($this->generateUrl('_ctp_example_cart'));
         }
 
-        $order = $this->orderManager->createOrderFromCart(
-            $request->getLocale(),
-            $cart,
-            $markingStoreOrderState->getStateReferenceOfInitial()
-        );
+        // requires admin privileges to set order states etc
 
-        return $this->render('ExampleBundle:cart:cartSuccess.html.twig', [
-            'orderId' => $order->getId()
+//        $markingStoreOrderState = $this->container->get('Commercetools\Symfony\StateBundle\Model\CtpMarkingStore\CtpMarkingStoreOrderState');
+//        if ($this->container->has('state_machine.OrderState')) {
+//            $markingStoreOrderState = $this->container->has('state_machine.OrderState');
+//        }
+
+//        $order = $this->orderManager->createOrderFromCart(
+//            $request->getLocale(),
+//            $cart,
+//            $markingStoreOrderState->getStateReferenceOfInitial()
+//        );
+
+        $order = $meOrderManager->createOrderFromCart($request->getLocale(), $cart);
+
+        return $this->render('@Example/checkout-thankyou.html.twig', [
+            'order' => $order
         ]);
     }
 
@@ -202,23 +207,23 @@ class CheckoutController extends AbstractController
      * @param UserInterface|null $user
      * @return \Symfony\Component\HttpFoundation\RedirectResponse|\Symfony\Component\HttpFoundation\Response
      */
-    public function setAddressAction(Request $request, SessionInterface $session, UserInterface $user = null)
+    public function setAddressAction(Request $request, UserInterface $user = null)
     {
-        $cartId = $session->get(CartRepository::CART_ID);
-        $cart = $this->cartManager->getCart($request->getLocale(), $cartId, $user, $session->getId());
+        $cart = $this->meCartManager->getCart($request->getLocale());
 
-        if (is_null($cart->getId())) {
+        if (is_null($cart) || is_null($cart->getId())) {
+            // add error message
             return $this->redirect($this->generateUrl('_ctp_example_cart'));
         }
 
         $entity = CartEntity::ofCart($cart);
-        if (!is_null($user) && count(array_diff_key($cart->getShippingAddress()->toArray(), ['country' => true])) == 0) {
+        if (!is_null($user) && !is_null($user->getDefaultShippingAddress()) && count(array_diff_key($cart->getShippingAddress()->toArray(), ['country' => true])) == 0) {
             $entity->setShippingAddress($user->getDefaultShippingAddress()->toArray());
         }
 
         $form = $this->createFormBuilder($entity)
             ->add(
-                'check',
+                'differentAddresses',
                 CheckboxType::class,
                 [
                     'required' => false,
@@ -228,22 +233,19 @@ class CheckoutController extends AbstractController
             )
             ->add('shippingAddress', AddressType::class)
             ->add('billingAddress', AddressType::class)
-            ->add('Submit', SubmitType::class)
+            ->add('submit', SubmitType::class)
             ->getForm();
 
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $check = $form->get('check')->getData();
+            $differentAddresses = $form->get('differentAddresses')->getData();
             $shippingAddress = Address::fromArray($form->get('shippingAddress')->getData());
 
-            $billingAddress = $shippingAddress;
+            $billingAddress = $differentAddresses ?
+                Address::fromArray($form->get('billingAddress')->getData()) : $shippingAddress;
 
-            if ($check !== true) {
-                $billingAddress = Address::fromArray($form->get('billingAddress')->getData());
-            }
-
-            $cartBuilder = $this->cartManager->update($cart);
+            $cartBuilder = $this->meCartManager->update($cart);
             $cartBuilder
                 ->setShippingAddress(CartSetShippingAddressAction::of()->setAddress($shippingAddress))
                 ->setBillingAddress(CartSetBillingAddressAction::of()->setAddress($billingAddress));
@@ -254,8 +256,9 @@ class CheckoutController extends AbstractController
             }
         }
 
-        return $this->render('ExampleBundle:checkout:checkout.html.twig', [
+        return $this->render('@Example/checkout-address.html.twig', [
             'form' => $form->createView(),
+            'cart' => $cart
         ]);
     }
 }

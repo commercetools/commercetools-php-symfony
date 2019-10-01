@@ -1,0 +1,12 @@
+<picture>
+  <source srcset="{{ asset('bundles/example/img/cms/blue-bg_large-4to3.png') }}" media="(min-width: 1200px)">
+  <source srcset="{{ asset('bundles/example/img/cms/blue-bg_medium-4to3.png') }}" media="(min-width: 768px)">
+  <img src="{{ asset('bundles/example/img/cms/blue-bg_small-4to3.png') }}" class="img-responsive">
+</picture>
+
+<div class="banner-text">
+  <h4 class="banner-title">
+    <img src="{{ asset('bundles/example/img/cms/sun-logo.png') }}"/><br/><br/>{{ 'bannerBottomRight1.title' | trans([], 'cms') | raw }}
+  </h4>
+</div>
+

@@ -5,7 +5,7 @@
 namespace Commercetools\Symfony\CatalogBundle\Model\Repository;
 
 use Commercetools\Core\Builder\Request\RequestBuilder;
-use Commercetools\Core\Client;
+use Commercetools\Core\Client\ApiClient;
 use Commercetools\Core\Error\InvalidArgumentException;
 use Commercetools\Core\Model\Common\LocalizedString;
 use Commercetools\Core\Model\Product\Product;
@@ -19,6 +19,7 @@ use Commercetools\Core\Request\Products\ProductProjectionSearchRequest;
 use Commercetools\Symfony\CtpBundle\Model\QueryParams;
 use Commercetools\Symfony\CtpBundle\Model\Repository;
 use Commercetools\Symfony\CatalogBundle\Model\Search;
+use Commercetools\Symfony\CtpBundle\Service\ContextFactory;
 use Commercetools\Symfony\CtpBundle\Service\MapperFactory;
 use Psr\Cache\CacheItemPoolInterface;
 use Psr\Http\Message\UriInterface;
@@ -26,6 +27,7 @@ use Psr\Http\Message\UriInterface;
 class CatalogRepository extends Repository
 {
     const NAME = 'products';
+    const CATEGORIES_NAME = 'categories';
 
     /**
      * @var Search
@@ -36,19 +38,21 @@ class CatalogRepository extends Repository
      * CatalogRepository constructor.
      * @param string|bool $enableCache
      * @param CacheItemPoolInterface $cache
-     * @param Client $client
+     * @param ApiClient $client
      * @param MapperFactory $mapperFactory
      * @param Search $searchModel
+     * @param ContextFactory $contextFactory
      */
     public function __construct(
         $enableCache,
         CacheItemPoolInterface $cache,
-        Client $client,
+        ApiClient $client,
         MapperFactory $mapperFactory,
-        Search $searchModel
+        Search $searchModel,
+        ContextFactory $contextFactory
     ) {
         $this->searchModel = $searchModel;
-        parent::__construct($enableCache, $cache, $client, $mapperFactory);
+        parent::__construct($enableCache, $cache, $client, $mapperFactory, $contextFactory);
     }
 
 
@@ -64,7 +68,7 @@ class CatalogRepository extends Repository
         $cacheKey = static::NAME . '-' . $slug . '-' . $locale;
 
         $productRequest = RequestBuilder::of()->productProjections()
-            ->getBySlug($slug, $this->client->getConfig()->getContext()->getLanguages())
+            ->getBySlug($slug, $this->context->getLanguages())
             ->country($country)
             ->currency($currency);
 
@@ -125,16 +129,16 @@ class CatalogRepository extends Repository
 
     /**
      * @param int|null $itemsPerPage
-     * @param int|null $currentPage
+     * @param int|null $offset
      * @param string|null $sort
      * @return ProductProjectionSearchRequest
      */
-    public function baseSearchProductsRequest($itemsPerPage = 20, $currentPage = 1, $sort = 'id asc')
+    public function baseSearchProductsRequest($itemsPerPage = 20, $offset = 1, $sort = 'id asc')
     {
         return RequestBuilder::of()->productProjections()->search()
             ->sort($sort)
             ->limit($itemsPerPage)
-            ->offset(min($itemsPerPage * ($currentPage - 1), 100000));
+            ->offset($offset);
     }
 
     /**
@@ -228,13 +232,15 @@ class CatalogRepository extends Repository
      */
     public function executeSearchRequest(ProductProjectionSearchRequest $searchRequest, $locale)
     {
-        $response = $searchRequest->executeWithClient($this->getClient());
+        $response = $this->getClient()->execute($searchRequest);
+        $ctpResponse = $searchRequest->buildResponse($response);
+
         $products = $searchRequest->mapFromResponse(
-            $response,
+            $ctpResponse,
             $this->getMapper($locale)
         );
 
-        return [$products, $response->getFacets(), $response->getOffset(), $response->getTotal()];
+        return [$products, $ctpResponse->getFacets(), $ctpResponse->getOffset(), $ctpResponse->getTotal()];
     }
 
     /**
@@ -251,14 +257,35 @@ class CatalogRepository extends Repository
 
     /**
      * @param $locale
+     * @param $productTypeId
+     * @param QueryParams $params
+     * @return mixed
+     */
+    public function getProductTypeById($locale, $productTypeId, QueryParams $params = null)
+    {
+        $productTypesRequest = RequestBuilder::of()->productTypes()->getById($productTypeId);
+
+        return $this->executeRequest($productTypesRequest, $locale, $params);
+    }
+
+    /**
+     * @param $locale
      * @param QueryParams $params
      * @return mixed
      */
     public function getCategories($locale, QueryParams $params = null)
     {
+        $cacheKey = static::CATEGORIES_NAME . '-' . $locale;
+
         $categoriesRequest = RequestBuilder::of()->categories()->query();
 
-        return $this->executeRequest($categoriesRequest, $locale, $params);
+        if (!is_null($params)) {
+            foreach ($params->getParams() as $param) {
+                $categoriesRequest->addParamObject($param);
+            }
+        }
+
+        return $this->retrieve($cacheKey, $categoriesRequest, $locale);
     }
 
     /**

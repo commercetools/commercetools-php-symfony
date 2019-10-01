@@ -1,0 +1,15 @@
+<div class="aspect-ratio aspect-ratio--4to3">
+  <picture>
+    <source srcset="{{ asset('bundles/example/img/cms/woman_large-4to3.jpg') }}" media="(min-width: 1200px)">
+    <source srcset="{{ asset('bundles/example/img/cms/woman_medium-4to3.jpg') }}" media="(min-width: 768px)">
+    <img src="{{ asset('bundles/example/img/cms/woman_small-4to3.jpg') }}" class="img-responsive">
+  </picture>
+</div>
+
+<div class="banner-text">
+  <h4 class="banner-title">{{ 'bannerTopRight.title' | trans([], 'cms') }}</h4>
+  <p class="banner-paragraph">{{ 'bannerTopRight.subtitle' | trans([], 'cms') }}</p>
+  <a href="{{ 'bannerTopRight.linkHref' | trans([], 'cms') }}" class="btn banner-btn">
+    {{ 'bannerTopRight.linkText' | trans([], 'cms') }}
+  </a>
+</div>

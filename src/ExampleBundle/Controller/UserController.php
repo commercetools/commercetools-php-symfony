@@ -4,12 +4,17 @@
 
 namespace Commercetools\Symfony\ExampleBundle\Controller;
 
-use Commercetools\Core\Client;
 use Commercetools\Core\Model\Common\Address;
+use Commercetools\Core\Request\Customers\Command\CustomerAddAddressAction;
 use Commercetools\Core\Request\Customers\Command\CustomerChangeAddressAction;
 use Commercetools\Core\Request\Customers\Command\CustomerChangeEmailAction;
+use Commercetools\Core\Request\Customers\Command\CustomerRemoveAddressAction;
+use Commercetools\Core\Request\Customers\Command\CustomerSetDefaultBillingAddressAction;
+use Commercetools\Core\Request\Customers\Command\CustomerSetDefaultShippingAddressAction;
 use Commercetools\Core\Request\Customers\Command\CustomerSetFirstNameAction;
 use Commercetools\Core\Request\Customers\Command\CustomerSetLastNameAction;
+use Commercetools\Core\Request\Customers\Command\CustomerSetTitleAction;
+use Commercetools\Symfony\CustomerBundle\Manager\MeCustomerManager;
 use Commercetools\Symfony\ExampleBundle\Entity\UserAddress;
 use Commercetools\Symfony\ExampleBundle\Entity\UserDetails;
 use Commercetools\Symfony\ExampleBundle\Model\Form\Type\AddressType;
@@ -24,37 +29,56 @@ use Symfony\Component\Security\Http\Authentication\AuthenticationUtils;
 class UserController extends AbstractController
 {
     /**
-     * @var Client
-     */
-    private $client;
-
-    /**
      * @var CustomerManager
      */
     private $manager;
 
+    /** @var MeCustomerManager */
+    private $meCustomerManager;
+
     /**
      * CustomerController constructor.
+     * @param CustomerManager $manager
+     * @param MeCustomerManager $meCustomerManager
      */
-    public function __construct(Client $client, CustomerManager $manager)
+    public function __construct(CustomerManager $manager, MeCustomerManager $meCustomerManager)
     {
-        $this->client = $client;
         $this->manager = $manager;
+        $this->meCustomerManager = $meCustomerManager;
     }
 
-//    public function indexAction()
-//    {
-//        /**
-//         * @var User $user
-//         */
-//        $user = $this->getUser();
-//
-//        return $this->render('ExampleBundle:catalog:index.html.twig',
-//            [
-//                'user' => $user
-//            ]
-//        );
-//    }
+    public function addAddressAction(Request $request)
+    {
+        $customer = $this->meCustomerManager->getMeInfo($request->getLocale());
+
+        $form = $this->createForm(AddressType::class, new UserAddress())
+            ->add('submit', SubmitType::class);
+
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+
+            /** @var UserAddress $userAddress */
+            $userAddress = $form->getData();
+            $address = Address::fromArray($userAddress->toArray());
+
+            $customerBuilder = $this->manager->update($customer)
+                ->addAddress(CustomerAddAddressAction::ofAddress($address));
+            $customerResponse = $customerBuilder->flush();
+
+            $addresses = $customerResponse->getAddresses()->toArray();
+
+            if (isset(end($addresses)['id'])) {
+                $addressId = end($addresses)['id'];
+                return $this->redirect($this->generateUrl('_ctp_example_user_address_edit', ['addressId' => $addressId]));
+            }
+        }
+
+        return $this->render('@Example/my-account-new-address.html.twig', [
+            'formAddress' => $form->createView(),
+            'customer' => $customer
+        ]);
+    }
 
     public function loginAction(Request $request, AuthenticationUtils $authenticationUtils)
     {
@@ -62,34 +86,37 @@ class UserController extends AbstractController
 
         $lastUsername = $authenticationUtils->getLastUsername();
 
-        return $this->render('ExampleBundle:user:login.html.twig', [
+        return $this->render('@Example/my-account-login.html.twig', [
             'last_username' => $lastUsername,
             'error' => $error
         ]);
     }
 
-    public function detailsAction(Request $request, UserInterface $user)
+    public function detailsAction(Request $request)
     {
-        $customer = $this->manager->getById($request->getLocale(), $user->getId());
+        $customer = $this->meCustomerManager->getMeInfo($request->getLocale());
         $entity = UserDetails::ofCustomer($customer);
 
         $form = $this->createForm(UserType::class, $entity)
             ->add('submit', SubmitType::class);
+
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $firstName = $form->get('firstName')->getData();
-            $lastName = $form->get('lastName')->getData();
-            $email = $form->get('email')->getData();
+            $firstName = $form->get('firstName')->getData() ?? '';
+            $lastName = $form->get('lastName')->getData() ?? '';
+            $email = $form->get('email')->getData() ?? '';
+            $title = $form->get('title')->getData() ?? '';
 
             $currentPassword = $form->get('currentPassword')->getData();
             $newPassword = $form->get('newPassword')->getData();
 
-            $customerBuilder = $this->manager->update($customer);
+            $customerBuilder = $this->meCustomerManager->update($customer);
             $customerBuilder
                 ->setFirstName(CustomerSetFirstNameAction::of()->setFirstName($firstName))
                 ->setLastName(CustomerSetLastNameAction::of()->setLastName($lastName))
-                ->changeEmail(CustomerChangeEmailAction::ofEmail($email));
+                ->changeEmail(CustomerChangeEmailAction::ofEmail($email))
+                ->setTitle(CustomerSetTitleAction::of()->setTitle($title));
 
             try {
                 $customer = $customerBuilder->flush();
@@ -102,7 +129,7 @@ class UserController extends AbstractController
             }
         }
 
-        return $this->render('ExampleBundle:User:user.html.twig', [
+        return $this->render('@Example/my-account-personal-details.html.twig', [
             'formDetails' => $form->createView()
         ]);
     }
@@ -111,7 +138,20 @@ class UserController extends AbstractController
     {
         $customer = $this->manager->getById($request->getLocale(), $user->getId());
 
-        return $this->render('ExampleBundle:User:addressBook.html.twig', [
+        return $this->render('@Example/my-account-address-book.html.twig', [
+            'customer' => $customer
+        ]);
+    }
+
+    public function deleteAddressAction(Request $request, UserInterface $user, $addressId)
+    {
+        $customer = $this->manager->getById($request->getLocale(), $user->getId());
+
+        $customerBuilder = $this->manager->update($customer)
+            ->removeAddress(CustomerRemoveAddressAction::ofAddressId($addressId));
+        $customer = $customerBuilder->flush();
+
+        return $this->render('@Example/my-account-address-book.html.twig', [
             'customer' => $customer
         ]);
     }
@@ -123,43 +163,36 @@ class UserController extends AbstractController
 
         $entity = UserAddress::ofAddress($address);
 
-        $form = $this->createFormBuilder(['address' => $entity->toArray()])
-            ->add('address', AddressType::class)
-            ->add('Submit', SubmitType::class)
-            ->getForm();
+        $form = $this->createForm(AddressType::class, $entity)
+            ->add('submit', SubmitType::class);
+
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $address = Address::fromArray($form->get('address')->getData());
+
+            /** @var UserAddress $userAddress */
+            $userAddress = $form->getData();
+            $address = Address::fromArray($userAddress->toArray());
 
             $customerBuilder = $this->manager->update($customer)
                 ->changeAddress(CustomerChangeAddressAction::ofAddressIdAndAddress($addressId, $address));
+
+            if ($userAddress->getIsDefaultBillingAddress()) {
+                $customerBuilder->addAction(CustomerSetDefaultBillingAddressAction::of()->setAddressId($addressId));
+            }
+
+            if ($userAddress->getIsDefaultShippingAddress()) {
+                $customerBuilder->addAction(CustomerSetDefaultShippingAddressAction::of()->setAddressId($addressId));
+            }
+
             $customerBuilder->flush();
         }
 
-        return $this->render('ExampleBundle:User:editAddress.html.twig', [
-            'form_address' => $form->createView()
+        return $this->render('@Example/my-account-edit-address.html.twig', [
+            'formAddress' => $form->createView(),
+            'addressId' => $addressId
         ]);
     }
-
-//    protected function getCustomer(User $user)
-//    {
-//        if (!$user instanceof User){
-//            throw new \InvalidArgumentException;
-//        }
-//
-//        /**
-//         * @var Client $client
-//         */
-//        $client = $this->get('commercetools.client');
-//
-//        $request = CustomerByIdGetRequest::ofId($user->getId());
-//        $response = $request->executeWithClient($client);
-//
-//        $customer = $request->mapResponse($response);
-//
-//        return $customer;
-//    }
 
     public function signUpAction()
     {

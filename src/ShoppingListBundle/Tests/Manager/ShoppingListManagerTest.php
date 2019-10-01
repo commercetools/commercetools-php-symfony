@@ -32,10 +32,9 @@ class ShoppingListManagerTest extends TestCase
             })->shouldBeCalled();
 
         $dispatcher->dispatch(
-            Argument::containingString(ShoppingListPostUpdateEvent::class),
             Argument::type(ShoppingListPostUpdateEvent::class)
         )->will(function ($args) {
-            return $args[1];
+            return $args[0];
         })->shouldBeCalled();
 
         $manager = new ShoppingListManager($repository->reveal(), $dispatcher->reveal());
@@ -164,10 +163,10 @@ class ShoppingListManagerTest extends TestCase
         $repository = $this->prophesize(ShoppingListRepository::class);
         $dispatcher = $this->prophesize(EventDispatcherInterface::class);
         $dispatcher->dispatch(
-            Argument::containingString(AbstractAction::class),
-            Argument::type(ShoppingListUpdateEvent::class)
+            Argument::type(ShoppingListUpdateEvent::class),
+            Argument::containingString(AbstractAction::class)
         )->will(function ($args) {
-            return $args[1];
+            return $args[0];
         })->shouldBeCalled();
         $action = $this->prophesize(AbstractAction::class);
 

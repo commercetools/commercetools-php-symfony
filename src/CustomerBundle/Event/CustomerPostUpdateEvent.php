@@ -6,7 +6,7 @@ namespace Commercetools\Symfony\CustomerBundle\Event;
 
 use Commercetools\Core\Model\Customer\Customer;
 use Commercetools\Core\Request\AbstractAction;
-use Symfony\Component\EventDispatcher\Event;
+use Symfony\Contracts\EventDispatcher\Event;
 
 class CustomerPostUpdateEvent extends Event
 {

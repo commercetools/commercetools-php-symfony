@@ -1,0 +1,30 @@
+<div class="checkout-summary">
+    <div class="text-uppercase">
+        <span class="checkout-summary-title"></span>
+      {% if editable %}
+        {% include '@Example/partials/checkout/edit-link.html.twig' with {'id':"confirmation-edit-shipping-btn", 'url':editUrl, 'enabled':editable} %}
+      {% endif %}
+    </div>
+    <div class="checkout-summary-text">
+        <span>{% if address.salutation %}{{ address.salutation }}{% endif %}{% if address.title %} {{ address.title }}{% endif %}{% if address.firstName %} {{ address.firstName }}{% endif %}{% if address.lastName %} {{ address.lastName }}{% endif %}</span>
+        <br>
+        <span>{{ address.streetName }} {{ address.streetNumber }}</span>
+        <br>
+        <span>{{ address.postalCode }} {{ address.city }}</span>
+        <br>
+        <span>{{ address.region }}</span>
+        <br>
+        <span>{{ address.country }}</span>
+    </div>
+    <div>
+      {% if address.phone %}
+          <span>{{ 'form.phone'|trans([], 'main') }}:</span>
+          <span> {{ address.phone }}</span>
+          <br>
+      {% endif %}
+      {% if address.email %}
+          <span>{{ 'form.email'|trans([], 'main') }}:</span>
+          <span> {{ address.email }}</span>
+      {% endif %}
+    </div>
+</div>

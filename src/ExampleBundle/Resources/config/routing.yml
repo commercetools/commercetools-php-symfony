@@ -1,33 +1,37 @@
 _ctp_example_index:
     path:     /
-    defaults: { _controller: Commercetools\Symfony\ExampleBundle\Controller\HomeController::indexAction }
+    defaults: { _controller: Commercetools\Symfony\ExampleBundle\Controller\SunriseController::homeAction }
 
-_ctp_example:
-    path:     /product
+_ctp_example_catalog:
+    path:     /products
     defaults: { _controller: Commercetools\Symfony\ExampleBundle\Controller\CatalogController::indexAction }
 
 _ctp_example_product:
-    path:    /product/slug/{slug}
+    path:    /product/slug-{slug}
     defaults: { _controller: Commercetools\Symfony\ExampleBundle\Controller\CatalogController::detailBySlugAction }
 
 _ctp_example_product_by_id:
-    path:    /product/id/{id}
+    path:    /product/id-{id}
     defaults: { _controller: Commercetools\Symfony\ExampleBundle\Controller\CatalogController::detailByIdAction }
 
 _ctp_example_products_of_category:
-    path:    /product/category/{categoryId}
+    path:    /products/catid-{categoryId}
+    defaults: { _controller: Commercetools\Symfony\ExampleBundle\Controller\CatalogController::indexAction }
+
+_ctp_example_products_of_category_with_slug:
+    path:    /products/category-{categorySlug}/
     defaults: { _controller: Commercetools\Symfony\ExampleBundle\Controller\CatalogController::indexAction }
 
 _ctp_example_product_categories:
-    path:    /product/categories/
+    path:    /products/categories/
     defaults: { _controller: Commercetools\Symfony\ExampleBundle\Controller\CatalogController::getCategoriesAction }
 
 _ctp_example_productTypes:
-    path:    /product/productTypes/
+    path:    /products/productTypes/
     defaults: { _controller: Commercetools\Symfony\ExampleBundle\Controller\CatalogController::getProductTypesAction }
 
 _ctp_example_products_of_productType:
-    path:    /product/type/{productTypeId}
+    path:    /products/type-{productTypeId}
     defaults: { _controller: Commercetools\Symfony\ExampleBundle\Controller\CatalogController::indexAction }
 
 login:
@@ -49,9 +53,17 @@ _ctp_example_user_address_book:
     path:    /user/address
     defaults: { _controller: Commercetools\Symfony\ExampleBundle\Controller\UserController::addressBookAction }
 
+_ctp_example_user_address_new:
+    path:    /user/address/new
+    defaults: { _controller: Commercetools\Symfony\ExampleBundle\Controller\UserController::addAddressAction }
+
 _ctp_example_user_address_edit:
     path:    /user/address/edit/{addressId}
     defaults: { _controller: Commercetools\Symfony\ExampleBundle\Controller\UserController::editAddressAction }
+
+_ctp_example_user_address_delete:
+    path:    /user/address/delete/{addressId}
+    defaults: { _controller: Commercetools\Symfony\ExampleBundle\Controller\UserController::deleteAddressAction }
 
 _ctp_example_cart:
     path: /cart
@@ -182,3 +194,23 @@ _ctp_example_review_create:
     path: /product/{productId}/reviews/create
     defaults: { _controller: Commercetools\Symfony\ExampleBundle\Controller\ReviewController::createReviewForProductAction }
     methods: [POST]
+
+_ctp_example_help:
+    path: /help
+    defaults: { _controller: Commercetools\Symfony\ExampleBundle\Controller\SunriseController::helpAction }
+
+_ctp_example_contact:
+    path: /contact
+    defaults: { _controller: Commercetools\Symfony\ExampleBundle\Controller\SunriseController::ContactAction }
+
+_ctp_example_locate_store:
+    path: /locate-store
+    defaults: { _controller: Commercetools\Symfony\ExampleBundle\Controller\SunriseController::locateStoreAction }
+
+_ctp_example_discount_code_add:
+    path: /
+    defaults: { _controller: Commercetools\Symfony\ExampleBundle\Controller\SunriseController::homeAction }
+
+_ctp_example_discount_code_remove:
+    path: /
+    defaults: { _controller: Commercetools\Symfony\ExampleBundle\Controller\SunriseController::homeAction }

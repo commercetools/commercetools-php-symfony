@@ -1,0 +1,10 @@
+<div class="col-sm-{{ columnWidth }}">
+  <div class="input-block">
+    <span class="text-uppercase">{{ form_label(formObject[formFieldName]) }}{% if required %}<abbr title="{{ 'form.required'|trans([], 'main') }}">*</abbr>{% endif %}</span>{{ form_errors(formObject[formFieldName]) }}<br>
+{#    <input id="input-{{ name }}" class="checkout-input-field" type="text" name="{{ settings.formFieldName }}{% if not settings.formFieldName %}{{ name }}{% endif %}" value="{{ value }}">#}
+    {{ form_widget(formObject[formFieldName]) }}
+    {% if additionalInfoKey %}
+    <span class="tel-email-text"></span>
+    {% endif %}
+  </div>
+</div>

@@ -19,10 +19,10 @@ class FactoryTest extends TestCase
         $container = $this->prophesize(ContainerBuilder::class);
         $definition = $this->prophesize(ChildDefinition::class);
 
-        $definition->replaceArgument(1, Argument::type(Reference::class))
+        $definition->replaceArgument('$userProvider', Argument::type(Reference::class))
             ->willReturn($definition)->shouldBeCalledOnce();
 
-        $definition->replaceArgument(3, Argument::is('foo'))
+        $definition->replaceArgument('$providerKey', Argument::is('foo'))
             ->willReturn($definition)->shouldBeCalledOnce();
 
         $container->setDefinition(
@@ -47,6 +47,7 @@ class FactoryTest extends TestCase
     }
 }
 
+//phpcs:disable
 class TestSecurityFactory extends SecurityFactory
 {
     public function createAuthProvider(ContainerBuilder $container, $id, $config, $userProviderId)

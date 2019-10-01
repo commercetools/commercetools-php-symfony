@@ -5,7 +5,7 @@
 
 namespace Commercetools\Symfony\CustomerBundle\Tests\Model\Repository;
 
-use Commercetools\Core\Client;
+use Commercetools\Core\Client\ApiClient;
 use Commercetools\Core\Model\Customer\Customer;
 use Commercetools\Core\Model\Customer\CustomerDraft;
 use Commercetools\Core\Request\Customers\Command\CustomerSetKeyAction;
@@ -16,6 +16,7 @@ use Commercetools\Core\Request\Customers\CustomerPasswordChangeRequest;
 use Commercetools\Core\Request\Customers\CustomerUpdateRequest;
 use Commercetools\Core\Response\ResourceResponse;
 use Commercetools\Symfony\CtpBundle\Model\QueryParams;
+use Commercetools\Symfony\CtpBundle\Service\ContextFactory;
 use Commercetools\Symfony\CtpBundle\Service\MapperFactory;
 use Commercetools\Symfony\CustomerBundle\Model\Repository\CustomerRepository;
 use PHPUnit\Framework\TestCase;
@@ -29,18 +30,20 @@ class CustomerRepositoryTest extends TestCase
     private $mapperFactory;
     private $response;
     private $client;
+    private $contextFactory;
 
     protected function setUp()
     {
         $this->cache = new ExternalAdapter();
         $this->mapperFactory = $this->prophesize(MapperFactory::class);
+        $this->contextFactory = $this->prophesize(ContextFactory::class);
 
         $this->response = $this->prophesize(ResourceResponse::class);
         $this->response->toArray()->willReturn([]);
         $this->response->getContext()->willReturn(null);
         $this->response->isError()->willReturn(false);
 
-        $this->client = $this->prophesize(Client::class);
+        $this->client = $this->prophesize(ApiClient::class);
     }
 
     private function getCustomerRepository()
@@ -49,7 +52,8 @@ class CustomerRepositoryTest extends TestCase
             false,
             $this->cache,
             $this->client->reveal(),
-            $this->mapperFactory->reveal()
+            $this->mapperFactory->reveal(),
+            $this->contextFactory->reveal()
         );
     }
 

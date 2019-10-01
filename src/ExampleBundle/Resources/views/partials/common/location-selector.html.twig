@@ -1,0 +1,27 @@
+<button id="location-dropdown-toggle-btn" class="location-dropdown-toggle">
+  <img class="pull-right" src="{{ asset('bundles/example/img/globe-2.png') }} alt="{{ 'header.location'|trans([], 'main') }}">
+</button>
+<div class="location-dropdown">
+  {% if location.language %}
+  <form id="form-select-language" action="{{ root.meta._links.selectLanguage.href }}" method="POST">
+    <input type="hidden" name="csrfToken" value="{{ csrf_token('csrfToken') }}"/>
+    <span class="location-dropdown-label">{{ 'header.language'|trans([], 'main') }}</span>
+    <select name="language" id="language-select" class="select location-select">
+      {% for language_i in location.language %}
+      <option value="{{ language_i.value }}" {% if language_i.selected %}selected{% endif %}>{{ language_i.label }}</option>
+      {% endfor %}
+    </select>
+  </form>
+  {% endif %}
+  {% if location.country %}
+  <form id="form-select-country" action="{{ root.meta._links.selectCountry.href }}" method="POST">
+    <input type="hidden" name="csrfToken" value="{{ csrf_token('csrfToken') }}"/>
+    <span class="location-dropdown-label">{{ 'header.country'|trans([], 'main') }}</span>
+    <select name="country" id="country-select" class="select location-select">
+      {% for country_i in location.country %}
+      <option value="{{ country_i.value }}" {% if country_i.selected %}selected{% endif %}>{{ country_i.label }}</option>
+      {% endfor %}
+    </select>
+  </form>
+  {% endif %}
+</div>

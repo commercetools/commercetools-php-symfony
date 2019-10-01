@@ -1,0 +1,26 @@
+<li>
+  <a href="{{ pagination.previousUrl }}" class="icon-prev">
+    <span class="sr-only">{{ 'pagination.previous'|trans([], 'catalog') }}</span>
+  </a>
+</li>
+
+{% if pagination.firstPage %}
+  <li><a href="{{ pagination.firstPage.url }}">{{ pagination.firstPage.text }}</a></li>
+  <li>...</li>
+{% endif %}
+
+
+{% for pages_i in pagination.pages %}
+  <li><a href="{{ pages_i.url }}" {% if pages_i.selected %}class="active"{% endif %}>{{ pages_i.text }}</a></li>
+{% endfor %}
+
+{% if pagination.lastPage %}
+  <li>...</li>
+  <li><a href="{{ pagination.lastPage.url }}">{{ pagination.lastPage.text }}</a></li>
+{% endif %}
+
+<li>
+  <a href="{{ pagination.nextUrl }}" class="icon-next">
+    <span class="sr-only">{{ 'pagination.next'|trans([], 'catalog') }}</span>
+  </a>
+</li>

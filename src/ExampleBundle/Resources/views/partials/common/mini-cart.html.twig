@@ -1,0 +1,14 @@
+{% if app.session.get('cart.itemCount') %}
+  <button class="not-empty link-your-bag icon-hand-bag">
+    <span class="hidden-xs hidden-sm">{{ 'header.miniCart'|trans([], 'main') }}</span>
+    <span class="cart-item-number">{{ app.session.get('cart.itemCount') }}</span>
+  </button>
+  <div class="col-xs-12">
+    {{ render(controller('Commercetools\\Symfony\\ExampleBundle\\Controller\\SunriseController::getMiniCartAction')) }}
+  </div>
+{% else %}
+<a href="{{ path('_ctp_example_cart') }}" class="not-empty link-your-bag icon-hand-bag">
+  <span class="hidden-xs hidden-sm">{{ 'header.miniCart'|trans([], 'main') }}</span>
+  <span class="cart-item-number">{{ app.session.get('cart.itemCount') | default('0') }}</span>
+</a>
+{% endif %}

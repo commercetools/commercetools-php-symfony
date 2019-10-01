@@ -1,0 +1,95 @@
+<div class="reviews-container">
+<div class="row">
+  <div class="col-sm-12">
+    <p class="text-uppercase text-center reviews-title">{{ 'reviews.title'|trans([], 'catalog') }}</p>
+  </div>
+</div>
+
+<div class="row">
+
+  <div class="add-review-container col-md-6">
+    <h4>write a review</h4>
+    {{ form_start(reviewForm, {attr: {
+      class: 'add-review-form',
+      id: 'add-review-form',
+      'data-submit-url': submitUrl
+    } }) }}
+    {% form_theme reviewForm 'bootstrap_3_layout.html.twig' %}
+    {{ form_widget(reviewForm) }}
+    {{ form_end(reviewForm) }}
+  </div>
+
+
+</div>
+
+<div class="row">
+  <div class="col-sm-12 reviews-col">
+    <div class="row">
+      <div class="col-sm-12">
+        <div>{{ reviews.count }} Reviews</div>
+      </div>
+    </div>
+      {% for review in reviews %}
+    <div class="single-comment hidden-xs">
+      <div class="row">
+        <div class="col-sm-12">
+          <div class="review-rating">
+            <fieldset class="rating rated-stars">
+                {% for i in 1..review.rating %}
+                    <input type="radio" id="star{{ i }}" name="rating" value="{{ i }}" /><label for="star{{ i }}" title="{{ i }} star(s)">{{ i }} star(s)</label>
+                {% endfor %}
+            </fieldset>
+            <p class="text-uppercase comment-user">{{ review.customer.obj.firstName | default('anonymous') }}<span class="grey-p comment-date"> {{ review.createdAt.getDateTime|date("m/d/Y H:i") }}</span></p>
+          </div>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-sm-12">
+          <p class="h4 review-top-comment">{{ review.text }}</p>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-sm-12">
+          <p class="review-comment">{{ review.text }}</p>
+        </div>
+      </div>
+    </div>
+      {% endfor %}
+
+    <div class="reviews-mobile visible-xs">
+
+      {% for review in reviews %}
+      <div class="single-comment">
+        <div class="row">
+          <div class="col-sm-12">
+            <div class="review-rating">
+              <fieldset class="rating rated-stars">
+                {% for i in 1..review.rating %}
+                  <input type="radio" id="star{{ i }}" name="rating" value="{{ i }}" /><label for="star{{ i }}" title="{{ i }} star(s)">{{ i }} star(s)</label>
+                {% endfor %}
+              </fieldset>
+              <p class="text-uppercase comment-user">{{ review.customer.obj.firstName | default('anonymous') }}<span class="grey-p comment-date"> {{ review.createdAt.getDateTime|date("m/d/Y H:i") }}</span></p>
+            </div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-sm-12">
+            <p class="h4 review-top-comment">{{ review.text }}</p>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-sm-12">
+            <p class="review-comment">{{ review.text }}</p>
+          </div>
+        </div>
+      </div>
+      {% endfor %}
+
+    </div>
+  </div>
+</div>
+<div>
+{#  <button type="button" class="btn write-review-btn">Write Review</button>#}
+{#  <button type="button" class="btn hidden-xs showmore-reviews-btn">Show More Reviews</button>#}
+</div>
+</div>

@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  {% include '@Example/partials/common/htmlhead.html.twig' %}
+</head>
+
+<body>
+  <div class="darkbg hidden"></div>
+  {% include '@Example/partials/common/header.html.twig' %}
+  <div class="my-account">
+    <div class="container">
+      {% include '@Example/partials/common/messages.html.twig' %}
+      <div class="my-account-title">
+        <span class="my-account-title-text icon-user">{{ 'myAccount.title'|trans([], 'my-account') }}</span>
+      </div>
+      <div class="row">
+        <div class="col-sm-9">
+          <div class="my-account-content">
+            <div class="row">
+              <div class="col-sm-3">
+                {% include '@Example/partials/myaccount/my-account-sidebar.html.twig' with {'myPersonalDetailsTab':true} %}
+              </div>
+              <div id="my-account-desktop-content" class="col-sm-9">
+                <div class="personal-details">
+                  <div class="personal-details-text-one">
+                    <span>{{ 'personalDetails.welcomeBack'|trans([], 'my-account') }}</span>
+                    <span>{{ app.user.username }}</span>
+                  </div>
+                    <div class="personal-details-title">
+                        <span>{{ 'personalDetails.title'|trans([], 'my-account') }}</span>
+                        <span class="pull-right required-text personal-details-edit-show">{{ 'form.required'|trans([], 'main') }}*</span>
+                    </div>
+                  {{ form_start(formDetails, {'action': path('_ctp_example_user_details')}) }}
+                  {% form_theme formDetails 'bootstrap_3_layout.html.twig' %}
+                    <div class="personal-details-edit-hide">
+                        <div class="personal-details-box">
+                          <div>
+                            {{ formDetails.title.vars.value }}
+                            {{ formDetails.firstName.vars.value }}
+                            {{ formDetails.lastName.vars.value }}
+                          </div>
+                          <div>{{ formDetails.email.vars.value }}</div><br>
+                          <div class="personal-details-box-edit">
+                            <a href="#" class="personal-details-edit-show-btn"><img src="{{ asset('bundles/example/img/edit-1.png') }}" alt="edit icon">{{ 'form.edit'|trans([], 'main') }}</a>
+                          </div>
+                        </div>
+                  </div>
+
+                  <div class="personal-details-edit personal-details-edit-show">
+                          <div class="row">
+                            {% include '@Example/partials/form/global-messages.html.twig' with {'messages':content.personalDetailsForm.messages} %}
+                            {{ form_errors(formDetails) }}
+                          </div>
+                          <div class="row">
+                            <div class="col-sm-12">
+                              {% set formObject = formDetails %}
+                              {% include '@Example/partials/form/choose-title.html.twig' with {'containerClass':"form-sections", 'formFieldName': 'title'} %}
+                            </div>
+                          </div>
+                          <div class="row">
+                            <div class="col-sm-6">
+                              <div class="form-sections">
+                                <span class="form-labels">{{ 'personalDetails.personalDetailsForm.firstName'|trans([], 'my-account') }}</span><br>
+                                {{ form_widget(formDetails.firstName) }}
+                              </div>
+                              <div class="form-sections">
+                                <span class="form-labels">{{ 'personalDetails.personalDetailsForm.email'|trans([], 'my-account') }}</span><br>
+                                {{ form_widget(formDetails.email) }}<br>
+                                <span class="form-notes"></span>
+                              </div>
+                            </div>
+                            <div class="col-sm-6">
+                              <div class="form-sections">
+                                <span class="form-labels">{{ 'personalDetails.personalDetailsForm.lastName'|trans([], 'my-account') }}</span><br>
+                                {{ form_widget(formDetails.lastName) }}
+                              </div>
+                            </div>
+                          </div>
+                        <hr class="light-grey-hr">
+                        <div class="personal-details-title">
+                          <span>{{ 'changePassword.changePasswordTitle'|trans([], 'my-account') }}</span>
+                        </div>
+                        <div class="row">
+                          <div class="col-sm-6">
+                            <div class="form-sections">
+                              <span class="form-labels">{{ 'changePassword.oldPasswordLabelTxt'|trans([], 'my-account') }}</span><br>
+                              {{ form_widget(formDetails.currentPassword) }}
+                            </div>
+                          </div>
+                        </div>
+                        <div class="row">
+                          <div class="col-sm-6">
+                            <div class="form-sections">
+                              <span class="form-labels">{{ 'changePassword.newPasswordLabelTxt'|trans([], 'my-account') }}</span><br>
+                              {{ form_widget(formDetails.newPassword.first) }}
+                            </div>
+                          </div>
+                          <div class="col-sm-6">
+                            <div class="form-sections">
+                              <span class="form-labels">{{ 'changePassword.confirmPasswordLabelTxt'|trans([], 'my-account') }}</span><br>
+                              {{ form_widget(formDetails.newPassword.second) }}
+                            </div>
+                          </div>
+
+                        </div>
+                        <hr class="light-grey-hr">
+                        <div class="personal-details-newsletter">
+                          <span>
+                            <input name="subscribeToNewsletter" type="checkbox" {% if personalDetails.personalDetailsForm.subscribeToNewsletter %}checked{% endif %}/>
+                            {{ 'personalDetails.personalDetailsForm.subscribeToNewsletter' | trans([], 'my-account') | raw }}
+
+                          </span>
+                        </div>
+                        <div class="personal-details-edit-btn">
+                          <span>
+                            {{ form_widget(formDetails.submit, {'attr': {'class': 'update-btn'}, 'label': 'personalDetails.updateBtn'|trans([], 'my-account')}) }}
+                            <button type="button" class="cancel-btn personal-details-edit-hide-btn">{{ 'personalDetails.cancelBtn'|trans([], 'my-account') }}</button>
+                          </span>
+                        </div>
+                    {{ form_end(formDetails) }}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="col-sm-3">
+          <div class="my-account-banners">
+            <div class="banner-one-wrapper hidden-xs">
+              <div class="my-account-banner">
+                <div class="banner-title">
+                  {{ 'personalDetails.bannerOne.title'|trans([], 'my-account') }}
+                </div>
+                <hr class="banner-hr">
+                <div class="banner-subtitle">
+                  {{ 'personalDetails.bannerOne.subtitle'|trans([], 'my-account') }}
+                </div>
+                <div class="banner-btn-wrapper">
+                  <a class="banner-btn" href="{{ content.bannerOne.url }}">{{ 'personalDetails.shopAllBtn'|trans([], 'my-account') }}</a>
+                </div>
+              </div>
+            </div>
+            <div class="banner-two-wrapper">
+              <div class="my-account-banner image-banner">
+                <div class="banner-title">
+                  {{ 'personalDetails.bannerTwo.title'|trans([], 'my-account') }}
+                </div>
+                <hr class="banner-hr">
+                <div class="banner-subtitle">
+                  {{ 'personalDetails.bannerTwo.subtitle'|trans([], 'my-account') }}
+                </div>
+                <div class="banner-btn-wrapper">
+                  <a class="banner-btn" href="{{ content.bannerTwo.url }}">{{ 'personalDetails.shopAllBtn'|trans([], 'my-account') }}</a>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  {# {{> common/wishlist}} #}
+  {% include '@Example/partials/common/footer.html.twig' %}
+  {% include '@Example/partials/common/htmlscripts.html.twig' %}
+</body>
+
+</html>

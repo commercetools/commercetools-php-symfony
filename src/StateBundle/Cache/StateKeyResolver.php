@@ -6,6 +6,7 @@
 namespace Commercetools\Symfony\StateBundle\Cache;
 
 use Commercetools\Core\Model\State\State;
+use Commercetools\Core\Model\State\StateCollection;
 use Commercetools\Core\Model\State\StateReference;
 use Commercetools\Symfony\StateBundle\Model\Repository\StateRepository;
 use Psr\Cache\CacheItemInterface;
@@ -86,11 +87,13 @@ class StateKeyResolver
     {
         $states = $this->stateRepository->getStates();
 
-        foreach ($states as $state) {
-            $item = $this->cache->getItem($state->getId());
-            $this->storeValue($item, $state->getKey());
-            $item = $this->cache->getItem($state->getKey());
-            $this->storeValue($item, $state->getId());
+        if ($states instanceof StateCollection) {
+            foreach ($states as $state) {
+                $item = $this->cache->getItem($state->getId());
+                $this->storeValue($item, $state->getKey());
+                $item = $this->cache->getItem($state->getKey());
+                $this->storeValue($item, $state->getId());
+            }
         }
     }
 }

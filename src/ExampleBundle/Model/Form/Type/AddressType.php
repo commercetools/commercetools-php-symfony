@@ -5,6 +5,7 @@
 namespace Commercetools\Symfony\ExampleBundle\Model\Form\Type;
 
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\CountryType;
 use Symfony\Component\Form\Extension\Core\Type\EmailType;
@@ -16,9 +17,9 @@ class AddressType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
-        $builder->add('title', TextType::class, ['required' => false]);
-        $builder->add('salutation', ChoiceType::class, [
-            'choices' => ['Mr' => 'Mr', 'Mrs' => 'Mrs']
+        $builder->add('salutation', TextType::class, ['required' => false]);
+        $builder->add('title', ChoiceType::class, [
+            'choices' => ['Mr' => 'Mr', 'Mrs' => 'Mrs', 'Other' => 'Other']
         ]);
         $builder->add('firstName', TextType::class, ['attr' => ['data-required' => 'true']]);
         $builder->add('lastName', TextType::class, ['attr' => ['data-required' => 'true']]);
@@ -42,5 +43,8 @@ class AddressType extends AbstractType
         ]);
         $builder->add('phone', TextType::class, ['required' => false]);
         $builder->add('mobile', TextType::class, ['required' => false]);
+
+        $builder->add('isDefaultBillingAddress', CheckboxType::class, ['required' => false]);
+        $builder->add('isDefaultShippingAddress', CheckboxType::class, ['required' => false]);
     }
 }

@@ -103,10 +103,9 @@ class PaymentManagerTest extends TestCase
             })->shouldBeCalled();
 
         $this->eventDispatcher->dispatch(
-            Argument::containingString(PaymentPostUpdateEvent::class),
             Argument::type(PaymentPostUpdateEvent::class)
         )->will(function ($args) {
-            return $args[1];
+            return $args[0];
         })->shouldBeCalled();
 
         $manager = new PaymentManager($this->paymentRepository->reveal(), $this->eventDispatcher->reveal());
@@ -122,10 +121,10 @@ class PaymentManagerTest extends TestCase
         $action = PaymentSetAmountPaidAction::of();
 
         $this->eventDispatcher->dispatch(
-            Argument::containingString(PaymentSetAmountPaidAction::class),
-            Argument::type(PaymentUpdateEvent::class)
+            Argument::type(PaymentUpdateEvent::class),
+            Argument::containingString(PaymentSetAmountPaidAction::class)
         )->will(function ($args) {
-            return $args[1];
+            return $args[0];
         })->shouldBeCalled();
 
         $manager = new PaymentManager($this->paymentRepository->reveal(), $this->eventDispatcher->reveal());
@@ -141,10 +140,9 @@ class PaymentManagerTest extends TestCase
         $action = PaymentSetAmountPaidAction::of();
 
         $this->eventDispatcher->dispatch(
-            Argument::containingString(PaymentPostUpdateEvent::class),
             Argument::type(PaymentPostUpdateEvent::class)
         )->will(function ($args) {
-            return $args[1];
+            return $args[0];
         })->shouldBeCalled();
 
         $manager = new PaymentManager($this->paymentRepository->reveal(), $this->eventDispatcher->reveal());

@@ -1,6 +1,5 @@
 <?php
 /**
- * @author: Ylambers <yaron.lambers@commercetools.de>
  */
 
 namespace Commercetools\Symfony\CustomerBundle\DependencyInjection\Factory;
@@ -27,8 +26,8 @@ class SecurityFactory extends FormLoginFactory
         $provider = 'security.authentication_provider.commercetools.'.$id;
         $container
             ->setDefinition($provider, new ChildDefinition('security.authentication_provider.commercetools'))
-            ->replaceArgument(1, new Reference($userProviderId))
-            ->replaceArgument(3, $id);
+            ->replaceArgument('$userProvider', new Reference($userProviderId))
+            ->replaceArgument('$providerKey', $id);
 
         return $provider;
     }

@@ -1,0 +1,40 @@
+{% if navMenu.new %}
+<li class="dropdown menu-large">
+  <a href="{{ root.meta._links.new.href }}" class="dropdown-toggle" data-toggle="dropdown">
+    {{ 'header.new'|trans([], 'main') }}
+    <img class="mobile-plus-content visible-xs" src="{{ asset('bundles/example/img/plus79.png') }}" alt="{{ 'more'|trans([], 'main') }}">
+  </a>
+  {% include '@Example/partials/common/nav-menu-category.html.twig' with {'category':new} %}
+</li>
+{% endif %}
+
+{% for category in navMenu.categories %}
+  <li class="dropdown menu-large">
+{#    <a href="{{ path('_ctp_example_products_of_category', {'categoryId': category.id}) }}" class="dropdown-toggle {% if category.sale %}sale icon-ribbon{% endif %}" data-toggle="dropdown">#}
+    <a href="{{ category.url }}" class="dropdown-toggle {% if category.sale %}sale icon-ribbon{% endif %}" data-toggle="dropdown">
+      {{ category.text }}
+      <img class="mobile-plus-content visible-xs" src="{{ asset('bundles/example/img/plus79.png') }}" alt="{{ 'more'|trans([], 'main') }}">
+    </a>
+    {% include '@Example/partials/common/nav-menu-category.html.twig' with {'category':category} %}
+  </li>
+{% endfor %}
+
+{% if navMenu.brands %}
+<li class="dropdown menu-large">
+  <a href="{{ root.meta._links.brands.href }}" class="dropdown-toggle" data-toggle="dropdown">
+    {{ 'header.brands'|trans([], 'main') }}
+    <img class="mobile-plus-content visible-xs" src="{{ asset('bundles/example/img/plus79.png') }}" alt="{{ 'more'|trans([], 'main') }}">
+  </a>
+  {% include '@Example/partials/common/nav-menu-category.html.twig' with {'category':brands} %}
+</li>
+{% endif %}
+
+{% if navMenu.sale %}
+  <li class="dropdown menu-large">
+    <a href="{{ root.meta._links.sale.href }}" class="dropdown-toggle sale icon-ribbon" data-toggle="dropdown">
+      {{ 'header.sale'|trans([], 'main') }}
+      <img class="mobile-plus-content visible-xs" src="{{ asset('bundles/example/img/plus79.png') }}" alt="{{ 'more'|trans([], 'main') }}">
+    </a>
+    {% include '@Example/partials/common/nav-menu-category.html.twig' with {'category':sale} %}
+  </li>
+{% endif %}

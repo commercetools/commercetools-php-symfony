@@ -7,12 +7,12 @@ namespace Commercetools\Symfony\CartBundle\Model;
 use Commercetools\Core\Builder\Update\CartsActionBuilder;
 use Commercetools\Core\Model\Cart\Cart;
 use Commercetools\Core\Request\AbstractAction;
-use Commercetools\Symfony\CartBundle\Manager\CartManager;
+use Commercetools\Symfony\CartBundle\Manager\CartManagerInterface;
 
 class CartUpdateBuilder extends CartsActionBuilder
 {
     /**
-     * @var CartManager
+     * @var CartManagerInterface
      */
     private $manager;
 
@@ -23,10 +23,10 @@ class CartUpdateBuilder extends CartsActionBuilder
 
     /**
      * CartUpdate constructor.
-     * @param CartManager $manager
+     * @param CartManagerInterface $manager
      * @param Cart $cart
      */
-    public function __construct(Cart $cart, CartManager $manager)
+    public function __construct(Cart $cart, CartManagerInterface $manager)
     {
         $this->manager = $manager;
         $this->cart = $cart;

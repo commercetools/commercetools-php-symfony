@@ -5,18 +5,22 @@
 
 namespace Commercetools\Symfony\SetupBundle\Tests\Command;
 
-use Commercetools\Core\Client;
+use Commercetools\Core\Client\ApiClient;
+use Commercetools\Core\Error\ApiException;
 use Commercetools\Core\Model\Type\Type;
 use Commercetools\Core\Model\Type\TypeCollection;
 use Commercetools\Core\Model\Type\TypeDraft;
 use Commercetools\Core\Request\Types\TypeCreateRequest;
 use Commercetools\Core\Request\Types\TypeDeleteByKeyRequest;
+use Commercetools\Core\Response\AbstractApiResponse;
 use Commercetools\Core\Response\ErrorResponse;
 use Commercetools\Symfony\CtpBundle\Model\QueryParams;
 use Commercetools\Symfony\CtpBundle\Tests\TestKernel;
 use Commercetools\Symfony\SetupBundle\Command\CommercetoolsSyncCustomTypesFromLocalConfigCommand;
 use Commercetools\Symfony\SetupBundle\Model\Repository\SetupRepository;
 use Prophecy\Argument;
+use Psr\Http\Message\RequestInterface;
+use Psr\Http\Message\ResponseInterface;
 use Symfony\Bundle\FrameworkBundle\Console\Application;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Symfony\Component\Console\Tester\CommandTester;
@@ -43,7 +47,7 @@ class CommercetoolsSyncCustomTypesFromLocalConfigCommandTest extends KernelTestC
         )->shouldBeCalledOnce();
 
         /** @var Client $client */
-        $client = $this->prophesize(Client::class);
+        $client = $this->prophesize(ApiClient::class);
         $client->execute(Argument::any())->shouldNotBeCalled();
 
         $params = [
@@ -79,11 +83,15 @@ class CommercetoolsSyncCustomTypesFromLocalConfigCommandTest extends KernelTestC
             TypeCollection::of()
         )->shouldBeCalledOnce();
 
-        $client = $this->prophesize(Client::class);
-        $client->execute(Argument::that(function (TypeCreateRequest $request) {
-            static::assertInstanceOf(TypeDraft::class, $request->getObject());
-            return true;
-        }), Argument::is(null))->shouldBeCalled();
+        $client = $this->prophesize(ApiClient::class);
+        $client->execute(
+            Argument::that(function (TypeCreateRequest $request) {
+                static::assertInstanceOf(TypeDraft::class, $request->getObject());
+                return true;
+            }),
+            Argument::is(null),
+            Argument::is(["http_errors" => true])
+        )->shouldBeCalled();
 
         $params = [
             'bar' => [
@@ -118,11 +126,15 @@ class CommercetoolsSyncCustomTypesFromLocalConfigCommandTest extends KernelTestC
             TypeCollection::of()->add(Type::of()->setKey('bar')->setVersion(1))
         )->shouldBeCalledOnce();
 
-        $client = $this->prophesize(Client::class);
-        $client->execute(Argument::that(function (TypeDeleteByKeyRequest $request) {
-            static::assertSame('bar', $request->getKey());
-            return true;
-        }), Argument::is(null))->shouldBeCalled();
+        $client = $this->prophesize(ApiClient::class);
+        $client->execute(
+            Argument::that(function (TypeDeleteByKeyRequest $request) {
+                static::assertSame('bar', $request->getKey());
+                return true;
+            }),
+            Argument::is(null),
+            Argument::is(["http_errors" => true])
+        )->shouldBeCalled();
 
         $params = [];
 
@@ -144,8 +156,6 @@ class CommercetoolsSyncCustomTypesFromLocalConfigCommandTest extends KernelTestC
 
     public function testExecuteWithError()
     {
-        $errorResponse = $this->prophesize(ErrorResponse::class);
-
         /** @var SetupRepository $setupRepository */
         $setupRepository = $this->prophesize(SetupRepository::class);
         $setupRepository->getCustomTypes(
@@ -155,11 +165,24 @@ class CommercetoolsSyncCustomTypesFromLocalConfigCommandTest extends KernelTestC
             TypeCollection::of()->add(Type::of()->setKey('bar')->setVersion(1))
         )->shouldBeCalledOnce();
 
-        $client = $this->prophesize(Client::class);
-        $client->execute(Argument::that(function (TypeDeleteByKeyRequest $request) {
-            static::assertSame('bar', $request->getKey());
-            return true;
-        }), Argument::is(null))->willReturn($errorResponse->reveal())->shouldBeCalled();
+        $requestInterface = $this->prophesize(RequestInterface::class);
+        $responseInterface = $this->prophesize(ResponseInterface::class);
+        $responseInterface->getHeader('X-Correlation-ID')->willReturn(['aaa-111'])->shouldBeCalledOnce();
+        $responseInterface->getStatusCode()->willReturn(500)->shouldBeCalled();
+        $responseInterface->getBody()->shouldBeCalled();
+        $responseInterface->getReasonPhrase()->shouldBeCalled();
+
+        $client = $this->prophesize(ApiClient::class);
+        $client->execute(
+            Argument::that(function (TypeDeleteByKeyRequest $request) {
+                static::assertSame('bar', $request->getKey());
+                return true;
+            }),
+            Argument::is(null),
+            Argument::is(["http_errors" => true])
+        )->will(function () use ($requestInterface, $responseInterface) {
+                throw new ApiException('error', $requestInterface->reveal(), $responseInterface->reveal());
+        })->shouldBeCalled();
 
         $params = [];
 

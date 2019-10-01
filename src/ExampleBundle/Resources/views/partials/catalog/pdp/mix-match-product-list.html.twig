@@ -1,0 +1,39 @@
+{% for list_i in products.list %}
+  <div class="mix-match-product">
+    <div class="row">
+      <div class="col-xs-3">
+        <div class="mix-match-product-img">
+          <img class="img-responsive" src="{{ list_i.variant.image }}" alt="product image">
+        </div>
+      </div>
+      <div class="col-xs-9">
+        <div class="mix-match-product-description">
+          <div class="mix-match-product-name">{{ list_i.variant.name }}</div>
+          <div class="mix-match-product-sku">{{ list_i.variant.sku }}</div>
+          <div>
+            {% if list_i.variant.priceOld %}<span class="mix-match-product-oldprice">{{ list_i.variant.priceOld }}</span>{% endif %}
+            <span class="mix-match-product-price">{{ list_i.variant.price }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="mix-match-product-attributes">
+      <ul class="list-inline">
+        {% for attributes_i in list_i.attributes %}
+          <li>
+            <div class="mix-match-product-attr-title">{{ attributes_i.name }}</div>
+            <select name="{{ attributes_i.key }}" id="product-attribute-{{ attributes_i.key }}">
+              {% for list_i in attributes_i.list %}
+                <option value="{{ list_i.value }}">{{ list_i.label }}</option>
+              {% endfor %}
+            </select>
+          </li>
+        {% endfor %}
+      </ul>
+      <div class="mix-match-product-add-input">
+        <input id="" type="checkbox">
+        <label for="">{{ 'mixMatch.addProduct'|trans({}, 'mix-match') }}</label>
+      </div>
+    </div>
+  </div>
+{% endfor %}

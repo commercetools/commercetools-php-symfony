@@ -1,0 +1,10 @@
+<div class="jumbotron">
+    <p>
+        {% if category.ancestors %}
+            {% set parentCategory = getCategoryById('en', category.ancestors.current.id) %}
+            {{ parentCategory.name }}
+        {% endif %}
+    </p>
+    <h2>{{ category.name }}</h2>
+    <h3>{{ jumbotron.description|raw }}</h3>
+</div>

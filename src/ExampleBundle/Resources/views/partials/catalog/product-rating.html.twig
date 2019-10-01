@@ -1,0 +1,25 @@
+<fieldset class="rating">
+  <input type="radio" id="rating{{ index }}-star5" name="rating" value="5" {% if product.rating5 %}checked{% endif %}/>
+  <label for="rating{{ index }}-star5" title="{{ 'ratings.description5'|trans([], 'catalog') }}">
+    {{ 'ratings.text5'|trans([], 'catalog') }}
+  </label>
+  <input type="radio" id="rating{{ index }}-star4" name="rating" value="4" {% if product.rating4 %}checked{% endif %} />
+  <label for="rating{{ index }}-star4" title="{{ 'ratings.description4'|trans([], 'catalog') }}">
+    {{ 'ratings.text4'|trans([], 'catalog') }}
+  </label>
+  <input type="radio" id="rating{{ index }}-star3" name="rating" value="3" {% if product.rating3 %}checked{% endif %} />
+  <label for="rating{{ index }}-star3" title="{{ 'ratings.description3'|trans([], 'catalog') }}">
+    {{ 'ratings.text3'|trans([], 'catalog') }}
+  </label>
+  <input type="radio" id="rating{{ index }}-star2" name="rating" value="2" {% if product.rating2 %}checked{% endif %} />
+  <label for="rating{{ index }}-star2" title="{{ 'ratings.description2'|trans([], 'catalog') }}">
+    {{ 'ratings.text2'|trans([], 'catalog') }}
+  </label>
+  <input type="radio" id="rating{{ index }}-star1" name="rating" value="1" {% if product.rating1 %}checked{% endif %} />
+  <label for="rating{{ index }}-star1" title="{{ 'ratings.description1'|trans([], 'catalog') }}">
+    {{ 'ratings.text1'|trans([], 'catalog') }}
+  </label>
+</fieldset>
+<span class="star-rating-review">
+  <a href="{{ root.meta._links.addReview.href }}">{{ 'reviews.write'|trans([], 'catalog') }}</a>
+</span>

@@ -1,0 +1,47 @@
+<div class="col-md-4 col-md-offset-1 col-sm-6">
+{#  {{ dump(product) }}#}
+  {% include '@Example/partials/catalog/pdp/product-gallery.html.twig' with {'gallery':product.gallery} %}
+</div>
+<div class="col-sm-6 product-description">
+  <div class="row">
+    <div class="col-sm-12">
+      {% include '@Example/partials/catalog/product-name.html.twig' %}
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-sm-12">
+      {% include '@Example/partials/catalog/product-rating.html.twig' %}
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-sm-12">
+      <p class="pdp-product-description view-details more" data-text-show="{{ 'description.show'|trans([], 'catalog') }}" data-text-hide="{{ 'description.hide'|trans([], 'catalog') }}">{{ product.description|raw }}</p>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-sm-12">
+      {% include '@Example/partials/catalog/product-price.html.twig' %}
+    </div>
+  </div>
+  {% include '@Example/partials/catalog/add-to-cart.html.twig' %}
+  {% include '@Example/partials/catalog/add-to-wishlist-btn.html.twig' %}
+  {% include '@Example/partials/catalog/reserve-in-store-btn.html.twig' %}
+  <div class="row">
+    <div class="col-sm-12">
+      {% include '@Example/partials/catalog/product-availability.html.twig' with {'availability':product.availability} %}
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-sm-12">
+      <div class="panel-group panel-group-pdp" id="accordion-product-info" role="tablist" aria-multiselectable="true">
+        {% include '@Example/partials/catalog/pdp/product-details.html.twig' %}
+        {% include '@Example/partials/catalog/pdp/delivery-rates.html.twig' %}
+      </div>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-sm-12">
+      {% include '@Example/partials/catalog/pdp/product-social.html.twig' %}
+    </div>
+  </div>
+</div>

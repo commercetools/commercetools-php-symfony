@@ -5,7 +5,7 @@
 
 namespace Commercetools\Symfony\ReviewBundle\Event;
 
-use Symfony\Component\EventDispatcher\Event;
+use Symfony\Contracts\EventDispatcher\Event;
 
 class ReviewCreateEvent extends Event
 {

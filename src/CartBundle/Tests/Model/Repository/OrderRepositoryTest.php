@@ -5,7 +5,7 @@
 
 namespace Commercetools\Symfony\CartBundle\Tests\Model\Repository;
 
-use Commercetools\Core\Client;
+use Commercetools\Core\Client\ApiClient;
 use Commercetools\Core\Error\InvalidArgumentException;
 use Commercetools\Core\Model\Cart\Cart;
 use Commercetools\Core\Model\Order\Order;
@@ -18,6 +18,7 @@ use Commercetools\Core\Request\Orders\OrderUpdateRequest;
 use Commercetools\Core\Response\ResourceResponse;
 use Commercetools\Symfony\CartBundle\Model\Repository\OrderRepository;
 use Commercetools\Symfony\CtpBundle\Model\QueryParams;
+use Commercetools\Symfony\CtpBundle\Service\ContextFactory;
 use Commercetools\Symfony\CtpBundle\Service\MapperFactory;
 use Commercetools\Symfony\CustomerBundle\Security\User\User;
 use PHPUnit\Framework\TestCase;
@@ -30,18 +31,20 @@ class OrderRepositoryTest extends TestCase
     private $mapperFactory;
     private $response;
     private $client;
+    private $contextFactory;
 
     protected function setUp()
     {
         $this->cache = new ExternalAdapter();
         $this->mapperFactory = $this->prophesize(MapperFactory::class);
+        $this->contextFactory = $this->prophesize(ContextFactory::class);
 
         $this->response = $this->prophesize(ResourceResponse::class);
         $this->response->toArray()->willReturn([]);
         $this->response->getContext()->willReturn(null);
         $this->response->isError()->willReturn(false);
 
-        $this->client = $this->prophesize(Client::class);
+        $this->client = $this->prophesize(ApiClient::class);
     }
 
     private function getOrderRepository()
@@ -50,7 +53,8 @@ class OrderRepositoryTest extends TestCase
             false,
             $this->cache,
             $this->client->reveal(),
-            $this->mapperFactory->reveal()
+            $this->mapperFactory->reveal(),
+            $this->contextFactory->reveal()
         );
     }
 

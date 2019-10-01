@@ -1,0 +1,16 @@
+{#<form id="form-add-to-wishlist{{ index }}" method="post" name="add-to-wishlist" action="{{ root.meta._links.addToWishlist.href }}">#}
+{#    <input type="hidden" name="csrfToken" value="{{ csrf_token('csrfToken') }}"/>#}
+{#    <input type="hidden" name="productId" value="{{ product.productId }}">#}
+{#    <input type="hidden" name="variantId" value="{{ product.variantId }}">#}
+
+{#    <button type="submit" class="btn pdp-product-heart">#}
+{#    <span class="sr-only">{{ 'wishlist.add'|trans([], 'catalog') }}</span>#}
+{#  </button>#}
+{#</form>#}
+
+{% if addToShoppingListForm %}
+    {{ form_start(addToShoppingListForm) }}
+    {% form_theme addToShoppingListForm 'bootstrap_3_layout.html.twig' %}
+    {{ form_widget(addToShoppingListForm) }}
+    {{ form_end(addToShoppingListForm) }}
+{% endif %}

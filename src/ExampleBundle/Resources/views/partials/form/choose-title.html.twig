@@ -1,0 +1,10 @@
+<div class="{{ containerClass }}">
+  <span class="text-uppercase">{{ 'form.title'|trans([], 'main') }}</span><br>
+{#  <select id="{{ selectId }}" class="checkout-dropdown" name="{{ options.formFieldName }}{% if not options.formFieldName %}{{ selectName }}{% endif %}">#}
+{#    <option value="" selected>{{ 'form.choose'|trans([], 'main') }}</option>#}
+{#    {% for list_i in options.list %}#}
+{#    <option value="{{ list_i.value }}" {% if list_i.selected %}selected{% endif %}>{{ list_i.label }}</option>#}
+{#    {% endfor %}#}
+{#  </select>#}
+  {{ form_widget(formObject[formFieldName], {'attr': {'class': 'checkout-dropdown'}}) }}
+</div>

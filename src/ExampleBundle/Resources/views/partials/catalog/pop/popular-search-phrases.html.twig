@@ -1,0 +1,9 @@
+<div class="popular-search-phrases-title">{{ 'popularSearchPhrases.title'|trans([], 'no-search-result') }}</div>
+<div class="popular-search-phrases-wrapper">
+  <div class="popular-search-phrases">
+    {% for popular_i in content.phrases.popular %}
+      <div>{{ popular_i.text }}</div>
+    {% endfor %}
+  </div>
+</div>
+<div class="popular-products-title">{{ 'popularSearchPhrases.suggestionsTitle'|trans([], 'no-search-result') }}</div>
