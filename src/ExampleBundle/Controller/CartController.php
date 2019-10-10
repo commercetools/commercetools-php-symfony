@@ -4,8 +4,6 @@
 
 namespace Commercetools\Symfony\ExampleBundle\Controller;
 
-use Commercetools\Core\Model\Cart\LineItemDraft;
-use Commercetools\Core\Model\Cart\LineItemDraftCollection;
 use Commercetools\Core\Model\Cart\MyLineItemDraft;
 use Commercetools\Core\Model\Cart\MyLineItemDraftCollection;
 use Commercetools\Core\Model\ShoppingList\ShoppingListReference;
@@ -17,25 +15,13 @@ use Commercetools\Core\Request\Carts\Command\CartRemoveLineItemAction;
 use Commercetools\Symfony\CartBundle\Manager\MeCartManager;
 use Commercetools\Symfony\ExampleBundle\Entity\ProductEntity;
 use Commercetools\Symfony\ExampleBundle\Model\Form\Type\AddToCartType;
-use Commercetools\Symfony\CartBundle\Model\Repository\CartRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Commercetools\Core\Model\Cart\Cart;
-use Commercetools\Symfony\CartBundle\Manager\CartManager;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Session\SessionInterface;
-use Symfony\Component\Security\Core\User\UserInterface;
 
 class CartController extends AbstractController
 {
-    const CSRF_TOKEN_NAME = 'csrfToken';
-
-
-    /**
-     * @var CartManager
-     */
-    private $manager;
-
     /**
      * @var MeCartManager $meCartManager
      */
@@ -43,12 +29,10 @@ class CartController extends AbstractController
 
     /**
      * CartController constructor.
-     * @param CartManager $manager
      * @param MeCartManager $meCartManager
      */
-    public function __construct(CartManager $manager, MeCartManager $meCartManager)
+    public function __construct(MeCartManager $meCartManager)
     {
-        $this->manager = $manager;
         $this->meCartManager = $meCartManager;
     }
 
@@ -100,15 +84,14 @@ class CartController extends AbstractController
         return new RedirectResponse($redirectUrl);
     }
 
-    public function changeLineItemAction(Request $request, SessionInterface $session, UserInterface $user = null)
+    public function changeLineItemAction(Request $request)
     {
         $lineItemId = $request->get('lineItemId');
         $quantity = (int)$request->get('quantity');
-        $cartId = $session->get(CartRepository::CART_ID);
 
-        $cart = $this->manager->getCart($request->getLocale(), $cartId, $user, $session->getId());
+        $cart = $this->meCartManager->getCart($request->getLocale());
 
-        $cartBuilder = $this->manager->update($cart);
+        $cartBuilder = $this->meCartManager->update($cart);
         $cartBuilder->addAction(
             CartChangeLineItemQuantityAction::ofLineItemIdAndQuantity($lineItemId, $quantity)
         );
@@ -117,13 +100,12 @@ class CartController extends AbstractController
         return new RedirectResponse($this->generateUrl('_ctp_example_cart'));
     }
 
-    public function deleteLineItemAction(Request $request, SessionInterface $session, UserInterface $user = null)
+    public function deleteLineItemAction(Request $request)
     {
         $lineItemId = $request->get('lineItemId');
-        $cartId = $session->get(CartRepository::CART_ID);
-        $cart = $this->manager->getCart($request->getLocale(), $cartId, $user, $session->getId());
+        $cart = $this->meCartManager->getCart($request->getLocale());
 
-        $cartBuilder = $this->manager->update($cart);
+        $cartBuilder = $this->meCartManager->update($cart);
         $cartBuilder->addAction(CartRemoveLineItemAction::ofLineItemId($lineItemId));
 
         $cartBuilder->flush();
@@ -131,28 +113,21 @@ class CartController extends AbstractController
         return new RedirectResponse($this->generateUrl('_ctp_example_cart'));
     }
 
-    public function addShoppingListToCartAction(Request $request, SessionInterface $session, UserInterface $user = null)
+    public function addShoppingListToCartAction(Request $request)
     {
-        $cartId = $session->get(CartRepository::CART_ID);
-
         $shoppingListId = $request->get('shoppingListId');
         $shoppingList = ShoppingListReference::ofId($shoppingListId);
-
-        if (!is_null($cartId)) {
-            $cart = $this->manager->getCart($request->getLocale(), $cartId, $user, $session->getId());
-        } else {
+        $locale = $request->getLocale();
+        $cart = $this->meCartManager->getCart($locale);
+        if (is_null($cart)) {
             $countryCode = $this->getCountryFromConfig();
             $currency = $this->getCurrencyFromConfig();
             $location = Location::of()->setCountry(strtoupper($countryCode));
 
-            if (is_null($user)) {
-                $cart = $this->manager->createCartForUser($request->getLocale(), $currency, $location, null, null, $session->getId());
-            } else {
-                $cart = $this->manager->createCartForUser($request->getLocale(), $currency, $location, null, $user->getId());
-            }
+            $cart = $this->meCartManager->createCart($locale, $currency, $location);
         }
 
-        $cartBuilder = $this->manager->update($cart);
+        $cartBuilder = $this->meCartManager->update($cart);
         $cartBuilder->addShoppingList(CartAddShoppingListAction::ofShoppingList($shoppingList));
         $cartBuilder->flush();
 

@@ -37,8 +37,6 @@ class CartControllerTest extends WebTestCase
     private $myContainer;
     private $twig;
     private $ctpClient;
-    /** @var CartManager */
-    private $cartManager;
     /** @var MeCartManager */
     private $meCartManager;
 
@@ -48,7 +46,6 @@ class CartControllerTest extends WebTestCase
         $this->myContainer = $this->prophesize(ContainerInterface::class);
         $this->twig = $this->prophesize(Environment::class);
         $this->ctpClient = $this->prophesize(Client::class);
-        $this->cartManager = $this->prophesize(CartManager::class);
         $this->meCartManager = $this->prophesize(MeCartManager::class);
 
         $this->request->getLocale()->willReturn('en')->shouldBeCalledOnce();
@@ -62,7 +59,7 @@ class CartControllerTest extends WebTestCase
         $this->myContainer->has('twig')->willReturn(true)->shouldBeCalledOnce();
         $this->myContainer->get('twig')->willReturn($this->twig)->shouldBeCalledOnce();
 
-        $controller = new CartController($this->cartManager->reveal(), $this->meCartManager->reveal());
+        $controller = new CartController($this->meCartManager->reveal());
         $controller->setContainer($this->myContainer->reveal());
         $response = $controller->indexAction($this->request->reveal());
 
@@ -77,7 +74,7 @@ class CartControllerTest extends WebTestCase
         $this->myContainer->has('twig')->willReturn(true)->shouldBeCalledOnce();
         $this->myContainer->get('twig')->willReturn($this->twig)->shouldBeCalledOnce();
 
-        $controller = new CartController($this->cartManager->reveal(), $this->meCartManager->reveal());
+        $controller = new CartController($this->meCartManager->reveal());
         $controller->setContainer($this->myContainer->reveal());
         $response = $controller->indexAction($this->request->reveal());
 
@@ -124,7 +121,7 @@ class CartControllerTest extends WebTestCase
         $this->myContainer->has('parameter_bag')->shouldNotBeCalled();
         $this->myContainer->get('twig')->shouldNotBeCalled();
 
-        $controller = new CartController($this->cartManager->reveal(), $this->meCartManager->reveal());
+        $controller = new CartController($this->meCartManager->reveal());
         $controller->setContainer($this->myContainer->reveal());
         $response = $controller->addLineItemAction($this->request->reveal());
 
@@ -156,7 +153,7 @@ class CartControllerTest extends WebTestCase
         $this->myContainer->has('twig')->shouldNotBeCalled();
         $this->myContainer->get('twig')->shouldNotBeCalled();
 
-        $controller = new CartController($this->cartManager->reveal(), $this->meCartManager->reveal());
+        $controller = new CartController($this->meCartManager->reveal());
         $controller->setContainer($this->myContainer->reveal());
         $response = $controller->addLineItemAction($this->request->reveal());
 
@@ -202,7 +199,7 @@ class CartControllerTest extends WebTestCase
         $this->myContainer->has('twig')->shouldNotBeCalled();
         $this->myContainer->get('twig')->shouldNotBeCalled();
 
-        $controller = new CartController($this->cartManager->reveal(), $this->meCartManager->reveal());
+        $controller = new CartController($this->meCartManager->reveal());
         $controller->setContainer($this->myContainer->reveal());
         $response = $controller->addLineItemAction($this->request->reveal());
 
@@ -249,7 +246,7 @@ class CartControllerTest extends WebTestCase
         $this->myContainer->has('parameter_bag')->willReturn(true)->shouldBeCalled();
         $this->myContainer->get('parameter_bag')->willReturn($parameterBag->reveal())->shouldBeCalled();
 
-        $controller = new CartController($this->cartManager->reveal(), $this->meCartManager->reveal());
+        $controller = new CartController($this->meCartManager->reveal());
         $controller->setContainer($this->myContainer->reveal());
         $response = $controller->addLineItemAction($this->request->reveal());
 
@@ -258,12 +255,6 @@ class CartControllerTest extends WebTestCase
 
     public function testChangeLineItemAction()
     {
-        $session = $this->prophesize(Session::class);
-        $session->get('cart.id')->willReturn('cart-id-1')->shouldBeCalledOnce();
-        $session->getId()->willReturn('session-1')->shouldBeCalledOnce();
-
-        $user = $this->prophesize(CtpUser::class);
-
         $cart = Cart::of();
 
         $cartUpdateBuilder = $this->prophesize(CartUpdateBuilder::class);
@@ -272,8 +263,8 @@ class CartControllerTest extends WebTestCase
         })->shouldBeCalled();
         $cartUpdateBuilder->flush()->willReturn($cart)->shouldBeCalled();
 
-        $this->cartManager->getCart('en', 'cart-id-1', $user->reveal(), 'session-1')->willReturn(Cart::of())->shouldBeCalledOnce();
-        $this->cartManager->update(Argument::type(Cart::class))->willReturn($cartUpdateBuilder->reveal())->shouldBeCalledOnce();
+        $this->meCartManager->getCart('en')->willReturn(Cart::of())->shouldBeCalledOnce();
+        $this->meCartManager->update(Argument::type(Cart::class))->willReturn($cartUpdateBuilder->reveal())->shouldBeCalledOnce();
 
         $router = $this->prophesize(Router::class);
         $router->generate('_ctp_example_cart', [], 1)->willReturn('bar')->shouldBeCalledOnce();
@@ -286,21 +277,15 @@ class CartControllerTest extends WebTestCase
         $this->request->get('lineItemId')->willReturn('foo')->shouldBeCalledOnce();
         $this->request->get('quantity')->willReturn('2')->shouldBeCalledOnce();
 
-        $controller = new CartController($this->cartManager->reveal(), $this->meCartManager->reveal());
+        $controller = new CartController($this->meCartManager->reveal());
         $controller->setContainer($this->myContainer->reveal());
-        $response = $controller->changeLineItemAction($this->request->reveal(), $session->reveal(), $user->reveal());
+        $response = $controller->changeLineItemAction($this->request->reveal());
 
         $this->assertTrue($response->isRedirect());
     }
 
     public function testDeleteLineItemAction()
     {
-        $session = $this->prophesize(Session::class);
-        $session->get('cart.id')->willReturn('cart-id-1')->shouldBeCalledOnce();
-        $session->getId()->willReturn('session-1')->shouldBeCalledOnce();
-
-        $user = $this->prophesize(CtpUser::class);
-
         $cart = Cart::of();
 
         $cartUpdateBuilder = $this->prophesize(CartUpdateBuilder::class);
@@ -309,8 +294,8 @@ class CartControllerTest extends WebTestCase
         })->shouldBeCalled();
         $cartUpdateBuilder->flush()->willReturn($cart)->shouldBeCalled();
 
-        $this->cartManager->getCart('en', 'cart-id-1', $user->reveal(), 'session-1')->willReturn(Cart::of())->shouldBeCalledOnce();
-        $this->cartManager->update(Argument::type(Cart::class))->willReturn($cartUpdateBuilder->reveal())->shouldBeCalledOnce();
+        $this->meCartManager->getCart('en')->willReturn(Cart::of())->shouldBeCalledOnce();
+        $this->meCartManager->update(Argument::type(Cart::class))->willReturn($cartUpdateBuilder->reveal())->shouldBeCalledOnce();
 
         $router = $this->prophesize(Router::class);
         $router->generate('_ctp_example_cart', [], 1)->willReturn('bar')->shouldBeCalledOnce();
@@ -322,21 +307,15 @@ class CartControllerTest extends WebTestCase
 
         $this->request->get('lineItemId')->willReturn('foo')->shouldBeCalledOnce();
 
-        $controller = new CartController($this->cartManager->reveal(), $this->meCartManager->reveal());
+        $controller = new CartController($this->meCartManager->reveal());
         $controller->setContainer($this->myContainer->reveal());
-        $response = $controller->deleteLineItemAction($this->request->reveal(), $session->reveal(), $user->reveal());
+        $response = $controller->deleteLineItemAction($this->request->reveal());
 
         $this->assertTrue($response->isRedirect());
     }
 
     public function testAddShoppingListToCartAction()
     {
-        $session = $this->prophesize(Session::class);
-        $session->get('cart.id')->willReturn('cart-id-1')->shouldBeCalledOnce();
-        $session->getId()->willReturn('session-1')->shouldBeCalledOnce();
-
-        $user = $this->prophesize(CtpUser::class);
-
         $cart = Cart::of();
 
         $cartUpdateBuilder = $this->prophesize(CartUpdateBuilder::class);
@@ -345,8 +324,8 @@ class CartControllerTest extends WebTestCase
         })->shouldBeCalled();
         $cartUpdateBuilder->flush()->willReturn($cart)->shouldBeCalled();
 
-        $this->cartManager->getCart('en', 'cart-id-1', $user->reveal(), 'session-1')->willReturn(Cart::of())->shouldBeCalledOnce();
-        $this->cartManager->update(Argument::type(Cart::class))->willReturn($cartUpdateBuilder->reveal())->shouldBeCalledOnce();
+        $this->meCartManager->getCart('en')->willReturn(Cart::of())->shouldBeCalledOnce();
+        $this->meCartManager->update(Argument::type(Cart::class))->willReturn($cartUpdateBuilder->reveal())->shouldBeCalledOnce();
 
         $router = $this->prophesize(Router::class);
         $router->generate(Argument::type('string'), Argument::type('array'), 1)->willReturn('bar')->shouldBeCalledOnce();
@@ -358,21 +337,15 @@ class CartControllerTest extends WebTestCase
 
         $this->request->get('shoppingListId')->willReturn('foo')->shouldBeCalledOnce();
 
-        $controller = new CartController($this->cartManager->reveal(), $this->meCartManager->reveal());
+        $controller = new CartController($this->meCartManager->reveal());
         $controller->setContainer($this->myContainer->reveal());
-        $response = $controller->addShoppingListToCartAction($this->request->reveal(), $session->reveal(), $user->reveal());
+        $response = $controller->addShoppingListToCartAction($this->request->reveal());
 
         $this->assertTrue($response->isRedirect());
     }
 
     public function testAddShoppingListToCartActionWithoutCart()
     {
-        $session = $this->prophesize(Session::class);
-        $session->get('cart.id')->willReturn(null)->shouldBeCalledOnce();
-
-        $user = $this->prophesize(CtpUser::class);
-        $user->getId()->willReturn('user-1')->shouldBeCalledOnce();
-
         $cart = Cart::of();
 
         $cartUpdateBuilder = $this->prophesize(CartUpdateBuilder::class);
@@ -381,9 +354,11 @@ class CartControllerTest extends WebTestCase
         })->shouldBeCalled();
         $cartUpdateBuilder->flush()->willReturn($cart)->shouldBeCalled();
 
-        $this->cartManager->createCartForUser('en', 'EUR', Argument::type(Location::class), null, 'user-1')
+        $this->meCartManager->getCart('en')
+            ->willReturn(null)->shouldBeCalledOnce();
+        $this->meCartManager->createCart('en', 'EUR', Argument::type(Location::class))
             ->willReturn($cart)->shouldBeCalledOnce();
-        $this->cartManager->update(Argument::type(Cart::class))->willReturn($cartUpdateBuilder->reveal())->shouldBeCalledOnce();
+        $this->meCartManager->update(Argument::type(Cart::class))->willReturn($cartUpdateBuilder->reveal())->shouldBeCalledOnce();
 
         $router = $this->prophesize(Router::class);
         $router->generate(Argument::type('string'), Argument::type('array'), 1)->willReturn('bar')->shouldBeCalledOnce();
@@ -401,19 +376,15 @@ class CartControllerTest extends WebTestCase
 
         $this->request->get('shoppingListId')->willReturn('foo')->shouldBeCalledOnce();
 
-        $controller = new CartController($this->cartManager->reveal(), $this->meCartManager->reveal());
+        $controller = new CartController($this->meCartManager->reveal());
         $controller->setContainer($this->myContainer->reveal());
-        $response = $controller->addShoppingListToCartAction($this->request->reveal(), $session->reveal(), $user->reveal());
+        $response = $controller->addShoppingListToCartAction($this->request->reveal());
 
         $this->assertTrue($response->isRedirect());
     }
 
     public function testAddShoppingListToCartActionWithoutCartForAnonymous()
     {
-        $session = $this->prophesize(Session::class);
-        $session->get('cart.id')->willReturn(null)->shouldBeCalledOnce();
-        $session->getId()->willReturn('session-1')->shouldBeCalledOnce();
-
         $cart = Cart::of();
 
         $cartUpdateBuilder = $this->prophesize(CartUpdateBuilder::class);
@@ -422,9 +393,11 @@ class CartControllerTest extends WebTestCase
         })->shouldBeCalled();
         $cartUpdateBuilder->flush()->willReturn($cart)->shouldBeCalled();
 
-        $this->cartManager->createCartForUser('en', 'EUR', Argument::type(Location::class), null, null, 'session-1')
+        $this->meCartManager->getCart('en')
+            ->willReturn(null)->shouldBeCalledOnce();
+        $this->meCartManager->createCart('en', 'EUR', Argument::type(Location::class))
             ->willReturn($cart)->shouldBeCalledOnce();
-        $this->cartManager->update(Argument::type(Cart::class))->willReturn($cartUpdateBuilder->reveal())->shouldBeCalledOnce();
+        $this->meCartManager->update(Argument::type(Cart::class))->willReturn($cartUpdateBuilder->reveal())->shouldBeCalledOnce();
 
         $router = $this->prophesize(Router::class);
         $router->generate(Argument::type('string'), Argument::type('array'), 1)->willReturn('bar')->shouldBeCalledOnce();
@@ -442,9 +415,9 @@ class CartControllerTest extends WebTestCase
 
         $this->request->get('shoppingListId')->willReturn('foo')->shouldBeCalledOnce();
 
-        $controller = new CartController($this->cartManager->reveal(), $this->meCartManager->reveal());
+        $controller = new CartController($this->meCartManager->reveal());
         $controller->setContainer($this->myContainer->reveal());
-        $response = $controller->addShoppingListToCartAction($this->request->reveal(), $session->reveal());
+        $response = $controller->addShoppingListToCartAction($this->request->reveal());
 
         $this->assertTrue($response->isRedirect());
     }
