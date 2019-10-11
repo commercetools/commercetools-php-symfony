@@ -54,6 +54,7 @@ class CatalogController extends AbstractController
 
     public function indexAction(Request $request, $categoryId = null, $productTypeId = null, $categorySlug = null)
     {
+        $locale = $request->getLocale();
         $form = $this->createFormBuilder()
             ->add(
                 'search',
@@ -84,9 +85,6 @@ class CatalogController extends AbstractController
         $filter = null;
 
         if (!is_null($categoryId)) {
-            $categories = $this->catalogManager->getCategories($request->getLocale());
-            $category = $categories->getById($categoryId);
-
             $filter['filter.query'][] = Filter::ofName('categories.id')->setValue($categoryId);
         }
 
@@ -95,14 +93,13 @@ class CatalogController extends AbstractController
         }
 
         if (!is_null($categorySlug)) {
-            $categories = $this->catalogManager->getCategories($request->getLocale());
-            $category = $categories->getBySlug($categorySlug, $request->getLocale());
+            $category = $this->catalogManager->getCategoryBySlug($locale, $categorySlug);
 
             $filter['filter.query'][] = Filter::ofName('categories.id')->setValue($category->getId());
         }
 
         list($products, $facets, $offset) = $this->catalogManager->searchProducts(
-            $request->getLocale(),
+            $locale,
             self::ITEMS_PER_PAGE,
             $offset,
             self::DEFAULT_SORT,

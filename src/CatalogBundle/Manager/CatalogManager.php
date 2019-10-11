@@ -4,6 +4,7 @@
 
 namespace Commercetools\Symfony\CatalogBundle\Manager;
 
+use Commercetools\Core\Model\Category\Category;
 use Commercetools\Core\Model\Category\CategoryCollection;
 use Commercetools\Core\Model\Product\Product;
 use Commercetools\Core\Model\Product\ProductProjection;
@@ -138,6 +139,27 @@ class CatalogManager
     {
         return $this->repository->getCategories($locale, $params);
     }
+
+    /**
+     * @param string $locale
+     * @param string $id
+     * @return Category|null
+     */
+    public function getCategoryById($locale, string $id)
+    {
+        return $this->repository->getCategoryById($locale, $id);
+    }
+
+    /**
+     * @param string $locale
+     * @param string $slug
+     * @return Category|null
+     */
+    public function getCategoryBySlug($locale, string $slug)
+    {
+        return $this->repository->getCategoryBySlug($locale, $slug);
+    }
+
 
     /**
      * @param Product $product

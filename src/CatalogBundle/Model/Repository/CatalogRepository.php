@@ -7,6 +7,7 @@ namespace Commercetools\Symfony\CatalogBundle\Model\Repository;
 use Commercetools\Core\Builder\Request\RequestBuilder;
 use Commercetools\Core\Client\ApiClient;
 use Commercetools\Core\Error\InvalidArgumentException;
+use Commercetools\Core\Model\Category\Category;
 use Commercetools\Core\Model\Common\LocalizedString;
 use Commercetools\Core\Model\Product\Product;
 use Commercetools\Core\Model\Product\ProductDraft;
@@ -286,6 +287,34 @@ class CatalogRepository extends Repository
         }
 
         return $this->retrieve($cacheKey, $categoriesRequest, $locale);
+    }
+
+    /**
+     * @param $locale
+     * @param string $slug
+     * @return Category|null
+     */
+    public function getCategoryBySlug($locale, string $slug)
+    {
+        $categoriesRequest = RequestBuilder::of()->categories()->query()
+            ->where('slug(' . $locale . ' = "' . $slug . '")')->limit(1);
+
+        $categories = $this->executeRequest($categoriesRequest, $locale);
+        $category = $categories->current();
+
+        return $category;
+    }
+
+    /**
+     * @param $locale
+     * @param string $id
+     * @return Category|null
+     */
+    public function getCategoryById($locale, string $id)
+    {
+        $categoriesRequest = RequestBuilder::of()->categories()->getById($id);
+
+        return $this->executeRequest($categoriesRequest, $locale);
     }
 
     /**
