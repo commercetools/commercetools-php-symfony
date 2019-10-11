@@ -270,54 +270,6 @@ class CatalogRepository extends Repository
     }
 
     /**
-     * @param $locale
-     * @param QueryParams $params
-     * @return mixed
-     */
-    public function getCategories($locale, QueryParams $params = null)
-    {
-        $cacheKey = static::CATEGORIES_NAME . '-' . $locale;
-
-        $categoriesRequest = RequestBuilder::of()->categories()->query();
-
-        if (!is_null($params)) {
-            foreach ($params->getParams() as $param) {
-                $categoriesRequest->addParamObject($param);
-            }
-        }
-
-        return $this->retrieve($cacheKey, $categoriesRequest, $locale);
-    }
-
-    /**
-     * @param $locale
-     * @param string $slug
-     * @return Category|null
-     */
-    public function getCategoryBySlug($locale, string $slug)
-    {
-        $categoriesRequest = RequestBuilder::of()->categories()->query()
-            ->where('slug(' . $locale . ' = "' . $slug . '")')->limit(1);
-
-        $categories = $this->executeRequest($categoriesRequest, $locale);
-        $category = $categories->current();
-
-        return $category;
-    }
-
-    /**
-     * @param $locale
-     * @param string $id
-     * @return Category|null
-     */
-    public function getCategoryById($locale, string $id)
-    {
-        $categoriesRequest = RequestBuilder::of()->categories()->getById($id);
-
-        return $this->executeRequest($categoriesRequest, $locale);
-    }
-
-    /**
      * @param Product $product
      * @param array $actions
      * @param QueryParams|null $params

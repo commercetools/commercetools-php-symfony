@@ -15,6 +15,7 @@ use Commercetools\Symfony\CatalogBundle\Model\ProductUpdateBuilder;
 use Commercetools\Symfony\CatalogBundle\Event\ProductPostUpdateEvent;
 use Commercetools\Symfony\CatalogBundle\Event\ProductUpdateEvent;
 use Commercetools\Symfony\CatalogBundle\Model\Repository\CatalogRepository;
+use Commercetools\Symfony\CatalogBundle\Model\Repository\CategoryRepository;
 use Commercetools\Symfony\CtpBundle\Model\QueryParams;
 use Commercetools\Symfony\ExampleBundle\Controller\CatalogController;
 use Psr\Http\Message\UriInterface;
@@ -28,6 +29,11 @@ class CatalogManager
     private $repository;
 
     /**
+     * @var CategoryRepository
+     */
+    private $categoryRepository;
+
+    /**
      * @var EventDispatcherInterface
      */
     private $dispatcher;
@@ -37,9 +43,10 @@ class CatalogManager
      * @param CatalogRepository $repository
      * @param EventDispatcherInterface $dispatcher
      */
-    public function __construct(CatalogRepository $repository, EventDispatcherInterface $dispatcher)
+    public function __construct(CatalogRepository $repository, CategoryRepository $categoryRepository, EventDispatcherInterface $dispatcher)
     {
         $this->repository = $repository;
+        $this->categoryRepository = $categoryRepository;
         $this->dispatcher = $dispatcher;
     }
 
@@ -137,7 +144,7 @@ class CatalogManager
      */
     public function getCategories($locale, QueryParams $params = null)
     {
-        return $this->repository->getCategories($locale, $params);
+        return $this->categoryRepository->getCategories($locale, $params);
     }
 
     /**
@@ -147,7 +154,7 @@ class CatalogManager
      */
     public function getCategoryById($locale, string $id)
     {
-        return $this->repository->getCategoryById($locale, $id);
+        return $this->categoryRepository->getCategoryById($locale, $id);
     }
 
     /**
@@ -157,7 +164,7 @@ class CatalogManager
      */
     public function getCategoryBySlug($locale, string $slug)
     {
-        return $this->repository->getCategoryBySlug($locale, $slug);
+        return $this->categoryRepository->getCategoryBySlug($locale, $slug);
     }
 
 

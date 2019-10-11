@@ -284,6 +284,7 @@ class CatalogRepositoryTest extends TestCase
 
     public function testGetCategories()
     {
+        $this->markTestSkipped('to be refactored');
         $this->response->getStatusCode()->willReturn(200)->shouldBeCalledOnce();
 
         $this->client->execute(

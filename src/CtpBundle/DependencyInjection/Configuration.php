@@ -58,6 +58,7 @@ class Configuration implements ConfigurationInterface
                         ->booleanNode('states')->defaultFalse()->end()
                         ->booleanNode('customer')->defaultFalse()->end()
                         ->booleanNode('catalog')->defaultFalse()->end()
+                        ->booleanNode('category')->defaultFalse()->end()
                         ->booleanNode('cart')->defaultFalse()->end()
                         ->booleanNode('shipping_method')->defaultFalse()->end()
                         ->booleanNode('order')->defaultFalse()->end()

@@ -96,7 +96,7 @@ class CatalogControllerTest extends WebTestCase
         $this->myContainer->get('form.factory')->willReturn($formFactory->reveal())->shouldBeCalled();
 
         $this->request->getRequestUri()->shouldBeCalled();
-        $this->request->getLocale()->willReturn('en')->shouldBeCalledTimes(2);
+        $this->request->getLocale()->willReturn('en')->shouldBeCalledOnce();
 
         $parameterBag = $this->prophesize(ParameterBag::class);
         $parameterBag->get('commercetools.project_settings.countries')->willReturn(['DE'])->shouldBeCalledOnce();
@@ -104,10 +104,6 @@ class CatalogControllerTest extends WebTestCase
 
         $this->myContainer->has('parameter_bag')->willReturn(true)->shouldBeCalledTimes(2);
         $this->myContainer->get('parameter_bag')->willReturn($parameterBag->reveal())->shouldBeCalledTimes(2);
-
-        $this->catalogManager->getCategories(
-            Argument::is('en')
-        )->willReturn(CategoryCollection::of())->shouldBeCalledOnce();
 
         $this->catalogManager->searchProducts(
             "en",

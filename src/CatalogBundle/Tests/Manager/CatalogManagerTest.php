@@ -17,6 +17,7 @@ use Commercetools\Symfony\CatalogBundle\Event\ProductUpdateEvent;
 use Commercetools\Symfony\CatalogBundle\Manager\CatalogManager;
 use Commercetools\Symfony\CatalogBundle\Model\ProductUpdateBuilder;
 use Commercetools\Symfony\CatalogBundle\Model\Repository\CatalogRepository;
+use Commercetools\Symfony\CatalogBundle\Model\Repository\CategoryRepository;
 use PHPUnit\Framework\TestCase;
 use Prophecy\Argument;
 use Psr\Http\Message\UriInterface;
@@ -26,11 +27,16 @@ class CatalogManagerTest extends TestCase
 {
     /** @var CatalogRepository */
     private $repository;
+
+    /** @var CategoryRepository */
+    private $categoryRepository;
+
     private $eventDispatcher;
 
     public function setUp()
     {
         $this->repository = $this->prophesize(CatalogRepository::class);
+        $this->categoryRepository = $this->prophesize(CategoryRepository::class);
         $this->eventDispatcher = $this->prophesize(EventDispatcherInterface::class);
     }
 
@@ -39,7 +45,7 @@ class CatalogManagerTest extends TestCase
         $this->repository->getProductById('en', '123')
             ->willReturn(ProductProjection::of()->setId('123'))->shouldBeCalled();
 
-        $manager = new CatalogManager($this->repository->reveal(), $this->eventDispatcher->reveal());
+        $manager = new CatalogManager($this->repository->reveal(), $this->categoryRepository->reveal(), $this->eventDispatcher->reveal());
         $product = $manager->getProductById('en', '123');
 
         $this->assertInstanceOf(ProductProjection::class, $product);
@@ -53,7 +59,7 @@ class CatalogManagerTest extends TestCase
                 LocalizedString::ofLangAndText('en', 'slug-123')
             ))->shouldBeCalled();
 
-        $manager = new CatalogManager($this->repository->reveal(), $this->eventDispatcher->reveal());
+        $manager = new CatalogManager($this->repository->reveal(), $this->categoryRepository->reveal(), $this->eventDispatcher->reveal());
         $product = $manager->getProductBySlug('en', 'slug-123', 'EUR', 'DE');
 
         $this->assertInstanceOf(ProductProjection::class, $product);
@@ -66,7 +72,7 @@ class CatalogManagerTest extends TestCase
         $this->repository->getProductTypes('en', null)
             ->willReturn(ProductTypeCollection::of())->shouldBeCalled();
 
-        $manager = new CatalogManager($this->repository->reveal(), $this->eventDispatcher->reveal());
+        $manager = new CatalogManager($this->repository->reveal(), $this->categoryRepository->reveal(), $this->eventDispatcher->reveal());
         $product = $manager->getProductTypes('en');
 
         $this->assertInstanceOf(ProductTypeCollection::class, $product);
@@ -74,10 +80,10 @@ class CatalogManagerTest extends TestCase
 
     public function testGetCategories()
     {
-        $this->repository->getCategories('en', null)
+        $this->categoryRepository->getCategories('en', null)
             ->willReturn(CategoryCollection::of())->shouldBeCalled();
 
-        $manager = new CatalogManager($this->repository->reveal(), $this->eventDispatcher->reveal());
+        $manager = new CatalogManager($this->repository->reveal(), $this->categoryRepository->reveal(), $this->eventDispatcher->reveal());
         $product = $manager->getCategories('en');
 
         $this->assertInstanceOf(CategoryCollection::class, $product);
@@ -88,7 +94,7 @@ class CatalogManagerTest extends TestCase
         $this->repository->suggestProducts('en', 'foo', 5, 'EUR', 'DE')
             ->willReturn(ProductProjectionCollection::of())->shouldBeCalled();
 
-        $manager = new CatalogManager($this->repository->reveal(), $this->eventDispatcher->reveal());
+        $manager = new CatalogManager($this->repository->reveal(), $this->categoryRepository->reveal(), $this->eventDispatcher->reveal());
         $product = $manager->suggestProducts('en', 'foo', 5, 'EUR', 'DE');
 
         $this->assertInstanceOf(ProductProjectionCollection::class, $product);
@@ -124,7 +130,7 @@ class CatalogManagerTest extends TestCase
 
         $uri = $this->prophesize(UriInterface::class);
 
-        $manager = new CatalogManager($this->repository->reveal(), $this->eventDispatcher->reveal());
+        $manager = new CatalogManager($this->repository->reveal(), $this->categoryRepository->reveal(), $this->eventDispatcher->reveal());
         $products = $manager->searchProducts(
             'en',
             5,
@@ -140,7 +146,7 @@ class CatalogManagerTest extends TestCase
 
     public function testUpdate()
     {
-        $manager = new CatalogManager($this->repository->reveal(), $this->eventDispatcher->reveal());
+        $manager = new CatalogManager($this->repository->reveal(), $this->categoryRepository->reveal(), $this->eventDispatcher->reveal());
         $update = $manager->update(Product::of()->setKey('product-1'));
 
         $this->assertInstanceOf(ProductUpdateBuilder::class, $update);
@@ -161,7 +167,7 @@ class CatalogManagerTest extends TestCase
             return $args[0];
         })->shouldBeCalled();
 
-        $manager = new CatalogManager($this->repository->reveal(), $this->eventDispatcher->reveal());
+        $manager = new CatalogManager($this->repository->reveal(), $this->categoryRepository->reveal(), $this->eventDispatcher->reveal());
         $product = $manager->apply($product, []);
 
         $this->assertInstanceOf(Product::class, $product);
@@ -180,7 +186,7 @@ class CatalogManagerTest extends TestCase
             return $args[0];
         })->shouldBeCalled();
 
-        $manager = new CatalogManager($this->repository->reveal(), $this->eventDispatcher->reveal());
+        $manager = new CatalogManager($this->repository->reveal(), $this->categoryRepository->reveal(), $this->eventDispatcher->reveal());
 
         $actions = $manager->dispatch($product, $action);
         $this->assertCount(1, $actions);
@@ -198,7 +204,7 @@ class CatalogManagerTest extends TestCase
             return $args[0];
         })->shouldBeCalled();
 
-        $manager = new CatalogManager($this->repository->reveal(), $this->eventDispatcher->reveal());
+        $manager = new CatalogManager($this->repository->reveal(), $this->categoryRepository->reveal(), $this->eventDispatcher->reveal());
 
         $actions = $manager->dispatchPostUpdate($product, [$action]);
         $this->assertCount(1, $actions);

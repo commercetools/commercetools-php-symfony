@@ -10,8 +10,13 @@
             <argument key="$enableCache">%commercetools.cache.catalog%</argument>
             <argument key="$searchModel" type="service" id="Commercetools\Symfony\CatalogBundle\Model\Search" />
         </service>
+        <service id="Commercetools\Symfony\CatalogBundle\Model\Repository\CategoryRepository"
+                 parent="Commercetools\Symfony\CtpBundle\Model\Repository" public="true">
+            <argument key="$enableCache">%commercetools.cache.category%</argument>
+        </service>
         <service id="Commercetools\Symfony\CatalogBundle\Manager\CatalogManager" public="true">
             <argument id="Commercetools\Symfony\CatalogBundle\Model\Repository\CatalogRepository" type="service"/>
+            <argument id="Commercetools\Symfony\CatalogBundle\Model\Repository\CategoryRepository" type="service"/>
             <argument id="event_dispatcher" type="service"/>
         </service>
         <service id="Commercetools\Symfony\CatalogBundle\Model\Search">
