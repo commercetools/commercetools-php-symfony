@@ -13,6 +13,8 @@ use Commercetools\Symfony\ExampleBundle\Model\Form\Type\AddToShoppingListType;
 use Commercetools\Symfony\ExampleBundle\Model\View\ProductModel;
 use Commercetools\Symfony\ExampleBundle\Model\ViewData;
 use Commercetools\Symfony\ExampleBundle\Model\ViewDataCollection;
+use Commercetools\Symfony\ShoppingListBundle\Manager\MeShoppingListManager;
+use Commercetools\Symfony\ShoppingListBundle\Manager\ShoppingListManagerInterface;
 use GuzzleHttp\Psr7\Uri;
 use Commercetools\Symfony\ExampleBundle\Model\View\Url;
 use Psr\Cache\CacheItemPoolInterface;
@@ -44,9 +46,9 @@ class CatalogController extends AbstractController
     /**
      * CatalogController constructor.
      * @param CatalogManager|null $catalogManager
-     * @param ShoppingListManager|null $shoppingListManager
+     * @param MeShoppingListManager|null $shoppingListManager
      */
-    public function __construct(CatalogManager $catalogManager = null, ShoppingListManager $shoppingListManager = null)
+    public function __construct(CatalogManager $catalogManager = null, MeShoppingListManager $shoppingListManager = null)
     {
         $this->catalogManager = $catalogManager;
         $this->shoppingListManager = $shoppingListManager;
@@ -149,11 +151,7 @@ class CatalogController extends AbstractController
         }
 
         $shoppingListsIds = [];
-        if (is_null($user)) {
-            $shoppingLists = $this->shoppingListManager->getAllOfAnonymous($request->getLocale(), $session->getId());
-        } else {
-            $shoppingLists = $this->shoppingListManager->getAllOfCustomer($request->getLocale(), CustomerReference::ofId($user->getId()));
-        }
+        $shoppingLists = $this->shoppingListManager->getAllMyShoppingLists($request->getLocale());
 
         foreach ($shoppingLists as $shoppingList) {
             /** @var ShoppingList $shoppingList */
