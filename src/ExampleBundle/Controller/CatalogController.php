@@ -121,7 +121,7 @@ class CatalogController extends AbstractController
         ]);
     }
 
-    public function detailBySlugAction(Request $request, $slug, SessionInterface $session, UserInterface $user = null, CacheItemPoolInterface $cache = null)
+    public function detailBySlugAction(Request $request, $slug)
     {
         $country = $this->getCountryFromConfig();
         $currency = $this->getCurrencyFromConfig();
@@ -133,17 +133,17 @@ class CatalogController extends AbstractController
             return $this->render('@Example/no-search-result.html.twig');
         }
 
-        return $this->productDetails($request, $product, $session, $user, $cache);
+        return $this->productDetails($request, $product);
     }
 
-    public function detailByIdAction(Request $request, $id, SessionInterface $session, UserInterface $user = null)
+    public function detailByIdAction(Request $request, $id)
     {
         $product = $this->catalogManager->getProductById($request->getLocale(), $id);
 
-        return $this->productDetails($request, $product, $session, $user);
+        return $this->productDetails($request, $product);
     }
 
-    private function productDetails(Request $request, ProductProjection $product, SessionInterface $session, UserInterface $user = null, CacheItemPoolInterface $cache = null)
+    private function productDetails(Request $request, ProductProjection $product)
     {
         $variantIds = [];
         foreach ($product->getAllVariants() as $variant) {

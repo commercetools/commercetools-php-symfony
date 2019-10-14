@@ -24,6 +24,7 @@ use Commercetools\Symfony\CtpBundle\Model\QueryParams;
 use Commercetools\Symfony\CustomerBundle\Security\User\CtpUser;
 use Commercetools\Symfony\ExampleBundle\Controller\CatalogController;
 use Commercetools\Symfony\ExampleBundle\Entity\ProductEntity;
+use Commercetools\Symfony\ShoppingListBundle\Manager\MeShoppingListManager;
 use Commercetools\Symfony\ShoppingListBundle\Manager\ShoppingListManager;
 use GuzzleHttp\Psr7\Uri;
 use Prophecy\Argument;
@@ -127,9 +128,8 @@ class CatalogControllerTest extends WebTestCase
     public function testDetailBySlugAction()
     {
         $session = $this->prophesize(SessionInterface::class);
-        $shoppingListManager = $this->prophesize(ShoppingListManager::class);
+        $shoppingListManager = $this->prophesize(MeShoppingListManager::class);
 
-        $session->getId()->willReturn('session-id-1')->shouldBeCalledOnce();
 
         $this->request->getLocale()->willReturn('en')->shouldBeCalled();
 
@@ -175,11 +175,11 @@ class CatalogControllerTest extends WebTestCase
         $this->catalogManager->getProductBySlug('en', 'prod-1', 'EUR', 'DE')
             ->willReturn($productProjection)->shouldBeCalledOnce();
 
-        $shoppingListManager->getAllOfAnonymous('en', 'session-id-1')->willReturn([])->shouldBeCalledOnce();
+        $shoppingListManager->getAllMyShoppingLists('en')->willReturn([])->shouldBeCalledOnce();
 
         $controller = new CatalogController($this->catalogManager->reveal(), $shoppingListManager->reveal());
         $controller->setContainer($this->myContainer->reveal());
-        $controller->detailBySlugAction($this->request->reveal(), 'prod-1', $session->reveal());
+        $controller->detailBySlugAction($this->request->reveal(), 'prod-1');
     }
 
 
@@ -191,7 +191,7 @@ class CatalogControllerTest extends WebTestCase
         $session = $this->prophesize(Session::class);
         $session->getFlashBag()->willReturn($flashBag->reveal())->shouldBeCalled();
 
-        $shoppingListManager = $this->prophesize(ShoppingListManager::class);
+        $shoppingListManager = $this->prophesize(MeShoppingListManager::class);
 
         $this->request->getLocale()->willReturn('en')->shouldBeCalled();
 
@@ -213,7 +213,7 @@ class CatalogControllerTest extends WebTestCase
 
         $controller = new CatalogController($this->catalogManager->reveal(), $shoppingListManager->reveal());
         $controller->setContainer($this->myContainer->reveal());
-        $response = $controller->detailBySlugAction($this->request->reveal(), 'prod-1', $session->reveal());
+        $response = $controller->detailBySlugAction($this->request->reveal(), 'prod-1');
 
         $this->assertTrue($response->isOk());
     }
@@ -221,7 +221,7 @@ class CatalogControllerTest extends WebTestCase
     public function testDetailByIdAction()
     {
         $session = $this->prophesize(SessionInterface::class);
-        $shoppingListManager = $this->prophesize(ShoppingListManager::class);
+        $shoppingListManager = $this->prophesize(MeShoppingListManager::class);
         $this->myContainer->has('parameter_bag')->willReturn(false)->shouldBeCalledOnce();
 
         $user = $this->prophesize(CtpUser::class);
@@ -254,11 +254,11 @@ class CatalogControllerTest extends WebTestCase
         $this->myContainer->get('form.factory')->willReturn($formFactory->reveal())->shouldBeCalled();
 
         $this->catalogManager->getProductById('en', 'prod-1')->willReturn(ProductProjection::of())->shouldBeCalledOnce();
-        $shoppingListManager->getAllOfCustomer('en', Argument::type(CustomerReference::class))->willReturn([])->shouldBeCalledOnce();
+        $shoppingListManager->getAllMyShoppingLists('en')->willReturn([])->shouldBeCalledOnce();
 
         $controller = new CatalogController($this->catalogManager->reveal(), $shoppingListManager->reveal());
         $controller->setContainer($this->myContainer->reveal());
-        $response = $controller->detailByIdAction($this->request->reveal(), 'prod-1', $session->reveal(), $user->reveal());
+        $response = $controller->detailByIdAction($this->request->reveal(), 'prod-1');
 
         $this->assertTrue($response->isOk());
     }
