@@ -220,12 +220,8 @@ class CatalogControllerTest extends WebTestCase
 
     public function testDetailByIdAction()
     {
-        $session = $this->prophesize(SessionInterface::class);
         $shoppingListManager = $this->prophesize(MeShoppingListManager::class);
         $this->myContainer->has('parameter_bag')->willReturn(false)->shouldBeCalledOnce();
-
-        $user = $this->prophesize(CtpUser::class);
-        $user->getId()->willReturn('user-1')->shouldBeCalledOnce();
 
         $this->request->getLocale()->willReturn('en')->shouldBeCalled();
 
