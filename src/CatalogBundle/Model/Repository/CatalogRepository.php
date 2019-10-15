@@ -22,8 +22,14 @@ use Commercetools\Symfony\CtpBundle\Model\Repository;
 use Commercetools\Symfony\CatalogBundle\Model\Search;
 use Commercetools\Symfony\CtpBundle\Service\ContextFactory;
 use Commercetools\Symfony\CtpBundle\Service\MapperFactory;
+use GuzzleHttp\Promise\PromiseInterface;
+use GuzzleHttp\Promise\RejectedPromise;
 use Psr\Cache\CacheItemPoolInterface;
+use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\UriInterface;
+use function GuzzleHttp\Promise\promise_for;
+use function GuzzleHttp\Promise\rejection_for;
+use function GuzzleHttp\Promise\settle;
 
 class CatalogRepository extends Repository
 {
@@ -80,6 +86,32 @@ class CatalogRepository extends Repository
 
     /**
      * @param string $locale
+     * @param string $slug
+     * @param string $currency
+     * @param string $country
+     * @return PromiseInterface|null
+     */
+    public function getProductBySlugAsync($locale, $slug, $currency, $country)
+    {
+        $productRequest = RequestBuilder::of()->productProjections()
+            ->getBySlug($slug, $this->context->getLanguages())
+            ->country($country)
+            ->currency($currency);
+
+        $promise = $this->executeRequestAsync($productRequest);
+
+        return $promise->then(
+            function (ResponseInterface $response) use ($productRequest, $locale) {
+                $product = $productRequest->mapFromResponse($response, $this->getMapper($locale));
+                if (is_null($product)) {
+                    return rejection_for('not_found');
+                }
+                return $product;
+            });
+    }
+
+    /**
+     * @param string $locale
      * @param string $id
      * @return ProductProjection
      */
@@ -92,6 +124,32 @@ class CatalogRepository extends Repository
         $product = $this->retrieve($cacheKey, $productRequest, $locale);
 
         return $product;
+    }
+
+    /**
+     * @param string $locale
+     * @param string $id
+     * @param string $currency
+     * @param string $country
+     * @return PromiseInterface|null
+     */
+    public function getProductByIdAsync($locale, $id, $currency, $country)
+    {
+        $productRequest = RequestBuilder::of()->productProjections()
+            ->getById($id)
+            ->country($country)
+            ->currency($currency);
+
+        $promise = $this->executeRequestAsync($productRequest);
+
+        return $promise->then(
+            function (ResponseInterface $response) use ($productRequest, $locale) {
+                $product = $productRequest->mapFromResponse($response, $this->getMapper($locale));
+                if (is_null($product)) {
+                    return rejection_for('not_found');
+                }
+                return $product;
+            });
     }
 
     /**

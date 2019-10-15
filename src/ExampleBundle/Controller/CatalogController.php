@@ -2,8 +2,10 @@
 
 namespace  Commercetools\Symfony\ExampleBundle\Controller;
 
+use Commercetools\Core\Model\Product\Product;
 use Commercetools\Core\Model\Product\ProductProjection;
 use Commercetools\Core\Model\Product\Search\Filter;
+use Commercetools\Core\Model\ShoppingList\ShoppingListCollection;
 use Commercetools\Symfony\CatalogBundle\Manager\CatalogManager;
 use Commercetools\Symfony\CtpBundle\Model\QueryParams;
 use Commercetools\Symfony\ExampleBundle\Entity\ProductEntity;
@@ -15,6 +17,7 @@ use Commercetools\Symfony\ExampleBundle\Model\ViewData;
 use Commercetools\Symfony\ExampleBundle\Model\ViewDataCollection;
 use Commercetools\Symfony\ShoppingListBundle\Manager\MeShoppingListManager;
 use Commercetools\Symfony\ShoppingListBundle\Manager\ShoppingListManagerInterface;
+use GuzzleHttp\Promise\PromiseInterface;
 use GuzzleHttp\Psr7\Uri;
 use Commercetools\Symfony\ExampleBundle\Model\View\Url;
 use Psr\Cache\CacheItemPoolInterface;
@@ -30,6 +33,7 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Commercetools\Core\Model\Customer\CustomerReference;
 use Commercetools\Core\Model\ShoppingList\ShoppingList;
+use function GuzzleHttp\Promise\promise_for;
 use function GuzzleHttp\Psr7\parse_query;
 
 class CatalogController extends AbstractController
@@ -126,24 +130,39 @@ class CatalogController extends AbstractController
         $country = $this->getCountryFromConfig();
         $currency = $this->getCurrencyFromConfig();
 
-        try {
-            $product = $this->catalogManager->getProductBySlug($request->getLocale(), $slug, $currency, $country);
-        } catch (NotFoundHttpException $e) {
-            $this->addFlash('error', sprintf('Cannot find product: %s', $slug));
-            return $this->render('@Example/no-search-result.html.twig');
-        }
+        $shoppingLists = $this->shoppingListManager->getAllMyShoppingListsAsync($request->getLocale());
 
-        return $this->productDetails($request, $product);
+        $promise = $this->catalogManager->getProductBySlugAsync($request->getLocale(), $slug, $currency, $country)->then(
+            function (ProductProjection $product) use ($request, $shoppingLists) {
+                return $this->productDetails($request, $product, $shoppingLists);
+            },
+            function () use ($slug) {
+                $this->addFlash('error', sprintf('Cannot find product: %s', $slug));
+                return $this->render( '@Example/no-search-result.html.twig');
+            });
+
+        return $promise->wait();
     }
 
     public function detailByIdAction(Request $request, $id)
     {
-        $product = $this->catalogManager->getProductById($request->getLocale(), $id);
+        $country = $this->getCountryFromConfig();
+        $currency = $this->getCurrencyFromConfig();
 
-        return $this->productDetails($request, $product);
+        $shoppingLists = $this->shoppingListManager->getAllMyShoppingListsAsync($request->getLocale());
+        $promise = $this->catalogManager->getProductByIdAsync($request->getLocale(), $id, $currency, $country)->then(
+            function (ProductProjection $product) use ($request, $shoppingLists) {
+                return $this->productDetails($request, $product, $shoppingLists);
+            },
+            function () use ($id) {
+                $this->addFlash('error', sprintf('Cannot find product: %s', $id));
+                return $this->render( '@Example/no-search-result.html.twig');
+            });
+
+        return $promise->wait();
     }
 
-    private function productDetails(Request $request, ProductProjection $product)
+    private function productDetails(Request $request, ProductProjection $product, PromiseInterface $shoppingListsPromise)
     {
         $variantIds = [];
         foreach ($product->getAllVariants() as $variant) {
@@ -151,9 +170,7 @@ class CatalogController extends AbstractController
         }
 
         $shoppingListsIds = [];
-        $shoppingLists = $this->shoppingListManager->getAllMyShoppingLists($request->getLocale());
-
-        foreach ($shoppingLists as $shoppingList) {
+        foreach ($shoppingListsPromise->wait() as $shoppingList) {
             /** @var ShoppingList $shoppingList */
             $shoppingListsIds[(string)$shoppingList->getName()] = $shoppingList->getId();
         }

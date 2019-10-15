@@ -4,6 +4,7 @@
 
 namespace Commercetools\Symfony\CtpBundle\Model;
 
+use Commercetools\Core\Client\ApiClient;
 use Commercetools\Core\Model\Common\Context;
 use Commercetools\Core\Model\MapperInterface;
 use Commercetools\Core\Request\AbstractApiRequest;
@@ -11,7 +12,7 @@ use Commercetools\Core\Request\ClientRequestInterface;
 use Commercetools\Core\Request\QueryAllRequestInterface;
 use Commercetools\Symfony\CtpBundle\Service\ContextFactory;
 use Commercetools\Symfony\CtpBundle\Service\MapperFactory;
-use GuzzleHttp\Client;
+use GuzzleHttp\Promise\PromiseInterface;
 use Psr\Cache\CacheItemPoolInterface;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
@@ -32,7 +33,7 @@ class MeRepository
     protected $cache;
 
     /**
-     * @var Client
+     * @var ApiClient
      */
     protected $client;
 
@@ -50,10 +51,10 @@ class MeRepository
      * Repository constructor.
      * @param string|bool $enableCache
      * @param CacheItemPoolInterface $cache
-     * @param Client $client
+     * @param ApiClient $client
      * @param MapperFactory $mapperFactory
      */
-    public function __construct($enableCache, CacheItemPoolInterface $cache, Client $client, MapperFactory $mapperFactory, ContextFactory $contextFactory)
+    public function __construct($enableCache, CacheItemPoolInterface $cache, ApiClient $client, MapperFactory $mapperFactory, ContextFactory $contextFactory)
     {
         if (is_string($enableCache)) {
             $enableCache = ($enableCache == "true");
@@ -66,7 +67,7 @@ class MeRepository
     }
 
     /**
-     * @return Client
+     * @return ApiClient
      */
     protected function getClient()
     {
@@ -171,7 +172,7 @@ class MeRepository
             $result = unserialize($cachedData->get());
             $result->setContext($this->context);
         } else {
-            $response = $request->executeWithClient($this->client);
+            $response = $this->client->execute($request);
             if ($response->isError() || is_null($response->toObject())) {
                 $this->store($cacheKey, '', $ttl);
                 throw new NotFoundHttpException("resource not found");
@@ -210,7 +211,7 @@ class MeRepository
             }
         }
 
-        $response = $this->client->send($request->httpRequest());
+        $response = $this->client->execute($request);
 
         $mappedResponse = $request->mapFromResponse(
             $response,
@@ -218,5 +219,22 @@ class MeRepository
         );
 
         return $mappedResponse;
+    }
+
+    /**
+     * @param ClientRequestInterface $request
+     * @param string $locale
+     * @param QueryParams|null $params
+     * @return PromiseInterface
+     */
+    protected function executeRequestAsync(ClientRequestInterface $request,QueryParams $params = null)
+    {
+        if (!is_null($params)) {
+            foreach ($params->getParams() as $param) {
+                $request->addParamObject($param);
+            }
+        }
+
+        return $this->client->executeAsync($request);
     }
 }

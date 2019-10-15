@@ -13,6 +13,7 @@ use Commercetools\Core\Request\ClientRequestInterface;
 use Commercetools\Core\Request\QueryAllRequestInterface;
 use Commercetools\Symfony\CtpBundle\Service\ContextFactory;
 use Commercetools\Symfony\CtpBundle\Service\MapperFactory;
+use GuzzleHttp\Promise\PromiseInterface;
 use Psr\Cache\CacheItemPoolInterface;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
@@ -224,5 +225,22 @@ class Repository
         );
 
         return $mappedResponse;
+    }
+
+    /**
+     * @param ClientRequestInterface $request
+     * @param string $locale
+     * @param QueryParams|null $params
+     * @return PromiseInterface
+     */
+    protected function executeRequestAsync(ClientRequestInterface $request, QueryParams $params = null)
+    {
+        if (!is_null($params)) {
+            foreach ($params->getParams() as $param) {
+                $request->addParamObject($param);
+            }
+        }
+
+        return $this->client->executeAsync($request);
     }
 }

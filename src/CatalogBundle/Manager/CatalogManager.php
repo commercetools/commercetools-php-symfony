@@ -18,6 +18,7 @@ use Commercetools\Symfony\CatalogBundle\Model\Repository\CatalogRepository;
 use Commercetools\Symfony\CatalogBundle\Model\Repository\CategoryRepository;
 use Commercetools\Symfony\CtpBundle\Model\QueryParams;
 use Commercetools\Symfony\ExampleBundle\Controller\CatalogController;
+use GuzzleHttp\Promise\PromiseInterface;
 use Psr\Http\Message\UriInterface;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
@@ -94,6 +95,18 @@ class CatalogManager
     }
 
     /**
+     * @param $locale
+     * @param $slug
+     * @param $currency
+     * @param $country
+     * @return PromiseInterface|null
+     */
+    public function getProductBySlugAsync($locale, $slug, $currency, $country)
+    {
+        return $this->repository->getProductBySlugAsync($locale, $slug, $currency, $country);
+    }
+
+    /**
      * @param string $locale
      * @param string $term
      * @param int $limit
@@ -114,6 +127,16 @@ class CatalogManager
     public function getProductById($locale, $id)
     {
         return $this->repository->getProductById($locale, $id);
+    }
+
+    /**
+     * @param string $locale
+     * @param string $id
+     * @return PromiseInterface|null
+     */
+    public function getProductByIdAsync($locale, $id, $currency, $country)
+    {
+        return $this->repository->getProductByIdAsync($locale, $id, $currency, $country);
     }
 
     /**

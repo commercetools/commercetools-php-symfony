@@ -33,9 +33,9 @@
         {% include '@Example/partials/catalog/suggestions.html.twig' %}
       </div>
       <hr class="hr">
-      {{ render(controller(
-        'Commercetools\\Symfony\\ExampleBundle\\Controller\\ReviewController::showReviewsForProductAction', { 'productId' : product.id }
-      )) }}
+{#      {{ render(controller(#}
+{#        'Commercetools\\Symfony\\ExampleBundle\\Controller\\ReviewController::showReviewsForProductAction', { 'productId' : product.id }#}
+{#      )) }}#}
     </div>
   </div>
   {% include '@Example/partials/common/wishlist.html.twig' with {'wishlist':content.wishlist} %}

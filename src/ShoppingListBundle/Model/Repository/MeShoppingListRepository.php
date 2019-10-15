@@ -8,8 +8,10 @@ use Commercetools\Core\Builder\Request\RequestBuilder;
 use Commercetools\Core\Model\Common\LocalizedString;
 use Commercetools\Core\Model\ShoppingList\MyShoppingListDraft;
 use Commercetools\Core\Model\ShoppingList\ShoppingList;
+use Commercetools\Core\Model\ShoppingList\ShoppingListCollection;
 use Commercetools\Symfony\CtpBundle\Model\MeRepository;
 use Commercetools\Symfony\CtpBundle\Model\QueryParams;
+use GuzzleHttp\Promise\PromiseInterface;
 
 class MeShoppingListRepository extends MeRepository
 {
@@ -36,6 +38,20 @@ class MeShoppingListRepository extends MeRepository
         $request = RequestBuilder::of()->me()->shoppingLists()->query();
 
         return $this->executeRequest($request, $locale, $params);
+    }
+
+    /**
+     * @param $locale
+     * @param QueryParams|null $params
+     * @return PromiseInterface
+     */
+    public function getAllMyShoppingListsAsync($locale, QueryParams $params = null)
+    {
+        $request = RequestBuilder::of()->me()->shoppingLists()->query();
+
+        return $this->executeRequestAsync($request, $params)->then(function ($response) use ($request, $locale) {
+            return $request->mapFromResponse($response, $this->getMapper($locale));
+        }, function () { return ShoppingListCollection::of(); });
     }
 
     /**

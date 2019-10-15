@@ -11,6 +11,7 @@ use Commercetools\Symfony\ShoppingListBundle\Event\ShoppingListUpdateEvent;
 use Commercetools\Symfony\ShoppingListBundle\Event\ShoppingListPostUpdateEvent;
 use Commercetools\Symfony\ShoppingListBundle\Model\Repository\MeShoppingListRepository;
 use Commercetools\Symfony\ShoppingListBundle\Model\ShoppingListUpdateBuilder;
+use GuzzleHttp\Promise\PromiseInterface;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
 class MeShoppingListManager implements ShoppingListManagerInterface
@@ -55,6 +56,16 @@ class MeShoppingListManager implements ShoppingListManagerInterface
     public function getAllMyShoppingLists($locale, QueryParams $params = null)
     {
         return $this->repository->getAllMyShoppingLists($locale, $params);
+    }
+
+    /**
+     * @param string $locale
+     * @param QueryParams|null $params
+     * @return PromiseInterface
+     */
+    public function getAllMyShoppingListsAsync($locale, QueryParams $params = null)
+    {
+        return $this->repository->getAllMyShoppingListsAsync($locale, $params);
     }
 
     /**
