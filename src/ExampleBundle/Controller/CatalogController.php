@@ -169,12 +169,6 @@ class CatalogController extends AbstractController
             $variantIds[$variant->getSku()] = $variant->getId();
         }
 
-        $shoppingListsIds = [];
-        foreach ($shoppingListsPromise->wait() as $shoppingList) {
-            /** @var ShoppingList $shoppingList */
-            $shoppingListsIds[(string)$shoppingList->getName()] = $shoppingList->getId();
-        }
-
         $productEntity = new ProductEntity();
         $productEntity->setProductId($product->getId())
             ->setSlug((string)$product->getSlug())
@@ -182,6 +176,12 @@ class CatalogController extends AbstractController
 
         $addToCartForm = $this->createForm(AddToCartType::class, $productEntity, ['action' => $this->generateUrl('_ctp_example_add_lineItem')]);
         $addToCartForm->handleRequest($request);
+
+        $shoppingListsIds = [];
+        foreach ($shoppingListsPromise->wait() as $shoppingList) {
+            /** @var ShoppingList $shoppingList */
+            $shoppingListsIds[(string)$shoppingList->getName()] = $shoppingList->getId();
+        }
 
         $productToShoppingList = new ProductToShoppingList();
         $productToShoppingList->setProductId($product->getId())

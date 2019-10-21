@@ -7,7 +7,7 @@
             <argument type="service" id="profiler" />
             <argument type="service" id="twig" />
         </service>
-        <service id="commercetools.profiler.extension" class="Commercetools\Symfony\CtpBundle\Profiler\CommercetoolsProfilerExtension" public="false">
+        <service id="commercetools.profiler.extension" class="Commercetools\Symfony\CtpBundle\Profiler\CommercetoolsProfilerExtension" public="true">
             <argument type="service" id="commercetools.profile" />
             <argument type="service" id="debug.stopwatch" on-invalid="null" />
         </service>
