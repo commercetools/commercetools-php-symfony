@@ -8,15 +8,16 @@
         <service id="GuzzleHttp\Client" alias="commercetools.api.client" />
         <service id="Commercetools\Core\Client\ApiClient" alias="commercetools.api.client" />
         <service id="commercetools.api.client" class="GuzzleHttp\Client">
-            <factory service="commercetools.client.factory" method="build" />
-        </service>
-        <service id="commercetools.client.factory" class="Commercetools\Symfony\CtpBundle\Service\ClientFactory">
+            <factory service="commercetools.http.clientfactory" method="createClient" />
             <argument type="service" id="commercetools.client.config" />
-            <argument type="service" id="commercetools.context.factory" />
-            <argument type="service" id="commercetools.cache" />
-            <argument type="service" id="commercetools.locale.converter" />
             <argument type="service" id="commercetools.logger" />
-            <argument type="service" id="commercetools.profiler.extension" on-invalid="null"/>
+            <argument type="service" id="commercetools.cache" />
+            <argument>null</argument>
+            <argument>null</argument>
+            <argument type="service" id="commercetools.context"/>
+        </service>
+        <service id="commercetools.context" class="Commercetools\Core\Model\Common\Context">
+            <factory service="commercetools.context.factory" method="build"/>
         </service>
         <service id="commercetools.context.factory" class="Commercetools\Symfony\CtpBundle\Service\ContextFactory">
             <argument>%commercetools.fallback_languages%</argument>
@@ -26,16 +27,11 @@
         <service id="commmercetools.mapper.factory" class="Commercetools\Symfony\CtpBundle\Service\MapperFactory">
             <argument type="service" id="commercetools.context.factory"/>
         </service>
-        <service id="commercetools.client.handlerstack" class="GuzzleHttp\HandlerStack">
-            <factory service="Commercetools\Symfony\CtpBundle\Service\HandlerStackFactory" method="create"/>
-            <argument type="service" id="Guzzle\HandlerStack"  on-invalid="null"/>
-            <argument type="service" id="commercetools.profiler.extension" on-invalid="null"/>
-        </service>
         <service id="commercetools.client.config" class="Commercetools\Core\Config">
             <factory class="Commercetools\Symfony\CtpBundle\Service\ConfigFactory" method="create"/>
             <argument>%commercetools.client.config%</argument>
-            <argument type="service" id="commercetools.client.handlerstack" />
             <argument type="service" id="commercetools.logger" />
+            <argument type="service" id="commercetools.profiler.extension" on-invalid="null"/>
             <argument>%kernel.debug%</argument>
         </service>
         <service id="commercetools.cache" parent="cache.app">
@@ -61,14 +57,6 @@
             <argument key="$contextFactory" type="service" id="commercetools.context.factory" />
         </service>
 
-        <service id="commercetools.client.me.handlerstack" class="GuzzleHttp\HandlerStack">
-            <factory service="Commercetools\Symfony\CtpBundle\Service\HandlerStackFactory" method="create"/>
-            <argument type="service" id="Guzzle\HandlerStack"  on-invalid="null"/>
-            <argument type="service" id="commercetools.profiler.extension" on-invalid="null"/>
-        </service>
-
-        <service id="Commercetools\Symfony\CtpBundle\Service\HandlerStackFactory" />
-
         <service id="commercetools.custom_types" class="Commercetools\Symfony\CtpBundle\Service\CustomTypeProvider" public="true">
             <factory method="build" class="Commercetools\Symfony\CtpBundle\Service\CustomTypeProviderFactory"/>
             <argument>%commercetools.custom_types%</argument>
@@ -79,13 +67,18 @@
             <factory class="Commercetools\Core\Client\ClientFactory" method="of"/>
         </service>
 
-        <service id="commercetools.oauth.client" class="GuzzleHttp\Client"/>
+        <service id="commercetools.oauth.me.client" class="GuzzleHttp\Client">
+            <factory class="Commercetools\Symfony\CtpBundle\Service\ClientFactory" method="buildOauthClient"/>
+            <argument type="service" id="commercetools.http.clientfactory" />
+            <argument type="service" id="commercetools.client.me.config"/>
+        </service>
 
         <service id="commercetools.client.me.config" class="Commercetools\Core\Config">
             <factory class="Commercetools\Symfony\CtpBundle\Service\ConfigFactory" method="create"/>
             <argument>%commercetools.client.config%</argument>
-            <argument type="service" id="commercetools.client.me.handlerstack" />
             <argument type="service" id="commercetools.logger" />
+            <argument type="service" id="commercetools.profiler.extension" on-invalid="null"/>
+            <argument>%kernel.debug%</argument>
         </service>
 
         <service id="commeretoools.client.me" class="GuzzleHttp\Client">
@@ -105,14 +98,14 @@
         <service id="Commercetools\Core\Client\OAuth\TokenStorageProvider">
             <factory service="commercetools.http.providerfactory" method="createTokenStorageProviderFor" />
             <argument type="service" id="commercetools.client.me.config"/>
-            <argument type="service" id="commercetools.oauth.client" />
+            <argument type="service" id="commercetools.oauth.me.client" />
             <argument type="service" id="Commercetools\Symfony\CtpBundle\Service\SessionTokenStorage"/>
         </service>
 
         <service id="Commercetools\Core\Client\OAuth\PasswordFlowTokenProvider">
             <factory service="commercetools.http.providerfactory" method="createPasswordFlowProviderFor" />
             <argument type="service" id="commercetools.client.me.config"/>
-            <argument type="service" id="commercetools.oauth.client"/>
+            <argument type="service" id="commercetools.oauth.me.client"/>
             <argument type="service" id="Commercetools\Symfony\CtpBundle\Service\SessionTokenStorage" />
         </service>
 
