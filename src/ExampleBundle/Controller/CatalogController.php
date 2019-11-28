@@ -1,11 +1,8 @@
 <?php
-
 namespace  Commercetools\Symfony\ExampleBundle\Controller;
 
-use Commercetools\Core\Model\Product\Product;
 use Commercetools\Core\Model\Product\ProductProjection;
 use Commercetools\Core\Model\Product\Search\Filter;
-use Commercetools\Core\Model\ShoppingList\ShoppingListCollection;
 use Commercetools\Symfony\CatalogBundle\Manager\CatalogManager;
 use Commercetools\Symfony\CtpBundle\Model\QueryParams;
 use Commercetools\Symfony\ExampleBundle\Entity\ProductEntity;
@@ -16,24 +13,16 @@ use Commercetools\Symfony\ExampleBundle\Model\View\ProductModel;
 use Commercetools\Symfony\ExampleBundle\Model\ViewData;
 use Commercetools\Symfony\ExampleBundle\Model\ViewDataCollection;
 use Commercetools\Symfony\ShoppingListBundle\Manager\MeShoppingListManager;
-use Commercetools\Symfony\ShoppingListBundle\Manager\ShoppingListManagerInterface;
 use GuzzleHttp\Promise\PromiseInterface;
 use GuzzleHttp\Psr7\Uri;
 use Commercetools\Symfony\ExampleBundle\Model\View\Url;
-use Psr\Cache\CacheItemPoolInterface;
 use Psr\Http\Message\UriInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
-use Commercetools\Symfony\ShoppingListBundle\Manager\ShoppingListManager;
-use Symfony\Component\HttpFoundation\Session\SessionInterface;
-use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
-use Symfony\Component\Security\Core\User\UserInterface;
-use Commercetools\Core\Model\Customer\CustomerReference;
 use Commercetools\Core\Model\ShoppingList\ShoppingList;
-use function GuzzleHttp\Promise\promise_for;
 use function GuzzleHttp\Psr7\parse_query;
 
 class CatalogController extends AbstractController
@@ -134,6 +123,7 @@ class CatalogController extends AbstractController
 
         $promise = $this->catalogManager->getProductBySlugAsync($request->getLocale(), $slug, $currency, $country)->then(
             function (ProductProjection $product) use ($request, $shoppingLists) {
+                $shoppingLists->wait(false);
                 return $this->productDetails($request, $product, $shoppingLists);
             },
             function () use ($slug) {
@@ -152,6 +142,7 @@ class CatalogController extends AbstractController
         $shoppingLists = $this->shoppingListManager->getAllMyShoppingListsAsync($request->getLocale());
         $promise = $this->catalogManager->getProductByIdAsync($request->getLocale(), $id, $currency, $country)->then(
             function (ProductProjection $product) use ($request, $shoppingLists) {
+                $shoppingLists->wait(false);
                 return $this->productDetails($request, $product, $shoppingLists);
             },
             function () use ($id) {
